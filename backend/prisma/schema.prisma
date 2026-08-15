@@ -1,0 +1,235 @@
+// Schema del SIRH-MFN — traduce el modelo entidad-relación del Capítulo V
+// (5.2) a Prisma. Provider "sqlite" para desarrollo local sin servicios
+// pesados; para producción basta cambiar provider a "postgresql" y
+// DATABASE_URL a la cadena de conexión real (ver README.md), sin tocar
+// el resto del schema — coincide con el stack PostgreSQL del Cap. V.
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "darwin-arm64"]
+}
+
+model UnidadOrganizacional {
+  id            Int                    @id @default(autoincrement())
+  nombre        String
+  unidadPadreId Int?
+  unidadPadre   UnidadOrganizacional?  @relation("UnidadJerarquia", fields: [unidadPadreId], references: [id])
+  hijas         UnidadOrganizacional[] @relation("UnidadJerarquia")
+  puestos       Puesto[]
+}
+
+// categoria: A | B | C | D (Manual de Evaluación de Desempeño, Cap. IV)
+model Puesto {
+  id              Int                   @id @default(autoincrement())
+  nombre          String
+  categoria       String
+  formaPago       String                @default("Mensual")
+  unidadId        Int?
+  unidad          UnidadOrganizacional? @relation(fields: [unidadId], references: [id])
+  jefeInmediatoId Int?
+  jefeInmediato   Puesto?               @relation("PuestoJerarquia", fields: [jefeInmediatoId], references: [id])
+  subordinados    Puesto[]              @relation("PuestoJerarquia")
+  colaboradores   Colaborador[]
+  convocatorias   Convocatoria[]
+}
+
+// estado: Activo | Inactivo
+model Colaborador {
+  id               Int                          @id @default(autoincrement())
+  nombre           String
+  dpi              String?                      @unique
+  puestoId         Int
+  puesto           Puesto                       @relation(fields: [puestoId], references: [id])
+  fechaIngreso     DateTime
+  tipoContrato     String?
+  estado           String                       @default("Activo")
+  usuario          Usuario?
+  contratos        Contrato[]
+  evaluaciones     EvaluacionDesempeno[]        @relation("EvaluacionColaborador")
+  evaluacionesHechas EvaluacionDesempeno[]      @relation("EvaluacionEvaluador")
+  ausencias        SolicitudAusencia[]
+  saldosVacaciones SaldoVacaciones[]
+  faltas           FaltaDisciplinaria[]
+  certificaciones  CertificacionCapacitacion[]
+  createdAt        DateTime                     @default(now())
+}
+
+// Roles con permisos configurables — evolución del enum fijo de 5 roles
+// de la propuesta original (Cap. I 1.9 Variables) hacia un catálogo de
+// roles en base de datos, más fiel a la jerarquía real de la MFN.
+// `permisos` = { modulos: string[], aprobar: string[], editar: string[] }
+model Rol {
+  id          Int       @id @default(autoincrement())
+  codigo      String    @unique
+  nombre      String
+  descripcion String?
+  permisos    Json
+  usuarios    Usuario[]
+}
+
+model Usuario {
+  id             Int                 @id @default(autoincrement())
+  correo         String              @unique
+  hashContrasena String
+  rolId          Int
+  rol            Rol                 @relation(fields: [rolId], references: [id])
+  colaboradorId  Int?                @unique
+  colaborador    Colaborador?        @relation(fields: [colaboradorId], references: [id])
+  bitacora       BitacoraAuditoria[]
+  createdAt      DateTime            @default(now())
+}
+
+// tipo: Interna | Externa | Mixta · estado: Abierta | Cerrada
+model Convocatoria {
+  id               Int         @id @default(autoincrement())
+  puestoId         Int
+  puesto           Puesto      @relation(fields: [puestoId], references: [id])
+  tipo             String
+  fechaPublicacion DateTime    @default(now())
+  fechaCierre      DateTime
+  requisitos       String?
+  estado           String      @default("Abierta")
+  candidatos       Candidato[]
+}
+
+model Candidato {
+  id                  Int          @id @default(autoincrement())
+  convocatoriaId      Int
+  convocatoria        Convocatoria @relation(fields: [convocatoriaId], references: [id])
+  nombre              String
+  expedienteCompleto  Boolean      @default(false)
+  puntajeCompetencias Float?
+  puntajeExperiencia  Float?
+  puntajeEntrevista   Float?
+  puntajeReferencias  Float?
+  puntajeTotal        Float?
+  createdAt           DateTime     @default(now())
+}
+
+// tipo: 2 meses | 6 meses | 1 año | Por obra
+model Contrato {
+  id                       Int         @id @default(autoincrement())
+  colaboradorId            Int
+  colaborador              Colaborador @relation(fields: [colaboradorId], references: [id])
+  tipo                     String
+  fechaInicio              DateTime
+  fechaFin                 DateTime?
+  fechaRegistroContraloria DateTime?
+  createdAt                DateTime    @default(now())
+}
+
+// resultado: Sobresaliente | Bueno | Regular | Deficiente | Pendiente
+model EvaluacionDesempeno {
+  id            Int                @id @default(autoincrement())
+  colaboradorId Int
+  colaborador   Colaborador        @relation("EvaluacionColaborador", fields: [colaboradorId], references: [id])
+  evaluadorId   Int
+  evaluador     Colaborador        @relation("EvaluacionEvaluador", fields: [evaluadorId], references: [id])
+  periodo       String
+  resultado     String?
+  fecha         DateTime?
+  factores      EvaluacionFactor[]
+  planMejora    PlanMejora?
+  createdAt     DateTime           @default(now())
+}
+
+model EvaluacionFactor {
+  id           Int                 @id @default(autoincrement())
+  evaluacionId Int
+  evaluacion   EvaluacionDesempeno @relation(fields: [evaluacionId], references: [id])
+  factor       Int
+  nombreFactor String
+  calificacion String?
+}
+
+model PlanMejora {
+  id           Int                 @id @default(autoincrement())
+  evaluacionId Int                 @unique
+  evaluacion   EvaluacionDesempeno @relation(fields: [evaluacionId], references: [id])
+  fechaInicio  DateTime            @default(now())
+  fechaLimite  DateTime
+  estado       String              @default("Activo")
+}
+
+// tipo: Vacaciones | Permiso | Licencia · estado: Pendiente | Aprobado | Rechazado
+model SolicitudAusencia {
+  id            Int         @id @default(autoincrement())
+  colaboradorId Int
+  colaborador   Colaborador @relation(fields: [colaboradorId], references: [id])
+  tipo          String
+  desde         DateTime
+  hasta         DateTime
+  motivo        String?
+  estado        String      @default("Pendiente")
+  aprobadorId   Int?
+  createdAt     DateTime    @default(now())
+}
+
+model SaldoVacaciones {
+  id              Int         @id @default(autoincrement())
+  colaboradorId   Int
+  colaborador     Colaborador @relation(fields: [colaboradorId], references: [id])
+  anio            Int
+  diasDisponibles Int
+  diasUsados      Int         @default(0)
+
+  @@unique([colaboradorId, anio])
+}
+
+// tipo: Leve | Grave
+model FaltaDisciplinaria {
+  id              Int      @id @default(autoincrement())
+  colaboradorId   Int
+  colaborador     Colaborador @relation(fields: [colaboradorId], references: [id])
+  tipo            String
+  descripcion     String
+  fecha           DateTime @default(now())
+  registradoPorId Int?
+  sancion         Sancion?
+}
+
+// tipo: Verbal | Escrita | Suspension
+model Sancion {
+  id             Int                @id @default(autoincrement())
+  faltaId        Int                @unique
+  falta          FaltaDisciplinaria @relation(fields: [faltaId], references: [id])
+  tipo           String
+  fechaAudiencia DateTime?
+  resultado      String?
+  resueltoPorId  Int?
+}
+
+model Capacitacion {
+  id                Int                          @id @default(autoincrement())
+  nombreHerramienta String
+  fecha             DateTime?
+  convocadaPorId    Int?
+  certificaciones   CertificacionCapacitacion[]
+}
+
+model CertificacionCapacitacion {
+  id             Int          @id @default(autoincrement())
+  capacitacionId Int
+  capacitacion   Capacitacion @relation(fields: [capacitacionId], references: [id])
+  colaboradorId  Int
+  colaborador    Colaborador  @relation(fields: [colaboradorId], references: [id])
+  firmado        Boolean      @default(false)
+  fecha          DateTime?
+
+  @@unique([capacitacionId, colaboradorId])
+}
+
+model BitacoraAuditoria {
+  id        Int      @id @default(autoincrement())
+  usuarioId Int?
+  usuario   Usuario? @relation(fields: [usuarioId], references: [id])
+  accion    String
+  entidad   String?
+  entidadId Int?
+  fecha     DateTime @default(now())
+}

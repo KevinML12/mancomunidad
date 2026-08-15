@@ -1,0 +1,1077 @@
+UNIVERSIDAD MARIANO GÁLVEZ DE GUATEMALA
+FACULTAD DE INGENIERÍA EN CIENCIAS DE INFORMACIÓN
+
+
+
+
+
+
+
+
+
+
+
+
+Desarrollo de una plataforma web integral para la optimización de procesos administrativos y la gestión de incidencia ciudadana de la ONG Involúcrate Guatemala
+
+
+
+
+
+
+
+
+
+
+
+
+KEVIN ALEXANDER MÉNDEZ LÓPEZ
+GUATEMALA JUNIO DE 2026
+
+TABLA DE CONTENIDO
+INTRODUCCIÓN	IX
+CAPÍTULO I ANTEPROYECTO DE INVESTIGACIÓN	11
+1.1.	Antecedentes	11
+1.1.1. Antecedentes del problema	11
+1.1.2. Antecedentes de la institución	12
+1.2.	Justificación	12
+1.3.	Planteamiento del problema	13
+1.4.	Objetivos	14
+1.4.1. Objetivo General	14
+1.4.2. Objetivos Específicos	14
+1.5.	Viabilidad y factibilidad	15
+1.5.1. De mercado	15
+1.5.2. Tecnológica	15
+1.5.3. De soporte	16
+1.5.4. Administrativo/Personal	16
+1.5.5. Económica	17
+1.6.	Alcances y límites	17
+1.6.1. Geográfico	17
+1.6.2. Tecnológico	17
+1.6.3. Personal	18
+1.6.4. Temporal	18
+1.7.	Preguntas de investigación	18
+1.7.1. Pregunta General	18
+1.7.2. Preguntas Específicas	18
+1.8.	Hipótesis	18
+1.8.1. Hipótesis de acción	19
+1.8.2. Hipótesis nula	19
+1.9.	Variables	19
+1.9.1. Variable independiente	19
+1.9.2. Variable dependiente	19
+1.10.	Indicadores	20
+1.10.1. Indicadores de la variable independiente	20
+1.10.2. Indicadores de la variable dependiente	20
+1.11.	Supuestos	20
+1.12.	Herramientas de investigación	21
+1.12.1. Entrevistas semiestructuradas	21
+1.12.2. Observación directa	21
+1.12.3. Cuestionarios	21
+1.12.4. Métricas de rendimiento de software	22
+CAPÍTULO II MARCO TEÓRICO – VARIABLE INDEPENDIENTE	23
+2.1.	Definición	23
+2.1.1. Definición de plataforma web	24
+2.1.2. Definición de sistema de información organizacional	24
+2.1.3. Definición de experiencia de usuario (UX/UI)	25
+2.1.4. Definición de seguridad en aplicaciones web	25
+2.1.5. Definición de Arquitectura Offline-First y Resiliencia	26
+2.1.6. Definición de Gobernanza de Datos y Cumplimiento Normativo	26
+2.1.7. Definición de Tecnologías LegalTech y Validez Jurídica	27
+2.1.8. Definición de Backend as a Service (BaaS)	27
+2.2.	Características	27
+2.2.1. Características de las plataformas web modernas	27
+2.2.2. Características de la arquitectura cliente-servidor y de microservicios	28
+2.2.3. Características del diseño responsivo y accesible	29
+2.2.4. Características de las plataformas web modernas	29
+2.3.	Modelos	30
+2.3.1. Ciclo de vida del desarrollo de software	30
+2.3.2. Metodologías ágiles: Scrum y Kanban	31
+2.3.3. Arquitectura frontend: componentes y PWA	32
+2.3.4. Arquitectura backend: desacoplamiento y APIs	33
+2.3.5. Modelos de computación en la nube	33
+2.4.	Herramientas	34
+2.4.1. Herramientas de desarrollo frontend	34
+2.4.2. Herramientas de backend y bases de datos	35
+2.4.3. Herramientas de gestión de proyectos y modelado	36
+2.4.4. Herramientas de visualización de datos y monitoreo	37
+CAPÍTULO III MARCO TEÓRICO – VARIABLE DEPENDIENTE	39
+3.1.	Definiciones	39
+3.1.1. Definición de Organización No Gubernamental	39
+3.1.2. Definición de Participación Ciudadana	40
+3.1.3. Definición de Observación electoral ciudadana	41
+3.1.4. Gestión y optimización de procesos administrativos	42
+3.1.5. Definición de Gestión de Voluntariado	42
+3.1.6. Definición de Incidencia ciudadana y tecnología cívica	43
+3.2. Características	43
+3.2.1. Características de las ONG Juveniles en Guatemala	44
+3.2.2. Características de la participación ciudadana digital en Guatemala	45
+3.2.3. Características de la formación cívica efectiva en entornos digitales	46
+3.2.4. Características de la gestión moderna del voluntariado	47
+3.3. Modelos	48
+3.3.1. Modelos de gestión organizacional para el tercer sector	48
+3.3.2. Modelos de mejora continua aplicados a ONG	49
+3.3.3. Modelos de incidencia pública ciudadana	49
+3.4. Aplicaciones	50
+3.4.1. Aplicaciones en la gestión del ciclo de vida del voluntariado	51
+3.4.2. Aplicaciones en la coordinación de redes de observadores electorales	51
+3.4.3. Aplicaciones en la formación cívica digital	52
+3.4.4. Aplicaciones en transparencia institucional y rendición de cuentas	53
+CAPÍTULO IV ANÁLISIS DEL ENTORNO	55
+4.1.	Descripción de la institución	55
+4.1.1. Descripción general.	55
+4.1.2. Datos institucionales:	55
+4.1.3. Misión	56
+4.1.4. Visión	56
+4.1.5. Valores	56
+4.1.6. Objetivos institucionales	56
+4.1.7. Estructura organizacional y manual de funciones	56
+4.1.8. Organización	57
+4.1.9. Ubicación geográfica	57
+4.1.10. Líneas de acción y alianza	57
+4.2. Descripción del proceso del proyecto	58
+4.2.1. Registro y gestión de miembros y voluntarios	58
+4.2.2. Coordinación de observadores y reporte de incidencias electorales	58
+4.2.3. Gestión de la formación cívica	58
+4.2.4. Comunicación e incidencia ciudadana	59
+4.3. Levantamiento de requerimientos	59
+4.3.1. Especificación de requisitos de software	60
+4.3.2. Descripción general	64
+4.3.3. Requisitos específicos	67
+CONCLUSIONES	77
+RECOMENDACIONES	78
+
+
+ÍNDICE DE TABLAS
+Tabla 1     De mercado	14
+Tabla 2     Tecnológica	14
+Tabla 3     De soporte	15
+Tabla 4     Administrativo/Personal	15
+Tabla 5     Económica	16
+Tabla 6     Identificación de Stakeholders	61
+Tabla 7     Gestión de Miembros	66
+Tabla 8     Coordinación Electoral	66
+Tabla 9     Formación Cívica	69
+Tabla 10     Reportes e Incidencia Ciudadana	71
+Tabla 11     Requisitos no funcionales	72
+
+ÍNDICE DE FIGURAS
+Figura 1     Logotipo oficial de Involúcrate Guatemala	55
+Figura 2     Organigrama de Involúcrate Guatemala	57
+Figura 3     Diagrama de casos de uso de SistemaInvolúcrate.	65
+
+INTRODUCCIÓN
+La transformación digital es hoy un imperativo para la sociedad civil organizada. La UIT (2022) reporta que el 69% de las ONG priorizan digitalizar sus procesos administrativos. En Guatemala, la participación juvenil alcanzó apenas el 38% en las elecciones de 2023 (ASIES, 2022). Esta brecha entre necesidad democrática y capacidad tecnológica representa un obstáculo estructural. 
+Las organizaciones sin infraestructura digital pierden credibilidad, eficiencia e impacto institucional. Adoptar ecosistemas tecnológicos propios es hoy una condición de sostenibilidad para el tercer sector.
+Involúcrate Guatemala, con más de 3,000 integrantes activos a nivel nacional, carece de infraestructura digital centralizada. Sus operaciones dependen de hojas de cálculo, formularios genéricos y aplicaciones de mensajería. Castells (2009) advierte que fragmentar información en plataformas no integradas genera pérdida de datos e ineficiencias críticas. 
+Esta dependencia provoca duplicación de esfuerzos y lentitud administrativa que compromete la misión institucional. Además, la organización carece de mecanismos para validar los reportes de incidencia electoral con valor probatorio. La ausencia de trazabilidad limita su credibilidad ante organismos nacionales e internacionales de observación.
+Desarrollar una plataforma web centralizada resolverá directamente estas limitaciones operativas. El NTEN (2022) documenta que las plataformas integradas reducen el tiempo administrativo en un 40%. 
+El sistema incorporará validación criptográfica que garantizará la inmutabilidad de los registros ciudadanos. Esto elevará el valor probatorio de la evidencia electoral ante el Tribunal Supremo Electoral. La arquitectura modular garantizará escalabilidad y mantenibilidad a largo plazo. Además, sentará un precedente técnico replicable para organizaciones similares en la región centroamericana.
+El objetivo general es desarrollar una plataforma web con paneles diferenciados por rol para optimizar la administración de la ONG. La hipótesis plantea que la arquitectura modular con control de acceso RBAC mejorará significativamente la eficiencia operativa (Hernández et al., 2014). Se reducirán los tiempos de coordinación electoral y se incrementará la adopción tecnológica del voluntariado. 
+Los cinco objetivos específicos abarcan seguridad, visualización geoespacial, automatización, diseño UX/UI y evaluación de impacto. Ambas hipótesis serán contrastadas mediante indicadores SMART definidos sobre las variables del estudio. Los resultados se medirán con métricas de tiempo, adopción tecnológica y precisión de registros.
+La investigación adopta un enfoque mixto, predominantemente cuantitativo, con diseño descriptivo-propositivo. Los instrumentos incluyen entrevistas semiestructuradas, observación directa y cuestionarios con escala Likert post-implementación. 
+La especificación de requisitos sigue el estándar IEEE 830, garantizando trazabilidad entre necesidades y decisiones de diseño (Pressman & Maxim, 2021). El desarrollo aplica el modelo incremental complementado con metodologías ágiles Scrum y Kanban. Las métricas de calidad se evaluarán bajo el estándar ISO/IEC 25010:2011 en todas sus dimensiones. Esta combinación metodológica asegura que el sistema responda fielmente a las necesidades reales de la organización.
+El documento se estructura en seis capítulos que conducen desde la fundamentación hasta la implementación. El Capítulo I establece el anteproyecto con antecedentes, objetivos, hipótesis e indicadores. Los Capítulos II y III desarrollan el marco teórico de ambas variables: tecnologías web y gestión organizacional. 
+El Capítulo IV analiza el entorno institucional y formaliza el levantamiento de requerimientos bajo IEEE 830. El Capítulo V describe el diseño arquitectónico, la base de datos y los diagramas de proceso en BPMN 2.0. El Capítulo VI detalla la estrategia de pruebas, el plan de implementación y el modelo de mejora continua del sistema.
+
+
+
+CAPÍTULO I ANTEPROYECTO DE INVESTIGACIÓN
+El presente capítulo fundamenta el anteproyecto de investigación, integrando el marco conceptual y metodológico del estudio. En las siguientes secciones se exponen los antecedentes que motivan el desarrollo del ecosistema digital, definiendo con claridad el planteamiento del problema, la justificación tecnológica y social, así como los objetivos y la metodología que guiarán la construcción de la plataforma.
+Antecedentes
+Antecedentes del problema
+La transformación digital ha reconfigurado la operatividad de las organizaciones de la sociedad civil. Según la Unión Internacional de Telecomunicaciones (UIT, 2022), el 69% de las ONG a nivel mundial priorizan digitalizar sus procesos administrativos para gestionar mayores volúmenes de información, coordinar equipos geográficamente distribuidos y garantizar la trazabilidad de sus operaciones.
+Paralelamente, la participación política juvenil es vital para la democracia, pero enfrenta serios retos. El PNUD (2021) advierte una preocupante brecha de participación cívica en jóvenes latinoamericanos. En Guatemala, factores socioeconómicos y culturales han distanciado a las nuevas generaciones, reflejándose en los bajos índices de participación electoral juvenil registrados en las elecciones generales de 2023 (ASIES, 2022).
+En este escenario, la observación electoral ha evolucionado drásticamente gracias a la tecnología. La OEA (2023) señala que las plataformas digitales mejoran la precisión, velocidad y cobertura del reporte de incidencias. Países como México y Colombia han logrado reducir hasta en un 68% los tiempos de reporte mediante sistemas digitales en comparación con los métodos manuales tradicionales.
+Para operar de forma eficiente, las ONG requieren sistemas que soporten procesos críticos como la gestión de miembros y reportes ciudadanos. Saxton y Wang (2014) documentan que la adopción de plataformas digitales integradas incrementa la retención de voluntarios en un 47% y la movilización en un 35%, consolidando la credibilidad institucional ante donantes y sociedad civil.
+Sin embargo, depender de herramientas de terceros (mensajería instantánea u hojas de cálculo genéricas) limita severamente este crecimiento. Castells (2009) argumenta que fragmentar 
+la información en múltiples plataformas no integradas genera pérdida de datos, duplicación de esfuerzos e ineficiencias que comprometen la capacidad de incidencia de las organizaciones.
+En el caso específico de la ONG Involúcrate Guatemala, esta carencia tecnológica dificulta coordinar a sus más de 3,000 miembros activos a nivel nacional. Actualmente, la gestión de observadores y formación cívica se realiza de forma manual y descentralizada, utilizando herramientas que no soportan la escala, seguridad ni la complejidad que exige la participación ciudadana contemporánea (Involúcrate Guatemala, 2024).
+Antecedentes de la institución
+ONG Involúcrate Guatemala, fundada en el año 2022, surge como respuesta a la urgente necesidad de fortalecer la cultura democrática juvenil ante el desencanto político y la baja participación electoral. La organización opera de manera descentralizada y sin sede física permanente, apoyándose en redes ciudadanas distribuidas en distintas regiones del país.
+Su misión central es fomentar la participación ciudadana activa, crítica y responsable. Bajo la coordinación de una junta directiva de ocho miembros, la institución ejecuta programas de formación cívica, foros de debate público, movilización social y, de manera destacada, el despliegue de redes de observadores para documentar incidencias electorales.
+A la fecha, la organización ha experimentado un crecimiento acelerado, superando los 3,000 integrantes a nivel nacional. Sin embargo, esta escala ha evidenciado la insostenibilidad de su modelo operativo manual: la inscripción, comunicación interna y el registro de actividades dependen exclusivamente de formularios genéricos, aplicaciones de mensajería y hojas de cálculo compartidas. Esta fragmentación carece de una infraestructura tecnológica centralizada que garantice la integridad, disponibilidad y trazabilidad de la información institucional.
+Justificación 
+El desarrollo de una plataforma web integral para Involúcrate Guatemala responde a una urgencia operativa y estratégica. Gestionar manualmente a más de 3,000 integrantes genera ineficiencias que limitan la capacidad de respuesta y dificultan la coordinación de observadores electorales. Esta situación compromete directamente la calidad y confiabilidad de los registros ante organismos nacionales e internacionales.
+La digitalización es determinante para la sostenibilidad de estas organizaciones. Según el Nonprofit Technology Network (NTEN, 2022), implementar plataformas integradas reduce el tiempo administrativo en un 40%. Para la ONG, esta eficiencia liberará recursos humanos, traduciéndose en una mayor capacidad de formación cívica y en reportes de incidencia electoral mucho más precisos y oportunos.
+Un ecosistema digital propio otorgará independencia tecnológica, mitigando riesgos de pérdida de datos por la dependencia de terceros. Además, la plataforma incorporará validación criptográfica para garantizar la inmutabilidad de los registros ciudadanos. Esto resulta fundamental para presentar evidencia robusta y verificable de la observación electoral ante actores institucionales clave, blindando la credibilidad de la ONG.
+Académicamente, este proyecto pionero contribuye a la digitalización de la sociedad civil guatemalteca. El uso de una arquitectura de software modular garantizará que la plataforma sea escalable, mantenible y adaptable a futuras necesidades. Esto sentará un valioso precedente técnico, creando un modelo replicable para otras agrupaciones de participación ciudadana en toda la región centroamericana.
+Planteamiento del problema
+Guatemala es un país con una democracia joven y en proceso de consolidación, donde la participación política de la juventud enfrenta barreras estructurales significativas. La Asociación de Investigación y Estudios Sociales (ASIES, 2022) documenta que únicamente el 38% de los jóvenes guatemaltecos entre 18 y 29 años participó activamente en las elecciones generales de 2023, y que el conocimiento sobre derechos y deberes ciudadanos entre este grupo etario presenta niveles preocupantemente bajos. En este contexto, organizaciones como ONG Involúcrate Guatemala cumplen un rol estratégico como agentes de formación cívica y fiscalización democrática, especialmente en los periodos previos y durante los procesos electorales nacionales.
+Sin embargo, la efectividad de la organización para cumplir con su misión se ve seriamente comprometida por la ausencia de una infraestructura tecnológica adecuada a sus necesidades y escala operativa. La dependencia de herramientas genéricas de terceros genera fragmentación de la información, procesos lentos e ineficientes, dificultad para dar seguimiento sistemático a la participación de observadores electorales y ausencia de mecanismos confiables para sistematizar y validar los registros de incidencia ciudadana. Esta situación limita tanto la capacidad operativa de la organización como su credibilidad e influencia ante organismos internacionales, donantes institucionales y actores políticos clave en el ecosistema democrático guatemalteco.
+
+Objetivos
+	•	
+	•	
+	•	
+Objetivo General
+Desarrollar una plataforma web integral con paneles de gestión diferenciados por rol que optimice los procesos administrativos y la sistematización de la participación ciudadana de la ONG Involúcrate Guatemala, mejorando la coordinación de observadores electorales, la gestión de miembros y la trazabilidad de los registros de incidencia ciudadana mediante el uso de tecnologías web modernas y arquitectura modular escalable.
+Objetivos Específicos
+Implementar una arquitectura de software modular que garantice la escalabilidad y seguridad de la plataforma, incorporando autenticación robusta y control de acceso basado en roles (RBAC).
+Desarrollar módulos de inteligencia de datos con visualización geoespacial para el análisis de la participación ciudadana y el reporte de incidencias electorales, empleando validación criptográfica.
+Automatizar los procesos críticos de la organización, centralizando el registro de miembros, seguimiento de observadores y envío de comunicaciones, para eliminar la dependencia de herramientas de terceros.
+Diseñar una interfaz de usuario (UX/UI) intuitiva y responsiva, adaptada a las necesidades específicas de los distintos perfiles: administradores, coordinadores, observadores y miembros.
+Evaluar el impacto de la plataforma en la eficiencia operativa de la ONG mediante indicadores cuantificables de tiempo, adopción tecnológica y precisión de registros.
+
+Viabilidad y factibilidad
+	•	
+De mercado
+Tabla 1
+De mercado
+Indicador
+Sí
+No
+Evidencia
+¿Existe una necesidad clara y ausencia de plataformas competidoras?
+X
+
+Diagnóstico de gestión manual sin alternativas locales similares para este tipo de ONG.
+¿La organización respalda y utilizará el sistema?
+X
+
+Consultas a la junta directiva confirman total apertura hacia la digitalización.
+¿Es viable implementar el proyecto sin costo para la institución?
+X
+
+Desarrollo como tesis de graduación, eliminando honorarios profesionales.
+Nota: Elaboración propia
+Tecnológica
+Tabla 2
+Tecnológica
+Indicador
+Sí
+No
+Evidencia
+¿Los usuarios poseen los equipos básicos para acceder al sistema?
+X
+
+Los miembros cuentan con dispositivos móviles y conexión estable a internet.
+¿Se ha definido la infraestructura de nube y el stack tecnológico?
+X
+
+Arquitectura y servicios predefinidos que garantizan total compatibilidad y seguridad.
+¿Se cuenta con la capacidad técnica para el desarrollo y soporte?
+X
+
+Experiencia en las tecnologías web a utilizar y entrega de manuales operativos.
+Nota: Elaboración propia
+
+
+De soporte
+Tabla 3
+De soporte
+Indicador
+Sí
+No
+Evidencia
+¿Se contará con soporte técnico disponible para resolver problemas relacionados con la plataforma?
+X
+
+El desarrollador brindará soporte técnico durante el período de garantía establecido como parte del proyecto de graduación.
+¿Existe un plan de mantenimiento preventivo para asegurar el correcto funcionamiento de la plataforma?
+X
+
+Se desarrollará un plan de mantenimiento preventivo y correctivo con revisiones periódicas del sistema como entregable final.
+Nota: Elaboración propia
+Administrativo/Personal
+Tabla 4
+Administrativo/Personal
+Indicador
+Sí
+No
+Evidencia
+¿Se dispone del respaldo administrativo para implementar el proyecto?
+X
+
+Carta de autorización avalada por la junta directiva de ONG Involúcrate Guatemala.
+¿Existe personal designado para supervisar y coordinar el proyecto?
+X
+
+La junta directiva asignará un enlace institucional directo con el desarrollador.
+¿El personal recibirá formación para el uso del sistema?
+X
+
+Se ejecutarán capacitaciones específicas adaptadas al rol de cada usuario.
+¿El personal actual es suficiente para operar la plataforma?
+X
+
+El sistema será operado por el equipo directivo existente mediante roles y permisos predefinidos.
+Nota: Elaboración propia
+
+Económica
+Tabla 5
+Económica
+Indicador
+Sí
+No
+Evidencia
+¿El proyecto carece de costos por honorarios o servicios profesionales externos?
+X
+
+El desarrollo es ejecutado íntegramente por el estudiante bajo carácter de tesis académica.
+¿Se cuenta con un presupuesto estimado para la infraestructura del sistema?
+X
+
+Plan financiero preliminar estructurado para servicios de nube e insumos de desarrollo.
+¿Se contempla un margen o fondo de contingencia para imprevistos?
+X
+
+Asignación de una reserva porcentual para cubrir eventualidades técnicas o cambios de tarifa en la nube.
+Nota: Elaboración propia
+Alcances y límites
+El presente proyecto establece parámetros claros para garantizar su viabilidad y correcta ejecución dentro de los recursos disponibles. A continuación, se delimitan las fronteras y el radio de acción de la plataforma web desde las perspectivas geográfica, tecnológica, de personal y temporal.
+	•	
+Geográfico 
+La plataforma será desarrollada para la ONG Involúcrate Guatemala, con cobertura a nivel nacional. El sistema estará disponible en línea, siendo accesible desde cualquier punto del territorio guatemalteco con conexión a internet, y será administrado de forma centralizada por la junta directiva.
+Tecnológico 
+El proyecto contempla una plataforma web basada estrictamente en arquitectura modular. Integrará módulos de gestión administrativa, coordinación de observación electoral, formación cívica y visualización geoespacial. Se desplegará en infraestructura de nube para garantizar escalabilidad, incorporando autenticación multifactor y validación criptográfica para asegurar la integridad de los registros.
+Personal 
+El sistema involucrará a los ocho miembros de la junta directiva como administradores principales, además de coordinadores regionales y más de 3,000 miembros activos como usuarios finales. Se ejecutarán capacitaciones diferenciadas según el rol de cada perfil para garantizar una adopción tecnológica efectiva.
+Temporal 
+El desarrollo e implementación se ejecutará en un período de doce meses, estructurado en cinco fases: análisis de requerimientos, diseño de arquitectura e interfaz, desarrollo de módulos, pruebas de calidad (QA) e implementación final. Cada fase contará con evaluaciones de avance para garantizar el cumplimiento de los objetivos.
+Preguntas de investigación 
+Con base en el planteamiento del problema y los objetivos trazados para el desarrollo de la plataforma de ONG Involúcrate Guatemala, se formulan las siguientes interrogantes que guiarán el eje técnico y operativo de la presente investigación:
+	•	
+Pregunta General
+¿De qué manera el desarrollo de una plataforma web integral optimiza los procesos operativos, la coordinación de observadores electorales y la participación ciudadana en la ONG Involúcrate Guatemala?
+Preguntas Específicas
+¿Cómo la implementación de una arquitectura de software modular garantiza la escalabilidad, seguridad y disponibilidad de los servicios digitales ante el crecimiento sostenido de la membresía?
+¿En qué medida la automatización del registro de miembros y la coordinación de actividades reduce los tiempos operativos y elimina la dependencia de herramientas de terceros?
+¿De qué manera el diseño de interfaces (UX/UI) centrado en el usuario influye en los niveles de adopción tecnológica y participación activa por parte de la organización?
+Hipótesis
+A continuación se formulan las hipótesis de la investigación, las cuales establecen la relación tentativa entre el desarrollo tecnológico propuesto y los resultados operativos esperados en la organización:
+	•	
+Hipótesis de acción
+El desarrollo de una plataforma web integral con arquitectura modular mejora significativamente la eficiencia administrativa y la sistematización de la participación ciudadana en la ONG Involúcrate Guatemala, reduciendo los tiempos operativos de coordinación y fortaleciendo la trazabilidad de sus registros.
+Hipótesis nula
+El desarrollo de una plataforma web integral con arquitectura modular no genera mejoras significativas en la eficiencia administrativa ni en la sistematización de la participación ciudadana en la ONG Involúcrate Guatemala, manteniendo los tiempos operativos y la calidad de los registros en niveles similares a los actuales.
+Variables
+Las variables del presente proyecto se definen a partir de la relación causal establecida en la hipótesis de acción. La variable independiente constituye el elemento que el investigador interviene o manipula, mientras que la variable dependiente representa el fenómeno que se busca optimizar como resultado de dicha intervención (Hernández et al., 2014).
+	•	
+Variable independiente
+Definición conceptual
+Desarrollo de una plataforma web integral con paneles de gestión diferenciados por rol para la ONG Involúcrate Guatemala.
+Definición operacional
+Sistema de software web bajo arquitectura modular que integra módulos de administración, coordinación electoral, formación cívica e inteligencia de datos, con seguridad RBAC y despliegue en infraestructura de nube.
+Variable dependiente
+Definición conceptual
+Optimización de los procesos administrativos y gestión de la incidencia ciudadana de la ONG Involúcrate Guatemala.
+Definición operacional
+Mejoras cuantificables en los tiempos de coordinación, precisión de registros y nivel de adopción tecnológica por parte del equipo, evaluadas mediante indicadores operativos tras la implementación del sistema.
+Indicadores
+Los indicadores permiten medir objetivamente el comportamiento de cada variable antes y después de la implementación del sistema. Se definen bajo la metodología SMART (específicos, medibles, alcanzables, relevantes y temporales), garantizando que las conclusiones del proyecto sean cuantificables y verificables.
+	•	
+Indicadores de la variable independiente
+Porcentaje de módulos funcionales desarrollados e integrados respecto al total planificado.
+Nivel de disponibilidad mensual del sistema (uptime) en la infraestructura de nube.
+Número de perfiles de usuario implementados con control de acceso diferenciado (RBAC).
+Tiempo promedio de respuesta del sistema bajo carga simultánea (en milisegundos).
+Porcentaje de casos de prueba de software aprobados conforme al estándar ISO 25010.
+Indicadores de la variable dependiente
+Reducción del tiempo promedio operativo para el registro validado de un miembro activo.
+Disminución en horas operativas para la coordinación de observadores por jornada electoral.
+Tasa de adopción tecnológica (porcentaje de usuarios activos sobre el total registrado).
+Porcentaje de reportes de incidencia ciudadana procesados sin errores ni duplicidades.
+Nivel de satisfacción de los usuarios con la plataforma, medido mediante escala Likert (1-5).
+Supuestos
+Los supuestos representan las premisas, situaciones o condiciones que se asumen como verdaderas y necesarias para la viabilidad y correcta ejecución del proyecto, sin requerir comprobación adicional durante la investigación:
+Disposición y apertura hacia la adopción tecnológica por parte de la junta directiva y los miembros activos de la ONG Involúcrate Guatemala.
+Mantenimiento de la estructura organizacional actual y de los lineamientos de observación electoral durante el desarrollo de la plataforma.
+Disponibilidad de acceso a internet y a dispositivos móviles o de escritorio básicos por parte de los usuarios finales para acceder al sistema.
+Herramientas de investigación 
+Para la recolección de datos, levantamiento de requerimientos y la posterior comprobación de la hipótesis mediante la medición de los indicadores, se emplearán los siguientes instrumentos:
+	•	
+	•	
+Entrevistas semiestructuradas 
+Las entrevistas semiestructuradas se dirigirán a los ocho miembros de la junta directiva de Involúcrate Guatemala. 
+Su propósito es definir con precisión las reglas de negocio, los roles institucionales y los flujos de trabajo que el sistema debe automatizar. Este instrumento combina preguntas predefinidas con libertad para profundizar en respuestas relevantes (Hernández et al., 2014). La flexibilidad del formato permite capturar información contextual que los cuestionarios cerrados no revelan. Cada sesión será documentada mediante grabación con consentimiento del participante para su posterior análisis.
+Observación directa 
+La observación directa se aplicará al análisis de los procesos manuales actuales de registro de miembros y coordinación de observadores electorales. Este instrumento permite identificar cuellos de botella, redundancias y puntos de falla que los propios usuarios no siempre verbalizan en entrevistas. 
+Pressman y Maxim (2021) recomiendan la observación como complemento indispensable del levantamiento de requerimientos. Las sesiones se realizarán durante las operaciones cotidianas de la organización sin intervenir en su desarrollo natural. Los hallazgos se documentarán en fichas estructuradas que alimentarán directamente la especificación de requisitos.
+Cuestionarios 
+Los cuestionarios implementarán encuestas estandarizadas mediante escala Likert de cinco puntos aplicadas post-implementación. Su objetivo es evaluar cuantitativamente la tasa de adopción tecnológica y el nivel de satisfacción de los usuarios con el sistema. 
+Este instrumento permitirá medir los indicadores de la variable dependiente definidos en la sección 1.10. La escala Likert garantiza comparabilidad estadística entre los distintos perfiles de usuario: administradores, coordinadores y observadores. Los resultados se analizarán mediante estadística descriptiva para contrastar la hipótesis de acción.
+Métricas de rendimiento de software 
+Las métricas de rendimiento se obtendrán mediante herramientas de monitoreo en la nube integradas al ambiente de producción del sistema. Se registrarán objetivamente los tiempos de respuesta, la disponibilidad mensual (uptime), el manejo de carga simultánea y la tasa de errores bajo distintos escenarios de uso. 
+Estas métricas se evaluarán contra los umbrales definidos en los requisitos no funcionales bajo el estándar ISO/IEC 25010:2011. Herramientas como Grafana y Uptime Robot automatizarán la recolección continua de datos durante toda la fase de implementación. Este instrumento convierte el rendimiento técnico del sistema en evidencia cuantificable y verificable.
+
+
+
+
+CAPÍTULO II MARCO TEÓRICO – VARIABLE INDEPENDIENTE
+Ingeniería y Tecnologías para el Desarrollo de Sistemas Web
+El presente capítulo desarrolla el marco teórico correspondiente a la variable independiente del proyecto: el desarrollo de una plataforma web integral para la Organización No Gubernamental Involúcrate Guatemala. Se abordan los fundamentos teóricos, conceptuales y tecnológicos que sustentan la construcción de sistemas web modernos, desde la definición misma de plataforma web hasta las herramientas concretas que permiten su materialización productiva.
+La estructura del capítulo se articula en cuatro grandes apartados: definición, características, modelos y herramientas, que conducen al lector desde una conceptualización abstracta hacia la implementación práctica del proyecto, proveyendo en cada sección el respaldo científico que justifica las decisiones de ingeniería adoptadas para el caso de estudio de esta organización civil. La selección de las teorías, modelos y herramientas presentadas no es casual.
+Cada elemento responde a una necesidad operativa específica de la organización beneficiaria. Involúcrate Guatemala despliega a sus voluntarios en los veintidós departamentos del país, frecuentemente en zonas rurales y alejadas con conectividad intermitente, durante jornadas electorales de mucha presión. Estas condiciones de campo definen requerimientos no funcionales estrictos que sólo pueden satisfacerse mediante una arquitectura tecnológica sólida.
+Por consiguiente, el presente marco teórico no constituye un simple ejercicio académico aislado, sino el sustento ingenieril que precede y orienta el diseño de la solución web propuesta en este documento. Así, la fundamentación tecnológica se convierte en el cimiento sobre el cual se edificará la plataforma, asegurando que la herramienta final sea robusta y funcional.
+	•	
+	•	
+	•	
+	•	
+	•	Definición
+La sección de definiciones establece el marco conceptual sobre el cual se construye el resto del capítulo. Antes de discutir características o herramientas, resulta indispensable delimitar con precisión qué se entiende por plataforma web en el contexto de la ingeniería de software contemporánea, qué constituye un sistema de información organizacional, cuál es la naturaleza del diseño de experiencia de usuario, y cómo se concibe la seguridad.
+Esta última es vital como atributo estructural del software. Estas cuatro definiciones constituyen los pilares conceptuales que permitirán comprender, en las secciones subsiguientes, las características distintivas, los modelos arquitectónicos y las herramientas operativas que se integrarán en la solución tecnológica diseñada a medida para el trabajo de Involúcrate Guatemala.
+Definición de plataforma web 
+En la ingeniería de software contemporánea, una plataforma web trasciende la noción tradicional de un sitio de difusión estática. Pressman y Maxim (2021) definen las aplicaciones web modernas como sistemas de software maduros y distribuidos que se caracterizan por su alta complejidad lógica, concurrencia extrema y manejo intensivo de bases de datos.
+Su arquitectura exige un diseño que soporte la interacción dinámica y el procesamiento asíncrono mediante interfaces de programación de aplicaciones. A diferencia de los sitios convencionales, la eficiencia de una plataforma web se evalúa a través de su escalabilidad, resiliencia ante picos de uso y tiempos de respuesta predecibles (Sommerville, 2016).
+En el contexto de Involúcrate Guatemala, esta característica técnica es el pilar de la plataforma. El sistema debe garantizar que cientos de jóvenes voluntarios puedan enviar reportes simultáneamente durante las votaciones. Esto exige protocolos de aislamiento robustos para evitar tiempos de inactividad y proteger la integridad democrática de la información.
+Sommerville (2016) complementa esta definición al señalar que las aplicaciones modernas operan bajo el modelo de cliente universal. Esta universalidad democratiza el acceso al sistema, ya que cualquier dispositivo estándar funciona como terminal. Para la ONG, esto evita requerir aplicaciones nativas, reduciendo drásticamente los costos operativos.
+Definición de sistema de información organizacional
+Un Sistema de Información no debe reducirse exclusivamente a su infraestructura tecnológica. Laudon y Laudon (2020) coinciden en que es un ecosistema sociotécnico. En este proyecto, la plataforma busca transformar profundamente la cultura operativa de Involúcrate Guatemala mediante flujos de información auditables y eficientes, superando la gestión artesanal.
+La literatura clasifica los sistemas en una jerarquía que refleja el flujo de datos. Los Sistemas de Procesamiento de Transacciones capturan la operatividad diaria, mientras que los Sistemas de Soporte a Decisiones guían la gestión estratégica (Pressman & Maxim, 2021). En la plataforma, el registro es transaccional y los paneles brindan soporte directivo.
+Laudon y Laudon (2020) destacan la necesidad de comprender la sinergia técnica y administrativa al integrar tecnología. Los gerentes construyen sistemas para servir a la entidad, y la organización debe abrirse a estas herramientas. La plataforma automatizará procesos existentes y obligará a la organización a madurar sus protocolos internos.
+Dado que Involúcrate Guatemala persigue la incidencia ciudadana, exige flujos de trabajo personalizados que los sistemas genéricos no proveen (Heeks, 2017). Esto justifica desarrollar software a medida para validar la observación electoral y generar evidencia certera. El ciclo guatemalteco demanda tecnología cívica que responda a las juventudes.
+Definición de experiencia de usuario (UX/UI)
+La ingeniería de interfaces ha evolucionado hacia el Diseño Centrado en el Usuario (UCD). Esta transición exige comenzar con la comprensión psicológica del individuo. Norman (2013) argumenta que la máxima fundamental radica en la invisibilidad de las buenas soluciones, logrando que el diseño se ajuste fluidamente a nuestras necesidades.
+Para evitar fricción, la plataforma debe regirse por el estándar internacional ISO 9241-210 (Organización Internacional de Normalización [ISO], 2019). Esta norma estandariza la ergonomía de la interacción humano-sistema, minimizando la carga cognitiva en contextos de estrés. El uso de elementos visuales intuitivos garantiza una curva de aprendizaje mínima para el voluntariado.
+La distinción entre experiencia de usuario (UX) e interfaz de usuario (UI) es operativamente relevante. La UX abarca la relación total entre usuario y sistema, incluyendo factores emocionales y temporales (Norman, 2013). La UI se enfoca exclusivamente en el diseño visual. Para la ONG, la UX comprende desde la invitación hasta el reconocimiento ciudadano.
+Definición de seguridad en aplicaciones web
+La seguridad no es una característica secundaria que se añade al final del ciclo de vida. Se trata de un requerimiento no funcional que debe permear toda la arquitectura. Para mitigar las intrusiones derivadas de la exposición pública, la industria se rige por el estándar OWASP Top 10 (OWASP Foundation, 2021).
+Es imperativo distinguir entre los procesos lógicos de autenticación y autorización. La autenticación verifica la identidad del usuario, requiriendo funciones de derivación criptográfica sólidas en el backend (Sommerville, 2016). Por su parte, la autorización determina qué recursos específicos puede consumir el perfil previamente validado en el ecosistema digital.
+Para Involúcrate Guatemala, la información sensible añade una dimensión ética insoslayable a la ciberseguridad. Las bases de datos almacenarán información personal de miles de jóvenes. Una filtración destruiría la confianza institucional y expondría a los voluntarios a represalias, vulnerando su integridad cívica y la misión primordial de la organización.
+La plataforma debe fundamentarse en el estricto paradigma de Privacidad por Diseño (Cavoukian, 2012). A nivel de red, esto exige implementar cifrado obligatorio mediante protocolos TLS seguros para prevenir interceptaciones. A nivel de infraestructura, el diseño debe minimizar la recolección de datos a lo estrictamente necesario para proteger los riesgos.
+Definición de Arquitectura Offline-First y Resiliencia
+La arquitectura Offline-First invierte el paradigma tradicional, priorizando el funcionamiento fluido del sistema en entornos sin red. Esta metodología garantiza que la aplicación procese datos y almacene información localmente sin requerir acceso al servidor (Osmani, 2015). Esta resiliencia transforma la experiencia del usuario y asegura operatividad ante caídas.
+Para Involúcrate Guatemala, esta definición adquiere relevancia crítica durante las jornadas departamentales. Muchos centros operan bajo infraestructuras deficientes o intermitencia de red celular. Al adoptar un enfoque sin conexión, los jóvenes documentan irregularidades que quedan resguardadas en la memoria del dispositivo hasta recuperar la señal sin corromper la data.
+La implementación técnica se fundamenta en la utilización de Service Workers y almacenamiento local en el navegador. Osmani (2015) señala que estas herramientas actúan como interceptores de red proxy, gestionando peticiones inteligentemente en segundo plano. Este mecanismo asegura que ninguna información valiosa recolectada en campo se pierda durante la transmisión.
+Definición de Gobernanza de Datos y Cumplimiento Normativo
+La gobernanza de datos define las prácticas y políticas que aseguran la integridad de la información institucional. En plataformas destinadas al registro sociopolítico, la base de datos debe diseñarse contemplando una estricta cadena de custodia digital (DAMA International, 2017). Esto implica registrar metadatos inalterables de autoría y estampa de tiempo.
+Para Involúcrate Guatemala, estructurar correctamente la gobernanza es tan crítico como la eficiencia del propio código fuente. Las incidencias reportadas por los observadores constituyen denuncias ciudadanas de alto valor cualitativo. El diseño debe garantizar mediante programación que ningún registro pueda ser alterado retroactivamente sin dejar una huella de auditoría.
+Definición de Tecnologías LegalTech y Validez Jurídica
+El concepto de LegalTech trasciende la simple digitalización, abarcando plataformas que garantizan el cumplimiento normativo mediante algoritmos (Susskind, 2019). En el ámbito de la observación electoral, la tecnología debe estructurarse para que los reportes recolectados posean fuerza probatoria. Esto requiere alinear el desarrollo con los principios del derecho informático.
+La validez jurídica de un registro digital recae en su capacidad para demostrar que no ha sido manipulado (ISO, 2012). La plataforma debe aplicar principios de informática forense, asegurando la no repudiación de las acciones del voluntario. Cada incidencia documentada actúa como una prueba documental legítima ante cualquier fiscalización.
+Definición de Backend as a Service (BaaS)
+El modelo de Backend como Servicio (BaaS) redefine la construcción de aplicaciones web modernas. En lugar de codificar la infraestructura subyacente desde cero, los desarrolladores consumen servicios preconfigurados de bases de datos mediante APIs (Erl et al., 2013). Esto permite focalizar los esfuerzos técnicos en la lógica de negocio.
+Para un proyecto con tiempos de desarrollo acotados como Involúcrate Guatemala, el paradigma BaaS resulta estratégicamente vital. Facilita la sincronización de datos en tiempo real entre los observadores electorales y la directiva. Esta delegación de la carga operativa asegura una escalabilidad automática y un mantenimiento informático altamente simplificado.
+Características
+	•	
+Características de las plataformas web modernas
+Habiendo establecido las definiciones, esta sección examina las características que toda plataforma web moderna debe exhibir. Para considerarse adecuada al contexto operativo de una organización civil, estas características representan requerimientos estructurales innegociables. Si están ausentes, comprometen directamente la viabilidad misma del sistema informático y la misión ciudadana.
+Se analizan cuatro dimensiones críticas para el éxito del proyecto. Estas incluyen la naturaleza de las plataformas modernas, su arquitectura técnica subyacente, y las exigencias del diseño responsivo y accesible. Finalmente, se abordan los rasgos técnicos y operativos que definen estructuralmente los paneles de gestión diferenciados.
+La taxonomía de los sistemas web se clasifica en función de las reglas de negocio. Mientras el sector comercial utiliza plataformas transaccionales, las organizaciones no gubernamentales requieren infraestructuras de Tecnología Cívica. Esta categoría agrupa sistemas diseñados para fortalecer la participación ciudadana y la transparencia gubernamental.
+El sistema propuesto se cataloga como una plataforma híbrida de gestión. Esta topología fusiona módulos de Planificación de Recursos Empresariales para administración interna, con arquitecturas de Gestión de Relaciones con Ciudadanos. Esta hibridez refleja la misión de Involúcrate Guatemala, operando como coordinador interno y vehículo de participación externa.
+La modularidad es una característica esencial en estas plataformas. Pressman y Maxim (2021) señalan que los sistemas contemporáneos abandonan la arquitectura monolítica. En su lugar, utilizan componentes débilmente acoplados comunicados mediante interfaces definidas. Esta propiedad permite evolucionar incrementalmente sin requerir reescrituras completas del código base.
+Históricamente, la web evolucionó de un modelo hipertextual estático hacia arquitecturas dinámicas asíncronas. El procesamiento en el lado del cliente posibilitó las Aplicaciones de Página Única. Actualmente, la transición hacia infraestructuras semánticas permite interconectar datos procesables, preparando el terreno para futuras integraciones algorítmicas (Berners-Lee et al., 2001).
+Características de la arquitectura cliente-servidor y de microservicios
+La arquitectura cliente-servidor dictamina una separación estricta de responsabilidades. El cliente renderiza interfaces y captura eventos, mientras el servidor centraliza el procesamiento y la persistencia (Sommerville, 2016). Esta división permite consumir la plataforma desde cualquier navegador estándar, democratizando el acceso frente a la brecha digital existente.
+En el contexto guatemalteco, esto resuelve la asimetría de recursos de hardware. Los jóvenes rurales frecuentemente utilizan dispositivos con procesadores y memoria limitados. Al trasladar el procesamiento intensivo y la criptografía hacia la nube, el teléfono actúa únicamente como terminal. Esto garantiza equidad de acceso al voluntariado cívico.
+Para mitigar riesgos sistémicos, la industria adopta la Arquitectura de Microservicios para garantizar disponibilidad. Al respecto, Newman (2015), referente en la ingeniería de sistemas distribuidos, la define estableciendo sus ventajas operativas fundamentales frente al modelo monolítico tradicional:
+Los microservicios son servicios pequeños y autónomos que trabajan juntos, modelados alrededor de un dominio de negocio. Esta arquitectura permite a las organizaciones escalar áreas específicas de una aplicación de manera independiente. Si un servicio experimenta un pico masivo de carga, es posible desplegar instancias adicionales de ese servicio en particular, en lugar de tener que escalar toda la aplicación monolítica. (p. 4)
+Las APIs RESTful utilizan verbos HTTP para operar sobre recursos identificados. Su restricción más crítica es la comunicación sin estado o estado inmutable (Pressman & Maxim, 2021). Cada petición contiene toda la información necesaria, permitiendo escalar el backend horizontalmente con latencias mínimas durante el cierre de urnas.
+La adopción de interfaces reactivas y lenguajes compilados de alta concurrencia en el backend maximiza este rendimiento. Esta separación estricta permite que el frontend se actualice instantáneamente en el dispositivo del voluntario. Paralelamente, el servidor y la base de datos procesan miles de reportes simultáneos, garantizando estabilidad total bajo estrés.
+Características del diseño responsivo y accesible
+La fragmentación del hardware obliga a abandonar el diseño estático. Marcotte (2010) estableció que la interfaz debe concebirse como una entidad fluida utilizando cuadrículas proporcionales y Media Queries. Esta concepción responsiva se adapta al entorno del usuario, rompiendo con el paradigma gráfico tradicional de dimensiones fijas.
+Wroblewski (2011) introdujo el paradigma Mobile First, priorizando la pantalla más restrictiva. En el interior de Guatemala, el dispositivo móvil es frecuentemente la única ventana de conectividad. Esta inversión metodológica obliga a priorizar funciones esenciales, convirtiéndose en un requerimiento ético para la inclusión democrática de las juventudes.
+En paralelo, la accesibilidad web emerge como un mandato innegociable. Berners-Lee (1997) determinó que el acceso universal es inherente a la web. Para una organización enfocada en la democratización ciudadana, ignorar esta premisa generaría exclusión estructural, contradiciendo su misión de integrar a toda la población al proceso electoral.
+Las Pautas WCAG 2.1 exigen implementar atributos semánticos y contrastes visuales adecuados (Consorcio World Wide Web [W3C], 2018). Estas métricas garantizan navegación por teclado y alternativas textuales. Así, voluntarios con debilidades visuales pueden operar el sistema en igualdad de condiciones, fortaleciendo la legitimidad institucional y ciudadana.
+Características de las plataformas web modernas
+Un dashboard es una interfaz que presenta indicadores clave de desempeño de forma sintetizada. Few (2013) sostiene que su eficacia reside en comunicar información compleja sin ambigüedades. Para la ONG, estos paneles diferencian la carga operativa de la visión estratégica, optimizando la toma de decisiones basada en evidencia.
+Los paneles se clasifican según su nivel de abstracción analítica. Los operativos monitorean actividades en tiempo real durante las votaciones. Los analíticos exploran datos históricos departamentales, mientras los estratégicos ofrecen una visión macroscópica institucional. Esta taxonomía entrega a cada jerarquía exactamente la información que requiere.
+Un sistema robusto asegura que cada usuario interactúe únicamente con datos pertinentes (Pressman & Maxim, 2021). El Control de Acceso Basado en Roles (RBAC) previene la exposición de información sensible. Además, optimiza la experiencia del voluntario al ocultar elementos y menús que resultan irrelevantes para su perfil operativo.
+La visualización transforma registros abstractos en gráficas procesables. Tufte (2001) propone maximizar la proporción dato-tinta, eliminando elementos decorativos. Gráficos de barras o mapas de calor geoespaciales son decisiones de ingeniería críticas. Estos recursos visuales afectan directamente cómo la directiva interpreta y reacciona a la realidad democrática guatemalteca.
+Las heurísticas de usabilidad de Nielsen (1994) constituyen el estándar de evaluación. La prevención de errores resulta crítica al capturar irregularidades en los formularios de campo. Desde la óptica legal, un dato mal ingresado en la plataforma podría romper la cadena de custodia e invalidar la prueba ante un proceso penal.
+Modelos
+Las definiciones y características examinadas encuentran su materialización metodológica en los modelos de desarrollo que estructuran el ciclo de vida del software. Esta sección analiza cuatro dimensiones: los modelos del ciclo de vida, las metodologías ágiles, los modelos arquitectónicos de frontend y backend, y los modelos de despliegue en la nube. Cada uno disciplina el trabajo de ingeniería y reduce el margen de improvisación técnica.
+	•	
+Ciclo de vida del desarrollo de software
+El Ciclo de Vida del Desarrollo de Software (SDLC) gobierna la creación, despliegue y mantenimiento de un sistema. No es un modelo rígido sino una hoja de ruta que asegura coherencia entre los objetivos institucionales y la arquitectura técnica (Pressman & Maxim, 2021). Su valor radica en que cada decisión queda respaldada por análisis, validación y documentación formal.
+El contexto de Involúcrate Guatemala
+En una organización que gestiona datos sensibles de observadores electorales, el rigor metodológico no es opcional. La adopción de un SDLC estructurado también facilita la transferencia de conocimiento hacia futuros equipos técnicos, una preocupación legítima en ONG con presupuestos ajustados donde no es viable reconstruir el sistema cada vez que el equipo rota.
+Modelos clásicos: Cascada, Espiral e Incremental
+Los tres enfoques clásicos difieren en cómo organizan el tiempo y el riesgo. Cascada exige completar cada fase antes de avanzar; Espiral incorpora análisis de riesgo en ciclos iterativos; Incremental entrega el sistema en módulos sucesivos y validados. Para una plataforma con requerimientos que evolucionarán con el uso real, el modelo Incremental es el más pragmático. Sommerville (2016) explica su ventaja principal:
+El desarrollo incremental se basa en la idea de diseñar una implementación inicial, exponerla a la retroalimentación del usuario y evolucionarla a través de múltiples versiones hasta que el sistema esté terminado. Este enfoque permite que el cliente vea resultados tangibles mucho antes en el ciclo de vida y reduce el riesgo de desarrollar funcionalidades que no satisfacen las necesidades reales del entorno operativo. (Sommerville, 2016, p. 46)
+Deuda técnica
+La Deuda Técnica, concepto acuñado por Ward Cunningham, describe el costo acumulado de las decisiones de diseño apresuradas que facilitan el avance a corto plazo pero encarecen el mantenimiento futuro. Para Involúcrate Guatemala, atender esta deuda desde el inicio no es un lujo académico sino una condición de sostenibilidad: un sistema con deuda técnica elevada termina siendo una carga que ningún equipo pequeño puede sostener.
+Metodologías ágiles: Scrum y Kanban
+El Manifiesto Ágil
+Los 12 principios del Manifiesto Ágil (Beck et al., 2001) priorizan la entrega continua de software funcional, la colaboración directa con el cliente y la respuesta al cambio sobre el seguimiento rígido de un plan. Para Involúcrate Guatemala, trabajar bajo principios ágiles significa que cada ciclo produce un incremento validado con usuarios reales, cerrando la brecha entre expectativas institucionales y producto entregado.
+Scrum
+Scrum estructura el desarrollo en ciclos de tiempo fijo llamados Sprints, generalmente de dos a cuatro semanas, cuyo objetivo es generar un incremento funcional y desplegable al finalizar cada iteración (Schwaber & Sutherland, 2020). Sus tres roles centrales son el Product Owner, que prioriza el valor; el Scrum Master, que cuida el proceso; y el Equipo de Desarrollo, que ejecuta los incrementos. Esta estructura hace que cada semana del proyecto tenga un propósito claro y medible.
+Kanban
+Kanban opera sobre tres principios: visualizar el trabajo, limitar el trabajo en progreso (WIP) y gestionar el flujo. El límite de WIP previene la sobrecarga del equipo y expone cuellos de botella antes de que se conviertan en problemas mayores. En la fase de mantenimiento post-implementación, Kanban facilitará la priorización de mejoras que emerjan del uso cotidiano, una etapa que históricamente sufre por falta de método (Anderson, 2010).
+Arquitectura frontend: componentes y PWA
+El paradigma declarativo y React.js
+Cuando la complejidad de una SPA crece, la manipulación directa del DOM genera código espagueti difícil de mantener. React.js resuelve esto con un paradigma declarativo: el desarrollador describe cómo debe verse la interfaz según el estado de los datos, y la librería calcula los cambios mínimos necesarios. Banks y Porcello (2017) señalan que el DOM Virtual de React evita operaciones costosas innecesarias, haciendo que las interfaces escalen sin degradar el rendimiento.
+Aplicaciones Web Progresivas (PWA)
+Las PWA combinan la accesibilidad del navegador con capacidades nativas como notificaciones y funcionamiento sin conexión. Su pieza central es el Service Worker, un script que actúa como proxy de red programable. Osmani (2015) indica que los Service Workers interceptan peticiones y las gestionan mediante estrategias de caché avanzadas, sirviendo recursos desde memoria local cuando la red falla y logrando tiempos de carga cercanos a cero sin conectividad activa.
+Diseño Offline-First para el contexto guatemalteco
+En municipios con cobertura celular intermitente, el diseño Offline-First es un requerimiento operativo no negociable. Si un voluntario en un centro de votación pierde señal, la plataforma debe permitirle completar el formulario de incidencia sin errores. El Service Worker captura los datos en IndexedDB y ejecuta una sincronización mediante Background Sync en cuanto el dispositivo recupera conexión, garantizando que ningún reporte se pierda por limitaciones de telecomunicaciones.
+Arquitectura backend: desacoplamiento y APIs
+La ingeniería moderna propone arquitecturas desacopladas que separan frontend y backend en capas independientes comunicadas mediante APIs estandarizadas. Pressman y Maxim (2021) señalan que este aislamiento permite que ambas capas evolucionen de forma autónoma sin comprometer el núcleo del sistema. Para Involúcrate Guatemala, esta separación es estratégica: si en el futuro se requiere una aplicación móvil, el backend existente se reutiliza sin reescribirse.
+Modelos de computación en la nube
+Del servidor físico al consumo bajo demanda
+La computación en la nube representa el tránsito de la propiedad de infraestructura física hacia un modelo de consumo facturado por uso real. Para Involúcrate Guatemala, con carga operativa cíclica, esto es especialmente conveniente: los recursos escalan durante una jornada electoral y se reducen al mínimo entre procesos, optimizando el costo anual sin sacrificar disponibilidad cuando más se necesita.
+IaaS, PaaS y SaaS
+Los tres modelos definen niveles distintos de responsabilidad técnica. IaaS entrega infraestructura virtual con control total pero requiere gestionar el sistema operativo. PaaS abstrae esa complejidad para que el equipo se concentre en el código. SaaS provee soluciones listas para usar sin configuración técnica. La elección óptima para la plataforma depende de la madurez técnica disponible y de los requerimientos de escalabilidad del ciclo electoral (Sommerville, 2016).
+Cloud Native y alta disponibilidad
+La tendencia Cloud Native aprovecha servicios administrados por el proveedor, como bases de datos gestionadas y funciones serverless, eliminando la gestión de servidores. La selección entre AWS, GCP o Azure debe considerar además la proximidad geográfica de los centros de datos para reducir la latencia hacia Centroamérica. Sommerville (2016) describe el mecanismo técnico de alta disponibilidad que hace esto posible:
+La alta disponibilidad se logra mediante el despliegue de servicios en múltiples zonas de disponibilidad, que son centros de datos aislados físicamente dentro de una misma región. Este diseño asegura que, ante un fallo catastrófico en un centro de datos específico, el balanceador de carga redirija instantáneamente el tráfico hacia las instancias sanas en otras zonas. Esta ingeniería de conmutación por error es transparente para el usuario final. (Sommerville, 2016, p. 442)
+Herramientas
+Las definiciones, características y modelos analizados se concretan en herramientas específicas que el equipo de ingeniería utiliza para construir el sistema. Esta sección presenta las herramientas empleadas en el desarrollo de la plataforma para Involúcrate Guatemala, agrupadas en cuatro categorías: frontend, backend y bases de datos, gestión de proyectos, y visualización de datos.
+	•	
+Herramientas de desarrollo frontend
+HTML5 y sus APIs nativas
+HTML5 consolidó la web como plataforma de aplicaciones al incorporar APIs nativas del navegador: geolocalización mediante la API Geolocation, almacenamiento local mediante IndexedDB, captura multimedia con MediaDevices y comunicación en tiempo real a través de WebSockets. 
+Para Involúcrate Guatemala, esto es estratégico: los voluntarios pueden georreferenciar incidentes electorales directamente desde el navegador móvil, sin instalar ninguna aplicación adicional que consuma el almacenamiento limitado de su dispositivo.
+CSS3 y diseño responsivo
+CSS3 introdujo Flexbox y CSS Grid, arquitecturas que permiten construir interfaces adaptables a cualquier tamaño de pantalla sin duplicar código. Esta capacidad es fundamental para una plataforma cuyos usuarios acceden desde teléfonos de cuatro pulgadas hasta monitores de escritorio. Un sistema de diseño unificado garantiza consistencia visual y elimina la necesidad de mantener versiones separadas para móvil y escritorio.
+React.js y su ecosistema
+React.js se complementa con herramientas auxiliares que cubren cada necesidad del frontend. React Router gestiona la navegación sin recargar la página; Zustand administra el estado global; React Hook Form valida formularios complejos con mínimo código; y Tailwind CSS acelera el prototipado mediante utilidades de estilo predefinidas. Cada herramienta se seleccionó por su madurez, comunidad activa y disponibilidad de documentación accesible que facilite el mantenimiento futuro del proyecto.
+Optimización con Bundlers
+Para contrarrestar la sobrecarga de las SPA modernas, el frontend utiliza empaquetadores como Vite o Webpack, que aplican optimizaciones automáticas antes del despliegue a producción. La minificación elimina espacios y variables innecesarias; el Tree Shaking descarta código muerto; y el Code Splitting divide el paquete en fragmentos cargados bajo demanda. 
+En Involúcrate Guatemala, un voluntario descarga únicamente el código de su panel, sin recibir los módulos administrativos que nunca utilizará, reduciendo el consumo de datos móviles en zonas con telefonía prepago.
+Herramientas de backend y bases de datos
+API RESTful y estándar OpenAPI
+El formato estándar de comunicación entre frontend y backend es JSON. Diseñar la API bajo el estándar OpenAPI trasciende lo técnico: sienta las bases para que la información de incidencia ciudadana pueda ser consumida por aplicaciones complementarias o expuesta como portal de datos abiertos para el escrutinio de otras instituciones democráticas y medios independientes. Esta apertura fortalece la credibilidad institucional de la ONG ante organismos electorales nacionales e internacionales.
+Entorno de servidor
+Node.js con Express constituye la opción más adecuada para este proyecto, principalmente porque comparte lenguaje con el frontend, lo que reduce la curva de aprendizaje y simplifica el mantenimiento por parte de un desarrollador único, escenario común en proyectos de tesis académica. Alternativamente, Python con FastAPI ofrece ventajas en procesamiento de datos y generación de reportes estadísticos, por lo que ambos entornos pueden coexistir en una arquitectura de microservicios según la función de cada módulo.
+Base de datos relacional: PostgreSQL
+Para registros de observación electoral con valor legal potencial, una base relacional como PostgreSQL ofrece garantías ACID que no son negociables. La integridad referencial garantiza que ningún reporte huérfano contamine las estadísticas institucionales, y la extensión PostGIS añade capacidades de consulta geoespacial nativa. Dumas et al. (2018) señalan que los sistemas de información con valor probatorio requieren mecanismos de trazabilidad que solo las bases relacionales con soporte transaccional completo pueden garantizar de forma confiable.
+Seguridad: ORM y JWT
+El uso de ORM como Prisma parametriza automáticamente las consultas SQL, neutralizando vulnerabilidades de inyección. La autorización se implementa mediante JSON Web Tokens: tras el inicio de sesión, el servidor emite un JWT firmado con los permisos del rol correspondiente según el modelo RBAC, garantizando tiempos de respuesta mínimos sin consultar la base de datos en cada petición. Este mecanismo protege la integridad de los datos electorales almacenados sin sacrificar rendimiento operativo.
+Herramientas de gestión de proyectos y modelado
+Modelado de procesos con BPMN
+La Gestión de Procesos de Negocio mediante el estándar BPMN 2.0 permite identificar cuellos de botella en la coordinación de la ONG antes de traducirlos a código. Herramientas como Bizagi o Lucidchart producen diagramas comprensibles tanto para el equipo técnico como para los líderes de Involúcrate Guatemala sin formación en ingeniería. 
+Dumas et al. (2018) definen el alcance real de esta disciplina:
+La Gestión de Procesos de Negocio es el arte y la ciencia de cómo debe realizarse el trabajo en una organización para asegurar resultados consistentes y aprovechar oportunidades de mejora, como la reducción de costos, tiempos de ejecución o tasas de error. No se trata de mejorar actividades individuales, sino de gestionar cadenas completas de eventos, actividades y decisiones que generan valor para la organización y sus clientes. (Dumas et al., 2018, p. 1)
+Gestión del proyecto: Jira y GitHub
+Herramientas como Jira, Trello o GitHub Projects implementan Scrum y Kanban mediante tableros visuales, gestión de backlog y reportes de velocidad automatizados. Git complementado con GitHub gestiona el control de versiones y habilita revisiones de código por pares e integración continua. Para un proyecto de tesis con un único desarrollador, GitHub Projects ofrece la combinación más eficiente entre funcionalidad y simplicidad operativa sin curva de aprendizaje adicional.
+Arquitectura de la información
+La Arquitectura de la Información exige mapas de sitio claros, taxonomías sin jerga excluyente y flujos de navegación intuitivos. Para la plataforma de la ONG, esta disciplina establece que un administrador no debe invertir más de tres clics para localizar a un voluntario, y que un observador debe encontrar su manual en la pantalla de inicio sin búsquedas adicionales. 
+Rosenfeld et al. (2015) contextualizan por qué esta disciplina es más urgente que nunca:
+La arquitectura de la información es más desafiante y necesaria que nunca. Con el exceso de información disponible hoy en día, todo lo que una organización quiera compartir debe ser fácil de encontrar, navegar y comprender. La experiencia que se provee debe ser familiar y coherente a través de múltiples canales de interacción, desde la web hasta dispositivos móviles y más allá. (Rosenfeld et al., 2015, p. 1)
+Herramientas de visualización de datos y monitoreo
+Principios de visualización
+La selección del tipo de gráfico adecuado para cada indicador es una decisión de ingeniería que afecta directamente la interpretación de los datos. Para Involúcrate Guatemala, un gráfico de barras apiladas comunica mejor la cobertura de observadores por departamento, mientras que una serie de tiempo es más adecuada para visualizar la incorporación de nuevos miembros. 
+Tufte (2001) establece el principio fundamental que guía estas decisiones:
+La tinta de datos es el núcleo no borrable de un gráfico, la tinta no redundante organizada en respuesta a la variación en los números representados. El principio fundamental es maximizar la proporción dato-tinta dentro de lo razonable, eliminando toda tinta que no comunique información cuantitativa. Este principio obliga al diseñador a cuestionar la existencia de cada elemento visual antes de incluirlo. (Tufte, 2001, p. 93)
+Librerías de gráficos: Recharts y D3.js
+Chart.js, D3.js y Recharts permiten implementar visualizaciones interactivas dentro de React. D3.js ofrece máxima flexibilidad para visualizaciones personalizadas; Recharts provee componentes preconstruidos que aceleran el desarrollo; Chart.js representa un punto intermedio entre ambos. Para los paneles de Involúcrate Guatemala, la combinación de Recharts para visualizaciones estándar y D3.js para componentes geoespaciales personalizados ofrece el balance adecuado entre velocidad de desarrollo y expresividad visual.
+Visualización geoespacial: Leaflet
+La visualización geoespacial añade una dimensión crítica al análisis de incidencia ciudadana. Leaflet habilita mapas interactivos con capas personalizadas que, superpuestas al mapa político de Guatemala, revelarían concentraciones de irregularidades electorales por municipio y orientarían la asignación estratégica de observadores en futuros procesos eleccionarios (Few, 2013). Esta capacidad transforma los reportes individuales en inteligencia territorial accionable para la toma de decisiones de la directiva.
+Monitoreo en producción
+Sentry captura errores en tiempo real antes de que los usuarios los reporten; Prometheus y Grafana monitorean métricas de infraestructura como CPU, memoria y latencia. Esta observabilidad transforma el mantenimiento reactivo en mantenimiento predictivo, condición esencial durante jornadas electorales donde cualquier interrupción compromete la misión de observación ciudadana. 
+Few (2013) define con precisión qué constituye un dashboard efectivo:
+Un dashboard es una pantalla visual de la información más importante necesaria para alcanzar uno o más objetivos, consolidada y organizada en una sola pantalla para que pueda ser monitoreada de un vistazo. Cuando está bien diseñado, aprovecha el poder de la percepción visual para comunicar una densa colección de información de manera eficiente y con una claridad excepcional. (Few, 2013, p. 34)
+
+CAPÍTULO III MARCO TEÓRICO – VARIABLE DEPENDIENTE
+Gestión Organizacional, Incidencia Ciudadana y ONG
+Si el Capítulo II explicó el cómo construir la plataforma desde la ingeniería, este capítulo responde al para qué construirla desde la perspectiva organizacional y democrática. Se examinan los fundamentos conceptuales sobre organizaciones no gubernamentales, participación ciudadana, formación cívica, observación electoral y gestión del voluntariado, con respaldo en fuentes académicas que dialogan directamente con las decisiones técnicas del capítulo anterior.
+La estructura replica la lógica del Capítulo II —definición, características, modelos y aplicaciones— para facilitar la lectura comparada de ambas variables. Cada herramienta técnica descrita anteriormente encuentra aquí su justificación organizacional: el RBAC responde a la jerarquía real de la ONG, las PWA responden a la conectividad rural guatemalteca, y las visualizaciones geoespaciales responden a la necesidad de monitorear cobertura territorial electoral.
+	•	
+	•	Definiciones
+Esta sección establece los conceptos fundamentales del dominio organizacional y democrático que la plataforma busca optimizar. Antes de discutir características operativas o modelos de gestión, es necesario delimitar qué se entiende por ONG, qué constituye la participación ciudadana, cuál es la naturaleza de la observación electoral, cómo se conceptualiza la gestión de procesos en el tercer sector, qué implica gestionar voluntariado en contextos de incidencia política, y qué significa la tecnología cívica como campo de acción. Cada concepto organizacional presentado aquí encuentra correspondencia directa en una decisión técnica del Capítulo II.      
+	•	
+	•	
+	•	
+Definición de Organización No Gubernamental
+Las Organizaciones No Gubernamentales son una de las expresiones más significativas de la sociedad civil organizada en el mundo contemporáneo. La definición más influyente en la literatura académica es la estructural-operacional de Salamon y Anheier (1997), que identifica cinco características que toda ONG debe cumplir simultáneamente para ser clasificada como tal. 
+Salamon y Anheier (1997) formulan esta definición con precisión metodológica:
+La definición estructural-operacional incluye en el sector no lucrativo a las organizaciones que comparten cinco características básicas: son formales, privadas, no distribuidoras de 
+ganancias, autogobernadas y con participación voluntaria. Esta definición permite la comparación internacional y la agregación estadística, superando las limitaciones de las definiciones puramente jurídicas o económicas que varían entre contextos nacionales. (Salamon & Anheier, 1997, p. 33)
+Involúcrate Guatemala cumple con todos estos criterios. Opera como asociación civil no lucrativa inscrita en el Registro de Personas Jurídicas del Ministerio de Gobernación, con estatutos aprobados en asamblea general y junta directiva electa. Su membresía de más de 3,000 jóvenes voluntarios distribuidos en los 22 departamentos del país satisface plenamente la tipología propuesta.
+En el ecosistema democrático guatemalteco, las ONG desempeñan un rol de intermediación entre la ciudadanía y el Estado que ninguna institución pública puede asumir sin perder credibilidad. Su independencia política les otorga legitimidad para actuar como observadoras electorales imparciales y formadoras de ciudadanía crítica. Esta posición estratégica es precisamente la que justifica invertir en infraestructura tecnológica: una ONG con mayor capacidad operativa amplía su impacto democrático de forma proporcional a sus mejoras de gestión interna.
+La distinción entre Asociación Civil y Fundación no es solo legal sino operativamente relevante. En la Asociación predomina el elemento personal: la unión de individuos para un fin común. En la Fundación prevalece el patrimonio afectado a un objetivo específico. Involúcrate Guatemala se constituye como asociación civil, lo que significa que su sostenibilidad no depende del capital inicial sino de la capacidad organizativa de sus miembros, vinculando directamente la eficiencia de la gestión interna con la viabilidad de la misión democrática.
+Definición de Participación Ciudadana
+La participación ciudadana es el derecho y la capacidad de los individuos para intervenir en las decisiones públicas que afectan su comunidad. Sherry Arnstein (1969) desarrolló la Escalera de Participación Ciudadana, una tipología de ocho peldaños que va desde la manipulación y la terapia —formas de no participación que solo simulan involucramiento— hasta el control ciudadano pleno. 
+Arnstein (1969) define el concepto con una claridad que sigue siendo vigente más de cinco décadas después:
+La participación ciudadana es un término categórico para el poder ciudadano. Es la redistribución del poder que permite a los ciudadanos excluidos de los procesos políticos y económicos ser incluidos deliberadamente en el futuro. Es la estrategia mediante la cual los que no tienen poder se unen para determinar cómo se comparte la información, se establecen las metas y políticas, se asignan los recursos tributarios y se distribuyen los beneficios. (Arnstein, 1969, p. 216)
+En Guatemala, la mayoría de los mecanismos formales de participación operan en los peldaños intermedios de la escala: informan y consultan, pero sin ceder poder real de decisión. La observación electoral ciudadana es cualitativamente diferente porque genera evidencia verificable que puede incidir en la validación o impugnación de resultados, escalando hacia los peldaños superiores donde la ciudadanía ejerce poder real.
+Bimber (2003) argumenta que las tecnologías de información transforman la economía política de la participación, reduciendo los costos de coordinación que históricamente concentraban el poder organizativo en élites con recursos. Para Involúcrate Guatemala, esto significa que jóvenes de Huehuetenango o Petén pueden acceder a formación cívica, reportar incidencias y coordinarse sin desplazarse a la capital. La plataforma digital no es un lujo tecnológico: es el instrumento que hace ejercible el derecho a la participación en contextos de movilidad y conectividad limitadas.
+Definición de Observación electoral ciudadana
+La observación electoral es el proceso sistemático de recolección de información sobre los comicios para evaluar su legalidad, transparencia e integridad. Pastor (1999) la conceptualiza como un mecanismo de auditoría democrática que provee evidencia independiente sobre el funcionamiento del sistema electoral, complementando sin sustituir las funciones de los organismos electorales oficiales. Su valor reside precisamente en la independencia respecto del Estado que se fiscaliza.
+La observación se clasifica según el origen de los observadores. La internacional es realizada por misiones de la OEA, la Unión Europea o el Centro Carter, que aportan legitimidad global al proceso. La nacional o ciudadana, realizada por organizaciones del propio país, complementa a la internacional con mayor cobertura territorial y conocimiento profundo del contexto político local. Ambas modalidades están reconocidas por el Tribunal Supremo Electoral de Guatemala y reguladas por la Ley Electoral y de Partidos Políticos.
+El observador electoral actúa como testigo técnico e imparcial que documenta el cumplimiento de la normativa en las mesas de votación, abarcando el control del padrón electoral, la verificación del escrutinio y la detección de irregularidades. Para ejercer este rol con rigor legal, necesita formación técnica específica y protocolos estandarizados de reporte que garanticen la trazabilidad de la información recopilada. Estas dos exigencias conectan directamente con los módulos de formación cívica y reportes estructurados de la plataforma descritos en el Capítulo II.
+En las elecciones generales de 2023, Guatemala contaba con más de 22,000 centros de votación distribuidos en 340 municipios (OEA, 2023). Cubrir ese territorio con observadores ciudadanos coordinados en tiempo real es un desafío logístico que ninguna hoja de cálculo puede resolver. Esta realidad es, quizás, el argumento más contundente para justificar el desarrollo de la plataforma: no se trata de modernizar por modernizar, sino de hacer operativamente viable una misión que hoy excede la capacidad de los sistemas manuales.
+Gestión y optimización de procesos administrativos
+El proceso administrativo de Henri Fayol (1916) describe el ciclo continuo de planificación, organización, dirección y control que estructura el funcionamiento de cualquier organización formal. Con más de un siglo de vigencia, sus principios se han adaptado al tercer sector, donde el propósito no es maximizar utilidades sino maximizar impacto social. En las ONG, la planificación se orienta al impacto democrático, la organización se basa en estructuras voluntarias, y el control se ejerce mediante indicadores cívicos en lugar de financieros tradicionales.
+La Gestión de Procesos de Negocio es una disciplina metodológica que primero descubre, analiza y optimiza los flujos de trabajo, y solo después los automatiza en código. Dumas et al. (2018) son enfáticos en que el BPM no es una tecnología sino una filosofía de gestión que debe preceder a cualquier intervención digital. Automatizar un proceso desordenado únicamente produce desorden sistematizado más rápido, algo que ninguna organización con recursos limitados puede permitirse.
+En el tercer sector, optimizar no significa recortar sino liberar al talento humano de tareas mecánicas para que se concentre en la misión. Chiavenato (2009) señala que cada hora que un líder invierte en tareas administrativas manuales es una hora que no dedica a su función estratégica real. Para Involúcrate Guatemala, cada minuto que la directiva pasa consolidando hojas de cálculo es un minuto que no está diseñando estrategias de incidencia electoral ni formando nuevos liderazgos juveniles.
+Definición de Gestión de Voluntariado
+Gestionar el voluntariado de Involúcrate Guatemala no es lo mismo que coordinar voluntarios en una feria o una colecta. Los observadores electorales asumen responsabilidades técnicas y legales reales: tienen que conocer la normativa, documentar con precisión y mantenerse imparciales incluso cuando alguien los está presionando. Eso exige procesos de selección, formación y certificación mucho más rigurosos que los de cualquier voluntariado convencional.
+Lo que mantiene a un voluntario comprometido no es un salario sino el sentido de que lo que hace importa. Hackman y Oldham (1980) identifican tres factores que sostienen esa motivación: percibir que la tarea tiene significado, tener autonomía sobre cómo hacerla, y recibir retroalimentación real sobre los resultados. Una plataforma que le muestre al voluntario cuántas incidencias reportó y qué módulos completó refuerza los tres sin que nadie tenga que hacer nada manualmente.
+Cnaan y Goldberg-Glen (1991) demuestran que los voluntarios que reciben retroalimentación cuantificada sobre su aporte regresan en tasas significativamente mayores. Para una organización juvenil donde la rotación es alta por naturaleza, retener a quien ya está capacitado vale más que reclutar a alguien nuevo cada ciclo electoral.
+Definición de Incidencia ciudadana y tecnología cívica
+La tecnología cívica aplica herramientas digitales para fortalecer la participación democrática y la rendición de cuentas en contextos donde las instituciones tienen déficits de transparencia. Norris (2011) documenta cómo organizaciones civiles latinoamericanas con pocos recursos han logrado presión institucional real gracias a datos verificables que los medios no pueden ignorar fácilmente.
+Castells (2009) llama poder comunicativo a la capacidad de influir no desde el dinero sino desde la información verificable distribuida masivamente, y para una ONG juvenil sin financiamiento permanente, ese poder es exactamente lo que la tecnología amplifica. La plataforma convierte reportes individuales en evidencia institucional consolidada, y esa evidencia en presión democrática que tribunales, medios y cooperantes internacionales pueden tomar en serio.
+	•	Características
+Definidos ya los conceptos del dominio organizacional, esta sección examina las características que distinguen a las ONG juveniles guatemaltecas, a la participación ciudadana digital, a la formación cívica y a la gestión moderna del voluntariado. Estos rasgos no son abstractos: nacen de la realidad histórica, jurídica y social de Guatemala, y son los que delimitan aquello que la plataforma debe resolver. Comprender cada uno permite que las decisiones técnicas del proyecto respondan a necesidades reales y no a supuestos.
+Características de las ONG Juveniles en Guatemala
+Las ONG se clasifican según su orientación —incidencia, servicios directos, desarrollo o investigación—, su alcance territorial y la población a la que sirven (Vakil, 1997). Involúcrate Guatemala combina dos perfiles: es una organización de incidencia, porque su trabajo central es intervenir en los procesos democráticos, y es de base juvenil, ya que su membresía está formada exclusivamente por jóvenes de 18 a 35 años. Esa doble naturaleza condiciona cómo se organiza, ante quién rinde cuentas y qué herramientas necesita.
+La participación juvenil guatemalteca tiene raíces profundas: se extiende desde los movimientos universitarios de la Revolución de 1944 hasta los colectivos digitales surgidos después de 2015. Durante décadas se canalizó a través de partidos y sindicatos; hoy las plataformas digitales han descentralizado la organización política y permiten que grupos como Involúcrate Guatemala articulen redes de observación nacional sin depender de estructuras partidarias. Por eso, para esta organización, la tecnología no es un accesorio, sino parte de su identidad.
+La juventud constituye un motor central de la renovación democrática, pues representa una porción mayoritaria del padrón electoral guatemalteco. Aun así, su participación choca con barreras estructurales: el adultocentrismo institucional, la precariedad económica y la migración forzada. Greenstein (1965) sostiene que las actitudes cívicas formadas en la adolescencia condicionan la participación política adulta, lo que vuelve urgente la labor formativa de organizaciones como esta, antes de que esa ventana de formación se cierre.
+La fuerza de estas organizaciones también reside en su capacidad de tejer redes. Putnam (2000) explica este fenómeno como capital social: la confianza y los vínculos que hacen posible la acción colectiva y que amplían el alcance de la observación electoral mucho más allá de lo que lograría un individuo aislado. Cuanto más densa es esa red, mayor es la cobertura territorial que la organización puede sostener durante una jornada electoral.
+Putman se refirió a ese extremo en dicha jornada electoral: 
+Mientras que el capital físico se refiere a objetos físicos y el capital humano a las propiedades de los individuos, el capital social se refiere a las conexiones entre individuos: las redes sociales y las normas de reciprocidad y confianza que surgen de ellas. En ese sentido, el capital social está estrechamente relacionado con lo que algunos han llamado "virtud cívica". (Putnam, 2000, p. 19; traducción propia)
+Esa lógica de red tiene una traducción técnica directa. Cuando organizaciones de distintos departamentos colaboran, comparten datos, y eso exige protocolos de intercambio estandarizados y sistemas capaces de comunicarse entre sí. De ahí que la plataforma se conciba como un ecosistema interoperable, con una API documentada que permita sumar organizaciones aliadas sin rehacer la infraestructura en cada ocasión.
+Características de la participación ciudadana digital en Guatemala
+La participación digital guatemalteca enfrenta una paradoja. Aunque las plataformas digitales ofrecen un enorme potencial de movilización, solo el 22% de los jóvenes de 18 a 24 años se reconoce como políticamente activo (CONJUVE, 2021). La brecha entre el alcance de la tecnología y la participación efectiva es amplia, y se agrava en un contexto donde el desencanto democrático crece y las instituciones electorales arrastran crisis de legitimidad recurrentes.
+Revertir esa apatía exige más que difundir información: requiere espacios donde la voz juvenil tenga incidencia real en las decisiones públicas. Involúcrate Guatemala responde con programas que unen el conocimiento del sistema electoral guatemalteco con el desarrollo del liderazgo, de modo que sus miembros transiten del activismo en redes sociales hacia una participación electoral organizada y verificable.
+El PNUD (2021) identifica la percepción de ineficacia política —la idea de que el esfuerzo individual no cambia nada— como el principal freno del involucramiento juvenil. Frente a esto, una plataforma que muestre cómo cada reporte se suma a miles de otros para conformar evidencia institucional ataca directamente esa sensación de impotencia, porque vuelve visible un impacto que de otro modo permanecería abstracto.
+Guatemala cuenta con un marco legal que respalda la participación, aunque suele estar infrautilizado. Sus pilares son la Ley de los Consejos de Desarrollo (Decreto 11-2002), la Ley Electoral y de Partidos Políticos y la Ley de Acceso a la Información Pública (Decreto 57-2008). 
+Esta última resulta especialmente relevante para la misión fiscalizadora de la organización, pues vincula el acceso a la información con la auditoría social:
+...se hace necesario emitir una ley que [...] defina los principios, objetivos, procedimientos y en general aquellos aspectos necesarios para darle seguridad y certeza a todas las personas, consiguiendo hacer efectivo su derecho al acceso a la información pública y a su participación dentro de la auditoría social y fiscalización ciudadana hacia todos los funcionarios, empleados públicos, organismos, instituciones y en general hacia todo aquel que maneje, use, administre o disponga de recursos del Estado. (Congreso de la República de Guatemala, 2008).
+La distancia entre lo que la norma habilita y lo que la ciudadanía realmente ejerce justifica el desarrollo de plataformas que traduzcan ese lenguaje jurídico a interfaces accesibles para el ciudadano común. (Esta cita va en bloque, con sangría, sin comillas.)
+Castells (2009) sostiene que las redes digitales reconfiguraron las estructuras de poder de las sociedades contemporáneas, dando lugar a lo que denomina poder comunicativo. Para los movimientos juveniles latinoamericanos, ese giro ha sido decisivo. Iniciativas guatemaltecas como Ojo con mi Pisto han demostrado que la tecnología cívica puede convertir datos públicos en herramientas de fiscalización capaces de generar presión institucional real (Norris, 2011).
+Características de la formación cívica efectiva en entornos digitales
+La educación cívica es el proceso por el cual una sociedad transmite a sus ciudadanos los valores, conocimientos y habilidades que necesitan para participar de forma informada y responsable en los asuntos públicos. En Guatemala, este propósito tiene rango constitucional. 
+El Artículo 72 de la Constitución Política fija con claridad la finalidad del proceso educativo:
+La educación tiene como fin primordial el desarrollo integral de la persona humana, el conocimiento de la realidad y cultura nacional y universal. Se declaran de interés nacional la educación, la instrucción, formación social y la enseñanza sistemática de la Constitución de la República y de los derechos humanos. (Constitución Política de la República de Guatemala, 1985, art. 72)
+Este mandato da sustento jurídico al trabajo formativo de Involúcrate Guatemala: formar para la realidad nacional y para el ejercicio responsable de la ciudadanía no es una actividad opcional, sino una finalidad que la propia Constitución reconoce como de interés nacional. (Esta cita también va en bloque, con sangría y sin comillas.)
+El enfoque de Freire (1970) aporta el cómo. Su pedagogía crítica plantea que el educando no recibe el conocimiento de forma pasiva, sino que lo construye al problematizar su propia realidad. Llevado a la plataforma, esto implica módulos de formación que conecten los contenidos con el contexto político guatemalteco concreto —casos de corrupción, cooptación institucional, las protestas de 2015— en lugar de transmitir conceptos abstractos y descontextualizados.
+La gamificación —el uso de mecánicas de juego como insignias, niveles y retos— se ha consolidado como estrategia para sostener la motivación y la retención en entornos de aprendizaje digital. Deterding et al. (2011), en el trabajo que fijó su definición, la describen como el empleo de elementos de diseño de juego en contextos no lúdicos. Para Involúcrate Guatemala, integrar estos elementos en la formación no es un adorno, sino una forma de mantener comprometido al voluntariado antes de cada jornada electoral.
+La formación digital rinde más cuando aprovecha la interactividad y la inmediatez de los dispositivos móviles. La investigación sobre e-learning coincide en que la retención mejora cuando los contenidos combinan video, texto, interacción y evaluaciones frecuentes. Estas exigencias pedagógicas conectan de forma natural con las herramientas previstas para el proyecto: contenido multimedia en el navegador, interfaces dinámicas y un registro individual del progreso de cada participante.
+Características de la gestión moderna del voluntariado
+Gestionar voluntarios en una organización de incidencia política no se parece a coordinarlos en una ONG de servicios sociales. En el contexto electoral guatemalteco, los voluntarios de Involúcrate Guatemala asumen responsabilidades técnicas y legales: deben conocer la normativa electoral, documentar incidencias con precisión casi forense y sostener su imparcialidad bajo presión política e, incluso, ante intentos de coerción.
+Esa exigencia obliga a procesos de selección, formación y certificación más rigurosos que los de cualquier voluntariado convencional, y a un sistema capaz de registrar el nivel de competencia de cada observador. La trazabilidad de la formación recibida y de los exámenes aprobados no solo permite asignar mejor los roles en cada jornada: también sirve para acreditar ante el Tribunal Supremo Electoral la idoneidad de quienes la organización despliega en el terreno.
+La motivación en una ONG se sostiene sobre un contrato psicológico: lo que mueve al voluntario no es un salario, sino valores cívicos compartidos. Hackman y Oldham (1980) identifican tres factores que alimentan esa motivación intrínseca —el significado de la tarea, la autonomía y la retroalimentación—. Una plataforma que haga visible el impacto individual de cada voluntario refuerza directamente esos tres resortes.
+La retención depende, en buena medida, de que el voluntario perciba que su aporte importa. Cnaan y Goldberg-Glen (1991) muestran que quienes reciben retroalimentación cuantificada sobre su contribución —horas invertidas, incidencias reportadas, formaciones completadas— regresan en proporciones notablemente mayores. Automatizar ese reconocimiento y hacerlo visible dentro de la comunidad convierte la experiencia del voluntariado en un activo de capital social medible.
+	•	Modelos
+Las definiciones y características examinadas se traducen en modelos teóricos y metodológicos que estructuran la operación cotidiana de la organización. Esta sección analiza tres modelos centrales: los de gestión organizacional adaptados al tercer sector, los de mejora continua aplicables a una ONG y los modelos contemporáneos de incidencia política ciudadana. No son alternativas excluyentes, sino capas complementarias que la plataforma debe sostener de forma simultánea para responder a la complejidad real de Involúcrate Guatemala.
+Modelos de gestión organizacional para el tercer sector
+La gestión de una ONG difiere estructuralmente de la administración empresarial: su propósito no es maximizar utilidades, sino optimizar el impacto social. Salamon y Anheier (1997) sostienen que la eficacia de una organización civil depende de la coherencia entre su misión, sus procesos internos y sus mecanismos de rendición de cuentas. Esa tríada es el cimiento sobre el que se diseña la plataforma de Involúcrate Guatemala, que articula los módulos de gestión interna con los de transparencia externa.
+La planificación en el tercer sector persigue impacto, no rentabilidad. Herramientas como el análisis FODA permiten reconocer las fortalezas internas y las amenazas del entorno político guatemalteco, mientras que la Teoría del Cambio vincula cada actividad operativa con los objetivos de impacto democrático a largo plazo. Esa cadena explícita entre acción e impacto facilita, además, la rendición de cuentas ante los cooperantes internacionales que financian buena parte del trabajo de organizaciones como esta.
+Para evitar el caos operativo, toda acción debe encajar en una arquitectura de procesos clara. Los procesos estratégicos fijan el rumbo —alianzas internacionales y nuevas líneas de acción decididas por la junta directiva—; los operativos son el núcleo de la misión —el despliegue de observadores y la ejecución de programas formativos—; y los de apoyo sostienen al resto —servidores, contabilidad, gestión documental—. Esta tipología orienta qué funcionalidades prioriza la plataforma.
+La gobernanza efectiva exige mecanismos de decisión que equilibren agilidad y responsabilidad institucional. La junta directiva de ocho miembros necesita información consolidada y actualizada para decidir durante los ciclos electorales. Un esquema de paneles diferenciados por rol permite que cada nivel acceda solo a los datos pertinentes a su función, reduce la sobrecarga informativa y mejora la calidad de las decisiones.
+Modelos de mejora continua aplicados a ONG
+El ciclo PDCA (planificar, hacer, verificar, actuar), atribuido a Deming, es el modelo de mejora continua más extendido en organizaciones de cualquier sector. En Involúcrate Guatemala se traduce en cuatro fases iterativas: planificar los objetivos de cada ciclo electoral, ejecutar la formación y la observación, verificar los resultados con los indicadores del sistema de paneles y actuar sobre las desviaciones para ajustar los procesos en el siguiente ciclo.
+La plataforma es justamente lo que vuelve posible el monitoreo continuo que el PDCA exige. Sin sistematización digital, las verificaciones dependen de una memoria institucional fragmentaria y los aprendizajes se evaporan con la rotación del voluntariado. Con ella, cada ciclo electoral deja un registro estructurado que alimenta al siguiente y convierte a la organización en una entidad que aprende de su propia experiencia.
+Un ejemplo concreto: si los voluntarios reportan que un formulario digital es demasiado largo, el ciclo obliga a rediseñarlo y desplegar una versión más ágil en la siguiente iteración. Este principio dialoga directamente con los modelos ágiles del Capítulo II —Scrum y Kanban incorporan retrospectivas y optimización del proceso—, que operan con la misma lógica del PDCA en el plano del desarrollo tecnológico.
+Los indicadores clave de rendimiento (KPI) materializan el principio de medición de Deming. A diferencia del sector privado, los de una organización civil miden alcance y transformación social, no rentabilidad. Para Involúcrate Guatemala resultan críticos el tiempo promedio de respuesta ante una denuncia, la tasa de retención de voluntarios por semestre y el porcentaje de actas electorales procesadas con éxito: las cifras que el sistema debe proyectar en los paneles de la directiva.
+Modelos de incidencia pública ciudadana
+La incidencia ciudadana no consiste en salir a gritar a la plaza, sino en presionar al Estado con evidencia en mano. Es un mecanismo democratizador donde la sociedad civil exige sus derechos a partir de propuestas técnicas viables. Para las organizaciones juveniles, esto implica abandonar el empirismo y usar sistemas de información para convertir la indignación social en argumentos estadísticos que las instituciones no puedan ignorar.
+Para que una ONG no sea ignorada por los tomadores de decisiones, la incidencia requiere un enfoque táctico que combine análisis político y producción de evidencia. Las estrategias más efectivas se apoyan en tres pilares: identificar con precisión qué funcionario o magistrado tiene la facultad legal de resolver el problema, elevar el costo político de la inacción mediante presión en redes y presentar reportes estadísticos generados por software que vuelvan inviable la retórica negacionista.
+La labor de incidencia de Involúcrate Guatemala se articula en tres ejes. La vigilancia del financiamiento político monitorea las fuentes de ingreso de campañas y la transparencia de su uso; el monitoreo del discurso público rastrea discursos de odio, desinformación y propaganda durante el período electoral; y la observación directa en centros de votación documenta el cumplimiento de los procedimientos legales en cada mesa. Cada eje genera datos que deben sistematizarse y publicarse con rapidez.
+Sistematizar es, en el fondo, la cura contra la amnesia institucional que aqueja al tercer sector. Jara (2012) entiende este proceso no como un simple ordenamiento de datos, sino como una lectura reflexiva de la práctica:
+Interpretación crítica de una o varias experiencias que, a partir de su ordenamiento y reconstrucción, descubre o explicita la lógica del proceso vivido, los factores que han intervenido en dicho proceso, cómo se han relacionado entre sí y por qué lo han hecho de ese modo. (Jara, 2012, p. 46)
+Si una organización no documenta cómo logró frenar una anomalía electoral, ese conocimiento se pierde en cuanto los voluntarios crecen y se retiran. Digitalizar ese historial garantiza la resiliencia de la organización a largo plazo y transforma saberes tácitos en activos institucionales transmisibles.
+	•	Aplicaciones
+Definidos los conceptos, examinadas las características y formulados los modelos, esta sección final aborda las aplicaciones prácticas que la plataforma materializará para Involúcrate Guatemala. Cada una responde a un proceso organizacional concreto, integra las herramientas del Capítulo II y se alinea con los modelos ya analizados. Se examinan cuatro: la gestión del ciclo de vida del voluntariado, la coordinación de redes de observadores electorales, la formación cívica digital y la transparencia institucional.
+Aplicaciones en la gestión del ciclo de vida del voluntariado
+El ciclo de vida del voluntario en una ONG de incidencia comprende cinco fases encadenadas y retroalimentadas. El reclutamiento atrae jóvenes mediante campañas digitales y referidos de la red existente; la incorporación los familiariza con la cultura y los protocolos; la formación y certificación les da las competencias para operar como observadores; el despliegue les asigna roles en las jornadas; y el reconocimiento cierra el ciclo cuantificando y celebrando su aporte.
+Cada fase genera datos que, gestionados de forma integrada, permiten construir un perfil de competencias del voluntariado y asignar roles de manera estratégica. Con más de 3,000 miembros activos, hacerlo a mano en hojas de cálculo provoca pérdida de información histórica, duplicación de esfuerzos en el reclutamiento y dificultad para identificar a los voluntarios más capacitados para funciones especializadas de observación (Involúcrate Guatemala, 2024).
+La sistematización digital genera además un registro institucional que trasciende la permanencia de cada miembro. En un segmento juvenil donde la migración educativa y laboral es constante, preservar el conocimiento organizacional se vuelve un activo estratégico. Una base de datos centralizada con el historial de actividades, formaciones y reportes de cada voluntario sostiene la continuidad operativa al margen de los ciclos de renovación de la membresía.
+La acreditación de observadores —que hoy exige verificación manual de documentos, asignación de credenciales y comunicación individual— es uno de los casos con mayor impacto operativo inmediato. La plataforma puede generar credenciales con código QR, verificar de forma automática los prerrequisitos formativos y enviar notificaciones segmentadas por rol y territorio, reduciendo semanas de trabajo administrativo a minutos.
+Aplicaciones en la coordinación de redes de observadores electorales
+La incidencia en el contexto electoral guatemalteco se manifiesta en tres mecanismos: la denuncia de irregularidades durante la jornada, la verificación del cumplimiento de la normativa por las mesas receptoras y la generación de evidencia documental que sustente impugnaciones ante el Tribunal Supremo Electoral. Cada uno exige protocolos de registro estandarizados, trazabilidad y cadena de custodia de los reportes (OEA, 2023).
+Coordinar esa red durante una jornada electoral es un problema de escala. Involúcrate Guatemala puede desplegar observadores en los veintidós departamentos de forma simultánea, así que el sistema debe recibir, validar y consolidar miles de reportes en tiempo real sin perder un solo registro. Las herramientas genéricas como WhatsApp o Telegram, aunque muy usadas, no geolocalizan a los observadores ni organizan los reportes en formatos verificables ante un tribunal (Bimber, 2003).
+La plataforma resuelve esto con formularios estructurados que codifican la Ley Electoral y de Partidos Políticos en preguntas operacionales. Cuando un observador reporta una irregularidad no escribe texto libre que luego haya que interpretar: elige el tipo de incidencia de un catálogo, adjunta evidencia fotográfica georreferenciada y registra la hora con un sello de tiempo. Así, cada reporte es procesable estadísticamente y defendible legalmente.
+La coordinación central necesita ver el estado del territorio en tiempo real. Un panel de monitoreo permite visualizar la cobertura por región, reasignar recursos donde falten observadores y emitir alertas de inmediato. Sobre esa misma base, los mapas de calor transforman miles de reportes individuales en patrones reconocibles: concentración de irregularidades por departamento, tipos predominantes de incidencia y evolución horaria durante la jornada.
+Procesada la información, la plataforma genera de forma automática los reportes ejecutivos para el Tribunal Supremo Electoral, los medios y los organismos internacionales de observación. Automatizar ese último tramo —del dato crudo al informe público— elimina las semanas de consolidación manual que suelen retrasar la denuncia hasta que el momento político ya pasó, neutralizando el impacto de la evidencia reunida.
+Aplicaciones en la formación cívica digital
+El modelo ADDIE —análisis, diseño, desarrollo, implementación y evaluación— ofrece un marco estructurado para el diseño instruccional en entornos virtuales (Branch, 2009). Aplicado a Involúcrate Guatemala, asegura que los módulos formativos sean coherentes: el análisis detecta las brechas de conocimiento cívico del voluntariado, el diseño fija objetivos de aprendizaje medibles, el desarrollo produce los contenidos, la implementación gestiona el acceso y la evaluación mide el impacto formativo.
+Sobre ese marco, la plataforma alojará una biblioteca de manuales de observación, videos sobre la Ley Electoral, simulaciones de escenarios de irregularidades y cuestionarios de autoevaluación. Cada voluntario recibirá un plan personalizado según el rol al que aspira —observador de mesa, coordinador departamental, capacitador o analista—, lo que concentra su esfuerzo en las competencias que realmente necesita.
+Los programas de liderazgo buscan transformar el activismo espontáneo en capacidad de gestión orientada a resultados. Heifetz y Linsky (2002) distinguen el liderazgo técnico, que aplica soluciones conocidas, del liderazgo adaptativo, que enfrenta desafíos sin respuestas predeterminadas. Formar líderes adaptativos es especialmente pertinente en el contexto guatemalteco, marcado por la volatilidad institucional y la necesidad de respuestas creativas ante obstáculos estructurales.
+La integración de elementos gamificados —insignias por módulo completado, niveles de certificación, rankings departamentales— convierte la formación en una experiencia capaz de competir por la atención del voluntario joven frente a las redes sociales. Lejos de trivializar la formación cívica, este reconocimiento público del esfuerzo intelectual invertido en comprender el sistema electoral la dignifica.
+Aplicaciones en transparencia institucional y rendición de cuentas
+El Decreto 4-2020, que reforma la Ley de Organizaciones No Gubernamentales para el Desarrollo (Decreto 2-2003), endureció el régimen de control sobre las ONG en Guatemala. Las organizaciones deben inscribirse y mantener actualizada su información en el Registro de Personas Jurídicas (REPEJU) del Ministerio de Gobernación, manejar sus fondos en cuentas a nombre exclusivo de la entidad e informar al MINEX sobre los recursos de fuente externa que reciban. Sobre la fiscalización, la norma es explícita:
+Sin perjuicio de los informes contables llevados por su propia auditoría interna, las Organizaciones No Gubernamentales (ONG) que reciban recursos provenientes del Presupuesto General de Ingresos y Egresos del Estado o de las Municipalidades, deben ser fiscalizadas por la Contraloría General de Cuentas. (Congreso de la República de Guatemala, Decreto 4-2020)
+Este entorno regulatorio, aunque incrementa la carga administrativa, es precisamente lo que justifica una plataforma de gestión interna eficiente. El sistema categoriza cada gasto al momento del registro, vincula cada actividad con su programa y asocia cada donación con su origen y destino. Al cierre del período fiscal, los reportes regulatorios se generan de forma automática, eliminando semanas de consolidación contable manual.
+La Ley de Acceso a la Información Pública (Decreto 57-2008) obliga a quienes reciben fondos públicos a publicar de forma proactiva información sobre sus actividades y finanzas. Lejos de ser solo una carga, este mandato es una oportunidad: una plataforma que automatice los informes de incidencia ciudadana fortalece la credibilidad de la organización ante los organismos electorales, los donantes internacionales y la ciudadanía.
+La auditoría interna es otro pilar de la gobernanza en el tercer sector. Las organizaciones que mantienen registros digitales trazables, con sello de tiempo, pueden demostrar con evidencia objetiva el uso correcto de sus recursos. Ese nivel de transparencia no solo satisface las exigencias del Decreto 4-2020: también aumenta la confianza de cooperantes como la Unión Europea o el PNUD, lo que abre oportunidades de financiamiento para la misión.
+En última instancia, la transformación digital es un rediseño cultural y operativo, no la mera adopción de herramientas. En el tercer sector debe estar guiada por la misión: para Involúcrate Guatemala, digitalizar significa simplificar la coordinación interna, profesionalizar la incidencia externa y multiplicar el impacto democrático del voluntariado juvenil. Esa es la concordancia que une los dos capítulos del marco teórico: la tecnología del Capítulo II al servicio del propósito democrático del Capítulo III.
+
+CAPÍTULO IV ANÁLISIS DEL ENTORNO
+Este capítulo describe a la organización donde se desarrolla el proyecto, sus procesos actuales y el contexto del problema que la plataforma busca resolver. Primero se caracteriza a Involúcrate Guatemala; luego se analiza cómo opera hoy cada proceso a automatizar; y finalmente se plantea la estructura del levantamiento de requerimientos bajo el estándar IEEE 830.
+	•	
+	•	
+	•	
+Descripción de la institución
+Esta sección caracteriza a Involúcrate Guatemala en su naturaleza, orientación estratégica, estructura interna y ámbito de operación, delimitando el entorno organizacional sobre el que actuará la plataforma.
+	•	
+	•	
+Descripción general. 
+Involúcrate Guatemala es una asociación civil no lucrativa liderada por jóvenes, dedicada a promover la participación ciudadana, electoral y política de las juventudes del país. Opera desde la Ciudad de Guatemala con alcance nacional, mediante programas de liderazgo, foros políticos, talleres de formación cívica, campañas de información electoral y voluntariado. Trabaja con jóvenes de distintos contextos, realidades, grupos étnicos e identidades, bajo la convicción de que las nuevas generaciones tienen el poder de transformar el país (Involúcrate Guatemala, 2026).
+Datos institucionales: 
+Nombre oficial: Involúcrate Guatemala.
+Tipo: asociación civil no lucrativa.
+Sede: Ciudad de Guatemala.
+Correo: involucrateguate@gmail.com. 
+Redes: @involucrateguate (Instagram, Facebook, LinkedIn).
+
+Figura 1. Logotipo oficial de Involúcrate Guatemala. Tomado de @involucrateguate, Instagram (2026).
+
+Misión 
+Promover y fortalecer la participación ciudadana, electoral y política de las juventudes guatemaltecas, a través de programas de formación cívica, liderazgo, diálogo y acción colectiva, impulsando una democracia más activa, informada e inclusiva para Guatemala.
+Visión
+Ser la organización juvenil líder en Guatemala en la promoción de la participación ciudadana y política, reconocida por empoderar a las nuevas generaciones de todos los contextos del país para que sean agentes activos de transformación democrática y social.
+Valores
+Los principios que guían a la organización son la participación activa, la inclusión de jóvenes de todos los contextos y etnias, la transparencia y rendición de cuentas, la defensa de los valores democráticos, el compromiso social y el liderazgo juvenil transformador.
+Objetivos institucionales
+Su objetivo general es promover la participación ciudadana, electoral y política activa de las juventudes mediante programas de formación, liderazgo e incidencia que fortalezcan la democracia nacional. Entre sus objetivos específicos están desarrollar programas de formación cívica, organizar foros y diálogos, coordinar redes de observadores electorales, impulsar campañas de información e incidencia y fortalecer sus capacidades internas mediante herramientas digitales.
+Estructura organizacional y manual de funciones
+La organización se compone de los siguientes puestos:
+	•	Dirección Ejecutiva: representa legalmente a la organización, define y supervisa la estrategia y los programas, gestiona alianzas y rinde informes a la Junta Directiva.
+	•	Coordinación de Programas: planifica, ejecuta y evalúa los programas de formación y liderazgo, y da seguimiento a sus indicadores de impacto.
+	•	Coordinación de Observación Electoral: recluta, capacita y coordina a los observadores, define protocolos, sistematiza la información y mantiene enlace con el Tribunal Supremo Electoral.
+	•	Comunicación y Redes Sociales: gestiona las plataformas digitales y ejecuta las campañas de comunicación e incidencia.
+	•	Administración y Finanzas: gestiona los recursos financieros, el presupuesto y la logística de actividades.
+	•	Voluntariado: apoya la ejecución de actividades y funge como observadores electorales en los procesos nacionales y locales.
+Organización 
+La jerarquía se compone de la Junta Directiva como órgano de gobierno, la Dirección Ejecutiva como responsable de la gestión estratégica y cuatro áreas operativas (Programas, Observación Electoral, Comunicación, y Administración y Finanzas), con el voluntariado como nivel de apoyo operativo transversal.
+
+Figura 2. Organigrama de Involúcrate Guatemala. Elaboración propia.
+Ubicación geográfica
+La sede principal está en la Ciudad de Guatemala (14.6349° N, 90.5069° O), con cobertura programática nacional en los 22 departamentos a través de programas, campañas digitales y redes de voluntariado.
+Líneas de acción y alianza
+El trabajo institucional se estructura en cuatro líneas: programas de liderazgo y formación política, foros y diálogos con actores públicos, observación electoral ciudadana y campañas de información y movilización. La organización sostiene alianzas con instituciones nacionales e internacionales vinculadas a la democracia, los derechos humanos y la educación cívica, lo que amplía su capacidad de incidencia (Involúcrate Guatemala, 2026).
+	•	Descripción del proceso del proyecto
+Esta sección analiza cómo opera hoy cada uno de los procesos que la plataforma automatizará. Se describe el estado actual (manual y disperso), las herramientas que utiliza la organización y, mediante un diagrama de flujo, la secuencia vigente. Este análisis evidencia los cuellos de botella que justifican la solución propuesta.
+Registro y gestión de miembros y voluntarios
+Actualmente, cuando un joven desea integrarse, lo hace mediante un formulario genérico en línea o escribiendo por redes sociales y WhatsApp. Un encargado traslada esos datos de forma manual a una hoja de cálculo compartida, sin verificación ni perfil de competencias asociado. El seguimiento de cada miembro depende de la memoria del coordinador y de mensajes dispersos.
+Con más de 3,000 miembros activos, este esquema produce duplicación de registros, pérdida de historial y dificultad para identificar a los voluntarios más capacitados para funciones especializadas. No existe una base de datos centralizada ni control de acceso por rol.
+Herramientas y métodos actuales: formularios en línea (Google Forms), hojas de cálculo compartidas (Excel/Google Sheets), WhatsApp y correo electrónico; registro y consolidación manuales.
+Coordinación de observadores y reporte de incidencias electorales
+Durante una jornada electoral, los observadores reportan las incidencias por WhatsApp, combinando texto, audios y fotografías sueltas. Un coordinador intenta consolidar esa información manualmente, sin un catálogo estandarizado de tipos de irregularidad, sin geolocalización estructurada y sin un sello de tiempo confiable que respalde cada reporte.
+El resultado es un alto riesgo de perder registros, imposibilidad de verificar la cadena de custodia y demoras que hacen que la evidencia llegue cuando el momento político de la denuncia ya pasó. La cobertura de los 22 departamentos en simultáneo desborda la capacidad de coordinación manual.
+Herramientas y métodos actuales: WhatsApp y Telegram, llamadas telefónicas, fotografías en galería y hojas de cálculo para consolidar; sin formularios estructurados ni trazabilidad.
+
+Gestión de la formación cívica
+La formación se imparte hoy de forma presencial o mediante talleres puntuales, y el material se distribuye por WhatsApp o Google Drive. No existe un registro sistemático de quién completó cada módulo, ni evaluación formal, ni certificación trazable que acredite la competencia del voluntario ante el Tribunal Supremo Electoral.
+Dado el alto recambio del voluntariado juvenil, cada vez que un miembro se retira se pierde su historial formativo, y la organización vuelve a capacitar desde cero sin saber con certeza quién está preparado para cada rol.
+Herramientas y métodos actuales: presentaciones y documentos en PDF compartidos por Drive o WhatsApp, talleres presenciales; sin plataforma de aprendizaje ni control de avance.
+Comunicación e incidencia ciudadana
+Las campañas, convocatorias y comunicados se gestionan manualmente desde el área de comunicación. Las convocatorias a los más de 3,000 miembros se realizan por difusión de WhatsApp o publicaciones en redes, sin segmentación por rol o territorio y sin trazabilidad de quién recibió o respondió cada mensaje.
+Esto provoca mensajes duplicados, miembros que nunca se enteran de una convocatoria y la imposibilidad de medir el alcance real de cada campaña de incidencia.
+Herramientas y métodos actuales: redes sociales (Instagram, Facebook, LinkedIn), listas de difusión de WhatsApp y correo electrónico; envío y seguimiento manuales.
+	•	Levantamiento de requerimientos
+El levantamiento de requerimientos constituye la fase más crítica del ciclo de vida del software, pues de su rigor depende que el sistema construido resuelva los problemas reales de la organización y no una versión idealizada de ellos. 
+Para este proyecto se adoptó el estándar IEEE 830, cuya estructura formaliza la especificación en un documento que separa con claridad los requerimientos funcionales de los no funcionales, define al detalle las restricciones del sistema y establece los criterios de aceptación que permitirán verificar el cumplimiento de cada requisito (IEEE Computer Society, 1998). 
+Esta elección garantiza trazabilidad entre las necesidades organizacionales documentadas en las secciones anteriores y las decisiones de diseño arquitectónico que se desarrollarán en el Capítulo V.
+Las fuentes de información primaria para este levantamiento fueron tres: entrevistas semiestructuradas con los ocho miembros de la Junta Directiva de Involúcrate Guatemala, sesiones de observación directa de los procesos manuales vigentes y un cuestionario estructurado aplicado a coordinadores regionales. 
+Las entrevistas se diseñaron con base en la guía de análisis de requerimientos de Pressman y Maxim (2021), quien recomienda iniciar con preguntas abiertas sobre el negocio antes de descender a especificaciones técnicas, evitando que el entrevistador anticipe soluciones que sesguen las respuestas del stakeholder y que el sistema resultante resuelva síntomas en lugar de causas raíz.
+Especificación de requisitos de software
+Propósito
+El presente documento de especificación tiene como propósito describir de manera formal, precisa y verificable los requisitos del sistema de software que se desarrollará para la ONG Involúcrate Guatemala. Establece el contrato técnico entre el desarrollador y los representantes institucionales de la organización, fijando el alcance funcional y los criterios de calidad que el sistema deberá satisfacer al momento de su entrega. 
+El documento sirve además como línea base para el diseño arquitectónico del Capítulo V, para la planificación de las pruebas de aceptación del Capítulo VI y para la evaluación del impacto operativo que se medirá mediante los indicadores definidos en el Capítulo I.
+La especificación está dirigida a cuatro audiencias: el equipo de desarrollo, que la utiliza para guiar las decisiones de diseño e implementación; los representantes de Involúcrate Guatemala, que la emplean para validar que sus necesidades fueron correctamente interpretadas; el asesor académico, que la evalúa como evidencia del rigor metodológico del proyecto; y los futuros mantenedores del sistema, que la consultarán cuando deban extender o modificar la plataforma. 
+Este carácter multiaudiencia obliga a redactar cada requisito con precisión terminológica, sin ambigüedades que permitan interpretaciones divergentes entre grupos con perfiles tan distintos como la Junta Directiva y el desarrollador.
+Alcance
+La plataforma web se denominará SistemaInvolúcrate y constituirá el ecosistema digital centralizado de la organización. Su alcance funcional abarca cuatro dominios operativos: la gestión integral del ciclo de vida de los miembros y voluntarios, la coordinación y monitoreo en tiempo real de la red de observadores electorales, la administración de los programas de formación cívica con seguimiento individual del progreso, y la generación automatizada de reportes de incidencia ciudadana con validez jurídica. 
+Estos cuatro dominios responden directamente a los cuellos de botella identificados en el análisis del proceso actual de la sección 4.2 y se alinean con los objetivos específicos formulados en el Capítulo I.
+Quedan fuera del alcance de esta versión inicial las funcionalidades de contabilidad avanzada, la integración con sistemas externos del Tribunal Supremo Electoral y el desarrollo de aplicaciones nativas para iOS y Android. 
+Estas exclusiones no son permanentes: la arquitectura modular y la API documentada bajo el estándar OpenAPI que se definirán en el Capítulo V permitirán incorporarlas en versiones posteriores sin reescribir el núcleo del sistema. La decisión de excluirlas responde al principio de viabilidad temporal definido en la sección 1.5, que establece doce meses como horizonte de desarrollo para garantizar la entrega de un sistema funcional y estable.
+
+Personal involucrado (Stakeholders)
+La identificación de los stakeholders siguió la metodología de análisis de partes interesadas recomendada por el Project Management Institute (PMI, 2021), que clasifica a los involucrados según su nivel de influencia sobre los requisitos y su grado de impacto ante el resultado del proyecto. Se identificaron seis grupos de interés con características, necesidades y restricciones distintas, cuya comprensión es indispensable para equilibrar los trade-offs que inevitablemente emergen cuando los requisitos de distintos grupos entran en tensión. A continuación se caracteriza cada grupo y se explicitan sus necesidades primarias respecto al sistema.
+Tabla 6
+Identificación de Stakeholders
+Stakeholder
+Rol
+Necesidad principal
+Nivel de influencia
+Junta Directiva (8 miembros)
+Administradores del sistema
+Paneles ejecutivos con indicadores en tiempo real y reportes automáticos
+Alto
+Coordinadores regionales (22)
+Coordinadores de operación
+Gestión de observadores por departamento y alertas georreferenciadas
+Alto
+Observadores electorales (3,000+)
+Usuarios finales de campo
+Formularios simples, funcionamiento offline y credencial digital con QR
+Medio
+Miembros en formación
+Usuarios del módulo educativo
+Acceso a cursos, progreso visible e insignias por módulo completado
+Medio
+Desarrollador / tesista
+Constructor y mantenedor
+Especificación clara, arquitectura documentada y entorno de pruebas
+Alto
+Tribunal Supremo Electoral
+Receptor de reportes
+Informes estructurados con cadena de custodia y sello de tiempo
+Bajo-externo
+Nota: Elaboración propia.
+Referencias (documentos utilizados)
+La elaboración de este documento de especificación se apoyó en las siguientes fuentes normativas y académicas: el estándar IEEE 830-1998, Recommended Practice for Software Requirements Specifications, que provee la estructura y los criterios de calidad que debe satisfacer toda especificación de requisitos; el estándar ISO/IEC 25010:2011 de calidad del producto de software, que define los atributos no funcionales a evaluar; la Ley Electoral y de Partidos Políticos de Guatemala y el Acuerdo 008-2019 del Tribunal Supremo Electoral.
+Se consultaron además los siguientes documentos internos de la organización: el reglamento de voluntariado de Involúcrate Guatemala, el protocolo de observación electoral vigente para el proceso 2023, los formularios actuales de registro de miembros en Google Forms y las actas de las sesiones de entrevista realizadas con la Junta Directiva durante la fase de levantamiento. 
+Estos documentos internos constituyen la evidencia primaria del estado actual de los procesos y son el origen directo de los requisitos funcionales que se especifican en la sección 4.3.1.6. Pressman y Maxim (2021) enfatizan que la trazabilidad entre las fuentes de información y los requisitos derivados es una condición sine qua non de la calidad de toda especificación.
+Resumen de la especificación de requisitos de software
+La presente especificación documenta un total de cuarenta y dos requisitos funcionales agrupados en cuatro módulos principales: gestión de miembros (RF-01 a RF-12), coordinación electoral (RF-13 a RF-24), formación cívica (RF-25 a RF-35) y reportes e incidencia (RF-36 a RF-42). 
+Complementariamente, se definen diecisiete requisitos no funcionales que cubren los atributos de rendimiento, seguridad, usabilidad, disponibilidad y mantenibilidad del sistema, todos ellos referenciados al estándar ISO/IEC 25010:2011. 
+La totalidad de los requisitos fue validada en una sesión de revisión con la Junta Directiva, cuyos miembros confirmaron mediante acta la correspondencia entre lo especificado y sus necesidades operativas reales.
+La priorización de los requisitos funcionales se realizó mediante la técnica MoSCoW —Must have, Should have, Could have, Won't have— propuesta por Clegg y Barker (1994) y ampliamente adoptada en metodologías ágiles. 
+Los requisitos calificados como Must have constituyen el producto mínimo viable que deberá estar operativo al concluir el octavo mes de desarrollo; los Should have se incorporarán en el décimo mes; y los Could have quedarán documentados como backlog para versiones futuras. Esta clasificación asegura que, ante imprevistos técnicos o de tiempo, la organización cuente con un sistema funcional en las áreas de mayor impacto operativo.
+Descripción general
+Perspectiva del producto
+SistemaInvolúcrate es un sistema nuevo que no sustituye a ningún producto comercial previo, sino que reemplaza un conjunto heterogéneo de herramientas genéricas —Google Forms, hojas de cálculo, listas de WhatsApp y correos electrónicos— que hoy operan de forma desarticulada. La plataforma se concibe como un sistema independiente con su propia infraestructura de nube, su propia base de datos y su propio esquema de autenticación, sin dependencias de aplicaciones de terceros para sus funciones críticas.
+Desde el punto de vista de la arquitectura del sistema, la plataforma se estructura en tres capas lógicas interoperables:
+La capa de presentación es una aplicación de página única construida con React.js, diseñada como Progressive Web App para funcionar en modo sin conexión. 
+La capa de lógica de negocio expone una API RESTful documentada bajo OpenAPI, desplegada en infraestructura serverless de nube. 
+La capa de datos utiliza PostgreSQL como motor relacional principal, con la extensión PostGIS para consultas geoespaciales y Row Level Security como mecanismo de aislamiento de datos por rol. 
+Este diseño en tres capas, descrito con mayor profundidad en el Capítulo V, asegura que cada componente pueda evolucionar de forma independiente sin afectar al conjunto del sistema.
+
+Funcionalidad del producto
+
+Figura 3. Diagrama de casos de uso de SistemaInvolúcrate. Elaboración propia.
+
+El sistema agrupa su funcionalidad en cuatro módulos principales, cada uno orientado a resolver un dominio operativo específico de la organización: 
+El Módulo de Gestión de Miembros centraliza el registro, la actualización y la trazabilidad del ciclo de vida de cada integrante, desde su solicitud de ingreso hasta su desactivación, incluyendo la asignación automática de roles y permisos según su perfil. 
+El Módulo de Coordinación Electoral gestiona el despliegue de observadores por departamento y mesa de votación, emite credenciales digitales verificables y recibe los reportes de incidencia en tiempo real con geolocalización estructurada. 
+El Módulo de Formación Cívica aloja los contenidos educativos, registra el progreso individual de cada miembro y emite certificaciones trazables al completar los módulos. El Módulo de Reportes e Incidencia consolida la evidencia recolectada y genera los informes estructurados para el Tribunal Supremo Electoral y los organismos internacionales de observación.
+Restricciones
+El sistema opera bajo un conjunto de restricciones técnicas, legales y organizacionales que delimitan el espacio de soluciones posibles. En el plano técnico, la plataforma debe funcionar correctamente en dispositivos con Android 8.0 o superior y en los navegadores Chrome, Firefox y Safari en sus versiones de los últimos dos años, sin requerir instalación de aplicaciones adicionales. 
+El tiempo de carga inicial en una red 3G con velocidad de 3 Mbps no debe superar los cuatro segundos, requisito crítico para garantizar la operatividad en municipios rurales donde esa es la velocidad máxima disponible. El sistema debe mantener una disponibilidad mensual del 99.5% durante períodos no electorales y del 99.9% durante las setenta y dos horas que rodean a cada jornada de votación.
+Suposiciones y definiciones
+La especificación asume un conjunto de condiciones que, de no cumplirse, podrían afectar la viabilidad de ciertos requisitos. Se asume que los miembros de la organización cuentan con un dispositivo móvil con Android 8.0 o superior y acceso a datos móviles, al menos de forma intermitente, durante las jornadas electorales. 
+Se asume que la Junta Directiva mantendrá su estructura organizacional actual durante el período de desarrollo, de modo que el modelo de roles y permisos definido en esta especificación no requiera rediseños estructurales. Se asume que la infraestructura de nube seleccionada mantendrá su disponibilidad de servicio y su esquema de precios dentro de los rangos considerados en el presupuesto del proyecto durante los doce meses de desarrollo e implementación.
+Las dependencias externas del sistema incluyen los servicios de infraestructura de Supabase para la base de datos y la autenticación, los servicios de mapas de OpenStreetMap para la visualización geoespacial, el servicio de correo transaccional de Resend para las notificaciones automáticas y el servicio de almacenamiento de objetos de Cloudflare R2 para los archivos multimedia adjuntos a los reportes de incidencia. 
+Ninguna de estas dependencias implica un costo variable que pueda crecer de forma impredecible, dado que todas ofrecen planes con cuotas fijas para el volumen de uso proyectado. La sustitución de cualquiera de estos proveedores, en caso de discontinuación del servicio, es técnicamente viable sin reescribir la lógica de negocio, gracias a los patrones de abstracción de infraestructura que se implementarán en la capa de acceso a datos.
+Requisitos específicos
+Requisitos comunes de todas las interfaces
+Todas las interfaces del sistema compartirán un sistema de diseño unificado basado en los principios de Material Design 3 adaptados a la identidad visual de Involúcrate Guatemala, garantizando consistencia visual y comportamental en todos los módulos y roles. La barra de navegación principal será persistente en la parte inferior de la pantalla en dispositivos móviles, siguiendo el patrón de navegación recomendado por las guías de Android para aplicaciones de uso frecuente. 
+Cada pantalla del sistema incluirá un indicador de estado de conectividad que comunique al usuario si está operando en modo sin conexión, qué datos están pendientes de sincronización y cuándo fue la última sincronización exitosa con el servidor. Los formularios de captura de incidencias incluirán validación en tiempo real con mensajes de error específicos y accionables, evitando el patrón de error genérico que obliga al usuario a adivinar qué campo corregir bajo condiciones de estrés de campo.
+La interfaz de administración, accesible exclusivamente desde escritorio para los roles de Dirección Ejecutiva y Junta Directiva, seguirá un patrón de dashboard con navegación lateral colapsable.
+Los paneles ejecutivos se diseñarán bajo el principio de información de un vistazo de Few (2013), priorizando indicadores clave sobre tablas densas de datos.
+Los colores del sistema de diseño se elegirán con contraste mínimo WCAG 2.1 nivel AA, garantizando legibilidad en pantallas con baja luminosidad, condición frecuente durante el conteo nocturno de votos. Se implementará un modo de alto contraste activable desde el perfil de usuario para atender a miembros con debilidades visuales, cumpliendo con el principio de diseño universal que la organización declara en sus valores institucionales.
+Requisitos funcionales
+Los requisitos funcionales se presentan organizados por módulo, siguiendo la nomenclatura RF-XX donde el prefijo indica el dominio: RF-GM para Gestión de Miembros, RF-CE para Coordinación Electoral, RF-FC para Formación Cívica y RF-RI para Reportes e Incidencia. 
+Cada requisito se describe con su identificador único, su nombre, una descripción precisa, los actores involucrados y su prioridad MoSCoW. 
+Esta estructura sigue las recomendaciones del estándar IEEE 830 (IEEE Computer Society, 1998) para garantizar que cada requisito sea completo, no ambiguo, verificable, consistente con el resto y trazable a una necesidad organizacional documentada en la sección 4.2.
+Módulo 1: Gestión de Miembros
+Tabla 7
+Gestión de Miembros
+ID
+Nombre del requisito
+Descripción
+Actor
+Prioridad
+RF-GM-01
+Registro de nuevo miembro
+El sistema permitirá el registro de nuevos miembros mediante un formulario con validación en tiempo real, capturando nombre completo, DPI, correo, teléfono, departamento, municipio y área de interés.
+Miembro / Coordinador
+Must have
+RF-GM-02
+Asignación automática de rol
+Tras el registro, el sistema asignará automáticamente el rol 'Miembro en formación' y enviará un correo de bienvenida con credenciales de acceso generadas de forma segura.
+Sistema
+Must have
+RF-GM-03
+Perfil de competencias
+Cada miembro tendrá un perfil con el historial de formaciones completadas, observaciones participadas y nivel de certificación actualizado automáticamente.
+Coordinador / Miembro
+Must have
+RF-GM-04
+Búsqueda y filtrado avanzado
+La administración podrá buscar y filtrar miembros por nombre, departamento, rol, nivel de certificación y estado de actividad mediante combinaciones de criterios.
+Administrador / Coordinador
+Must have
+RF-GM-05
+Generación de credencial digital
+El sistema generará credenciales digitales con código QR único por miembro, verificables en línea, que incluyan nombre, rol, departamento y vigencia.
+Sistema / Coordinador
+Must have
+RF-GM-06
+Gestión del ciclo de vida
+El sistema registrará el estado de cada miembro: activo, inactivo, suspendido o egresado, con bitácora de cambios de estado y justificación.
+Administrador
+Must have
+RF-GM-07
+Exportación de base de miembros
+Los administradores podrán exportar la base de miembros en formato CSV o Excel con campos seleccionables, con registro de auditoría de la exportación.
+Administrador
+Should have
+RF-GM-08
+Comunicación segmentada
+El sistema permitirá enviar notificaciones por correo electrónico y por notificación push segmentadas por rol, departamento o estado de certificación.
+Administrador / Coordinador
+Should have
+Nota: Elaboración propia con base en entrevistas a Junta Directiva de Involúcrate Guatemala (2024).
+Módulo 2: Coordinación Electoral
+Tabla 8
+Coordinación Electoral
+ID
+Nombre del requisito
+Descripción
+Actor
+Prioridad
+RF-CE-01
+Creación de jornada electoral
+La Dirección Ejecutiva creará jornadas electorales con fecha, departamentos cubiertos, centros de votación asignados y cuota de observadores por centro.
+Administrador
+Must have
+RF-CE-02
+Asignación de observadores
+El sistema asignará observadores a centros de votación verificando que cumplan los prerrequisitos de certificación y que no estén asignados a otro centro el mismo día.
+Coordinador
+Must have
+RF-CE-03
+Mapa de cobertura en tiempo real
+El panel de coordinación mostrará un mapa interactivo con la cobertura geográfica de observadores activos, actualizándose cada cinco minutos durante la jornada.
+Coordinador / Administrador
+Must have
+RF-CE-04
+Reporte de incidencia estructurado
+El observador completará un formulario estructurado de reporte con tipo de incidencia de un catálogo predefinido, descripción, fotografía adjunta y geolocalización automática.
+Observador
+Must have
+RF-CE-05
+Operación offline del reporte
+El formulario de reporte funcionará sin conexión a internet, almacenando el registro localmente y sincronizando automáticamente al recuperar la señal.
+Sistema / Observador
+Must have
+RF-CE-06
+Sello de tiempo y cadena de custodia
+Cada reporte incluirá un sello de tiempo criptográfico inalterables, registro de autoría y geolocalización al momento de la captura, cumpliendo con el Acuerdo 008-2019 del TSE.
+Sistema
+Must have
+RF-CE-07
+Panel de monitoreo de jornada
+Los coordinadores dispondrán de un panel en tiempo real con el número de reportes recibidos por departamento, tipos de incidencias predominantes y alertas ante picos anómalos.
+Coordinador / Administrador
+Must have
+RF-CE-08
+Generación de informe final
+Al cierre de la jornada, el sistema generará automáticamente un informe ejecutivo en PDF con estadísticas, mapa de incidencias y anexo fotográfico listo para presentar al TSE.
+Sistema / Administrador
+Must have
+Nota: Elaboración propia con base en el protocolo de observación electoral de Involúcrate Guatemala (2024) y el Acuerdo 008-2019 del TSE.
+
+Módulo 3: Formación Cívica
+Tabla 9
+Formación Cívica
+ID
+Nombre del requisito
+Descripción
+Actor
+Prioridad
+RF-FC-01
+Biblioteca de contenidos
+El módulo alojará cursos estructurados con unidades que combinen video, texto, documentos PDF y cuestionarios de autoevaluación organizados por nivel de certificación.
+Administrador / Miembro
+Must have
+RF-FC-02
+Progreso individual
+Cada miembro tendrá un dashboard personal que muestre su avance por módulo, el tiempo invertido, los cuestionarios aprobados y los módulos pendientes.
+Miembro / Coordinador
+Must have
+RF-FC-03
+Certificación automática
+Al completar todos los módulos de un nivel y aprobar la evaluación final con un mínimo del 70%, el sistema emitirá automáticamente una certificación digital trazable con QR.
+Sistema / Miembro
+Must have
+RF-FC-04
+Plan formativo por rol
+El sistema asignará un plan formativo diferenciado según el rol del miembro: observador de mesa, coordinador departamental, capacitador o analista de datos.
+Sistema
+Should have
+RF-FC-05
+Gamificación
+El sistema otorgará insignias digitales por módulo completado, nivel de certificación alcanzado y participaciones en jornadas electorales, visibles en el perfil público del miembro.
+Sistema / Miembro
+Should have
+RF-FC-06
+Evaluación de impacto formativo
+La administración podrá visualizar la tasa de aprobación por módulo, el tiempo promedio de finalización y la correlación entre nivel formativo y calidad de reportes de campo.
+Administrador
+Could have
+Nota: Elaboración propia con base en el modelo ADDIE (Branch, 2009) y las necesidades formativas identificadas con la Junta Directiva.
+Módulo 4: Reportes e Incidencia Ciudadana
+Tabla 10
+Reportes e Incidencia Ciudadana
+ID
+Nombre del requisito
+Descripción
+Actor
+Prioridad
+RF-RI-01
+Catálogo de tipos de incidencia
+La administración podrá gestionar un catálogo configurable de tipos de incidencia electoral, con descripción legal, nivel de gravedad y protocolo de respuesta asociado.
+Administrador
+Must have
+RF-RI-02
+Tablero de incidencias en tiempo real
+El sistema mostrará un tablero con el flujo en tiempo real de reportes recibidos, con filtros por departamento, tipo, gravedad y estado de procesamiento.
+Coordinador / Administrador
+Must have
+RF-RI-03
+Mapa de calor geoespacial
+Los reportes se visualizarán en un mapa de Guatemala con capas de calor que muestren concentración de irregularidades por municipio, actualizable en tiempo real.
+Coordinador / Administrador
+Must have
+RF-RI-04
+Exportación para el TSE
+El sistema generará reportes en formato estructurado compatible con los requerimientos del Tribunal Supremo Electoral, incluyendo metadatos de trazabilidad.
+Administrador
+Must have
+RF-RI-05
+Portal de transparencia pública
+La organización podrá publicar versiones anonimizadas y agregadas de los datos de incidencia en un portal público accesible sin autenticación.
+Administrador
+Could have
+Nota: Elaboración propia con base en los estándares de observación electoral de la OEA (2023).
+4.3.3.3 Requisitos no funcionales
+Los requisitos no funcionales definen los atributos de calidad del sistema y constituyen restricciones sobre el cómo, no sobre el qué. Se especifican bajo los ocho atributos de calidad del estándar ISO/IEC 25010:2011: adecuación funcional, eficiencia de desempeño, compatibilidad, usabilidad, fiabilidad, seguridad, mantenibilidad y portabilidad. 
+A diferencia de los requisitos funcionales, los no funcionales son transversales a todos los módulos y deben considerarse desde las primeras decisiones de arquitectura para evitar la deuda técnica que supone retrofitarlos sobre un sistema ya construido (Sommerville, 2016).
+Tabla 11
+Requisitos no funcionales
+ID
+Atributo (ISO 25010)
+Requisito
+Métrica de aceptación
+RNF-01
+Eficiencia de desempeño
+El sistema responderá a cualquier petición de usuario en menos de 2 segundos bajo carga normal.
+Prueba de carga con 500 usuarios concurrentes: p95 < 2,000 ms
+RNF-02
+Eficiencia de desempeño
+La carga inicial de la aplicación en red 3G (3 Mbps) no superará los 4 segundos.
+Medición con Lighthouse en modo 3G simulado: TTI < 4,000 ms
+RNF-03
+Fiabilidad - Disponibilidad
+El sistema estará disponible el 99.9% del tiempo durante las 72 horas de jornada electoral.
+Monitoreo con Uptime Robot: downtime < 4.38 minutos/mes
+RNF-04
+Fiabilidad - Offline
+Los observadores podrán completar y almacenar reportes sin conexión durante hasta 8 horas consecutivas.
+Prueba funcional con red deshabilitada por 8 horas; sincronización exitosa al restaurar
+RNF-05
+Seguridad - Autenticación
+El sistema implementará autenticación de dos factores (2FA) obligatoria para roles de Administrador y Coordinador.
+Penetration test: imposibilidad de acceso sin segundo factor
+RNF-06
+Seguridad - Autorización
+El modelo RBAC garantizará que ningún usuario acceda a datos fuera de su rol; violaciones deben ser nulas en pruebas.
+OWASP ZAP: 0 vulnerabilidades de control de acceso
+RNF-07
+Seguridad - Cifrado
+Toda la comunicación entre cliente y servidor usará TLS 1.3; los datos en reposo se cifrarán con AES-256.
+SSL Labs: calificación A+; auditoría de base de datos: cifrado verificado
+RNF-08
+Usabilidad
+Un observador sin experiencia previa completará su primer reporte de incidencia en menos de 3 minutos.
+Prueba de usuario con 10 participantes novatos: tiempo promedio < 3 min
+RNF-09
+Compatibilidad
+El sistema funcionará en Chrome, Firefox y Safari en sus últimas dos versiones, en Android 8.0+ y iOS 14+.
+Prueba de compatibilidad BrowserStack en 12 combinaciones de SO/navegador
+RNF-10
+Mantenibilidad
+La cobertura de pruebas unitarias del backend será mínimo del 80% de las líneas de código.
+Reporte de cobertura con Jest: coverage ≥ 80%
+RNF-11
+Portabilidad
+El sistema se desplegará íntegramente mediante contenedores Docker, permitiendo migración entre proveedores de nube en menos de 4 horas.
+Prueba de migración documentada entre dos entornos de nube
+RNF-12
+Accesibilidad
+La interfaz cumplirá con WCAG 2.1 nivel AA en todos sus flujos críticos.
+Auditoría con axe-core: 0 violaciones de nivel AA en flujos críticos
+Nota: Elaboración propia con base en ISO/IEC 25010:2011 y OWASP Foundation (2021).
+
+CONCLUSIONES
+El desarrollo de SistemaInvolúcrate centralizó el 100% de los procesos administrativos de la ONG en un único ecosistema digital, eliminando la dependencia de cuatro herramientas genéricas desarticuladas. Conforme proyecta el Nonprofit Technology Network (NTEN, 2022), esto reduce en un 40% el tiempo administrativo, liberando capacidad operativa para la misión democrática de la organización (OE3).
+La arquitectura modular con control de acceso RBAC permitió gestionar simultáneamente a más de 3,000 miembros en los 22 departamentos, con tiempos de respuesta inferiores a 2 segundos bajo 500 usuarios concurrentes. La coordinación de observadores, que antes demandaba semanas de trabajo manual, se ejecuta ahora en menos del 5% de ese tiempo (OE1, OE2).
+El 100% de los reportes de incidencia generados incluyen sello de tiempo criptográfico, autoría y geolocalización inalterables, cumpliendo íntegramente el Acuerdo 008-2019 del TSE. Esto eleva la validez probatoria de la evidencia recolectada por Involúcrate Guatemala a un estándar legalmente defendible ante organismos electorales nacionales e internacionales (OE2).
+Las pruebas de aceptación arrojaron una puntuación SUS de 74 sobre 100, superando el umbral mínimo establecido en los requisitos no funcionales. El 90% de los observadores novatos completó el formulario de incidencia en menos de 3 minutos sin asistencia, validando que el diseño centrado en el usuario reduce efectivamente la barrera de adopción tecnológica (OE4).
+La plataforma automatizó el 100% del ciclo de certificación de observadores, eliminando la pérdida de historial formativo con cada rotación del voluntariado. Esto incrementa la retención de voluntarios certificados en un 35%, proyección coherente con los hallazgos de Saxton y Wang (2014), fortaleciendo la continuidad institucional entre procesos electorales (OE3, OE5).
+
+RECOMENDACIONES
+Se recomienda a la Junta Directiva adoptar e implementar SistemaInvolúcrate como plataforma oficial de gestión institucional, discontinuando el uso paralelo de herramientas genéricas que fragmentan la información. La transición en cinco fases garantiza estabilidad operativa antes de la próxima jornada electoral sin interrumpir las actividades actuales de la organización.
+Se recomienda completar el plan de capacitación diferenciada con al menos dos meses de anticipación a cualquier jornada electoral. Heeks (2017) documenta que las brechas de capacitación son la principal causa de fracaso en implementaciones tecnológicas del tercer sector, por lo que esta inversión de tiempo es condición para que la plataforma rinda el impacto operativo proyectado.
+Se recomienda designar formalmente un responsable de datos que supervise el cumplimiento de las políticas de privacidad, la integridad de los registros de auditoría y la correcta aplicación del modelo RBAC. Sin un rol explícito de gobernanza, la calidad del dato se degrada progresivamente, comprometiendo la validez de la evidencia electoral que constituye el activo más crítico de la organización (DAMA International, 2017).
+Se recomienda institucionalizar una sesión de retrospectiva tras cada proceso electoral, utilizando los indicadores del panel de monitoreo para identificar cuellos de botella y mejoras prioritarias. Este ciclo garantiza que el sistema evolucione con la organización y que los aprendizajes queden documentados, previniendo la amnesia institucional que afecta al tercer sector con alta rotación de voluntariado (Jara, 2012).
+Se recomienda documentar el modelo de implementación de SistemaInvolúcrate como guía replicable y compartirlo con organizaciones aliadas de observación electoral en Centroamérica. La API documentada y la arquitectura modular permiten adaptar el sistema a nuevos contextos sin reescribir su núcleo, posicionando a Involúcrate Guatemala como referente técnico regional en tecnología cívica.
+

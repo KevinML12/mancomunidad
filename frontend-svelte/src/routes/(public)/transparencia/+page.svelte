@@ -84,16 +84,79 @@
   let activeTab = $state('proyectos'); // 'proyectos' | 'actas' | 'estadisticas'
   let searchQuery = $state('');
 
-  function toggleVisibilidadProyecto(p) {
+  const fetchTransparencia = async () => {
+    try {
+      const endpoint = auth.isAuthenticated ? '/transparencia/gestion' : '/transparencia/publico';
+      const { data } = await apiClient.get(endpoint);
+      
+      if (auth.isAuthenticated && Array.isArray(data) && data.length > 0) {
+        // Modo gestión: viene el array directo de publicaciones
+        actas = data.map(pub => ({
+          id: pub.id,
+          numero: pub.codigo,
+          fecha: new Date(pub.fechaPublicacion).toLocaleDateString('es-GT', { day: '2-digit', month: 'short', year: 'numeric' }),
+          municipio: 'Regional',
+          resumen: pub.resumen,
+          urlPdf: '#',
+          visibilidad: pub.visibilidad
+        }));
+      } else if (data?.publicaciones) {
+        // Modo público ciudadano
+        if (data.publicaciones.length > 0) {
+          actas = data.publicaciones.map(pub => ({
+            id: pub.id,
+            numero: pub.codigo,
+            fecha: new Date(pub.fechaPublicacion).toLocaleDateString('es-GT', { day: '2-digit', month: 'short', year: 'numeric' }),
+            municipio: 'Regional',
+            resumen: pub.resumen,
+            urlPdf: '#',
+            visibilidad: pub.visibilidad
+          }));
+        }
+        if (data.proyectosPublicos && data.proyectosPublicos.length > 0) {
+          proyectos = data.proyectosPublicos.map(p => ({
+            id: p.id,
+            codigo: `MFN-2024-AG0${p.id}`,
+            nombre: p.nombre,
+            municipio: 'Regional',
+            cooperante: p.agenciaFinanciadora,
+            monto: `Q ${(p.presupuestoMunicipal + (p.presupuestoCooperacion || 0)).toLocaleString()}`,
+            avance: p.porcentajeAvanceFisico,
+            estado: p.estado,
+            visibilidad: true
+          }));
+        }
+      }
+    } catch (err) {
+      console.log('Utilizando publicaciones base de transparencia');
+    }
+  };
+
+  onMount(() => {
+    fetchTransparencia();
+  });
+
+  async function toggleVisibilidadProyecto(p) {
     p.visibilidad = !p.visibilidad;
     proyectos = [...proyectos];
     toast.info(p.visibilidad ? 'Proyecto publicado en portal ciudadano' : 'Proyecto retirado de la vista pública');
   }
 
-  function toggleVisibilidadActa(a) {
-    a.visibilidad = !a.visibilidad;
+  async function toggleVisibilidadActa(a) {
+    const nuevoEstado = !a.visibilidad;
+    a.visibilidad = nuevoEstado;
     actas = [...actas];
-    toast.info(a.visibilidad ? 'Acta publicada en portal ciudadano' : 'Acta retirada de la vista pública');
+    
+    if (a.id && auth.isAuthenticated) {
+      try {
+        await apiClient.put(`/transparencia/${a.id}/visibilidad`, { visibilidad: nuevoEstado });
+        toast.success(nuevoEstado ? 'Publicación habilitada en el portal' : 'Publicación ocultada al público');
+      } catch {
+        toast.info(nuevoEstado ? 'Publicación visible en sesión' : 'Publicación oculta en sesión');
+      }
+    } else {
+      toast.info(nuevoEstado ? 'Acta publicada en portal ciudadano' : 'Acta retirada de la vista pública');
+    }
   }
 
   let proyectosVisibles = $derived(

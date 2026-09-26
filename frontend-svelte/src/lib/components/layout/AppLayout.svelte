@@ -22,8 +22,98 @@
     goto('/login');
   };
 
+  let mobileMenuOpen = $state(false);
+
+  const toggleMobileMenu = () => {
+    mobileMenuOpen = !mobileMenuOpen;
+  };
+
+  const closeMobileMenu = () => {
+    mobileMenuOpen = false;
+  };
+
   let { children } = $props();
 </script>
+
+<!-- Mobile Navigation Bar (< lg) -->
+<div class="lg:hidden w-full flex items-center justify-between bg-white px-5 py-3.5 rounded-2xl shadow-sm border border-gray-100 mb-6 sticky top-4 z-30">
+  <div class="flex items-center gap-3">
+    <div class="w-9 h-9 rounded-xl bg-[#0A1526] flex items-center justify-center text-amber-400 shadow-sm shrink-0">
+      <Icon name="account_balance" className="w-4 h-4" />
+    </div>
+    <div>
+      <h1 class="text-xs font-black tracking-tight text-[#0A1526]">MFN Digital</h1>
+      <p class="text-[9px] font-bold text-[#0A1526]/50 uppercase tracking-wider">Huehuetenango Nte.</p>
+    </div>
+  </div>
+
+  <button 
+    onclick={toggleMobileMenu} 
+    class="w-10 h-10 rounded-xl bg-gray-50 hover:bg-gray-100 flex items-center justify-center text-[#0A1526] transition-colors"
+    aria-label="Abrir menú"
+  >
+    <Icon name={mobileMenuOpen ? 'close' : 'menu'} className="w-5 h-5" />
+  </button>
+</div>
+
+<!-- Mobile Drawer Overlay -->
+{#if mobileMenuOpen}
+  <div 
+    class="fixed inset-0 bg-[#0A1526]/60 backdrop-blur-sm z-40 lg:hidden"
+    onclick={closeMobileMenu}
+    role="button"
+    tabindex="0"
+    onkeydown={(e) => e.key === 'Escape' && closeMobileMenu()}
+  ></div>
+
+  <aside class="fixed top-0 left-0 bottom-0 w-[300px] bg-white z-50 p-6 flex flex-col justify-between overflow-y-auto lg:hidden shadow-2xl animate-fade-in">
+    <div class="space-y-6">
+      <div class="flex items-center justify-between border-b border-gray-100 pb-4">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-[#0A1526] flex items-center justify-center text-amber-400">
+            <Icon name="account_balance" className="w-4 h-4" />
+          </div>
+          <div>
+            <h1 class="text-sm font-black text-[#0A1526]">Frontera del Norte</h1>
+            <p class="text-[9px] font-bold uppercase tracking-wider text-[#0A1526]/40">Menú Institucional</p>
+          </div>
+        </div>
+        <button onclick={closeMobileMenu} class="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center text-[#0A1526]/60">
+          <Icon name="close" className="w-5 h-5" />
+        </button>
+      </div>
+
+      <div class="space-y-1">
+        {#each NAV_ITEMS as item}
+          {@const isActive = $page.url.pathname === item.to || (!item.exact && item.to !== '/' && $page.url.pathname.startsWith(item.to))}
+          <a 
+            href={item.to} 
+            onclick={closeMobileMenu}
+            class="flex items-center justify-between px-4 py-3 rounded-2xl text-[13px] font-semibold transition-all {isActive ? 'bg-[#0A1526] text-white shadow-md' : 'text-[#0A1526]/70 hover:bg-gray-50'}"
+          >
+            <div class="flex items-center gap-3">
+              <Icon name={item.icon} className="w-[18px] h-[18px] {isActive ? 'text-[#3B82F6]' : 'text-[#0A1526]/40'}" />
+              <span>{item.label}</span>
+            </div>
+            {#if item.hasDot}
+              <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+            {/if}
+          </a>
+        {/each}
+      </div>
+    </div>
+
+    <div class="pt-6 border-t border-gray-100 space-y-3">
+      <div class="px-3 py-2 rounded-xl bg-gray-50 text-[10px] font-bold text-[#0A1526]/60">
+        6 Municipios Federados · 2024-2028
+      </div>
+      <button onclick={handleLogout} class="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl hover:bg-rose-50 text-rose-600 font-bold text-xs transition-colors">
+        <Icon name="logout" className="w-4 h-4" />
+        <span>Cerrar Sesión</span>
+      </button>
+    </div>
+  </aside>
+{/if}
 
 <aside class="hidden lg:flex w-[300px] shrink-0 bg-white shadow-[0_20px_60px_-15px_rgba(10,21,38,0.05)] rounded-[32px] p-6 flex-col justify-between min-h-[calc(100vh-3rem)] sticky top-6 z-20">
   <div class="space-y-8">

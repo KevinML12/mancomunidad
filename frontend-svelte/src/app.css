@@ -1,0 +1,848 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ═══════════════════════════════════════════════════════════════════
+   CASA DEL REY — LIQUID GLASS LIGHT MODE  ·  Apple HIG
+   Canvas navy · Tinta blanca · Acento cálido de las fotos · Squircles
+═══════════════════════════════════════════════════════════════════ */
+
+:root {
+  color-scheme: dark;
+
+  /* ── PALETTE ──────────────────────────────────────────────────── */
+  --bg:           #0A1526;      /* Deep Navy Canvas */
+  --bg-tint:      #0F192B;      
+  --bg-soft:      #131F33;      
+
+  --ink:          #FFFFFF;      /* Pure white text */
+  --ink-2:        #94A3B8;      /* muted text */
+  --ink-3:        #475569;      
+  --ink-soft:     rgba(255, 255, 255, 0.05);   
+  --ink-line:     rgba(255, 255, 255, 0.10);   
+
+  /* ── ACENTO ÚNICO ────────────────────────────────────────────────
+     Muestreado de las fotos reales de la iglesia: la luz cálida de
+     escenario que aparece en bg-ubicacion.jpg (#925D38 promedio de sus
+     píxeles cálidos), albums/alabanza.jpg (#A38B69) y bg-hero.jpg
+     (#B18768). #E8823C es esa familia llevada a saturación de acento.
+
+     Antes aquí vivían --celeste/--rose/--amber/--emerald con los
+     valores #3B82F6 / #F43F5E / #F59E0B / #10B981: los cinco eran
+     EXACTAMENTE la rampa 500 de Tailwind sin tocar (blue-500,
+     rose-500, amber-500, emerald-500, violet-500), y --ink-2/--ink-3
+     eran slate-400/slate-600. Nadie elige cinco colores y aterriza en
+     el stop 500 cinco veces seguidas: era el default del starter, no
+     una decisión, y es lo primero que delata a un sitio generado.
+
+     Contraste verificado: 6.70:1 contra el canvas navy en ambas
+     direcciones (el azul anterior daba 4.97:1, o sea que además de
+     genérico era peor).
+
+     El acento tiene CUATRO trabajos y ninguno más: link activo del
+     header, borde de la cita bíblica, halo de hover de las cards de
+     categoría, y el día del evento destacado. El CTA primario sigue
+     siendo BLANCO sobre navy (18:1) -- no se pinta de acento. */
+  --acento:      #FFFFFF;
+  --acento-hov:  #F8FAFC;
+  --acento-soft: #0F192B;
+  --on-acento:   #0B1320;
+
+  /* Estados de formulario. NO son colores de diseño: solo se usan para
+     comunicar error/aviso/éxito, nunca para decorar. Por eso conservan
+     los valores estándar -- en un estado de error, la convención vale
+     más que la personalidad. */
+  --rose:         #F43F5E;
+  --rose-soft:    #881337;
+  --amber:        #F59E0B;
+  --amber-soft:   #78350F;
+  --emerald:      #10B981;
+  --emerald-soft: #064E3B;
+
+  /* ── GEOMETRY (Squircles) ────────────────────────────────────── */
+  --r-xs:   8px;
+  --r-sm:   12px;     
+  --r-md:   16px;     
+  --r-lg:   20px;
+  --r-xl:   24px;     
+  --r-2xl:  32px;     
+  --r-pill: 9999px;
+
+  /* ── ELEVATION (whisper-soft) ────────────────────────────────── */
+  --sh-glass:   0 8px 32px rgba(10, 21, 38, 0.08);
+  --sh-card:    0 12px 36px -12px rgba(10, 21, 38, 0.10),
+                0 2px 6px rgba(10, 21, 38, 0.04);
+  --sh-card-lg: 0 24px 60px -20px rgba(10, 21, 38, 0.18),
+                0 4px 12px rgba(10, 21, 38, 0.04);
+  --sh-pop:     0 24px 60px -16px rgba(232, 130, 60, 0.32),
+                0 6px 16px rgba(10, 21, 38, 0.08);
+  --sh-ring:    0 0 0 4px rgba(232, 130, 60, 0.18);
+
+  /* ── MOTION (Spring) ─────────────────────────────────────────── */
+  --ease-spring:   cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out:      cubic-bezier(0, 0, 0.2, 1);
+
+  /* ── TOKENS LEGACY (compat) ──────────────────────────────────── */
+  --pri:         var(--acento);
+  --pri-press:   var(--acento-hov);
+  --on-pri:      var(--on-acento);
+  --pri-con:     var(--acento-soft);
+  --on-pri-con:  var(--acento-hov);
+
+  --sec:         var(--ink);
+  --on-sec:      #FFFFFF;
+  --sec-con:     var(--bg-soft);
+  --on-sec-con:  var(--ink);
+
+  --ter:         var(--acento);
+  --on-ter:      #FFFFFF;
+  --ter-con:     var(--acento-soft);
+  --on-ter-con:  var(--acento-hov);
+
+  --err:         var(--rose);
+  --on-err:      #FFFFFF;
+  --err-con:     var(--rose-soft);
+  --on-err-con:  var(--rose);
+
+  --warn:        var(--amber);
+  --warn-con:    var(--amber-soft);
+  --on-warn-con: #92400E;
+
+  --ok:          var(--emerald);
+  --ok-con:      var(--emerald-soft);
+  --on-ok-con:   #065F46;
+
+  --surf:        var(--bg);
+  --surf-dim:    var(--ink-line);
+  --surf-low:    var(--bg-soft);
+  --surf-high:   #FFFFFF;
+  --on-surf:     var(--ink);
+  --on-surf-var: var(--ink-2);
+  --outline:     var(--ink-3);
+  --outline-var: var(--ink-soft);
+
+  --inv-surf:    var(--ink);
+  --inv-on-surf: #FFFFFF;
+  --inv-pri:     var(--acento);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   BASE
+═══════════════════════════════════════════════════════════════════ */
+/* Lenis smooth scroll */
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+.lenis.lenis-stopped { overflow: hidden; }
+
+/* Arimo self-hosted (woff2 variable, subset latin, ~20KB) — clon
+   métricamente idéntico a Helvetica/Arial, licencia Apache (libre, sin
+   el problema de licencia de Helvetica Neue). UN solo archivo variable
+   cubre todo el eje de peso 400-700. font-display:swap con el system
+   stack de Apple de fallback. Ojo: Arimo NO pasa de 700 (Bold), igual
+   que Helvetica — los display en 800 se muestran en 700, que es lo
+   correcto tipográficamente. */
+@font-face {
+  font-family: 'Arimo';
+  src: url('/fonts/Arimo.woff2') format('woff2');
+  font-weight: 400 700; font-style: normal; font-display: swap;
+}
+
+/* Material Symbols self-hosted (antes @import de Google Fonts en la línea 1
+   — bloqueaba el parseo del CSS entero para TODOS los visitantes). Solo lo
+   usan los paneles admin/líder/voluntario (clase .ms); el sitio público usa
+   su set SVG propio, así que el visitante público nunca descarga este
+   archivo (el navegador solo baja una fuente cuando algo la renderiza).
+   font-display:block a propósito: si aún no carga, mejor no mostrar nada
+   que mostrar el nombre de la ligadura ("dashboard") como texto. */
+@font-face {
+  font-family: 'Material Symbols Rounded';
+  src: url('/fonts/MaterialSymbolsRounded.woff2') format('woff2');
+  font-weight: 400; font-style: normal; font-display: block;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+  /* Arimo (clon libre de Helvetica) como principal; el system stack de
+     Apple queda de fallback mientras carga (font-display:swap) o si fallara. */
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Arimo', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    letter-spacing: -0.01em;
+  }
+  ::selection { background: rgba(232, 130, 60, 0.26); color: var(--ink); }
+  a { text-decoration: none; color: inherit; }
+
+  /* Editorial display: massive + tight */
+  .display-mega {
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 0.95;
+  }
+  .display-tight {
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+  }
+  .font-display {
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    line-height: 1.0;
+  }
+  .font-serif { font-family: 'New York', Georgia, serif; font-style: italic; }
+  .font-mono  { font-family: 'SF Mono', 'Cascadia Code', Consolas, Menlo, monospace; letter-spacing: 0.05em; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   LIQUID GLASS MATERIALS
+   Cristal sobre lienzo blanco — hairline + whisper shadow para que no
+   se pierdan elementos blancos sobre blanco.
+═══════════════════════════════════════════════════════════════════ */
+
+/* Registra --spec-x/--spec-y como <length> animable: al transicionar
+   la propiedad en el elemento, el brillo especular (que la consume en
+   el radial-gradient del ::after) se desliza con inercia en vez de
+   saltar de golpe — el "líquido movible" sin JS ni WebGL extra. */
+@property --spec-x { syntax: '<length>'; inherits: true; initial-value: 0px; }
+@property --spec-y { syntax: '<length>'; inherits: true; initial-value: 0px; }
+/* -1 (card entra por abajo) → 0 (centro del viewport) → 1 (sale por arriba),
+   la misma que Tilt usa para rotateX/rotateY. La foto DENTRO de la card
+   (.parallax-layer) la lee para moverse más lento que la card — profundidad
+   ambiental mientras haces scroll, sin JS por imagen. */
+@property --scroll-p { syntax: '<number>'; inherits: true; initial-value: 0; }
+
+@layer components {
+
+  /* Cristal estándar — la base para cards translúcidas y navbars */
+  .glass {
+    background: rgba(255, 255, 255, 0.05);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+            backdrop-filter: blur(24px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Glass para el Navbar flotante — cristal claro escarchado (mockup Frame 1):
+     blanco translúcido con tinta navy encima. Al scroll sube la opacidad
+     para mantener legibilidad sobre cualquier contenido. */
+  .glass-nav {
+    background: rgba(255, 255, 255, 0.62);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+            backdrop-filter: blur(24px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.9),
+      0 8px 32px rgba(10, 21, 38, 0.22);
+  }
+  .glass-nav--scrolled {
+    background: rgba(255, 255, 255, 0.8);
+  }
+
+  /* ── LIQUID GLASS — MATERIALES (Apple HIG) ──
+     Dos variantes, con reglas DISTINTAS según el área (ver
+     docs/DISENO_LIQUID_GLASS.md y docs/DISENO_LIQUID_GLASS_ADMIN.md):
+     · .liquid-glass  → material del SITIO PÚBLICO (oscuro). Elementos sobre
+                        el canvas navy o sobre fotos oscuras. Texto blanco.
+                        En el panel admin/líder/voluntario ya NO se usa (ese
+                        panel es claro desde jul-2026) — si aparece ahí, es
+                        un resto de una versión anterior, cámbialo a
+                        .glass-light.
+     · .glass-light   → cristal CLARO escarchado, texto navy. En el SITIO
+                        PÚBLICO se reserva para UN acento por página — nunca
+                        material dominante, va sobre una foto clara. En el
+                        PANEL ADMIN/LÍDER/VOLUNTARIO es al revés: es EL
+                        material dominante de toda card (no hay fotos, va
+                        sobre los halos ambientales de cada layout). El
+                        modelado de luz (gradiente diagonal + bisel
+                        asimétrico, igual que .liquid-glass) es lo que lo
+                        hace leer como vidrio real y no como una caja blanca
+                        lechosa — NUNCA bajar a un rgba() plano sin gradiente.
+     Ambos con lensing de borde: highlight superior + hairline inferior,
+     que es lo que da la lectura de "vidrio curvo" del material de Apple. */
+
+  .liquid-glass {
+    /* Vidrio real, casi transparente. El realismo NO viene de opacar el
+       fondo (foto sigue legible, blur bajo 8px) sino del MODELADO de la
+       luz en un cristal grueso, todo con box-shadow:
+        · bisel: luz en el borde arriba-izq, sombra abajo-der → espesor
+        · realce acento inferior: como el agua/vidrio concentra la luz en
+          su borde de abajo (el detalle que lo hace leer como "gota")
+        · hairline superior: filo brillante donde pega la luz
+        · sombra externa: lo despega del fondo, flota */
+    background: linear-gradient(157deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.014) 55%, rgba(255,255,255,0.008) 100%);
+    -webkit-backdrop-filter: blur(8px) saturate(150%) brightness(1.05);
+            backdrop-filter: blur(8px) saturate(150%) brightness(1.05);
+    border: 1px solid rgba(255, 255, 255, 0.11);
+    /* Monocromático a propósito (mismo tono que el .glass-light claro):
+       el modelado es sólo blanco/neutro — bisel + realce inferior tenue —
+       nada de tinte acento, para que el cristal se sienta sobrio y
+       uniforme, no colorido. */
+    box-shadow:
+      inset 1.5px 2.5px 5px rgba(255, 255, 255, 0.26),
+      inset -1.5px -2px 8px rgba(255, 255, 255, 0.05),
+      inset 0 1px 0 rgba(255, 255, 255, 0.20),
+      inset 0 -26px 40px -26px rgba(255, 255, 255, 0.15),
+      0 24px 50px -20px rgba(0, 0, 0, 0.5);
+    transition: box-shadow 0.4s var(--ease-out), border-color 0.4s var(--ease-out),
+                --spec-x 0.6s var(--ease-spring), --spec-y 0.6s var(--ease-spring);
+    position: relative;
+    overflow: hidden;
+  }
+  .liquid-glass:hover {
+    border-color: rgba(255, 255, 255, 0.22);
+    box-shadow:
+      inset 1.5px 2.5px 5px rgba(255, 255, 255, 0.32),
+      inset -1.5px -2px 8px rgba(255, 255, 255, 0.06),
+      inset 0 1px 0 rgba(255, 255, 255, 0.25),
+      inset 0 -28px 44px -26px rgba(255, 255, 255, 0.20),
+      0 30px 60px -22px rgba(0, 0, 0, 0.55);
+  }
+
+  .glass-light {
+    /* v1: rgba(255,255,255,0.48) plano — caja blanca lechosa, sin luz.
+       v2: gradiente 0.64→0.30 — mejor bisel, pero sobre NAVY liso (el
+       panel admin de esa época) el backdrop-filter mezclaba tanto navy
+       oscuro que salía gris azulado apagado ("parece pañal").
+       v3: opacidad forzada a 0.90→0.62 para que se sostuviera sola sobre
+       ese navy — funcionó, pero quedó demasiado opaca/plana, perdiendo
+       el "ves a través" que sí tiene esta misma clase en el dropdown del
+       header público (que el usuario señaló como referencia).
+       v4 (actual): el panel admin YA NO es navy — es bg-paper claro
+       (ver .admin-light) más los halos acentos. Ya no hay nada oscuro
+       detrás que ensuciar, así que se puede bajar la opacidad de vuelta
+       a un rango translúcido de verdad sin repetir el problema de v2. */
+    background: linear-gradient(155deg, rgba(255,255,255,0.62) 0%, rgba(255,255,255,0.42) 55%, rgba(255,255,255,0.28) 100%);
+    -webkit-backdrop-filter: blur(26px) saturate(180%) brightness(1.06);
+            backdrop-filter: blur(26px) saturate(180%) brightness(1.06);
+    border-width: 1px;
+    border-style: solid;
+    border-color: rgba(255, 255, 255, 0.7) rgba(255, 255, 255, 0.42) rgba(255, 255, 255, 0.42) rgba(255, 255, 255, 0.62);
+    box-shadow:
+      inset 1.5px 2px 4px rgba(255, 255, 255, 0.85),
+      inset -1.5px -1.5px 6px rgba(255, 255, 255, 0.22),
+      inset 0 1.5px 0 rgba(255, 255, 255, 0.9),
+      inset 0 -22px 36px -24px rgba(255, 255, 255, 0.55),
+      0 24px 60px -20px rgba(10, 21, 38, 0.45),
+      0 4px 12px rgba(10, 21, 38, 0.12);
+    transition: box-shadow 0.4s var(--ease-out), border-color 0.4s var(--ease-out),
+                --spec-x 0.6s var(--ease-spring), --spec-y 0.6s var(--ease-spring);
+    position: relative;
+    overflow: hidden;
+  }
+  .glass-light:hover {
+    border-color: rgba(255, 255, 255, 0.82) rgba(255, 255, 255, 0.5) rgba(255, 255, 255, 0.5) rgba(255, 255, 255, 0.72);
+    box-shadow:
+      inset 1.5px 2px 4px rgba(255, 255, 255, 0.92),
+      inset -1.5px -1.5px 6px rgba(255, 255, 255, 0.28),
+      inset 0 1.5px 0 rgba(255, 255, 255, 0.95),
+      inset 0 -24px 40px -24px rgba(255, 255, 255, 0.6),
+      0 30px 70px -22px rgba(10, 21, 38, 0.5),
+      0 4px 12px rgba(10, 21, 38, 0.14);
+  }
+
+  /* .glass-light-nested — segunda capa, MÁS transparente que .glass-light.
+     Referencia del usuario: el Control Center de iOS (fondo → círculo de
+     cristal → otro círculo de cristal más transparente encima) — capas
+     que se distinguen por su nivel de transparencia, no todas al mismo
+     tono. Antes StatCard usaba .glass-light IGUAL que su SectionContainer
+     — dos capas con la misma opacidad no leen como capas, leen como una
+     sola superficie plana. Esta va DENTRO de un .glass-light (o de
+     cualquier superficie clara), nunca directo sobre bg-paper — necesita
+     algo semi-opaco detrás para no lavarse. */
+  .glass-light-nested {
+    background: linear-gradient(155deg, rgba(255,255,255,0.34) 0%, rgba(255,255,255,0.20) 55%, rgba(255,255,255,0.10) 100%);
+    -webkit-backdrop-filter: blur(18px) saturate(170%) brightness(1.08);
+            backdrop-filter: blur(18px) saturate(170%) brightness(1.08);
+    border-width: 1px;
+    border-style: solid;
+    border-color: rgba(255, 255, 255, 0.55) rgba(255, 255, 255, 0.24) rgba(255, 255, 255, 0.24) rgba(255, 255, 255, 0.4);
+    box-shadow:
+      inset 1px 1.5px 3px rgba(255, 255, 255, 0.7),
+      inset -1px -1px 4px rgba(255, 255, 255, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.75),
+      0 10px 24px -12px rgba(10, 21, 38, 0.18);
+    transition: box-shadow 0.4s var(--ease-out), border-color 0.4s var(--ease-out),
+                --spec-x 0.6s var(--ease-spring), --spec-y 0.6s var(--ease-spring);
+    position: relative;
+    overflow: hidden;
+  }
+  .glass-light-nested:hover {
+    border-color: rgba(255, 255, 255, 0.65) rgba(255, 255, 255, 0.3) rgba(255, 255, 255, 0.3) rgba(255, 255, 255, 0.48);
+    box-shadow:
+      inset 1px 1.5px 3px rgba(255, 255, 255, 0.78),
+      inset -1px -1px 4px rgba(255, 255, 255, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.82),
+      0 14px 30px -14px rgba(10, 21, 38, 0.22);
+  }
+
+  /* ── SCRIMS ────────────────────────────────────────────────────────
+     Las capas oscuras que van SOBRE una foto para que el texto encima
+     se lea. Tres, con nombre, y ninguna más.
+
+     Antes esto vivía como 25 gradientes inline distintos escritos a
+     mano (`from-bg via-bg/25|/35|/40|/45|/50|/55|/60|/75 to-bg|/5|/10|
+     transparent`), casi todos usados una sola vez: cuatro secciones
+     consecutivas de Nosotros tenían cuatro valores medios distintos
+     haciendo exactamente lo mismo. Nadie los comparó nunca porque cada
+     sección se escribió por separado -- y esa falta de sistema es
+     justo lo que hace que el sitio no se sienta construido.
+
+     La otra mitad del problema: además del scrim, la foto llevaba
+     `opacity-45` encima, así que llegaba al visitante entre el 14% y
+     el 33% de su color real. Las caras de la congregación -- lo único
+     irrepetible que tiene este sitio -- se leían como textura gris.
+     REGLA: la foto va a opacidad 100 y el contraste lo pone el scrim,
+     que solo oscurece DONDE hay texto. */
+
+  /* Bajo un titular centrado (PageHero): óvalo oscuro en el centro y
+     desvanecido al canvas abajo, para que la foto respire en los bordes. */
+  .scrim-hero {
+    position: absolute; inset: 0; pointer-events: none;
+    background:
+      /* El óvalo cubre título Y bajada. Con 55% de alto quedaba tan corto
+         que en un hero bajo (Eventos: pt-40 pb-12) el párrafo caía FUERA
+         del óvalo y aterrizaba sobre camisa blanca a plena luz -- medido,
+         el decil más claro dejaba la bajada en 3.2:1, bajo el 4.5 que pide
+         texto de cuerpo. El óvalo se estira, no se oscurece: la foto sigue
+         entera y a color en los bordes. */
+      radial-gradient(72% 82% ellipse at 50% 45%, rgba(10,21,38,.86), rgba(10,21,38,.30) 68%, rgba(10,21,38,0) 88%),
+      linear-gradient(to bottom, rgba(10,21,38,.55) 0%, rgba(10,21,38,0) 28%, rgba(10,21,38,0) 60%, var(--bg) 100%);
+  }
+  /* Texto anclado al tercio inferior. Es el valor que PhotoHeaderCard ya
+     usaba y que funciona -- aquí solo se le pone nombre. */
+  .scrim-card {
+    position: absolute; inset: 0; pointer-events: none;
+    background: linear-gradient(to top, var(--bg) 0%, rgba(10,21,38,.75) 38%, rgba(10,21,38,.10) 100%);
+  }
+  /* Texto a un lado (composición en banda): oscurece a la izquierda y
+     deja la foto entera visible a la derecha. */
+  .scrim-band {
+    position: absolute; inset: 0; pointer-events: none;
+    /* Tres paradas y no dos: con una rampa recta de .62 a .10 el titular d1
+       -- que ocupa hasta el 80% del ancho -- salía del área protegida por la
+       mitad y su cola caía sobre pelo y camisa a plena luz. La banda sostiene
+       el oscuro a lo ancho de la COLUMNA DE TEXTO y recién ahí suelta, así
+       que el tercio derecho de la foto sigue llegando casi entero. */
+    background: linear-gradient(to right,
+      var(--bg) 0%,
+      rgba(10,21,38,.70) 40%,
+      rgba(10,21,38,.46) 66%,
+      rgba(10,21,38,.08) 100%);
+  }
+
+  /* Brillo especular interactivo — sigue al cursor vía --spec-x/--spec-y
+     (seteadas con pointermove/touchmove, ver useGlassSpecular.js).
+     Modelo de una gota de agua real fotografiada: NO es un solo punto de
+     luz, son dos — el "catch light" (reflejo directo de la fuente, chico
+     y muy definido) y un segundo reflejo más suave y grande, desplazado
+     unos px hacia abajo-derecha (la luz que se refracta DENTRO de la
+     gota, no la que rebota en la superficie) — más una dispersión ancha
+     y tenue de ambiente. `mix-blend-mode: overlay` en el oscuro hace que
+     el brillo se sienta como luz interactuando con el cristal en vez de
+     una calcomanía blanca pegada encima. Reemplaza al shine en loop: el
+     material de Apple es calmo y reacciona a la interacción, no anima
+     solo. */
+  .liquid-glass::after,
+  .glass-light::after,
+  .glass-light-nested::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background:
+      radial-gradient(30px 20px ellipse at var(--spec-x, 50%) var(--spec-y, 0%), rgba(255, 255, 255, 0.85), transparent 72%),
+      radial-gradient(115px 85px ellipse at calc(var(--spec-x, 50%) + 20px) calc(var(--spec-y, 0%) + 24px), rgba(255, 255, 255, 0.28), transparent 74%),
+      radial-gradient(230px 175px ellipse at var(--spec-x, 50%) var(--spec-y, 0%), rgba(255, 255, 255, 0.10), transparent 76%);
+    /* --spec-o: además del :hover (mouse), useGlassSpecular la fuerza a 1
+       en touch — donde :hover no dispara. */
+    opacity: var(--spec-o, 0);
+    transition: opacity 0.5s var(--ease-out);
+  }
+  .liquid-glass::after { mix-blend-mode: overlay; }
+  .glass-light::after,
+  .glass-light-nested::after {
+    background:
+      radial-gradient(28px 18px ellipse at var(--spec-x, 50%) var(--spec-y, 0%), rgba(255, 255, 255, 0.95), transparent 70%),
+      radial-gradient(105px 78px ellipse at calc(var(--spec-x, 50%) + 18px) calc(var(--spec-y, 0%) + 22px), rgba(255, 255, 255, 0.4), transparent 74%),
+      radial-gradient(210px 160px ellipse at var(--spec-x, 50%) var(--spec-y, 0%), rgba(255, 255, 255, 0.18), transparent 76%);
+  }
+  .liquid-glass:hover::after,
+  .glass-light:hover::after,
+  .glass-light-nested:hover::after { opacity: 1; }
+
+  /* Reflejo de vidrio FIJO (antes barría en loop — se leía como flash de
+     plantilla/IA). Ahora es una franja de luz diagonal estática en la
+     esquina superior, como el reflejo de una ventana sobre el cristal:
+     da vida sin animar solo. El vidrio es calmo y reacciona a la
+     interacción (specular al cursor + tilt), no anima por su cuenta —
+     mismo principio que el material de Apple. */
+  .liquid-shine {
+    position: relative;
+    overflow: hidden;
+  }
+  .liquid-shine::before {
+    content: '';
+    position: absolute;
+    top: -30%; left: -10%; right: 40%; bottom: 40%;
+    pointer-events: none;
+    background: linear-gradient(
+      125deg,
+      rgba(255, 255, 255, 0.32) 0%,
+      rgba(255, 255, 255, 0.12) 35%,
+      transparent 62%
+    );
+    mix-blend-mode: overlay;
+    opacity: 0.85;
+    transition: opacity 0.4s var(--ease-out);
+  }
+  .liquid-shine:hover::before { opacity: 1; }
+
+  /* Parallax por card — la foto vive un poco "más atrás" que el vidrio:
+     se desplaza y se acerca sutilmente con --scroll-p (la misma señal de
+     Tilt). scale(1.14) da margen para que la traslación no deje huecos
+     en los bordes. Se pone en el <img> de portada de cada card. */
+  .parallax-layer {
+    transform: translateY(calc(var(--scroll-p, 0) * -16px)) scale(1.14);
+    transition: transform 0.5s var(--ease-out);
+    will-change: transform;
+  }
+
+  /* Pill button base — squircle 12, spring interaction */
+  .btn-spring {
+    transition: transform 0.4s var(--ease-spring),
+                box-shadow 0.4s var(--ease-spring),
+                background-color 0.2s var(--ease-standard);
+  }
+  .btn-spring:hover { transform: scale(1.02); }
+  .btn-spring:active { transform: scale(0.97); }
+
+  /* Hover de tarjetas con Spring physics + radio que respira */
+  .card-spring {
+    transition: transform 0.4s var(--ease-spring),
+                box-shadow 0.4s var(--ease-spring),
+                border-radius 0.5s var(--ease-spring);
+  }
+  .card-spring:hover {
+    transform: translateY(-2px) scale(1.005);
+    box-shadow: var(--sh-card-lg);
+    border-radius: 20px;
+  }
+
+  /* Focus ring de marca (acento con halo suave) */
+  .focus-ring:focus-visible {
+    outline: none;
+    box-shadow: var(--sh-ring);
+  }
+
+  /* Squircle — curvatura continua G2 (la de Apple). El border-radius normal
+     tiene una discontinuidad donde la recta toca el arco; el squircle la
+     elimina y el borde se ve "líquido". Fallback silencioso al radio normal. */
+  @supports (corner-shape: squircle) {
+    .liquid-glass, .glass-light, .glass-nav, .glass,
+    .card-spring, .input-squircle {
+      corner-shape: squircle;
+    }
+  }
+
+  /* Material Symbols — panel admin/líder/voluntario (íconos por ligadura:
+     el texto "dashboard" se sustituye por el glifo vía OpenType 'liga').
+     Sin font-feature-settings:'liga' el navegador NO hace la sustitución
+     y se ve el nombre del ícono como texto plano — bug real que afectaba
+     TODOS los íconos de los 3 paneles, encontrado al verificar el admin. */
+  .ms {
+    font-family: 'Material Symbols Rounded', sans-serif;
+    font-size: 24px;
+    line-height: 1;
+    font-style: normal;
+    font-weight: normal;
+    font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+    -webkit-font-feature-settings: 'liga';
+            font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    user-select: none;
+    flex-shrink: 0;
+    vertical-align: middle;
+    speak: never;
+  }
+
+  /* Decorative — orbe ambiental acento muy suave (subtle "luz") */
+  .halo {
+    position: absolute;
+    border-radius: 9999px;
+    filter: blur(80px);
+    pointer-events: none;
+    opacity: 0.55;
+  }
+
+  /* Hero grid sutil sobre blanco */
+  .hero-grid {
+    background-image: radial-gradient(circle, rgba(10, 21, 38, 0.04) 1px, transparent 1px);
+    background-size: 32px 32px;
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+  }
+
+  /* Editorial gradient text */
+  .text-grad-acento {
+    background: linear-gradient(135deg, #3B82F6 0%, #60A5FA 100%);
+    -webkit-background-clip: text;
+            background-clip: text;
+    -webkit-text-fill-color: transparent;
+            color: transparent;
+  }
+  .text-grad-ink {
+    background: linear-gradient(135deg, #0A1526 0%, #475569 100%);
+    -webkit-background-clip: text;
+            background-clip: text;
+    -webkit-text-fill-color: transparent;
+            color: transparent;
+  }
+
+  /* ── PANEL ADMIN EN CLARO (jul-2026) ──
+     Los paneles admin/líder/voluntario son modo claro estilo Apple:
+     canvas off-white (bg-paper), tinta navy, cards blancas escarchadas.
+     El sitio público sigue oscuro. Esta clase va en el ROOT de cada
+     layout de panel: corrige color-scheme (el :root global declara dark,
+     que pinta date/time pickers y scrollbars nativos oscuros — mal sobre
+     blanco). */
+  .admin-light {
+    color-scheme: light;
+  }
+  .admin-light ::-webkit-scrollbar-thumb { background: rgba(10, 21, 38, 0.15); }
+  .admin-light ::-webkit-scrollbar-thumb:hover { background: rgba(10, 21, 38, 0.3); }
+
+  /* Input claro del panel (NO tocar .input-squircle: esa es la del
+     público sobre navy y la usa Field/GlassField de Glass.jsx). */
+  .input-light {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.75);
+    border: 1px solid rgba(10, 21, 38, 0.12);
+    border-radius: var(--r-sm);
+    padding: 12px 16px;
+    color: var(--bg);
+    font-size: 14.5px;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+  }
+  .input-light::placeholder { color: rgba(10, 21, 38, 0.35); }
+  .input-light:focus {
+    outline: none;
+    background: #FFFFFF;
+    border-color: var(--acento);
+    box-shadow: var(--sh-ring);
+  }
+
+  /* Squircle inputs — bg-soft inset, hairline */
+  .input-squircle {
+    width: 100%;
+    background: var(--bg-soft);
+    border: 1px solid var(--ink-soft);
+    border-radius: var(--r-sm);
+    padding: 14px 16px;
+    color: var(--ink);
+    font-size: 15px;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+  }
+  .input-squircle::placeholder { color: var(--ink-3); }
+  .input-squircle:focus {
+    outline: none;
+    background: var(--bg-tint);
+    border-color: var(--acento);
+    box-shadow: var(--sh-ring);
+  }
+
+  /* Animaciones signature Apple HIG */
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes scaleUp { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: scale(1); } }
+  @keyframes riseSpring { from { opacity: 0; transform: translateY(20px) scale(0.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
+  @keyframes subtlePulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.75; transform: scale(0.98); } }
+  @keyframes beaconRing { 0% { transform: scale(1); opacity: 0.8; } 70% { transform: scale(2.2); opacity: 0; } 100% { transform: scale(2.2); opacity: 0; } }
+
+  .animate-fade-in    { animation: fadeIn 240ms var(--ease-out) both; }
+  .animate-slide-up   { animation: slideUp 360ms var(--ease-out) both; }
+  .animate-scale-up   { animation: scaleUp 260ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+  .animate-rise       { animation: riseSpring 600ms var(--ease-spring) both; }
+  .animate-pulse-soft { animation: subtlePulse 2.5s infinite ease-in-out; }
+  
+  .beacon-dot {
+    position: relative;
+    display: inline-block;
+  }
+  .beacon-dot::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 9999px;
+    background: currentColor;
+    animation: beaconRing 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+    pointer-events: none;
+  }
+
+  .card-lift {
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease-out;
+  }
+  .card-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 20px 45px -12px rgba(10, 21, 38, 0.08);
+  }
+  .card-lift:active {
+    transform: translateY(0) scale(0.995);
+  }
+
+  .pill-interactive {
+    transition: transform 0.15s ease-out, background-color 0.15s ease-out, box-shadow 0.15s ease-out;
+  }
+  .pill-interactive:hover {
+    transform: translateY(-1px);
+  }
+  .pill-interactive:active {
+    transform: scale(0.96);
+  }
+
+  .stagger-1 { animation-delay: 50ms; }
+  .stagger-2 { animation-delay: 100ms; }
+  .stagger-3 { animation-delay: 150ms; }
+  .stagger-4 { animation-delay: 200ms; }
+  .stagger-5 { animation-delay: 250ms; }
+  .stagger-6 { animation-delay: 300ms; }
+
+  .animate-hero-1   { animation: riseSpring 700ms var(--ease-spring)  60ms both; }
+  .animate-hero-2   { animation: riseSpring 700ms var(--ease-spring) 180ms both; }
+  .animate-hero-3   { animation: riseSpring 700ms var(--ease-spring) 320ms both; }
+  .animate-hero-4   { animation: riseSpring 700ms var(--ease-spring) 460ms both; }
+  .animate-hero-5   { animation: riseSpring 700ms var(--ease-spring) 600ms both; }
+
+  /* Resalta la card de evento tras un deep-link (Home → /events?id=).
+     Anillo azul (--acento) con glow, no blanco -- un anillo blanco se
+     perdia contra las cards claras (glass-light). Pulsa 2 veces para que
+     sea imposible de perder aunque el usuario ya este mirando otra parte
+     de la pantalla al terminar el scroll. */
+  @keyframes eventHighlightPulse {
+    0%   { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.9), 0 0 0 0 rgba(255, 255, 255, 0.5); }
+    50%  { box-shadow: 0 0 0 8px rgba(255, 255, 255, 0.55), 0 0 70px 16px rgba(255, 255, 255, 0.45); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0), 0 0 0 0 rgba(255, 255, 255, 0); }
+  }
+  .event-highlight { animation: eventHighlightPulse 1.3s ease-out 2; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   ACCESIBILIDAD — fallbacks del material (Apple siempre los incluye)
+═══════════════════════════════════════════════════════════════════ */
+@media (prefers-reduced-transparency: reduce) {
+  .glass, .liquid-glass {
+    -webkit-backdrop-filter: none;
+            backdrop-filter: none;
+    background: rgba(15, 25, 43, 0.97);
+  }
+  .glass-nav, .glass-light {
+    -webkit-backdrop-filter: none;
+            backdrop-filter: none;
+    background: rgba(255, 255, 255, 0.97);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  html { scroll-behavior: auto; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   PROSE (Blog / Article)
+═══════════════════════════════════════════════════════════════════ */
+.tiptap p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: var(--ink-3);
+  pointer-events: none;
+  height: 0;
+}
+.prose h2 { font-size: 1.75rem; font-weight: 800; color: var(--ink); margin: 2rem 0 .75rem; letter-spacing: -0.025em; }
+.prose h3 { font-size: 1.375rem; font-weight: 700; color: var(--ink); margin: 1.5rem 0 .5rem; letter-spacing: -0.02em; }
+.prose p  { margin-bottom: 1.25rem; color: var(--ink-2); line-height: 1.75; font-size: 17px; }
+.prose ul, .prose ol { padding-left: 1.5rem; margin-bottom: 1.25rem; color: var(--ink-2); }
+.prose ul { list-style: disc; }
+.prose ol { list-style: decimal; }
+.prose li { margin-bottom: .375rem; }
+.prose blockquote {
+  border-left: 3px solid var(--acento);
+  padding: .5rem 0 .5rem 1.5rem;
+  color: var(--ink);
+  font-style: italic;
+  margin: 2rem 0;
+  font-family: 'New York', Georgia, serif;
+  font-size: 1.375rem;
+  line-height: 1.5;
+}
+.prose a { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: rgba(255, 255, 255, 0.4); }
+.prose a:hover { text-decoration-color: var(--ink); }
+.admin-light .prose a { color: var(--bg); text-decoration-color: rgba(10, 21, 38, 0.4); }
+.admin-light .prose a:hover { text-decoration-color: var(--bg); }
+.prose img { max-width: 100%; border-radius: var(--r-xl); margin: 2rem 0; }
+.prose strong { font-weight: 700; color: var(--ink); }
+
+/* .prose sobre glass-light (ArticleReader): las reglas de arriba leen
+   var(--ink)/--ink-2 (blanco/gris, pensadas para liquid-glass oscuro) --
+   redeclararlas a navy en este scope basta, .prose ya las usa todas. */
+.prose-light {
+  --ink:      var(--bg);
+  --ink-2:    rgba(10, 21, 38, 0.65);
+  --ink-3:    rgba(10, 21, 38, 0.4);
+  --ink-line: rgba(10, 21, 38, 0.14);
+  --ink-soft: rgba(10, 21, 38, 0.05);
+}
+.prose-light a { text-decoration-color: rgba(10, 21, 38, 0.4); }
+.prose-light a:hover { text-decoration-color: var(--bg); }
+
+/* ═══════════════════════════════════════════════════════════════════
+   SCROLLBAR
+═══════════════════════════════════════════════════════════════════ */
+::-webkit-scrollbar       { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--ink-line);
+  border-radius: 4px;
+  transition: background 150ms var(--ease-standard);
+}
+::-webkit-scrollbar-thumb:hover { background: var(--ink-3); }
+
+/* ═══════════════════════════════════════════════════════════════════
+   LOW-TIER DEVICE FALLBACKS
+   Disables expensive backdrop-filter effects when html.low-tier is active
+═══════════════════════════════════════════════════════════════════ */
+.low-tier .glass {
+  background: rgba(30, 30, 30, 0.95);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+.low-tier .glass-nav, .low-tier .glass-nav--scrolled {
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+.low-tier .glass-dark-nested, .low-tier .liquid-glass-nested {
+  background: rgba(30, 35, 45, 0.95);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+.low-tier .glass-light-nested {
+  background: rgba(250, 250, 250, 0.95);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}

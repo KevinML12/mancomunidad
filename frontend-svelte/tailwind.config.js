@@ -1,0 +1,234 @@
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: ['./src/**/*.{html,js,svelte,ts}'],
+  theme: {
+    extend: {
+      colors: {
+        // ── LIQUID GLASS NAVY — paleta directa ────────────────────
+        'bg':           '#0A1526',     // Deep Navy Canvas
+        'bg-tint':      '#0F192B',
+        'bg-soft':      '#131F33',
+
+        'ink':          '#FFFFFF',     // Pure White Text
+        'ink-2':        '#94A3B8',     // Muted Text
+        'ink-3':        '#475569',
+
+        // Acento único, muestreado de las fotos reales de la iglesia
+        // (luz cálida de escenario). Ver el bloque ACENTO ÚNICO de
+        // index.css para el porqué: los valores anteriores eran la
+        // rampa 500 de Tailwind sin tocar.
+        'acento':      'var(--acento)',
+        'acento-hov':  'var(--acento-hov)',
+        'acento-soft': 'var(--acento-soft)',
+
+        // Canvas CLARO del panel admin/líder/voluntario (jul-2026): el
+        // panel es modo claro estilo Apple (tinta navy sobre off-white);
+        // el sitio público sigue en navy oscuro. Off-white frío, no #FFF
+        // puro, para que las cards blancas resalten encima.
+        'paper':        '#F2F5FA',
+
+        'rose':         '#F43F5E',
+        'rose-soft':    '#881337',
+        'amber':        '#F59E0B',
+        'amber-soft':   '#78350F',
+        'emerald':      '#10B981',
+        'emerald-soft': '#064E3B',
+
+        // ── ALIAS LEGACY (compat con código existente) ──────────────
+        'pri':         'var(--acento)',
+        'pri-press':   'var(--acento-hov)',
+        'on-pri':      '#FFFFFF',
+        'pri-con':     'var(--acento-soft)',
+        'on-pri-con':  'var(--acento-hov)',
+
+        'sec':         'var(--bg-soft)',
+        'on-sec':      '#FFFFFF',
+        'sec-con':     'var(--bg)',
+        'on-sec-con':  '#FFFFFF',
+
+        'ter':         'var(--acento)',
+        'on-ter':      '#FFFFFF',
+        'ter-con':     'var(--acento-soft)',
+        'on-ter-con':  'var(--acento-hov)',
+
+        'err':         'var(--rose)',
+        'on-err':      '#FFFFFF',
+        'err-con':     'var(--rose-soft)',
+        'on-err-con':  '#FDA4AF',
+        'warn':        'var(--amber)',
+        'warn-con':    'var(--amber-soft)',
+        'on-warn-con': '#FCD34D',
+        'ok':          'var(--emerald)',
+        'ok-con':      'var(--emerald-soft)',
+        'on-ok-con':   '#6EE7B7',
+
+        'surf':        '#0A1526',
+        'surf-dim':    '#0F192B',
+        'surf-low':    '#131F33',
+        'surf-high':   '#1E293B',
+        'on-surf':     '#FFFFFF',
+        'on-surf-var': '#94A3B8',
+        'outline':     '#334155',
+        'outline-var': '#1E293B',
+
+        'inv-surf':    '#FFFFFF',
+        'inv-on-surf': '#0A1526',
+        'inv-pri':     'var(--acento)',
+      },
+
+      fontFamily: {
+        sans:    ['"Plus Jakarta Sans"', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+        display: ['"Plus Jakarta Sans"', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+        serif:   ['New York', 'Georgia', 'serif'],
+        mono:    ['"JetBrains Mono"', 'SF Mono', 'Cascadia Code', 'Consolas', 'Menlo', 'monospace'],
+      },
+
+      // ── Squircle radii (Apple HIG) ──────────────────────────────
+      borderRadius: {
+        'xs':     '8px',
+        'sm':     '12px',
+        'md':     '16px',
+        'lg':     '20px',
+        'xl':     '24px',
+        '2xl':    '32px',
+        '3xl':    '40px',
+        'field':  '12px',
+        'inner':  '16px',
+        'card':   '24px',
+        'modal':  '32px',
+        'pill':   '9999px',
+        'full':   '9999px',
+      },
+
+      // ── ESCALA DE OPACIDAD ENTERA (ago-2026) ───────────────────
+      // Tailwind trae la escala de 5 en 5 (0, 5, 10, 15, 20 …), así que
+      // TODO modificador que no cayera en un múltiplo de 5 no generaba
+      // ninguna clase y el navegador lo ignoraba en silencio. En este
+      // proyecto eso eran ~160 usos reales que llevaban meses sin
+      // pintarse: bg-bg/8 (58), bg-bg/6 (29), divide-bg/8 (23),
+      // bg-bg/4 (22), border-bg/12 (17)… Justo los tintes flojos con los
+      // que se separan las superficies -- las filas de una lista, el
+      // relleno de un chip, la línea entre dos bloques. Sin ellos cada
+      // panel quedaba en una sola lámina de un solo tono, que es
+      // exactamente lo que se sentía como "plano" y como "plantilla".
+      //
+      // No se corrigieron los 160 usos a múltiplos de 5: el valor escrito
+      // en cada sitio es el que el diseño quería. Se abre la escala.
+      opacity: Object.fromEntries(
+        Array.from({ length: 101 }, (_, n) => [n, String(n / 100)])
+      ),
+
+      boxShadow: {
+        'whisper':  '0 8px 32px rgba(10, 21, 38, 0.08)',
+        'card':     '0 12px 36px -12px rgba(10, 21, 38, 0.10), 0 2px 6px rgba(10, 21, 38, 0.04)',
+        'card-lg':  '0 24px 60px -20px rgba(10, 21, 38, 0.18), 0 4px 12px rgba(10, 21, 38, 0.04)',
+        'pop':      '0 24px 60px -16px rgba(59, 130, 246, 0.32), 0 6px 16px rgba(10, 21, 38, 0.08)',
+        'pri':      '0 12px 32px -8px rgba(59, 130, 246, 0.45)',
+        'pri-lg':   '0 20px 48px -12px rgba(59, 130, 246, 0.55)',
+        'elev-1':   '0 1px 2px rgba(10, 21, 38, 0.04), 0 1px 3px rgba(10, 21, 38, 0.06)',
+        'elev-2':   '0 4px 6px rgba(10, 21, 38, 0.04), 0 2px 4px rgba(10, 21, 38, 0.06)',
+        'elev-3':   '0 10px 15px rgba(10, 21, 38, 0.08), 0 4px 6px rgba(10, 21, 38, 0.05)',
+        'ring-pri': '0 0 0 4px rgba(59, 130, 246, 0.18)',
+      },
+
+      letterSpacing: {
+        'tightest': '-0.05em',
+        'tighter':  '-0.04em',
+        'tightish': '-0.02em',
+        // Antes 0.34em — el letterspacing exagerado delataba "look IA".
+        // Apple usa labels en caps con tracking moderado.
+        'widest':   '0.08em',
+      },
+
+      fontSize: {
+        // ── ESCALA DE DISPLAY DEL SITIO PÚBLICO ──────────────────────
+        // Tres tamaños con nombre, y ninguno más. El tamaño va HORNEADO
+        // aquí, no escrito en cada JSX.
+        //
+        // Antes: la clase .display-mega definía peso y tracking pero NO
+        // tamaño, así que sus 24 usos resolvían el tamaño cada uno por
+        // su cuenta con `style={{fontSize:'clamp(...)'}}` -- 16 valores
+        // de clamp distintos. Cuatro secciones de Nosotros repetían el
+        // MISMO clamp carácter por carácter, y otras inventaban el suyo:
+        // cada sección decidía sin memoria de lo que se decidió dos
+        // archivos atrás, que es literalmente cómo trabaja un generador.
+        //
+        // Peso 700 y no 800: Arimo topa en 700 (ver el @font-face de
+        // index.css), así que declarar 800/900 pintaba el mismo trazo y
+        // fingía una jerarquía que la pantalla nunca cumplía.
+        'd1': ['clamp(2.75rem, 7vw, 6.5rem)', { lineHeight: '0.94', letterSpacing: '-0.045em', fontWeight: '700' }],
+        'd2': ['clamp(2.25rem, 5vw, 4rem)',   { lineHeight: '0.98', letterSpacing: '-0.035em', fontWeight: '700' }],
+        'd3': ['clamp(1.6rem, 3vw, 2.6rem)',  { lineHeight: '1.08', letterSpacing: '-0.02em',  fontWeight: '700' }],
+
+        'display-l': ['clamp(4rem, 9vw, 8rem)',     { lineHeight: '0.92', letterSpacing: '-0.05em', fontWeight: '800' }],
+        'display-m': ['clamp(3rem, 6vw, 5.5rem)',   { lineHeight: '0.95', letterSpacing: '-0.04em', fontWeight: '800' }],
+        'display-s': ['clamp(2.25rem, 4vw, 3.5rem)', { lineHeight: '1.0',  letterSpacing: '-0.03em', fontWeight: '800' }],
+        'headline-l':['clamp(2.5rem, 5vw, 4rem)',   { lineHeight: '1.05', letterSpacing: '-0.03em', fontWeight: '800' }],
+        'headline-m':['2rem',                       { lineHeight: '1.1',  letterSpacing: '-0.025em', fontWeight: '700' }],
+        'headline-s':['1.5rem',                     { lineHeight: '1.2',  letterSpacing: '-0.02em', fontWeight: '700' }],
+        'title-l':   ['1.5rem',  { lineHeight: '1.3',  letterSpacing: '-0.015em', fontWeight: '700' }],
+        'title-m':   ['1.125rem',{ lineHeight: '1.4',  letterSpacing: '-0.01em',  fontWeight: '600' }],
+        'title-s':   ['1rem',    { lineHeight: '1.4',  fontWeight: '600' }],
+        'body-l':    ['1.125rem',{ lineHeight: '1.6',  fontWeight: '400' }],
+        'body-m':    ['1rem',    { lineHeight: '1.6',  fontWeight: '400' }],
+        'body-s':    ['0.875rem',{ lineHeight: '1.55', fontWeight: '400' }],
+        'label-l':   ['0.875rem',{ lineHeight: '1.4',  letterSpacing: '0.05em',  fontWeight: '600' }],
+        'label-m':   ['0.75rem', { lineHeight: '1.3',  letterSpacing: '0.1em',   fontWeight: '600' }],
+        'label-s':   ['0.6875rem',{ lineHeight: '1.3', letterSpacing: '0.15em',  fontWeight: '600' }],
+        'mono':      ['0.6875rem',{ lineHeight: '1.3', letterSpacing: '0.2em',   fontWeight: '500' }],
+
+        // Escala del SITIO PÚBLICO (liquid glass) -- nombrada por su valor en
+        // px para no chocar/mezclarse con la escala M3 de arriba (esa es
+        // solo del panel admin, a propósito -- ver DISENO_LIQUID_GLASS.md).
+        // Reemplaza los ~316 usos sueltos de text-[Npx] del código: mismo
+        // número de token = mismo tamaño (sin line-height propio, para no
+        // cambiar el ritmo vertical heredado que ya existía). Consolida los
+        // pasos de medio píxel (10.5/11.5/12.5/13.5/14.5/15.5) al entero
+        // vecino más usado -- eran ruido, no jerarquía real.
+        '7':  '7px',  '9':  '9px',  '10': '10px', '11': '11px',
+        '12': '12px', '13': '13px', '14': '14px', '15': '15px',
+        '16': '16px', '17': '17px', '18': '18px', '19': '19px',
+        '20': '20px', '21': '21px', '22': '22px', '24': '24px',
+        '26': '26px', '28': '28px', '30': '30px', '32': '32px',
+        '34': '34px', '36': '36px', '38': '38px', '40': '40px',
+        '44': '44px', '72': '72px',
+      },
+
+      spacing: {
+        '18': '4.5rem',
+        '22': '5.5rem',
+        '30': '7.5rem',
+        '34': '8.5rem',
+      },
+
+      transitionTimingFunction: {
+        'spring':     'cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+        'standard':   'cubic-bezier(0.4, 0, 0.2, 1)',
+        'decelerate': 'cubic-bezier(0, 0, 0.2, 1)',
+        'accelerate': 'cubic-bezier(0.4, 0, 1, 1)',
+        'sharp':      'cubic-bezier(0.4, 0, 0.6, 1)',
+      },
+
+      backdropBlur: {
+        'apple': '20px',
+        'glass': '24px',
+        'strong':'28px',
+      },
+      backdropSaturate: {
+        'apple': '180%',
+      },
+      keyframes: {
+        blob: {
+          '0%': { transform: 'translate(0px, 0px) scale(1)' },
+          '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+          '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+          '100%': { transform: 'translate(0px, 0px) scale(1)' },
+        }
+      },
+      animation: {
+        blob: 'blob 7s infinite',
+      }
+    },
+  },
+  plugins: [],
+}

@@ -12,6 +12,13 @@ import evaluacionesRoutes from './routes/evaluaciones.routes.js';
 import ausenciasRoutes from './routes/ausencias.routes.js';
 import disciplinaRoutes from './routes/disciplina.routes.js';
 import capacitacionesRoutes from './routes/capacitaciones.routes.js';
+import proyectosRoutes from './routes/proyectos.routes.js';
+import arcRoutes from './routes/arc.routes.js';
+import financieroRoutes from './routes/financiero.routes.js';
+import gobernanzaRoutes from './routes/gobernanza.routes.js';
+import conveniosRoutes from './routes/convenios.routes.js';
+import estadisticasRoutes from './routes/estadisticas.routes.js';
+import transparenciaRoutes from './routes/transparencia.routes.js';
 
 const app = express();
 
@@ -35,6 +42,13 @@ app.use('/api/v1/evaluaciones', evaluacionesRoutes);
 app.use('/api/v1/ausencias', ausenciasRoutes);
 app.use('/api/v1/disciplina', disciplinaRoutes);
 app.use('/api/v1/capacitaciones', capacitacionesRoutes);
+app.use('/api/v1/proyectos', proyectosRoutes);
+app.use('/api/v1/arc', arcRoutes);
+app.use('/api/v1/financiero', financieroRoutes);
+app.use('/api/v1/gobernanza', gobernanzaRoutes);
+app.use('/api/v1/convenios', conveniosRoutes);
+app.use('/api/v1/estadisticas', estadisticasRoutes);
+app.use('/api/v1/transparencia', transparenciaRoutes);
 
 app.use((req, res) => res.status(404).json({ error: 'Ruta no encontrada' }));
 

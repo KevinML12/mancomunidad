@@ -4,7 +4,7 @@
 // no depender de un servicio corriendo en la máquina); esta es la que se
 // usa para migrar y desplegar contra la base de datos real en la nube:
 //   npx prisma migrate deploy --schema prisma/schema.production.prisma
-// con DATABASE_URL apuntando al Postgres real (Neon/Supabase).
+// con DATABASE_URL apuntando al Postgres real (Neon/Supabase/Fly Postgres).
 
 datasource db {
   provider = "postgresql"
@@ -12,7 +12,8 @@ datasource db {
 }
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "darwin-arm64", "debian-openssl-3.0.x"]
 }
 
 model UnidadOrganizacional {
@@ -233,4 +234,162 @@ model BitacoraAuditoria {
   entidad   String?
   entidadId Int?
   fecha     DateTime @default(now())
+}
+
+// ==========================================
+// MÓDULO 1: PROYECTOS INTERMUNICIPALES
+// ==========================================
+
+model Proyecto {
+  id                     Int                  @id @default(autoincrement())
+  nombre                 String
+  agenciaFinanciadora    String
+  fechaInicioPlanificada DateTime
+  fechaFinPlanificada    DateTime?
+  presupuestoMunicipal   Float                @default(0)
+  presupuestoCooperacion Float                @default(0)
+  estado                 String               @default("Planificación") // Planificación, Ejecución, Finalizado
+  porcentajeAvanceFisico Float                @default(0)
+  evidencias             EvidenciaProyecto[]
+  createdAt              DateTime             @default(now())
+}
+
+model EvidenciaProyecto {
+  id           Int      @id @default(autoincrement())
+  proyectoId   Int
+  proyecto     Proyecto @relation(fields: [proyectoId], references: [id])
+  urlArchivo   String
+  latitud      Float?
+  longitud     Float?
+  descripcion  String?
+  fechaCaptura DateTime @default(now())
+  cargadoPorId Int?     // referencia a Usuario
+}
+
+// ==========================================
+// MÓDULO 2: PLAN DE MEJORAS (ARC)
+// ==========================================
+
+model TareaARC {
+  id              Int       @id @default(autoincrement())
+  codigo          String    @unique
+  titulo          String
+  descripcion     String
+  dimension       String    // Planificación y Monitoreo | Gestión de Proyectos e Inversión | Probidad, Transparencia y Eficiencia
+  prioridad       String    @default("Media") // Alta | Media | Baja
+  estado          String    @default("Pendiente") // Pendiente | En Proceso | En Revisión | Finalizado
+  municipio       String?   @default("Regional")
+  responsable     String
+  fechaLimite     DateTime
+  fechaFinalizada DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+// ==========================================
+// MÓDULO 3: CONTROL FINANCIERO Y CUOTAS
+// ==========================================
+
+model TransaccionFinanciera {
+  id                Int      @id @default(autoincrement())
+  codigo            String   @unique
+  tipo              String   // Ingreso | Egreso
+  cuentaBancaria    String   // Fondos Públicos | Cooperación Internacional
+  categoria         String   // Cuota Ordinaria | Cuota Extraordinaria | Caja Chica | Operativo | Donación
+  municipio         String?  // San Pedro Soloma, Santa Eulalia, etc.
+  monto             Float
+  comprobanteTipo   String   // Recibo CGC 63-A2 | Factura SAT FEL | Recibo SAT
+  comprobanteNumero String
+  urlComprobante    String?  // Evidencia obligatoria en caja chica
+  descripcion       String
+  fecha             DateTime @default(now())
+  createdAt         DateTime @default(now())
+}
+
+// ==========================================
+// MÓDULO 4: GOBERNANZA Y ACTAS
+// ==========================================
+
+model ActaAsamblea {
+  id              Int                 @id @default(autoincrement())
+  numeroActa      String              @unique
+  numeroSesion    Int
+  tipoSesion      String              @default("Ordinaria")
+  fecha           DateTime
+  municipioSede   String
+  lugarReunion    String?
+  libroCGCFolio   String
+  urlPdfEscaneado String?
+  acuerdos        AcuerdoGobernanza[]
+  createdAt       DateTime            @default(now())
+}
+
+model AcuerdoGobernanza {
+  id                Int          @id @default(autoincrement())
+  codigo            String       @unique
+  actaId            Int
+  acta              ActaAsamblea @relation(fields: [actaId], references: [id])
+  titulo            String
+  descripcion       String
+  responsable       String
+  fechaCumplimiento DateTime?
+  estado            String       @default("En Proceso") // Cumplido | En Proceso | Pendiente
+  evidenciaUrl      String?
+  createdAt         DateTime     @default(now())
+}
+
+// ==========================================
+// MÓDULO 5: ALIANZAS Y CONVENIOS
+// ==========================================
+
+model ConvenioInstitucional {
+  id                Int      @id @default(autoincrement())
+  codigo            String   @unique
+  nombre            String
+  tipoOrganizacion  String   // Cooperación Internacional | Sector Público | ONG
+  entidadCooperante String
+  montoCooperacion  Float    @default(0)
+  contrapartidaMFN  Float    @default(0)
+  fechaSuscripcion  DateTime
+  fechaVencimiento  DateTime
+  estado            String   @default("Vigente") // Vigente | Próximo a Vencer | Vencido | En Renovación
+  urlDocumento      String?
+  coordinadorMFN    String
+  createdAt         DateTime @default(now())
+}
+
+// ==========================================
+// MÓDULO 6: ESTADÍSTICAS ASH (AGUA Y SANEAMIENTO)
+// ==========================================
+
+model CensoComunitarioASH {
+  id                    Int      @id @default(autoincrement())
+  codigo                String   @unique
+  municipio             String
+  comunidad             String
+  viviendasTotales      Int
+  viviendasConAgua      Int
+  sistemaCloracion      Boolean  @default(false)
+  ppmCloroResidual      Float    @default(0)
+  viviendasConSaneamiento Int
+  fechaLevantamiento    DateTime @default(now())
+  tecnicoResponsable    String
+  createdAt             DateTime @default(now())
+}
+
+// ==========================================
+// MÓDULO 7: PORTAL DE TRANSPARENCIA (RF5)
+// ==========================================
+
+model PublicacionTransparencia {
+  id               Int      @id @default(autoincrement())
+  codigo           String   @unique
+  tipo             String   // Proyecto | Acta | Estadística | Finanzas
+  titulo           String
+  resumen          String
+  referenciaId     Int?
+  visibilidad      Boolean  @default(true)
+  fechaPublicacion DateTime @default(now())
+  autorizadoPor    String   @default("Gerencia Ejecutiva")
+  createdAt        DateTime @default(now())
 }

@@ -7,10 +7,13 @@
 node_modules/
 backend/node_modules/
 frontend/node_modules/
+frontend-svelte/node_modules/
 
 # Build artifacts
 dist/
 frontend/dist/
+frontend-svelte/build/
+frontend-svelte/.svelte-kit/
 
 # Environments
 .env
@@ -27,3 +30,5 @@ backend/prisma/dev.db-journal
 .vercel
 backend/.vercel
 frontend/.vercel
+frontend-svelte/.vercel
+

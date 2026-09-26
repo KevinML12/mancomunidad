@@ -5,95 +5,8 @@
   import { toast } from 'svelte-sonner';
   import { fade, fly } from 'svelte/transition';
 
-  const TAREAS_DEFAULT = [
-    {
-      id: 1,
-      codigo: 'ARC-2024-01',
-      titulo: 'Interoperabilidad CommCare con Base de Datos Central MFN',
-      descripcion: 'Automatizar la extracción de datos de campo de agua y saneamiento para evitar tabulación manual en hojas de cálculo.',
-      dimension: 'Planificación y Monitoreo',
-      prioridad: 'Alta',
-      estado: 'En Proceso',
-      municipio: 'Regional',
-      responsable: 'Ing. Carlos Méndez',
-      fechaLimite: '2024-04-10',
-      estaVencida: false,
-      diasRestantes: 14
-    },
-    {
-      id: 2,
-      codigo: 'ARC-2024-02',
-      titulo: 'Auditoría Concurrentes de Fideicomisos de Obra Santa Eulalia',
-      descripcion: 'Revisión y cuadre documental de retenciones del 5% de garantía de obra física previo a liquidación.',
-      dimension: 'Gestión de Proyectos e Inversión',
-      prioridad: 'Alta',
-      estado: 'En Revisión',
-      municipio: 'Santa Eulalia',
-      responsable: 'Licda. Celia Pascual',
-      fechaLimite: '2024-03-30',
-      estaVencida: false,
-      diasRestantes: 3
-    },
-    {
-      id: 3,
-      codigo: 'ARC-2024-03',
-      titulo: 'Digitalización y Foliado de Actas Oficiales CGC 2023',
-      descripcion: 'Indexación de libros de hojas movibles autorizados por Contraloría y carga de firmas escaneadas.',
-      dimension: 'Probidad, Transparencia y Eficiencia Institucional',
-      prioridad: 'Media',
-      estado: 'Finalizado',
-      municipio: 'Regional',
-      responsable: 'Secretaría General',
-      fechaLimite: '2024-03-15',
-      estaVencida: false,
-      diasRestantes: -12
-    },
-    {
-      id: 4,
-      codigo: 'ARC-2024-04',
-      titulo: 'Notificación Preventiva Renovación Convenio AECID',
-      descripcion: 'Emitir dictamen técnico de cumplimiento y solicitar prórroga de financiamiento con 90 días de anticipación.',
-      dimension: 'Planificación y Monitoreo',
-      prioridad: 'Alta',
-      estado: 'Pendiente',
-      municipio: 'San Mateo Ixtatán',
-      responsable: 'Gerencia Ejecutiva',
-      fechaLimite: '2024-03-20',
-      estaVencida: true,
-      diasRestantes: -7
-    },
-    {
-      id: 5,
-      codigo: 'ARC-2024-05',
-      titulo: 'Levantamiento de Censo ASH en Microcuenca Ixtapoc',
-      descripcion: 'Aplicación de encuestas móviles sobre cobertura de agua potable y letrinización comunitaria.',
-      dimension: 'Gestión de Proyectos e Inversión',
-      prioridad: 'Media',
-      estado: 'Pendiente',
-      municipio: 'Santa Eulalia',
-      responsable: 'Técnico OMAS',
-      fechaLimite: '2024-04-25',
-      estaVencida: false,
-      diasRestantes: 29
-    },
-    {
-      id: 6,
-      codigo: 'ARC-2024-06',
-      titulo: 'Actualización del Portal Ciudadano de Datos Abiertos',
-      descripcion: 'Publicar resoluciones de la Junta Directiva y avances físicos de obras según mandato de Ley de Acceso a la Información.',
-      dimension: 'Probidad, Transparencia y Eficiencia Institucional',
-      prioridad: 'Baja',
-      estado: 'En Proceso',
-      municipio: 'Regional',
-      responsable: 'Unidad de Informática',
-      fechaLimite: '2024-04-05',
-      estaVencida: false,
-      diasRestantes: 9
-    }
-  ];
-
-  let tareas = $state(TAREAS_DEFAULT);
-  let loading = $state(false);
+  let tareas = $state([]);
+  let loading = $state(true);
   let filtroDimension = $state('todas');
   let filtroPrioridad = $state('todas');
   let searchQuery = $state('');
@@ -119,14 +32,15 @@
   ];
 
   async function fetchTareas() {
+    loading = true;
     try {
-      loading = true;
       const { data } = await apiClient.get('/arc');
-      if (data && data.length > 0) {
+      if (Array.isArray(data)) {
         tareas = data;
       }
-    } catch {
-      console.log('Usando tareas base de Plan de Mejoras ARC');
+    } catch (err) {
+      console.error('Error al cargar tareas ARC de la BD:', err);
+      toast.error('No se pudo cargar el tablero ARC desde la base de datos');
     } finally {
       loading = false;
     }
@@ -138,19 +52,12 @@
 
   async function cambiarEstado(tareaId, nuevoEstado) {
     try {
-      const idx = tareas.findIndex(t => t.id === tareaId);
-      if (idx !== -1) {
-        tareas[idx].estado = nuevoEstado;
-        if (nuevoEstado === 'Finalizado') {
-          tareas[idx].estaVencida = false;
-        }
-        tareas = [...tareas];
-      }
       await apiClient.put(`/arc/${tareaId}`, { estado: nuevoEstado });
-      toast.success(`Tarea movida a: ${nuevoEstado}`);
-    } catch {
-      // Si falla API, se mantiene local
-      toast.info(`Estado actualizado a: ${nuevoEstado}`);
+      toast.success(`Estado actualizado en la BD: ${nuevoEstado}`);
+      await fetchTareas();
+    } catch (err) {
+      console.error('Error al actualizar estado:', err);
+      toast.error('No se pudo actualizar el estado en la base de datos');
     }
   }
 
@@ -158,27 +65,8 @@
     e.preventDefault();
     formLoading = true;
     try {
-      const count = tareas.length + 1;
-      const codigo = `ARC-2024-${count.toString().padStart(2, '0')}`;
-      const limite = new Date(nuevaTarea.fechaLimite);
-      const ahora = new Date();
-      const diasRestantes = Math.ceil((limite - ahora) / (1000 * 60 * 60 * 24));
-      
-      const creada = {
-        id: Date.now(),
-        codigo,
-        ...nuevaTarea,
-        estado: 'Pendiente',
-        estaVencida: diasRestantes < 0,
-        diasRestantes
-      };
-
-      try {
-        await apiClient.post('/arc', nuevaTarea);
-      } catch {}
-
-      tareas = [creada, ...tareas];
-      toast.success('Meta del Plan ARC creada correctamente');
+      await apiClient.post('/arc', nuevaTarea);
+      toast.success('Meta del Plan ARC guardada en la base de datos');
       showModal = false;
       nuevaTarea = {
         titulo: '',
@@ -189,6 +77,10 @@
         responsable: 'Ing. Carlos Méndez',
         fechaLimite: ''
       };
+      await fetchTareas();
+    } catch (err) {
+      console.error('Error al crear tarea en la BD:', err);
+      toast.error('Error al guardar la meta en la base de datos');
     } finally {
       formLoading = false;
     }

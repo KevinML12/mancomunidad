@@ -5,100 +5,9 @@
   import { toast } from 'svelte-sonner';
   import { fade, fly } from 'svelte/transition';
 
-  const ACTAS_DEFAULT = [
-    {
-      id: 1,
-      numeroActa: 'ACTA-01-2024',
-      numeroSesion: 1,
-      tipoSesion: 'Ordinaria',
-      fecha: '2024-01-18',
-      municipioSede: 'Santa Eulalia',
-      lugarReunion: 'Salón Mayor de la Sede Mancomunada',
-      libroCGCFolio: 'Libro Hojas Movibles No. 04-2023 · Folio 112',
-      urlPdfEscaneado: 'https://storage.mfn.gob.gt/actas/acta-01-2024.pdf',
-      acuerdos: [
-        {
-          id: 101,
-          codigo: 'ACU-ACTA-01-2024-01',
-          titulo: 'Aprobación del Plan Operativo Anual (POA) y Presupuesto 2024',
-          descripcion: 'Fijación de la cuota municipal ordinaria en Q15,000 mensuales por municipio miembro.',
-          responsable: 'Gerencia Ejecutiva y DAF',
-          fechaCumplimiento: '2024-01-31',
-          estado: 'Cumplido',
-          evidenciaUrl: 'https://storage.mfn.gob.gt/resoluciones/poa-2024.pdf'
-        },
-        {
-          id: 102,
-          codigo: 'ACU-ACTA-01-2024-02',
-          titulo: 'Priorización de Contrapartida para Proyecto IWASH USAID',
-          descripcion: 'Apertura de cuenta fiduciaria específica para fondos de cooperación en Banrural.',
-          responsable: 'Dirección de Proyectos',
-          fechaCumplimiento: '2024-02-15',
-          estado: 'Cumplido',
-          evidenciaUrl: 'https://storage.mfn.gob.gt/resoluciones/cuenta-fiduciaria.pdf'
-        }
-      ]
-    },
-    {
-      id: 2,
-      numeroActa: 'ACTA-02-2024',
-      numeroSesion: 2,
-      tipoSesion: 'Extraordinaria',
-      fecha: '2024-02-08',
-      municipioSede: 'San Pedro Soloma',
-      lugarReunion: 'Palacio Municipal de San Pedro Soloma',
-      libroCGCFolio: 'Libro Hojas Movibles No. 04-2023 · Folio 118',
-      urlPdfEscaneado: 'https://storage.mfn.gob.gt/actas/acta-02-2024.pdf',
-      acuerdos: [
-        {
-          id: 103,
-          codigo: 'ACU-ACTA-02-2024-01',
-          titulo: 'Adjudicación de Maquinaria para Mantenimiento de Tramos Viales',
-          descripcion: 'Contratación de servicios de motoniveladora para el corredor San Mateo - Barillas.',
-          responsable: 'Dirección de Proyectos y Alcaldes',
-          fechaCumplimiento: '2024-03-30',
-          estado: 'En Proceso',
-          evidenciaUrl: null
-        }
-      ]
-    },
-    {
-      id: 3,
-      numeroActa: 'ACTA-03-2024',
-      numeroSesion: 3,
-      tipoSesion: 'Ordinaria',
-      fecha: '2024-03-05',
-      municipioSede: 'San Rafael la Independencia',
-      lugarReunion: 'Centro Comunitario Municipal',
-      libroCGCFolio: 'Libro Hojas Movibles No. 04-2023 · Folio 124',
-      urlPdfEscaneado: 'https://storage.mfn.gob.gt/actas/acta-03-2024.pdf',
-      acuerdos: [
-        {
-          id: 104,
-          codigo: 'ACU-ACTA-03-2024-01',
-          titulo: 'Convocatoria a Auditoría Externa Financiera Período 2023',
-          descripcion: 'Publicación de términos de referencia para firma auditora independiente.',
-          responsable: 'Auditoría Interna',
-          fechaCumplimiento: '2024-04-15',
-          estado: 'En Proceso',
-          evidenciaUrl: null
-        },
-        {
-          id: 105,
-          codigo: 'ACU-ACTA-03-2024-02',
-          titulo: 'Mesa Técnica Interinstitucional con Ministerio de Salud (MSPAS)',
-          descripcion: 'Estandarización de cloro residual en los 6 sistemas de agua potable mancomunados.',
-          responsable: 'Coordinador ASH',
-          fechaCumplimiento: '2024-03-20',
-          estado: 'Pendiente',
-          evidenciaUrl: null
-        }
-      ]
-    }
-  ];
-
-  let actas = $state(ACTAS_DEFAULT);
-  let selectedActa = $state(ACTAS_DEFAULT[0]);
+  let actas = $state([]);
+  let selectedActa = $state(null);
+  let loading = $state(true);
   let searchQuery = $state('');
   let filtroMunicipio = $state('todos');
 
@@ -107,7 +16,7 @@
   let formLoading = $state(false);
   let nuevaActa = $state({
     numeroActa: '',
-    numeroSesion: 4,
+    numeroSesion: 1,
     tipoSesion: 'Ordinaria',
     fecha: '',
     municipioSede: 'Santa Eulalia',
@@ -117,14 +26,22 @@
   });
 
   async function fetchActas() {
+    loading = true;
     try {
       const { data } = await apiClient.get('/gobernanza/actas');
-      if (data && data.length > 0) {
+      if (Array.isArray(data)) {
         actas = data;
-        selectedActa = data[0];
+        if (data.length > 0 && !selectedActa) {
+          selectedActa = data[0];
+        } else if (selectedActa) {
+          selectedActa = data.find(a => a.id === selectedActa.id) || data[0] || null;
+        }
       }
-    } catch {
-      console.log('Cargando repositorio base de actas');
+    } catch (err) {
+      console.error('Error al cargar actas de la base de datos:', err);
+      toast.error('No se pudo cargar el repositorio de actas de la BD');
+    } finally {
+      loading = false;
     }
   }
 
@@ -157,25 +74,26 @@
   );
 
   async function actualizarEstadoAcuerdo(acuerdo, nuevoEstado) {
-    if (nuevoEstado === 'Cumplido' && !acuerdo.evidenciaUrl) {
+    let evidencia = acuerdo.evidenciaUrl;
+    if (nuevoEstado === 'Cumplido' && !evidencia) {
       const url = prompt('RF14: Ingrese URL de la evidencia o resolución de cumplimiento:');
       if (!url) {
-        toast.error('Se requiere evidencia para marcar como Cumplido');
+        toast.error('Se requiere evidencia documental obligatoria para marcar como Cumplido');
         return;
       }
-      acuerdo.evidenciaUrl = url;
+      evidencia = url;
     }
 
-    acuerdo.estado = nuevoEstado;
-    actas = [...actas];
     try {
       await apiClient.put(`/gobernanza/acuerdos/${acuerdo.id}`, {
         estado: nuevoEstado,
-        evidenciaUrl: acuerdo.evidenciaUrl
+        evidenciaUrl: evidencia
       });
-      toast.success(`Acuerdo actualizado a: ${nuevoEstado}`);
-    } catch {
-      toast.info(`Acuerdo actualizado a: ${nuevoEstado}`);
+      toast.success(`Acuerdo actualizado en la base de datos: ${nuevoEstado}`);
+      await fetchActas();
+    } catch (err) {
+      console.error('Error al actualizar acuerdo en la BD:', err);
+      toast.error('No se pudo actualizar el acuerdo en la base de datos');
     }
   }
 
@@ -183,21 +101,27 @@
     e.preventDefault();
     formLoading = true;
     try {
-      const item = {
-        id: Date.now(),
+      await apiClient.post('/gobernanza/actas', {
         ...nuevaActa,
         numeroSesion: Number(nuevaActa.numeroSesion),
-        acuerdos: []
-      };
-
-      try {
-        await apiClient.post('/gobernanza/actas', nuevaActa);
-      } catch {}
-
-      actas = [item, ...actas];
-      selectedActa = item;
-      toast.success('Acta oficial registrada e indexada');
+        fecha: nuevaActa.fecha || new Date().toISOString().split('T')[0]
+      });
+      toast.success('Acta oficial registrada e indexada en la base de datos');
       showModal = false;
+      nuevaActa = {
+        numeroActa: '',
+        numeroSesion: actas.length + 1,
+        tipoSesion: 'Ordinaria',
+        fecha: '',
+        municipioSede: 'Santa Eulalia',
+        lugarReunion: '',
+        libroCGCFolio: '',
+        urlPdfEscaneado: ''
+      };
+      await fetchActas();
+    } catch (err) {
+      console.error('Error al registrar acta en la BD:', err);
+      toast.error('Error al guardar el acta en la base de datos');
     } finally {
       formLoading = false;
     }

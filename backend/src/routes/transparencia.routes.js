@@ -26,11 +26,32 @@ router.get('/publico', async (req, res, next) => {
       }
     });
 
+    const censos = await prisma.censoComunitarioASH.findMany();
+    let totalViviendas = 0;
+    let conAgua = 0;
+    let conSaneamiento = 0;
+    let clorados = 0;
+    censos.forEach(c => {
+      totalViviendas += c.viviendasTotales;
+      conAgua += c.viviendasConAgua;
+      conSaneamiento += c.viviendasConSaneamiento;
+      if (c.ppmCloroResidual >= 0.5 && c.ppmCloroResidual <= 1.5) clorados++;
+    });
+
+    const estadisticas = {
+      coberturaAgua: totalViviendas > 0 ? Number(((conAgua / totalViviendas) * 100).toFixed(1)) : 0,
+      coberturaSaneamiento: totalViviendas > 0 ? Number(((conSaneamiento / totalViviendas) * 100).toFixed(1)) : 0,
+      cloroConforme: censos.length > 0 ? Number(((clorados / censos.length) * 100).toFixed(1)) : 0,
+      totalViviendas,
+      totalCensos: censos.length
+    };
+
     res.json({
       portal: 'Portal de Transparencia y Datos Abiertos · Mancomunidad Frontera del Norte',
       marcoLegal: 'Ley de Acceso a la Información Pública (Decreto 57-2008)',
       publicaciones,
-      proyectosPublicos
+      proyectosPublicos,
+      estadisticas
     });
   } catch (err) {
     next(err);
@@ -43,7 +64,46 @@ router.get('/gestion', requireAuth, async (req, res, next) => {
     const publicaciones = await prisma.publicacionTransparencia.findMany({
       orderBy: { createdAt: 'desc' }
     });
-    res.json(publicaciones);
+
+    const proyectosPublicos = await prisma.proyecto.findMany({
+      where: { estado: { not: 'Cancelado' } },
+      select: {
+        id: true,
+        nombre: true,
+        agenciaFinanciadora: true,
+        presupuestoMunicipal: true,
+        presupuestoCooperacion: true,
+        estado: true,
+        porcentajeAvanceFisico: true,
+        createdAt: true
+      }
+    });
+
+    const censos = await prisma.censoComunitarioASH.findMany();
+    let totalViviendas = 0;
+    let conAgua = 0;
+    let conSaneamiento = 0;
+    let clorados = 0;
+    censos.forEach(c => {
+      totalViviendas += c.viviendasTotales;
+      conAgua += c.viviendasConAgua;
+      conSaneamiento += c.viviendasConSaneamiento;
+      if (c.ppmCloroResidual >= 0.5 && c.ppmCloroResidual <= 1.5) clorados++;
+    });
+
+    const estadisticas = {
+      coberturaAgua: totalViviendas > 0 ? Number(((conAgua / totalViviendas) * 100).toFixed(1)) : 0,
+      coberturaSaneamiento: totalViviendas > 0 ? Number(((conSaneamiento / totalViviendas) * 100).toFixed(1)) : 0,
+      cloroConforme: censos.length > 0 ? Number(((clorados / censos.length) * 100).toFixed(1)) : 0,
+      totalViviendas,
+      totalCensos: censos.length
+    };
+
+    res.json({
+      publicaciones,
+      proyectosPublicos,
+      estadisticas
+    });
   } catch (err) {
     next(err);
   }

@@ -5,88 +5,8 @@
   import { toast } from 'svelte-sonner';
   import { fade, fly } from 'svelte/transition';
 
-  const CENSOS_DEFAULT = [
-    {
-      id: 1,
-      codigo: 'ASH-2024-STE-001',
-      municipio: 'Santa Eulalia',
-      comunidad: 'Aldea Ixtapoc',
-      viviendasTotales: 340,
-      viviendasConAgua: 290,
-      sistemaCloracion: true,
-      ppmCloroResidual: 0.9,
-      viviendasConSaneamiento: 220,
-      tecnicoResponsable: 'Técnico OMAS Juan Pedro',
-      fechaLevantamiento: '2024-03-12'
-    },
-    {
-      id: 2,
-      codigo: 'ASH-2024-SOL-002',
-      municipio: 'San Pedro Soloma',
-      comunidad: 'Caserío El Mirador',
-      viviendasTotales: 180,
-      viviendasConAgua: 155,
-      sistemaCloracion: true,
-      ppmCloroResidual: 1.1,
-      viviendasConSaneamiento: 140,
-      tecnicoResponsable: 'Ing. Carlos Méndez',
-      fechaLevantamiento: '2024-03-10'
-    },
-    {
-      id: 3,
-      codigo: 'ASH-2024-SRI-003',
-      municipio: 'San Rafael la Independencia',
-      comunidad: 'Cantón Central',
-      viviendasTotales: 220,
-      viviendasConAgua: 120,
-      sistemaCloracion: false,
-      ppmCloroResidual: 0.1,
-      viviendasConSaneamiento: 95,
-      tecnicoResponsable: 'Promotor Comunitario Mateo',
-      fechaLevantamiento: '2024-03-05'
-    },
-    {
-      id: 4,
-      codigo: 'ASH-2024-SMI-004',
-      municipio: 'San Mateo Ixtatán',
-      comunidad: 'Aldea Bulej',
-      viviendasTotales: 410,
-      viviendasConAgua: 190,
-      sistemaCloracion: false,
-      ppmCloroResidual: 0.0,
-      viviendasConSaneamiento: 110,
-      tecnicoResponsable: 'Técnico OMAS Mateo',
-      fechaLevantamiento: '2024-02-28'
-    },
-    {
-      id: 5,
-      codigo: 'ASH-2024-BAR-005',
-      municipio: 'Barillas',
-      comunidad: 'Aldea San Ramón',
-      viviendasTotales: 500,
-      viviendasConAgua: 380,
-      sistemaCloracion: true,
-      ppmCloroResidual: 0.8,
-      viviendasConSaneamiento: 310,
-      tecnicoResponsable: 'Ing. Supervisor Barillas',
-      fechaLevantamiento: '2024-02-20'
-    },
-    {
-      id: 6,
-      codigo: 'ASH-2024-SMA-006',
-      municipio: 'San Miguel Acatán',
-      comunidad: 'Caserío Nueva Esperanza',
-      viviendasTotales: 150,
-      viviendasConAgua: 70,
-      sistemaCloracion: false,
-      ppmCloroResidual: 0.2,
-      viviendasConSaneamiento: 45,
-      tecnicoResponsable: 'Promotor de Salud',
-      fechaLevantamiento: '2024-02-15'
-    }
-  ];
-
-  let censos = $state(CENSOS_DEFAULT);
+  let censos = $state([]);
+  let loading = $state(true);
   let searchQuery = $state('');
   let filtroMunicipio = $state('todos');
 
@@ -105,11 +25,17 @@
   });
 
   async function fetchCensos() {
+    loading = true;
     try {
       const { data } = await apiClient.get('/estadisticas/censos');
-      if (data && data.length > 0) censos = data;
-    } catch {
-      console.log('Utilizando base de censos ASH');
+      if (Array.isArray(data)) {
+        censos = data;
+      }
+    } catch (err) {
+      console.error('Error al cargar censos ASH de la BD:', err);
+      toast.error('No se pudo cargar la base de censos de la base de datos');
+    } finally {
+      loading = false;
     }
   }
 
@@ -184,29 +110,28 @@
 
     formLoading = true;
     try {
-      const count = censos.length + 1;
-      const clean = nuevoCenso.municipio.toUpperCase().slice(0, 3);
-      const codigo = `ASH-2024-${clean}-${count.toString().padStart(3, '0')}`;
-      const fecha = new Date().toISOString().split('T')[0];
-
-      const item = {
-        id: Date.now(),
-        codigo,
-        fechaLevantamiento: fecha,
+      await apiClient.post('/estadisticas/censos', {
         ...nuevoCenso,
         viviendasTotales: Number(nuevoCenso.viviendasTotales),
         viviendasConAgua: Number(nuevoCenso.viviendasConAgua),
         viviendasConSaneamiento: Number(nuevoCenso.viviendasConSaneamiento),
         ppmCloroResidual: Number(nuevoCenso.ppmCloroResidual)
-      };
-
-      try {
-        await apiClient.post('/estadisticas/censos', nuevoCenso);
-      } catch {}
-
-      censos = [item, ...censos];
-      toast.success('Censo territorial incorporado a estadísticas ASH');
+      });
+      await fetchCensos();
+      toast.success('Censo territorial guardado exitosamente en base de datos');
       showModal = false;
+      nuevoCenso = {
+        municipio: 'Santa Eulalia',
+        comunidad: '',
+        viviendasTotales: 100,
+        viviendasConAgua: 80,
+        sistemaCloracion: true,
+        ppmCloroResidual: 0.8,
+        viviendasConSaneamiento: 60,
+        tecnicoResponsable: 'Técnico OMAS'
+      };
+    } catch (err) {
+      toast.error('Error al guardar censo en base de datos: ' + (err.message || 'Error'));
     } finally {
       formLoading = false;
     }

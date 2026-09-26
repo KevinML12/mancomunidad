@@ -5,74 +5,8 @@
   import { toast } from 'svelte-sonner';
   import { fade, fly } from 'svelte/transition';
 
-  const CONVENIOS_DEFAULT = [
-    {
-      id: 1,
-      codigo: 'CONV-2024-USAID-01',
-      nombre: 'Convenio de Subvención Proyecto Integral IWASH',
-      tipoOrganizacion: 'Cooperación Internacional',
-      entidadCooperante: 'USAID / DAI',
-      montoCooperacion: 1240000,
-      contrapartidaMFN: 180000,
-      fechaSuscripcion: '2023-01-15',
-      fechaVencimiento: '2024-05-15', // ~50 días restantes -> Alerta 90d
-      estado: 'Próximo a Vencer',
-      urlDocumento: 'https://storage.mfn.gob.gt/convenios/convenio-iwash.pdf',
-      coordinadorMFN: 'Ing. Carlos Méndez',
-      diasRestantes: 50,
-      alerta: 'proximo_a_vencer'
-    },
-    {
-      id: 2,
-      codigo: 'CONV-2024-AECID-02',
-      nombre: 'Fondo de Infraestructura y Conectividad Vial Fronteriza',
-      tipoOrganizacion: 'Cooperación Internacional',
-      entidadCooperante: 'AECID España',
-      montoCooperacion: 2850000,
-      contrapartidaMFN: 350000,
-      fechaSuscripcion: '2023-06-01',
-      fechaVencimiento: '2024-12-31',
-      estado: 'Vigente',
-      urlDocumento: 'https://storage.mfn.gob.gt/convenios/convenio-aecid.pdf',
-      coordinadorMFN: 'Arq. Valeria Soto',
-      diasRestantes: 280,
-      alerta: 'normal'
-    },
-    {
-      id: 3,
-      codigo: 'CONV-2024-BID-03',
-      nombre: 'Programa Regional de Saneamiento de Cuencas Altas',
-      tipoOrganizacion: 'Cooperación Internacional',
-      entidadCooperante: 'BID / IADB',
-      montoCooperacion: 3450000,
-      contrapartidaMFN: 420000,
-      fechaSuscripcion: '2022-11-10',
-      fechaVencimiento: '2024-04-05', // ~10 días restantes -> Alerta urgente
-      estado: 'En Renovación',
-      urlDocumento: 'https://storage.mfn.gob.gt/convenios/convenio-bid.pdf',
-      coordinadorMFN: 'Licda. Celia Pascual',
-      diasRestantes: 10,
-      alerta: 'proximo_a_vencer'
-    },
-    {
-      id: 4,
-      codigo: 'CONV-2024-MSPAS-04',
-      nombre: 'Carta de Entendimiento Interinstitucional Calidad de Agua',
-      tipoOrganizacion: 'Sector Público',
-      entidadCooperante: 'Ministerio de Salud (MSPAS)',
-      montoCooperacion: 0,
-      contrapartidaMFN: 50000,
-      fechaSuscripcion: '2023-03-01',
-      fechaVencimiento: '2024-03-01', // Vencido
-      estado: 'Vencido',
-      urlDocumento: 'https://storage.mfn.gob.gt/convenios/carta-mspas.pdf',
-      coordinadorMFN: 'Técnico OMAS',
-      diasRestantes: -25,
-      alerta: 'vencido'
-    }
-  ];
-
-  let convenios = $state(CONVENIOS_DEFAULT);
+  let convenios = $state([]);
+  let loading = $state(true);
   let searchQuery = $state('');
   let filtroTipo = $state('todos');
   let filtroAlerta = $state('todas');
@@ -93,11 +27,17 @@
   });
 
   async function fetchConvenios() {
+    loading = true;
     try {
       const { data } = await apiClient.get('/convenios');
-      if (data && data.length > 0) convenios = data;
-    } catch {
-      console.log('Utilizando portafolio base de convenios MFN');
+      if (Array.isArray(data)) {
+        convenios = data;
+      }
+    } catch (err) {
+      console.error('Error al cargar convenios de la BD:', err);
+      toast.error('No se pudo conectar con el portafolio de convenios de la base de datos');
+    } finally {
+      loading = false;
     }
   }
 
@@ -106,8 +46,8 @@
   });
 
   // Métricas reactivas
-  let totalCooperacion = $derived(convenios.reduce((acc, c) => acc + c.montoCooperacion, 0));
-  let totalContrapartida = $derived(convenios.reduce((acc, c) => acc + c.contrapartidaMFN, 0));
+  let totalCooperacion = $derived(convenios.reduce((acc, c) => acc + (c.montoCooperacion || 0), 0));
+  let totalContrapartida = $derived(convenios.reduce((acc, c) => acc + (c.contrapartidaMFN || 0), 0));
   let alertas90dCount = $derived(convenios.filter(c => c.diasRestantes >= 0 && c.diasRestantes <= 90).length);
   let vencidosCount = $derived(convenios.filter(c => c.diasRestantes < 0).length);
   let enRenovacionCount = $derived(convenios.filter(c => c.estado === 'En Renovación').length);
@@ -120,10 +60,10 @@
       if (filtroAlerta === 'vigentes' && !(c.diasRestantes > 90)) return false;
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
-        const match = c.nombre.toLowerCase().includes(q) ||
-                      c.codigo.toLowerCase().includes(q) ||
-                      c.entidadCooperante.toLowerCase().includes(q) ||
-                      c.coordinadorMFN.toLowerCase().includes(q);
+        const match = (c.nombre || '').toLowerCase().includes(q) ||
+                      (c.codigo || '').toLowerCase().includes(q) ||
+                      (c.entidadCooperante || '').toLowerCase().includes(q) ||
+                      (c.coordinadorMFN || '').toLowerCase().includes(q);
         if (!match) return false;
       }
       return true;
@@ -138,20 +78,16 @@
     actual.setMonth(actual.getMonth() + Number(meses));
     const nuevaFecha = actual.toISOString().split('T')[0];
 
-    conv.fechaVencimiento = nuevaFecha;
-    conv.estado = 'Vigente';
-    conv.diasRestantes += Number(meses) * 30;
-    conv.alerta = 'normal';
-    convenios = [...convenios];
-
     try {
       await apiClient.put(`/convenios/${conv.id}`, {
         estado: 'Vigente',
         fechaVencimiento: nuevaFecha
       });
-      toast.success(`Convenio prorrogado exitosamente hasta ${nuevaFecha}`);
-    } catch {
-      toast.info(`Convenio prorrogado localmente hasta ${nuevaFecha}`);
+      toast.success(`Convenio prorrogado en la BD hasta ${nuevaFecha}`);
+      await fetchConvenios();
+    } catch (err) {
+      console.error('Error al prorrogar convenio:', err);
+      toast.error('No se pudo actualizar la prórroga en la base de datos');
     }
   }
 
@@ -159,32 +95,29 @@
     e.preventDefault();
     formLoading = true;
     try {
-      const count = convenios.length + 1;
-      const clean = nuevoConvenio.entidadCooperante.toUpperCase().replace(/\s+/g, '').slice(0, 5);
-      const codigo = `CONV-2024-${clean}-${count.toString().padStart(2, '0')}`;
-      
-      const v = new Date(nuevoConvenio.fechaVencimiento);
-      const ahora = new Date();
-      const diasRestantes = Math.ceil((v.getTime() - ahora.getTime()) / (1000 * 60 * 60 * 24));
-
-      const item = {
-        id: Date.now(),
-        codigo,
+      await apiClient.post('/convenios', {
         ...nuevoConvenio,
         montoCooperacion: Number(nuevoConvenio.montoCooperacion),
         contrapartidaMFN: Number(nuevoConvenio.contrapartidaMFN),
-        estado: diasRestantes <= 90 ? 'Próximo a Vencer' : 'Vigente',
-        diasRestantes,
-        alerta: diasRestantes <= 90 ? 'proximo_a_vencer' : 'normal'
-      };
-
-      try {
-        await apiClient.post('/convenios', nuevoConvenio);
-      } catch {}
-
-      convenios = [item, ...convenios];
-      toast.success('Convenio institucional incorporado al portafolio');
+        fechaSuscripcion: nuevoConvenio.fechaSuscripcion || new Date().toISOString().split('T')[0]
+      });
+      toast.success('Convenio registrado exitosamente en la base de datos');
       showModal = false;
+      nuevoConvenio = {
+        nombre: '',
+        tipoOrganizacion: 'Cooperación Internacional',
+        entidadCooperante: '',
+        montoCooperacion: 0,
+        contrapartidaMFN: 0,
+        fechaSuscripcion: '',
+        fechaVencimiento: '',
+        urlDocumento: '',
+        coordinadorMFN: 'Ing. Carlos Méndez'
+      };
+      await fetchConvenios();
+    } catch (err) {
+      console.error('Error al guardar convenio:', err);
+      toast.error('Error al registrar el convenio en la base de datos');
     } finally {
       formLoading = false;
     }

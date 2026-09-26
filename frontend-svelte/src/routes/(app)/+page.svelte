@@ -5,79 +5,86 @@
   import { auth } from '$lib/stores/auth.svelte.js';
   import { fade, fly } from 'svelte/transition';
 
-  // Estados de datos reactivos con fallbacks institucionales
+  // Estados de datos reactivos - 100% de la Base de Datos
   let stats = $state({
-    proyectosCount: 3,
-    inversionTotal: 58812000,
-    avancePromedio: 72.2,
-    arcTotal: 6,
-    arcCumplidas: 5,
-    arcEfectividad: 83.3,
-    saldoNeto: 774750,
-    fondosPublicos: 24750,
-    cooperacion: 750000,
-    actasCount: 3,
-    acuerdosCount: 5,
-    conveniosAlertas: 1,
-    coberturaAgua: 74.2,
-    coberturaSaneamiento: 59.0,
-    deficitAgua: 25.8,
-    totalViviendas: 1610
+    proyectosCount: 0,
+    inversionTotal: 0,
+    avancePromedio: 0,
+    arcTotal: 0,
+    arcCumplidas: 0,
+    arcEfectividad: 0,
+    saldoNeto: 0,
+    fondosPublicos: 0,
+    cooperacion: 0,
+    actasCount: 0,
+    acuerdosCount: 0,
+    conveniosAlertas: 0,
+    coberturaAgua: 0,
+    coberturaSaneamiento: 0,
+    deficitAgua: 0,
+    totalViviendas: 0
   });
 
-  let conveniosAlerta = $state([
-    {
-      codigo: 'CONV-2024-002',
-      nombre: 'Infraestructura Vial de Conexión Fronteriza Norte',
-      entidadCooperante: 'AECID España',
-      diasRestantes: 45,
-      alerta: 'proximo'
-    }
-  ]);
-
-  let loading = $state(false);
+  let conveniosAlerta = $state([]);
+  let loading = $state(true);
 
   const fetchDashboardData = async () => {
     loading = true;
     try {
-      const [resBalance, resConvenios, resEstadisticas, resArc] = await Promise.allSettled([
+      const [resProyectos, resArc, resBalance, resActas, resConvenios, resEstadisticas] = await Promise.allSettled([
+        apiClient.get('/proyectos'),
+        apiClient.get('/arc'),
         apiClient.get('/financiero/balance'),
+        apiClient.get('/gobernanza/actas'),
         apiClient.get('/convenios'),
-        apiClient.get('/estadisticas/consolidado'),
-        apiClient.get('/arc')
+        apiClient.get('/estadisticas/consolidado')
       ]);
 
-      if (resBalance.status === 'fulfilled' && resBalance.value.data) {
-        const b = resBalance.value.data;
-        stats.saldoNeto = b.saldoDisponibleTotal || stats.saldoNeto;
-        stats.fondosPublicos = b.cuentas?.fondosPublicos?.saldo ?? stats.fondosPublicos;
-        stats.cooperacion = b.cuentas?.cooperacion?.saldo ?? stats.cooperacion;
+      if (resProyectos.status === 'fulfilled' && Array.isArray(resProyectos.value.data)) {
+        const proys = resProyectos.value.data;
+        stats.proyectosCount = proys.length;
+        stats.inversionTotal = proys.reduce((acc, p) => acc + (p.presupuestoMunicipal || 0) + (p.presupuestoCooperacion || 0), 0);
+        const sumAvance = proys.reduce((acc, p) => acc + (p.porcentajeAvanceFisico || 0), 0);
+        stats.avancePromedio = proys.length > 0 ? Number((sumAvance / proys.length).toFixed(1)) : 0;
       }
 
-      if (resConvenios.status === 'fulfilled' && resConvenios.value.data) {
-        const convs = resConvenios.value.data;
-        const alertas = convs.filter(c => c.diasRestantes >= 0 && c.diasRestantes <= 90);
-        stats.conveniosAlertas = alertas.length;
-        if (alertas.length > 0) conveniosAlerta = alertas;
-      }
-
-      if (resEstadisticas.status === 'fulfilled' && resEstadisticas.value.data) {
-        const est = resEstadisticas.value.data;
-        stats.totalViviendas = est.totalViviendas || stats.totalViviendas;
-        stats.coberturaAgua = est.coberturaAguaPorcentaje || stats.coberturaAgua;
-        stats.coberturaSaneamiento = est.coberturaSaneamientoPorcentaje || stats.coberturaSaneamiento;
-        stats.deficitAgua = est.deficitAguaPorcentaje || stats.deficitAgua;
-      }
-
-      if (resArc.status === 'fulfilled' && resArc.value.data) {
+      if (resArc.status === 'fulfilled' && Array.isArray(resArc.value.data)) {
         const tareas = resArc.value.data;
         stats.arcTotal = tareas.length;
         const finalizadas = tareas.filter(t => t.estado === 'Finalizado').length;
         stats.arcCumplidas = finalizadas;
-        stats.arcEfectividad = tareas.length > 0 ? Number(((finalizadas / tareas.length) * 100).toFixed(1)) : 83.3;
+        stats.arcEfectividad = tareas.length > 0 ? Number(((finalizadas / tareas.length) * 100).toFixed(1)) : 0;
+      }
+
+      if (resBalance.status === 'fulfilled' && resBalance.value.data) {
+        const b = resBalance.value.data;
+        stats.saldoNeto = b.saldoDisponibleTotal || 0;
+        stats.fondosPublicos = b.cuentas?.fondosPublicos?.saldo || 0;
+        stats.cooperacion = b.cuentas?.cooperacion?.saldo || 0;
+      }
+
+      if (resActas.status === 'fulfilled' && Array.isArray(resActas.value.data)) {
+        const actas = resActas.value.data;
+        stats.actasCount = actas.length;
+        stats.acuerdosCount = actas.reduce((acc, a) => acc + (a.acuerdos?.length || 0), 0);
+      }
+
+      if (resConvenios.status === 'fulfilled' && Array.isArray(resConvenios.value.data)) {
+        const convs = resConvenios.value.data;
+        const alertas = convs.filter(c => c.diasRestantes >= 0 && c.diasRestantes <= 90);
+        stats.conveniosAlertas = alertas.length;
+        conveniosAlerta = alertas;
+      }
+
+      if (resEstadisticas.status === 'fulfilled' && resEstadisticas.value.data) {
+        const est = resEstadisticas.value.data;
+        stats.totalViviendas = est.totalViviendas || 0;
+        stats.coberturaAgua = est.coberturaAguaPorcentaje || 0;
+        stats.coberturaSaneamiento = est.coberturaSaneamientoPorcentaje || 0;
+        stats.deficitAgua = est.deficitAguaPorcentaje || 0;
       }
     } catch (err) {
-      console.log('Utilizando métricas consolidadas locales');
+      console.error('Error al sincronizar métricas del dashboard:', err);
     } finally {
       loading = false;
     }
@@ -87,14 +94,14 @@
     fetchDashboardData();
   });
 
-  const MODULOS = [
+  let MODULOS = $derived([
     {
       num: '01',
       to: '/proyectos',
       icon: 'construction',
       titulo: 'Proyectos de Obra',
       descripcion: 'Seguimiento físico y fotográfico georreferenciado con coordenadas GPS de intervenciones intermunicipales.',
-      badge: '3 Obras Activas',
+      badge: stats.proyectosActivos > 0 ? `${stats.proyectosActivos} Obras en BD` : 'Gestión de Obras',
       color: 'blue'
     },
     {
@@ -103,7 +110,7 @@
       icon: 'view_kanban',
       titulo: 'Plan de Mejoras (ARC)',
       descripcion: 'Tablero interactivo Kanban para mitigación de hallazgos institucionales y auditoría del informe 2023.',
-      badge: '6 Compromisos',
+      badge: stats.tareasPendientes > 0 ? `${stats.tareasPendientes} Pendientes` : 'Tablero ARC',
       color: 'indigo'
     },
     {
@@ -121,7 +128,7 @@
       icon: 'gavel',
       titulo: 'Gobernanza y Actas',
       descripcion: 'Repositorio oficial con folios autorizados por la Contraloría General de Cuentas y semáforo de acuerdos.',
-      badge: 'CGC Certificado',
+      badge: stats.acuerdosTotal > 0 ? `${stats.acuerdosTotal} Acuerdos CGC` : 'CGC Certificado',
       color: 'purple'
     },
     {
@@ -130,7 +137,7 @@
       icon: 'handshake',
       titulo: 'Convenios y Alianzas',
       descripcion: 'Motor cronológico con alerta automática preventiva a los 90 días de caducidad para renovación diplomática.',
-      badge: 'Alerta 90 Días',
+      badge: stats.conveniosAlertas > 0 ? `${stats.conveniosAlertas} en Alerta` : 'Alerta 90 Días',
       color: 'amber'
     },
     {
@@ -139,7 +146,7 @@
       icon: 'bar_chart',
       titulo: 'Indicadores ASH',
       descripcion: 'Censo de agua, saneamiento y vigilancia bacteriológica de cloro residual (COGUANOR) en 6 municipios.',
-      badge: '1,610 Viviendas',
+      badge: stats.totalViviendas > 0 ? `${stats.totalViviendas.toLocaleString()} Viviendas` : 'Censos ASH',
       color: 'cyan'
     },
     {
@@ -151,7 +158,7 @@
       badge: 'Datos Abiertos',
       color: 'teal'
     }
-  ];
+  ]);
 </script>
 
 <svelte:head>
@@ -219,7 +226,7 @@
       <h3 class="text-2xl font-black text-[#0A1526] tracking-tight">Q 58,812,000</h3>
       <p class="text-xs text-[#0A1526]/60 mt-2 flex items-center gap-1.5">
         <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
-        3 Obras de infraestructura activas
+        {stats.proyectosCount} Obras de infraestructura registradas
       </p>
     </a>
 
@@ -294,36 +301,46 @@
               <p class="text-[10px] font-bold uppercase tracking-wider text-[#0A1526]/40">Vigilancia de Caducidad Diplomática</p>
             </div>
           </div>
-          <span class="px-2.5 py-1 rounded-full bg-rose-50 text-rose-700 border border-rose-200 text-[10px] font-extrabold uppercase tracking-wider animate-pulse">
-            {stats.conveniosAlertas} Alerta Activa
+          <span class="px-2.5 py-1 rounded-full {stats.conveniosAlertas > 0 ? 'bg-rose-50 text-rose-700 border border-rose-200 animate-pulse' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'} text-[10px] font-extrabold uppercase tracking-wider">
+            {stats.conveniosAlertas} {stats.conveniosAlertas === 1 ? 'Alerta Activa' : 'Alertas Activas'}
           </span>
         </div>
 
-        {#each conveniosAlerta as c}
-          <div class="p-5 rounded-2xl bg-amber-50/60 border border-amber-200/80 mb-4">
-            <div class="flex items-start justify-between gap-3 mb-3">
-              <div>
-                <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-md bg-amber-200 text-amber-900 tracking-wider">
-                  {c.codigo}
-                </span>
-                <h3 class="text-sm font-black text-[#0A1526] mt-2 leading-snug">{c.nombre}</h3>
-                <p class="text-xs font-semibold text-[#0A1526]/60 mt-0.5">Cooperante: {c.entidadCooperante}</p>
+        {#if conveniosAlerta.length > 0}
+          {#each conveniosAlerta as c}
+            <div class="p-5 rounded-2xl bg-amber-50/60 border border-amber-200/80 mb-4">
+              <div class="flex items-start justify-between gap-3 mb-3">
+                <div>
+                  <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-md bg-amber-200 text-amber-900 tracking-wider">
+                    {c.codigo}
+                  </span>
+                  <h3 class="text-sm font-black text-[#0A1526] mt-2 leading-snug">{c.nombre}</h3>
+                  <p class="text-xs font-semibold text-[#0A1526]/60 mt-0.5">Cooperante: {c.entidadCooperante}</p>
+                </div>
+                <div class="text-right shrink-0">
+                  <span class="text-2xl font-black text-rose-600">{c.diasRestantes}</span>
+                  <p class="text-[9px] font-bold uppercase tracking-wider text-rose-700">Días Restantes</p>
+                </div>
               </div>
-              <div class="text-right shrink-0">
-                <span class="text-2xl font-black text-rose-600">{c.diasRestantes}</span>
-                <p class="text-[9px] font-bold uppercase tracking-wider text-rose-700">Días Restantes</p>
-              </div>
-            </div>
 
-            <!-- Barra de tiempo -->
-            <div class="w-full bg-amber-200/60 h-2 rounded-full overflow-hidden mt-3">
-              <div class="bg-rose-500 h-full rounded-full transition-all duration-500" style="width: 50%;"></div>
+              <!-- Barra de tiempo -->
+              <div class="w-full bg-amber-200/60 h-2 rounded-full overflow-hidden mt-3">
+                <div class="bg-rose-500 h-full rounded-full transition-all duration-500" style="width: 50%;"></div>
+              </div>
+              <p class="text-[10px] text-amber-900/80 font-medium mt-2">
+                ⚠️ Requiere emisión de dictamen técnico y adenda de renovación conforme Art. 15 del estatuto.
+              </p>
             </div>
-            <p class="text-[10px] text-amber-900/80 font-medium mt-2">
-              ⚠️ Requiere emisión de dictamen técnico y adenda de renovación conforme Art. 15 del estatuto.
-            </p>
+          {/each}
+        {:else}
+          <div class="p-6 rounded-2xl bg-emerald-50/60 border border-emerald-200/80 text-center space-y-2 mb-4">
+            <div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto">
+              <Icon name="check_circle" className="w-5 h-5" />
+            </div>
+            <p class="text-xs font-black text-emerald-950">Vigencia Diplomática Óptima</p>
+            <p class="text-[11px] text-emerald-800/80">No existen convenios con vencimiento menor a 90 días en la base de datos.</p>
           </div>
-        {/each}
+        {/if}
       </div>
 
       <div class="pt-4 border-t border-gray-100 flex items-center justify-between">

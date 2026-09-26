@@ -20,42 +20,15 @@
     descripcion: ''
   });
 
-  const PROYECTO_FALLBACK = {
-    id: 'AG01',
-    nombre: 'Sistema de Agua Potable y Conducción por Gravedad Santa Eulalia',
-    agenciaFinanciadora: 'USAID / DAI',
-    municipio: 'Santa Eulalia',
-    estado: 'En Ejecución',
-    porcentajeAvanceFisico: 78.5,
-    presupuestoMunicipal: 1200000,
-    presupuestoCooperacion: 8472000,
-    evidencias: [
-      {
-        id: 1,
-        urlArchivo: 'https://images.unsplash.com/photo-1541888086225-b829ccba6f6b?q=80&w=800&auto=format&fit=crop',
-        latitud: '15.7314',
-        longitud: '-91.4821',
-        descripcion: 'Caja de Captación y Línea de Conducción en Microcuenca Ixtapoc.',
-        fechaCaptura: new Date().toISOString()
-      },
-      {
-        id: 2,
-        urlArchivo: 'https://images.unsplash.com/photo-1590486803833-1c5dc8ddd4c8?q=80&w=800&auto=format&fit=crop',
-        latitud: '15.7289',
-        longitud: '-91.4795',
-        descripcion: 'Tanque de Distribución y Cloración - Prueba Hidrostática superada.',
-        fechaCaptura: new Date().toISOString()
-      }
-    ]
-  };
-
   const fetchProyecto = async () => {
+    loading = true;
     try {
-      loading = true;
       const { data } = await apiClient.get(`/proyectos/${projectId}`);
-      proyecto = data || PROYECTO_FALLBACK;
-    } catch {
-      proyecto = PROYECTO_FALLBACK;
+      proyecto = data;
+    } catch (err) {
+      console.error('Error al obtener proyecto:', err);
+      proyecto = null;
+      toast.error('No se pudo encontrar el proyecto en la base de datos');
     } finally {
       loading = false;
     }
@@ -86,29 +59,18 @@
     e.preventDefault();
     formLoading = true;
     try {
-      await apiClient.post(`/proyectos/${projectId}/evidencias`, formData);
-      toast.success('Evidencia registrada exitosamente');
+      await apiClient.post(`/proyectos/${projectId}/evidencias`, {
+        urlArchivo: formData.urlArchivo,
+        latitud: formData.latitud ? parseFloat(formData.latitud) : null,
+        longitud: formData.longitud ? parseFloat(formData.longitud) : null,
+        descripcion: formData.descripcion
+      });
+      toast.success('Evidencia guardada exitosamente en la base de datos');
       showModal = false;
-      const nueva = {
-        id: Date.now(),
-        ...formData,
-        fechaCaptura: new Date().toISOString()
-      };
-      if (proyecto) {
-        proyecto.evidencias = [nueva, ...(proyecto.evidencias || [])];
-      }
       formData = { urlArchivo: '', latitud: '', longitud: '', descripcion: '' };
-    } catch {
-      toast.info('Evidencia agregada localmente');
-      const nueva = {
-        id: Date.now(),
-        ...formData,
-        fechaCaptura: new Date().toISOString()
-      };
-      if (proyecto) {
-        proyecto.evidencias = [nueva, ...(proyecto.evidencias || [])];
-      }
-      showModal = false;
+      await fetchProyecto();
+    } catch (err) {
+      toast.error('Error al registrar evidencia en la base de datos: ' + (err.message || 'Error'));
     } finally {
       formLoading = false;
     }
@@ -248,7 +210,7 @@
                 <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
                 <div class="absolute top-3 left-3 bg-[#0A1526]/80 backdrop-blur-md rounded-lg px-2.5 py-1 text-white text-[9px] font-bold flex items-center gap-1.5">
                   <Icon name="calendar_today" className="w-3 h-3 text-[#3B82F6]" />
-                  {new Date(evidencia.fechaCaptura || Date.now()).toLocaleDateString('es-GT', { day: '2-digit', month: 'short', year: 'numeric' })}
+                  {evidencia.fechaCaptura ? new Date(evidencia.fechaCaptura).toLocaleDateString('es-GT', { day: '2-digit', month: 'short', year: 'numeric' }) : (evidencia.createdAt ? new Date(evidencia.createdAt).toLocaleDateString('es-GT', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Reciente')}
                 </div>
                 {#if evidencia.latitud && evidencia.longitud}
                   <div class="absolute top-3 right-3 bg-emerald-500 rounded-lg px-2 py-1 text-white text-[9px] font-black flex items-center gap-1">

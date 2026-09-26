@@ -5,130 +5,63 @@
   import { auth } from '$lib/stores/auth.svelte.js';
   import { toast } from 'svelte-sonner';
 
-  const PROYECTOS_PUBLICOS = [
-    {
-      id: 1,
-      codigo: 'MFN-2024-AG01',
-      nombre: 'Sistema de Agua Potable y Conducción por Gravedad',
-      municipio: 'Santa Eulalia',
-      cooperante: 'USAID / DAI',
-      monto: '$ 1,240,000 (Q 9,672,000)',
-      avance: 78.5,
-      estado: 'En Ejecución',
-      visibilidad: true
-    },
-    {
-      id: 2,
-      codigo: 'MFN-2024-VI04',
-      nombre: 'Puente Biregional San Mateo - Conexión Corredor Norte',
-      municipio: 'San Mateo Ixtatán',
-      cooperante: 'AECID España',
-      monto: '$ 2,850,000 (Q 22,230,000)',
-      avance: 42.0,
-      estado: 'Cimentación',
-      visibilidad: true
-    },
-    {
-      id: 3,
-      codigo: 'MFN-2024-PV08',
-      nombre: 'Pavimentación Asfáltica Tramo Barillas - Aldea San Ramón',
-      municipio: 'Barillas',
-      cooperante: 'MFN Fondos Propios',
-      monto: 'Q 7,078,000',
-      avance: 15.0,
-      estado: 'Terracería',
-      visibilidad: true
-    },
-    {
-      id: 4,
-      codigo: 'MFN-2023-PT02',
-      nombre: 'Planta de Tratamiento de Aguas Residuales Macro-Soloma',
-      municipio: 'San Pedro Soloma',
-      cooperante: 'BID / IADB',
-      monto: '$ 3,450,000 (Q 26,910,000)',
-      avance: 96.0,
-      estado: 'Recepción Previa',
-      visibilidad: true
-    }
-  ];
-
-  const ACTAS_PUBLICAS = [
-    {
-      numero: 'ACTA-01-2024',
-      fecha: '18 de Enero 2024',
-      municipio: 'Santa Eulalia',
-      resumen: 'Aprobación del Plan Operativo Anual y fijación de cuotas ordinarias.',
-      urlPdf: 'https://storage.mfn.gob.gt/actas/acta-01-2024.pdf',
-      visibilidad: true
-    },
-    {
-      numero: 'ACTA-02-2024',
-      fecha: '08 de Febrero 2024',
-      municipio: 'San Pedro Soloma',
-      resumen: 'Adjudicación de maquinaria vial para el corredor norte.',
-      urlPdf: 'https://storage.mfn.gob.gt/actas/acta-02-2024.pdf',
-      visibilidad: true
-    },
-    {
-      numero: 'ACTA-03-2024',
-      fecha: '05 de Marzo 2024',
-      municipio: 'San Rafael la Independencia',
-      resumen: 'Mesa interinstitucional de calidad de agua y desinfección con cloro.',
-      urlPdf: 'https://storage.mfn.gob.gt/actas/acta-03-2024.pdf',
-      visibilidad: true
-    }
-  ];
-
-  let proyectos = $state(PROYECTOS_PUBLICOS);
-  let actas = $state(ACTAS_PUBLICAS);
+  let proyectos = $state([]);
+  let actas = $state([]);
+  let estadisticas = $state({
+    coberturaAgua: 0,
+    coberturaSaneamiento: 0,
+    cloroConforme: 0,
+    totalViviendas: 0,
+    totalCensos: 0
+  });
   let activeTab = $state('proyectos'); // 'proyectos' | 'actas' | 'estadisticas'
   let searchQuery = $state('');
+  let loading = $state(true);
 
   const fetchTransparencia = async () => {
+    loading = true;
     try {
       const endpoint = auth.isAuthenticated ? '/transparencia/gestion' : '/transparencia/publico';
       const { data } = await apiClient.get(endpoint);
       
-      if (auth.isAuthenticated && Array.isArray(data) && data.length > 0) {
-        // Modo gestión: viene el array directo de publicaciones
-        actas = data.map(pub => ({
+      const publicaciones = data?.publicaciones || (Array.isArray(data) ? data : []);
+      const proys = data?.proyectosPublicos || [];
+      const stats = data?.estadisticas || null;
+
+      if (stats) {
+        estadisticas = stats;
+      }
+
+      if (Array.isArray(publicaciones)) {
+        actas = publicaciones.map(pub => ({
           id: pub.id,
           numero: pub.codigo,
-          fecha: new Date(pub.fechaPublicacion).toLocaleDateString('es-GT', { day: '2-digit', month: 'short', year: 'numeric' }),
+          fecha: pub.fechaPublicacion ? new Date(pub.fechaPublicacion).toLocaleDateString('es-GT', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Reciente',
           municipio: 'Regional',
-          resumen: pub.resumen,
+          resumen: pub.resumen || pub.titulo,
           urlPdf: '#',
           visibilidad: pub.visibilidad
         }));
-      } else if (data?.publicaciones) {
-        // Modo público ciudadano
-        if (data.publicaciones.length > 0) {
-          actas = data.publicaciones.map(pub => ({
-            id: pub.id,
-            numero: pub.codigo,
-            fecha: new Date(pub.fechaPublicacion).toLocaleDateString('es-GT', { day: '2-digit', month: 'short', year: 'numeric' }),
-            municipio: 'Regional',
-            resumen: pub.resumen,
-            urlPdf: '#',
-            visibilidad: pub.visibilidad
-          }));
-        }
-        if (data.proyectosPublicos && data.proyectosPublicos.length > 0) {
-          proyectos = data.proyectosPublicos.map(p => ({
-            id: p.id,
-            codigo: `MFN-2024-AG0${p.id}`,
-            nombre: p.nombre,
-            municipio: 'Regional',
-            cooperante: p.agenciaFinanciadora,
-            monto: `Q ${(p.presupuestoMunicipal + (p.presupuestoCooperacion || 0)).toLocaleString()}`,
-            avance: p.porcentajeAvanceFisico,
-            estado: p.estado,
-            visibilidad: true
-          }));
-        }
+      }
+
+      if (Array.isArray(proys)) {
+        proyectos = proys.map(p => ({
+          id: p.id,
+          codigo: `MFN-OBRA-${p.id.toString().padStart(3, '0')}`,
+          nombre: p.nombre,
+          municipio: 'Regional',
+          cooperante: p.agenciaFinanciadora || 'Fondos Propios MFN',
+          monto: `Q ${(p.presupuestoMunicipal + (p.presupuestoCooperacion || 0)).toLocaleString()}`,
+          avance: p.porcentajeAvanceFisico || 0,
+          estado: p.estado || 'En Ejecución',
+          visibilidad: true
+        }));
       }
     } catch (err) {
-      console.log('Utilizando publicaciones base de transparencia');
+      console.error('Error al cargar datos de transparencia desde BD:', err);
+      toast.error('No se pudo conectar con el portal de transparencia');
+    } finally {
+      loading = false;
     }
   };
 
@@ -151,17 +84,18 @@
       try {
         await apiClient.put(`/transparencia/${a.id}/visibilidad`, { visibilidad: nuevoEstado });
         toast.success(nuevoEstado ? 'Publicación habilitada en el portal' : 'Publicación ocultada al público');
-      } catch {
-        toast.info(nuevoEstado ? 'Publicación visible en sesión' : 'Publicación oculta en sesión');
+      } catch (err) {
+        a.visibilidad = !nuevoEstado;
+        actas = [...actas];
+        toast.error('Error al actualizar visibilidad en la base de datos');
       }
     } else {
-      toast.info(nuevoEstado ? 'Acta publicada en portal ciudadano' : 'Acta retirada de la vista pública');
+      toast.info(nuevoEstado ? 'Acta marcada pública' : 'Acta retirada de la vista pública');
     }
   }
 
   let proyectosVisibles = $derived(
     proyectos.filter(p => {
-      // Si está autenticado como Gerente, ve todos con switch; si es ciudadano, solo visibilidad: true
       if (!auth.isAuthenticated && !p.visibilidad) return false;
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
@@ -244,138 +178,161 @@
   </div>
 
   <span class="text-[11px] font-mono text-[#0A1526]/40">
-    Actualizado al 24 de Marzo 2024
+    Datos en Línea · Base de Datos Neon MFN
   </span>
 </div>
 
 <!-- CONTENIDO POR PESTAÑAS -->
-{#key activeTab}
-<div class="animate-scale-up">
-{#if activeTab === 'proyectos'}
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-    {#each proyectosVisibles as p}
-      <div class="bg-white border border-gray-100 rounded-[28px] p-7 shadow-[0_20px_60px_-15px_rgba(10,21,38,0.05)] card-lift flex flex-col justify-between">
-        <div>
-          <div class="flex items-center justify-between gap-3 mb-3">
-            <span class="text-[9px] font-mono font-bold text-[#3B82F6] bg-blue-50 px-2 py-0.5 rounded-md">
-              {p.codigo}
-            </span>
-            
-            <div class="flex items-center gap-2">
-              <span class="px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-100">
-                {p.estado}
-              </span>
-              {#if auth.isAuthenticated}
-                <button 
-                  onclick={() => toggleVisibilidadProyecto(p)}
-                  class="text-[9px] font-bold px-2 py-0.5 rounded border {p.visibilidad ? 'border-emerald-200 text-emerald-700' : 'border-rose-200 text-rose-700 bg-rose-50'}"
-                  title="Control Gerencial de Visibilidad RF5"
-                >
-                  {p.visibilidad ? 'Visible' : 'Oculto'}
-                </button>
-              {/if}
-            </div>
-          </div>
-
-          <h3 class="text-lg font-black text-[#0A1526] tracking-tight leading-snug mb-1">
-            {p.nombre}
-          </h3>
-          <p class="text-[12px] font-bold text-[#0A1526]/40 mb-4">{p.municipio} · Financiado por {p.cooperante}</p>
-
-          <div class="p-4 rounded-2xl bg-[#F8FAFC] border border-gray-100 mb-5">
-            <span class="text-[9px] font-bold uppercase tracking-wider text-[#0A1526]/40 block mb-1">Inversión Aprobada</span>
-            <p class="text-base font-black text-[#0A1526]">{p.monto}</p>
-          </div>
-
-          <div class="space-y-1.5">
-            <div class="flex justify-between text-[11px] font-bold">
-              <span class="text-[#0A1526]/50">Avance Físico Certificado:</span>
-              <span class="text-[#3B82F6] font-black">{p.avance}%</span>
-            </div>
-            <div class="w-full bg-gray-200 rounded-full h-1.5 overflow-hidden">
-              <div class="bg-[#3B82F6] h-1.5 rounded-full transition-all duration-500" style="width: {p.avance}%"></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="pt-5 mt-5 border-t border-gray-50 flex items-center justify-between text-[11px]">
-          <span class="text-[#0A1526]/40 font-medium">Supervisión: Ing. Carlos Méndez</span>
-          <span class="text-emerald-700 font-bold flex items-center gap-1">
-            <Icon name="verified" className="w-3.5 h-3.5" />
-            <span>EXIF Validado</span>
-          </span>
-        </div>
-      </div>
-    {/each}
-  </div>
-{:else if activeTab === 'actas'}
-  <div class="bg-white border border-gray-100 rounded-[32px] p-8 shadow-[0_20px_60px_-15px_rgba(10,21,38,0.05)] animate-fade-in">
-    <div class="space-y-4">
-      {#each actasVisibles as a}
-        <div class="bg-[#F8FAFC] border border-gray-100 rounded-[22px] p-6 transition-all duration-300 hover:shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div class="space-y-1">
-            <div class="flex items-center gap-2">
-              <span class="text-[11px] font-mono font-bold text-[#3B82F6] bg-blue-50 px-2.5 py-0.5 rounded-md">
-                {a.numero}
-              </span>
-              <span class="text-[11px] text-[#0A1526]/40">{a.fecha}</span>
-              <span class="text-[11px] font-bold text-[#0A1526]">· {a.municipio}</span>
-            </div>
-            <p class="text-[13px] font-bold text-[#0A1526] leading-snug">{a.resumen}</p>
-          </div>
-
-          <div class="flex items-center gap-3 shrink-0">
-            {#if auth.isAuthenticated}
-              <button 
-                onclick={() => toggleVisibilidadActa(a)}
-                class="text-[9px] font-bold px-2 py-1 rounded border {a.visibilidad ? 'border-emerald-200 text-emerald-700' : 'border-rose-200 text-rose-700 bg-rose-50'}"
-              >
-                {a.visibilidad ? 'Público' : 'Retirado'}
-              </button>
-            {/if}
-            <a 
-              href={a.urlPdf} 
-              target="_blank"
-              class="px-5 py-2.5 bg-[#0A1526] hover:bg-black text-white text-[12px] font-bold rounded-full shadow-xs flex items-center gap-2 transition-colors"
-            >
-              <Icon name="download" className="w-3.5 h-3.5 text-[#3B82F6]" />
-              <span>Descargar Acta PDF</span>
-            </a>
-          </div>
-        </div>
-      {/each}
-    </div>
+{#if loading}
+  <div class="py-24 text-center bg-white border border-gray-100 rounded-[28px] animate-pulse">
+    <div class="w-8 h-8 border-3 border-[#3B82F6] border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+    <p class="text-[13px] font-bold text-[#0A1526]">Cargando portal de transparencia desde la base de datos...</p>
   </div>
 {:else}
-  <!-- Indicadores ASH Abiertos -->
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 animate-fade-in">
-    <div class="bg-white border border-gray-100 rounded-[28px] p-7 shadow-xs">
-      <div class="flex items-center justify-between mb-3">
-        <span class="text-[9px] font-extrabold uppercase tracking-wider text-[#0A1526]/40">Cobertura Regional de Agua</span>
-        <Icon name="water_drop" className="w-5 h-5 text-[#3B82F6]" />
+  {#key activeTab}
+  <div class="animate-scale-up">
+  {#if activeTab === 'proyectos'}
+    {#if proyectosVisibles.length === 0}
+      <div class="py-16 text-center bg-white border border-gray-100 rounded-[28px]">
+        <Icon name="construction" className="w-10 h-10 text-gray-300 mx-auto mb-3" />
+        <p class="text-sm font-bold text-[#0A1526]">No hay proyectos públicos disponibles</p>
+        <p class="text-xs text-[#0A1526]/40 mt-1">No se encontraron obras registradas en la base de datos.</p>
       </div>
-      <p class="text-[32px] font-black text-[#0A1526]">68.4%</p>
-      <p class="text-[12px] text-[#0A1526]/50 mt-1">Hogares con servicio continuo en los 6 municipios.</p>
-    </div>
+    {:else}
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {#each proyectosVisibles as p}
+          <div class="bg-white border border-gray-100 rounded-[28px] p-7 shadow-[0_20px_60px_-15px_rgba(10,21,38,0.05)] card-lift flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between gap-3 mb-3">
+                <span class="text-[9px] font-mono font-bold text-[#3B82F6] bg-blue-50 px-2 py-0.5 rounded-md">
+                  {p.codigo}
+                </span>
+                
+                <div class="flex items-center gap-2">
+                  <span class="px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-100">
+                    {p.estado}
+                  </span>
+                  {#if auth.isAuthenticated}
+                    <button 
+                      onclick={() => toggleVisibilidadProyecto(p)}
+                      class="text-[9px] font-bold px-2 py-0.5 rounded border {p.visibilidad ? 'border-emerald-200 text-emerald-700' : 'border-rose-200 text-rose-700 bg-rose-50'}"
+                      title="Control Gerencial de Visibilidad RF5"
+                    >
+                      {p.visibilidad ? 'Visible' : 'Oculto'}
+                    </button>
+                  {/if}
+                </div>
+              </div>
 
-    <div class="bg-white border border-gray-100 rounded-[28px] p-7 shadow-xs">
-      <div class="flex items-center justify-between mb-3">
-        <span class="text-[9px] font-extrabold uppercase tracking-wider text-[#0A1526]/40">Cobertura de Saneamiento</span>
-        <Icon name="sanitizer" className="w-5 h-5 text-emerald-600" />
-      </div>
-      <p class="text-[32px] font-black text-[#0A1526]">51.2%</p>
-      <p class="text-[12px] text-[#0A1526]/50 mt-1">Letrinas mejoradas y red de drenaje sanitario.</p>
-    </div>
+              <h3 class="text-lg font-black text-[#0A1526] tracking-tight leading-snug mb-1">
+                {p.nombre}
+              </h3>
+              <p class="text-[12px] font-bold text-[#0A1526]/40 mb-4">{p.municipio} · Financiado por {p.cooperante}</p>
 
-    <div class="bg-white border border-gray-100 rounded-[28px] p-7 shadow-xs">
-      <div class="flex items-center justify-between mb-3">
-        <span class="text-[9px] font-extrabold uppercase tracking-wider text-[#0A1526]/40">Sistemas con Cloro Conforme</span>
-        <Icon name="science" className="w-5 h-5 text-amber-500" />
+              <div class="p-4 rounded-2xl bg-[#F8FAFC] border border-gray-100 mb-5">
+                <span class="text-[9px] font-bold uppercase tracking-wider text-[#0A1526]/40 block mb-1">Inversión Aprobada</span>
+                <p class="text-base font-black text-[#0A1526]">{p.monto}</p>
+              </div>
+
+              <div class="space-y-1.5">
+                <div class="flex justify-between text-[11px] font-bold">
+                  <span class="text-[#0A1526]/50">Avance Físico Certificado:</span>
+                  <span class="text-[#3B82F6] font-black">{p.avance}%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-1.5 overflow-hidden">
+                  <div class="bg-[#3B82F6] h-1.5 rounded-full transition-all duration-500" style="width: {p.avance}%"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="pt-5 mt-5 border-t border-gray-50 flex items-center justify-between text-[11px]">
+              <span class="text-[#0A1526]/40 font-medium">Supervisión: Ing. Técnico MFN</span>
+              <span class="text-emerald-700 font-bold flex items-center gap-1">
+                <Icon name="verified" className="w-3.5 h-3.5" />
+                <span>EXIF Validado</span>
+              </span>
+            </div>
+          </div>
+        {/each}
       </div>
-      <p class="text-[32px] font-black text-[#0A1526]">72.5%</p>
-      <p class="text-[12px] text-[#0A1526]/50 mt-1">Cumplen norma técnica nacional COGUANOR.</p>
+    {/if}
+  {:else if activeTab === 'actas'}
+    <div class="bg-white border border-gray-100 rounded-[32px] p-8 shadow-[0_20px_60px_-15px_rgba(10,21,38,0.05)] animate-fade-in">
+      {#if actasVisibles.length === 0}
+        <div class="py-16 text-center">
+          <Icon name="gavel" className="w-10 h-10 text-gray-300 mx-auto mb-3" />
+          <p class="text-sm font-bold text-[#0A1526]">No hay publicaciones o actas registradas</p>
+          <p class="text-xs text-[#0A1526]/40 mt-1">No se encontraron resoluciones públicas en la base de datos.</p>
+        </div>
+      {:else}
+        <div class="space-y-4">
+          {#each actasVisibles as a}
+            <div class="bg-[#F8FAFC] border border-gray-100 rounded-[22px] p-6 transition-all duration-300 hover:shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div class="space-y-1">
+                <div class="flex items-center gap-2">
+                  <span class="text-[11px] font-mono font-bold text-[#3B82F6] bg-blue-50 px-2.5 py-0.5 rounded-md">
+                    {a.numero}
+                  </span>
+                  <span class="text-[11px] text-[#0A1526]/40">{a.fecha}</span>
+                  <span class="text-[11px] font-bold text-[#0A1526]">· {a.municipio}</span>
+                </div>
+                <p class="text-[13px] font-bold text-[#0A1526] leading-snug">{a.resumen}</p>
+              </div>
+
+              <div class="flex items-center gap-3 shrink-0">
+                {#if auth.isAuthenticated}
+                  <button 
+                    onclick={() => toggleVisibilidadActa(a)}
+                    class="text-[9px] font-bold px-2 py-1 rounded border {a.visibilidad ? 'border-emerald-200 text-emerald-700' : 'border-rose-200 text-rose-700 bg-rose-50'}"
+                  >
+                    {a.visibilidad ? 'Público' : 'Retirado'}
+                  </button>
+                {/if}
+                <a 
+                  href={a.urlPdf} 
+                  target="_blank"
+                  class="px-5 py-2.5 bg-[#0A1526] hover:bg-black text-white text-[12px] font-bold rounded-full shadow-xs flex items-center gap-2 transition-colors"
+                >
+                  <Icon name="download" className="w-3.5 h-3.5 text-[#3B82F6]" />
+                  <span>Descargar Acta PDF</span>
+                </a>
+              </div>
+            </div>
+          {/each}
+        </div>
+      {/if}
     </div>
+  {:else}
+    <!-- Indicadores ASH Abiertos desde DB -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 animate-fade-in">
+      <div class="bg-white border border-gray-100 rounded-[28px] p-7 shadow-xs">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-[9px] font-extrabold uppercase tracking-wider text-[#0A1526]/40">Cobertura Regional de Agua</span>
+          <Icon name="water_drop" className="w-5 h-5 text-[#3B82F6]" />
+        </div>
+        <p class="text-[32px] font-black text-[#0A1526]">{estadisticas.coberturaAgua}%</p>
+        <p class="text-[12px] text-[#0A1526]/50 mt-1">Hogares con servicio continuo en los 6 municipios ({estadisticas.totalViviendas} viviendas en base de datos).</p>
+      </div>
+
+      <div class="bg-white border border-gray-100 rounded-[28px] p-7 shadow-xs">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-[9px] font-extrabold uppercase tracking-wider text-[#0A1526]/40">Cobertura de Saneamiento</span>
+          <Icon name="sanitizer" className="w-5 h-5 text-emerald-600" />
+        </div>
+        <p class="text-[32px] font-black text-[#0A1526]">{estadisticas.coberturaSaneamiento}%</p>
+        <p class="text-[12px] text-[#0A1526]/50 mt-1">Letrinas mejoradas y red de drenaje sanitario auditada.</p>
+      </div>
+
+      <div class="bg-white border border-gray-100 rounded-[28px] p-7 shadow-xs">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-[9px] font-extrabold uppercase tracking-wider text-[#0A1526]/40">Sistemas con Cloro Conforme</span>
+          <Icon name="science" className="w-5 h-5 text-amber-500" />
+        </div>
+        <p class="text-[32px] font-black text-[#0A1526]">{estadisticas.cloroConforme}%</p>
+        <p class="text-[12px] text-[#0A1526]/50 mt-1">Cumplen norma técnica nacional COGUANOR ({estadisticas.totalCensos} censos OMAS).</p>
+      </div>
+    </div>
+  {/if}
   </div>
+  {/key}
 {/if}
-</div>
-{/key}

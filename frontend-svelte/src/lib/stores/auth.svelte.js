@@ -12,19 +12,14 @@ export const ROLES = {
 };
 
 let token = $state(
-  typeof localStorage !== 'undefined' && localStorage.getItem('mfn_token')
-    ? localStorage.getItem('mfn_token')
-    : 'demo-token-mfn'
+  typeof localStorage !== 'undefined'
+    ? (localStorage.getItem('sirh_token') || localStorage.getItem('mfn_token'))
+    : null
 );
 let user = $state(
-  typeof localStorage !== 'undefined' && localStorage.getItem('mfn_user')
-    ? JSON.parse(localStorage.getItem('mfn_user'))
-    : {
-        nombre: 'Ing. Carlos Méndez',
-        correo: 'gerencia@mfn.gob.gt',
-        rol: 'GE',
-        rolNombre: 'Gerencia Ejecutiva'
-      }
+  typeof localStorage !== 'undefined' && (localStorage.getItem('sirh_user') || localStorage.getItem('mfn_user'))
+    ? JSON.parse(localStorage.getItem('sirh_user') || localStorage.getItem('mfn_user'))
+    : null
 );
 let loading = $state(false);
 
@@ -52,8 +47,12 @@ export const auth = {
     loading = true;
     try {
       const { data } = await apiClient.post('/auth/login', { correo, contrasena });
-      localStorage.setItem('sirh_token', data.token);
-      localStorage.setItem('sirh_user', JSON.stringify(data.user));
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem('sirh_token', data.token);
+        localStorage.setItem('sirh_user', JSON.stringify(data.user));
+        localStorage.setItem('mfn_token', data.token);
+        localStorage.setItem('mfn_user', JSON.stringify(data.user));
+      }
       token = data.token;
       user = data.user;
       return data.user;
@@ -63,8 +62,12 @@ export const auth = {
   },
 
   logout() {
-    localStorage.removeItem('sirh_token');
-    localStorage.removeItem('sirh_user');
+    if (typeof localStorage !== 'undefined') {
+      localStorage.removeItem('sirh_token');
+      localStorage.removeItem('sirh_user');
+      localStorage.removeItem('mfn_token');
+      localStorage.removeItem('mfn_user');
+    }
     token = null;
     user = null;
   }

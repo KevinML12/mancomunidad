@@ -5,107 +5,16 @@
   import { toast } from 'svelte-sonner';
   import { fade, fly } from 'svelte/transition';
 
-  const PROYECTOS_DEFAULT = [
-    {
-      id: 'AG01',
-      codigo: 'MFN-2024-',
-      sufijo: 'AG01',
-      nombre: 'Sistema de Agua Potable y Conducción por Gravedad',
-      nombreDetalle: 'Sistema de Agua Potable y Conducción por Gravedad Santa Eulalia',
-      agencia: 'USAID / DAI',
-      municipio: 'Santa Eulalia',
-      subregion: 'MICROCUENCA IXTAPOC',
-      presupuestoUsd: '$1,240,000',
-      presupuestoQ: 'Q 9,672,000',
-      estado: 'En Ejecución',
-      estadoTipo: 'emerald',
-      avance: 78.5,
-      etapa: 'ETAPA 4/5',
-      convenio: 'Convenio Vinculante USAID-GUA-089',
-      descripcion: 'Intervención intermunicipal prioritaria orientada a garantizar caudal continuo y desinfección automatizada a 14,200 habitantes. Comprende obra de captación superficial, desarenador, 18.4 km de tubería HG de 4 pulgadas y tanque de dosificación de cloro.',
-      aprobado: '$1,240,000',
-      devengado: '$973,400',
-      saldo: '$266,600',
-      hallazgos: 0
-    },
-    {
-      id: 'VI04',
-      codigo: 'MFN-2024-',
-      sufijo: 'VI04',
-      nombre: 'Puente Biregional San Mateo - Conexión Corredor Norte',
-      nombreDetalle: 'Puente Biregional San Mateo - Conexión Corredor Norte San Mateo Ixtatán',
-      agencia: 'AECID España',
-      municipio: 'San Mateo Ixtatán',
-      subregion: 'RÍO YOLCULTEC',
-      presupuestoUsd: '$2,850,000',
-      presupuestoQ: 'Q 22,230,000',
-      estado: 'Cimentación',
-      estadoTipo: 'amber',
-      avance: 42.0,
-      etapa: 'ETAPA 2/5',
-      convenio: 'Convenio Vinculante AECID-GT-114',
-      descripcion: 'Construcción de infraestructura vial estratégica de conexión binacional sobre el Río Yolcultec. Estructura mixta con zapatas de concreto armado y superestructura metálica para soporte de carga pesada.',
-      aprobado: '$2,850,000',
-      devengado: '$1,197,000',
-      saldo: '$1,653,000',
-      hallazgos: 0
-    },
-    {
-      id: 'PV08',
-      codigo: 'MFN-2024-',
-      sufijo: 'PV08',
-      nombre: 'Pavimentación Asfáltica Tramo Barillas - Aldea San Ramón',
-      nombreDetalle: 'Pavimentación Asfáltica Tramo Barillas - Aldea San Ramón',
-      agencia: 'MFN Propio',
-      municipio: 'Barillas',
-      subregion: 'SECTOR FRONTERIZO',
-      presupuestoUsd: '$918,000',
-      presupuestoQ: 'Q 7,078,000',
-      estado: 'Terracería',
-      estadoTipo: 'blue',
-      avance: 15.0,
-      etapa: 'ETAPA 1/4',
-      convenio: 'Fondo Mancomunado Extraordinario MFN-2024',
-      descripcion: 'Mejoramiento vial mediante colocación de carpeta asfáltica en caliente y cunetas de concreto hidráulico a lo largo de 8.5 km en la franja fronteriza.',
-      aprobado: '$918,000',
-      devengado: '$137,700',
-      saldo: '$780,300',
-      hallazgos: 0
-    },
-    {
-      id: 'PT02',
-      codigo: 'MFN-2023-',
-      sufijo: 'PT02',
-      nombre: 'Planta de Tratamiento de Aguas Residuales Macro-Soloma',
-      nombreDetalle: 'Planta de Tratamiento de Aguas Residuales Macro-Soloma',
-      agencia: 'BID / IADB',
-      municipio: 'San Pedro Soloma',
-      subregion: 'VALLE CENTRAL',
-      presupuestoUsd: '$3,450,000',
-      presupuestoQ: 'Q 26,910,000',
-      estado: 'Recepción Previa',
-      estadoTipo: 'emerald',
-      avance: 96.0,
-      etapa: 'ETAPA 5/5',
-      convenio: 'Convenio de Cooperación Reembolsable BID-GUA-002',
-      descripcion: 'Planta de biofiltración y lodos activados con capacidad de tratamiento de 45 litros por segundo, reduciendo la contaminación de la cuenca hidrográfica del Río San Pedro.',
-      aprobado: '$3,450,000',
-      devengado: '$3,312,000',
-      saldo: '$138,000',
-      hallazgos: 0
-    }
-  ];
-
-  let proyectos = $state(PROYECTOS_DEFAULT);
-  let selectedProyecto = $state(PROYECTOS_DEFAULT[0]);
-  let loading = $state(false);
+  let proyectos = $state([]);
+  let selectedProyecto = $state(null);
+  let loading = $state(true);
   
   // Modal states
   let showModal = $state(false);
   let formLoading = $state(false);
   let formData = $state({
     nombre: '',
-    agenciaFinanciadora: '',
+    agenciaFinanciadora: 'USAID / DAI',
     municipio: 'Santa Eulalia',
     fechaInicioPlanificada: '',
     fechaFinPlanificada: '',
@@ -114,25 +23,47 @@
   });
 
   const fetchProyectos = async () => {
+    loading = true;
     try {
       const { data } = await apiClient.get('/proyectos');
-      if (data && data.length > 0) {
-        // Enlazar los proyectos de la base de datos con los visuales
-        const merged = data.map((d, idx) => ({
-          ...PROYECTOS_DEFAULT[idx % PROYECTOS_DEFAULT.length],
-          id: d.id.toString(),
-          sufijo: `AG${d.id.toString().padStart(2, '0')}`,
-          nombre: d.nombre,
-          nombreDetalle: d.nombre,
-          agencia: d.agenciaFinanciadora || 'USAID / DAI',
-          avance: d.porcentajeAvanceFisico || 78.5,
-          estado: d.estado || 'En Ejecución'
-        }));
-        proyectos = merged;
-        selectedProyecto = merged[0];
+      if (Array.isArray(data)) {
+        proyectos = data.map((d) => {
+          const totalQ = (d.presupuestoMunicipal || 0) + (d.presupuestoCooperacion || 0);
+          return {
+            id: d.id.toString(),
+            codigo: 'MFN-2024-',
+            sufijo: `AG${d.id.toString().padStart(2, '0')}`,
+            nombre: d.nombre,
+            nombreDetalle: d.nombre,
+            agencia: d.agenciaFinanciadora || 'Cooperación Internacional',
+            municipio: d.municipio || 'Regional',
+            subregion: 'TERRITORIO MFN',
+            presupuestoUsd: `$${Math.round(totalQ / 7.8).toLocaleString()}`,
+            presupuestoQ: `Q ${totalQ.toLocaleString()}`,
+            estado: d.estado || 'Planificación',
+            estadoTipo: d.estado === 'Finalizado' ? 'emerald' : d.estado === 'Ejecución' ? 'blue' : 'amber',
+            avance: d.porcentajeAvanceFisico || 0,
+            etapa: d.porcentajeAvanceFisico > 80 ? 'ETAPA 4/5' : d.porcentajeAvanceFisico > 40 ? 'ETAPA 2/5' : 'ETAPA 1/5',
+            convenio: `Convenio Institucional MFN-${d.id}`,
+            descripcion: `Proyecto de inversión pública registrado en la base de datos oficial. Agencia financiadora: ${d.agenciaFinanciadora}.`,
+            aprobado: `Q ${totalQ.toLocaleString()}`,
+            devengado: `Q ${Math.round(totalQ * ((d.porcentajeAvanceFisico || 0) / 100)).toLocaleString()}`,
+            saldo: `Q ${Math.round(totalQ * (1 - ((d.porcentajeAvanceFisico || 0) / 100))).toLocaleString()}`,
+            hallazgos: 0,
+            evidenciasCount: d._count?.evidencias || 0
+          };
+        });
+        if (proyectos.length > 0 && !selectedProyecto) {
+          selectedProyecto = proyectos[0];
+        } else if (selectedProyecto) {
+          selectedProyecto = proyectos.find(p => p.id === selectedProyecto.id) || proyectos[0] || null;
+        }
       }
     } catch (err) {
-      console.log('Utilizando cartera predeterminada MFN');
+      console.error('Error al consultar proyectos de la base de datos:', err);
+      toast.error('No se pudo cargar la cartera de proyectos de la BD');
+    } finally {
+      loading = false;
     }
   };
 
@@ -144,35 +75,17 @@
     e.preventDefault();
     formLoading = true;
     try {
-      await apiClient.post('/proyectos', formData);
-      toast.success('Proyecto creado exitosamente');
+      await apiClient.post('/proyectos', {
+        ...formData,
+        fechaInicioPlanificada: formData.fechaInicioPlanificada || new Date().toISOString().split('T')[0],
+        presupuestoMunicipal: Number(formData.presupuestoMunicipal),
+        presupuestoCooperacion: Number(formData.presupuestoCooperacion)
+      });
+      toast.success('Proyecto guardado en la base de datos');
       showModal = false;
-      const nuevo = {
-        id: (proyectos.length + 1).toString(),
-        codigo: 'MFN-2024-',
-        sufijo: `AG${(proyectos.length + 1).toString().padStart(2, '0')}`,
-        nombre: formData.nombre,
-        nombreDetalle: formData.nombre,
-        agencia: formData.agenciaFinanciadora,
-        municipio: formData.municipio,
-        subregion: 'ZONA DE INVERSIÓN',
-        presupuestoUsd: `$${Math.round((Number(formData.presupuestoMunicipal) + Number(formData.presupuestoCooperacion)) / 7.8).toLocaleString('en-US')}`,
-        presupuestoQ: `Q ${(Number(formData.presupuestoMunicipal) + Number(formData.presupuestoCooperacion)).toLocaleString('es-GT')}`,
-        estado: 'En Ejecución',
-        estadoTipo: 'emerald',
-        avance: 10.0,
-        etapa: 'ETAPA 1/5',
-        convenio: `Convenio Institucional ${formData.agenciaFinanciadora}`,
-        descripcion: 'Nuevo proyecto registrado en la cartera de inversiones intermunicipales.',
-        aprobado: `$${Math.round((Number(formData.presupuestoMunicipal) + Number(formData.presupuestoCooperacion)) / 7.8).toLocaleString('en-US')}`,
-        devengado: '$0',
-        saldo: `$${Math.round((Number(formData.presupuestoMunicipal) + Number(formData.presupuestoCooperacion)) / 7.8).toLocaleString('en-US')}`,
-        hallazgos: 0
-      };
-      proyectos = [nuevo, ...proyectos];
-      selectedProyecto = nuevo;
+      await fetchProyectos();
     } catch (err) {
-      toast.error('Error al crear proyecto');
+      toast.error('Error al guardar el proyecto en la base de datos');
     } finally {
       formLoading = false;
     }

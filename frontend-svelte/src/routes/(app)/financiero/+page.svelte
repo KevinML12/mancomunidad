@@ -5,89 +5,45 @@
   import { toast } from 'svelte-sonner';
   import { fade, fly } from 'svelte/transition';
 
-  const MUNICIPIOS_MFN = [
-    { nombre: 'Santa Eulalia', cuotasPagadas: 180000, cuotasEsperadas: 180000, estado: 'Solvente', ultimoAporte: '15 Mar 2024' },
-    { nombre: 'San Pedro Soloma', cuotasPagadas: 180000, cuotasEsperadas: 180000, estado: 'Solvente', ultimoAporte: '10 Mar 2024' },
-    { nombre: 'San Rafael la Independencia', cuotasPagadas: 180000, cuotasEsperadas: 180000, estado: 'Solvente', ultimoAporte: '12 Mar 2024' },
-    { nombre: 'San Mateo Ixtatán', cuotasPagadas: 150000, cuotasEsperadas: 180000, estado: 'Atraso 2 Meses', ultimoAporte: '15 Ene 2024' },
-    { nombre: 'Santa Cruz Barillas', cuotasPagadas: 180000, cuotasEsperadas: 180000, estado: 'Solvente', ultimoAporte: '14 Mar 2024' },
-    { nombre: 'San Miguel Acatán', cuotasPagadas: 135000, cuotasEsperadas: 180000, estado: 'Atraso 3 Meses', ultimoAporte: '18 Dic 2023' },
+  const LISTA_MUNICIPIOS = [
+    'Santa Eulalia',
+    'San Pedro Soloma',
+    'San Rafael la Independencia',
+    'San Mateo Ixtatán',
+    'Santa Cruz Barillas',
+    'San Miguel Acatán'
   ];
 
-  const TRANSACCIONES_DEFAULT = [
-    {
-      id: 1,
-      codigo: 'FIN-2024-ING0042',
-      tipo: 'Ingreso',
-      cuentaBancaria: 'Fondos Públicos',
-      categoria: 'Cuota Ordinaria',
-      municipio: 'Santa Eulalia',
-      monto: 15000,
-      comprobanteTipo: 'Recibo CGC 63-A2',
-      comprobanteNumero: 'Serie AG-88921',
-      descripcion: 'Aporte mensual municipal correspondiente al mes de Marzo 2024.',
-      fecha: '2024-03-15',
-      urlComprobante: null
-    },
-    {
-      id: 2,
-      codigo: 'FIN-2024-ING0043',
-      tipo: 'Ingreso',
-      cuentaBancaria: 'Cooperación Internacional',
-      categoria: 'Donación',
-      municipio: 'Regional',
-      monto: 780000,
-      comprobanteTipo: 'Recibo SAT',
-      comprobanteNumero: 'SAT-DON-2024-019',
-      descripcion: 'Desembolso Q1 Proyecto Agua y Saneamiento USAID/DAI.',
-      fecha: '2024-03-14',
-      urlComprobante: 'https://storage.mfn.gob.gt/comprobantes/usaid-q1.pdf'
-    },
-    {
-      id: 3,
-      codigo: 'FIN-2024-EGR0019',
-      tipo: 'Egreso',
-      cuentaBancaria: 'Fondos Públicos',
-      categoria: 'Caja Chica',
-      municipio: 'Santa Eulalia',
-      monto: 850,
-      comprobanteTipo: 'Factura SAT FEL',
-      comprobanteNumero: 'FEL-D7A8-9921',
-      descripcion: 'Compra de combustible para camioneta institucional supervisión técnica de obra.',
-      fecha: '2024-03-12',
-      urlComprobante: 'https://images.unsplash.com/photo-1554415707-9e4966668834?q=80&w=400&auto=format&fit=crop'
-    },
-    {
-      id: 4,
-      codigo: 'FIN-2024-EGR0020',
-      tipo: 'Egreso',
-      cuentaBancaria: 'Fondos Públicos',
-      categoria: 'Caja Chica',
-      municipio: 'Regional',
-      monto: 420,
-      comprobanteTipo: 'Factura SAT FEL',
-      comprobanteNumero: 'FEL-B421-1102',
-      descripcion: 'Papelería y tóner para actas de asamblea general.',
-      fecha: '2024-03-11',
-      urlComprobante: 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?q=80&w=400&auto=format&fit=crop'
-    },
-    {
-      id: 5,
-      codigo: 'FIN-2024-ING0044',
-      tipo: 'Ingreso',
-      cuentaBancaria: 'Fondos Públicos',
-      categoria: 'Cuota Ordinaria',
-      municipio: 'San Pedro Soloma',
-      monto: 15000,
-      comprobanteTipo: 'Recibo CGC 63-A2',
-      comprobanteNumero: 'Serie AG-88922',
-      descripcion: 'Aporte mensual municipal correspondiente al mes de Marzo 2024.',
-      fecha: '2024-03-10',
-      urlComprobante: null
+  let transacciones = $state([]);
+  let balance = $state({
+    ingresosTotales: 0,
+    egresosTotales: 0,
+    saldoDisponibleTotal: 0,
+    cuentas: {
+      fondosPublicos: { ingresos: 0, egresos: 0, saldo: 0 },
+      cooperacion: { ingresos: 0, egresos: 0, saldo: 0 }
     }
-  ];
+  });
+  let loading = $state(true);
 
-  let transacciones = $state(TRANSACCIONES_DEFAULT);
+  // Derivar las cuotas y solvencia de los municipios a partir de las transacciones reales en la BD
+  let municipiosMFN = $derived(
+    LISTA_MUNICIPIOS.map(nombre => {
+      const txs = transacciones.filter(t => t.municipio === nombre && t.categoria === 'Cuota Ordinaria' && t.tipo === 'Ingreso');
+      const cuotasPagadas = txs.reduce((acc, t) => acc + (t.monto || 0), 0);
+      const cuotasEsperadas = 180000;
+      const ultimo = txs[0]?.fecha ? new Date(txs[0].fecha).toLocaleDateString('es-GT', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Sin aportes';
+      const estado = cuotasPagadas >= cuotasEsperadas ? 'Solvente' : cuotasPagadas > 0 ? `Atraso ${Math.max(1, 12 - Math.floor(cuotasPagadas / 15000))} Meses` : 'Sin aportes';
+      return {
+        nombre,
+        cuotasPagadas,
+        cuotasEsperadas,
+        estado,
+        ultimoAporte: ultimo
+      };
+    })
+  );
+
   let filtroCuenta = $state('todas');
   let filtroTipo = $state('todos');
   let searchQuery = $state('');
@@ -109,11 +65,23 @@
   });
 
   async function fetchFinanciero() {
+    loading = true;
     try {
-      const { data } = await apiClient.get('/financiero/transacciones');
-      if (data && data.length > 0) transacciones = data;
-    } catch {
-      console.log('Utilizando libro auxiliar contable MFN');
+      const [resTx, resBal] = await Promise.allSettled([
+        apiClient.get('/financiero/transacciones'),
+        apiClient.get('/financiero/balance')
+      ]);
+      if (resTx.status === 'fulfilled' && Array.isArray(resTx.value.data)) {
+        transacciones = resTx.value.data;
+      }
+      if (resBal.status === 'fulfilled' && resBal.value.data) {
+        balance = resBal.value.data;
+      }
+    } catch (err) {
+      console.error('Error al cargar datos financieros de la BD:', err);
+      toast.error('No se pudo conectar con el módulo financiero de la base de datos');
+    } finally {
+      loading = false;
     }
   }
 
@@ -140,11 +108,11 @@
         tipo: 'Egreso',
         cuentaBancaria: 'Fondos Públicos',
         categoria: 'Caja Chica',
-        municipio: 'Santa Eulalia',
+        municipio: 'Regional',
         monto: 450,
         comprobanteTipo: 'Factura SAT FEL',
         comprobanteNumero: 'FEL-',
-        urlComprobante: 'https://images.unsplash.com/photo-1554415707-9e4966668834?q=80&w=400&auto=format&fit=crop',
+        urlComprobante: '',
         descripcion: 'Gasto operativo de oficina central.'
       };
     }
@@ -160,25 +128,16 @@
 
     formLoading = true;
     try {
-      const count = transacciones.length + 1;
-      const prefijo = nuevaTx.tipo === 'Ingreso' ? 'ING' : 'EGR';
-      const codigo = `FIN-2024-${prefijo}${count.toString().padStart(4, '0')}`;
-      const fecha = new Date().toISOString().split('T')[0];
-
-      const item = {
-        id: Date.now(),
-        codigo,
-        fecha,
-        ...nuevaTx
-      };
-
-      try {
-        await apiClient.post('/financiero/transacciones', nuevaTx);
-      } catch {}
-
-      transacciones = [item, ...transacciones];
-      toast.success(nuevaTx.tipo === 'Ingreso' ? 'Comprobante de ingreso registrado y emitido' : 'Egreso de caja chica liquidado');
+      await apiClient.post('/financiero/transacciones', {
+        ...nuevaTx,
+        monto: Number(nuevaTx.monto)
+      });
+      toast.success(nuevaTx.tipo === 'Ingreso' ? 'Comprobante de ingreso registrado en la base de datos' : 'Egreso de caja chica liquidado en la base de datos');
       showModal = false;
+      await fetchFinanciero();
+    } catch (err) {
+      console.error('Error al guardar movimiento:', err);
+      toast.error('Error al registrar la transacción en la base de datos');
     } finally {
       formLoading = false;
     }
@@ -342,7 +301,7 @@
   </div>
 
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 pt-2">
-    {#each MUNICIPIOS_MFN as m}
+    {#each municipiosMFN as m}
       {@const porcentaje = Math.round((m.cuotasPagadas / m.cuotasEsperadas) * 100)}
       {@const esSolvente = m.estado === 'Solvente'}
       <div class="bg-[#F8FAFC] border border-gray-100 rounded-[22px] p-4.5 transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
@@ -484,8 +443,8 @@
             <div>
               <label class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Municipio Miembro</label>
               <select bind:value={nuevaTx.municipio} class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[12px] text-[#0A1526]">
-                {#each MUNICIPIOS_MFN as m}
-                  <option value={m.nombre}>{m.nombre}</option>
+                {#each LISTA_MUNICIPIOS as mun}
+                  <option value={mun}>{mun}</option>
                 {/each}
               </select>
             </div>

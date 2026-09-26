@@ -31,6 +31,13 @@ app.use(cors({
 app.use(express.json());
 app.use(morgan('dev'));
 
+app.get('/', (req, res) => res.json({
+  ok: true,
+  name: 'SIRH-MFN Backend API',
+  version: '1.0.0',
+  health: '/api/v1/health'
+}));
+app.get('/health', (req, res) => res.json({ ok: true, service: 'sirh-mfn-backend' }));
 app.get('/api/v1/health', (req, res) => res.json({ ok: true, service: 'sirh-mfn-backend' }));
 
 app.use('/api/v1/auth', authRoutes);

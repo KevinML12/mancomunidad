@@ -19,6 +19,7 @@ import gobernanzaRoutes from './routes/gobernanza.routes.js';
 import conveniosRoutes from './routes/convenios.routes.js';
 import estadisticasRoutes from './routes/estadisticas.routes.js';
 import transparenciaRoutes from './routes/transparencia.routes.js';
+import inteligenciaRoutes from './routes/inteligencia.routes.js';
 
 const app = express();
 
@@ -56,6 +57,7 @@ app.use('/api/v1/gobernanza', gobernanzaRoutes);
 app.use('/api/v1/convenios', conveniosRoutes);
 app.use('/api/v1/estadisticas', estadisticasRoutes);
 app.use('/api/v1/transparencia', transparenciaRoutes);
+app.use('/api/v1/inteligencia', inteligenciaRoutes);
 
 app.use((req, res) => res.status(404).json({ error: 'Ruta no encontrada' }));
 

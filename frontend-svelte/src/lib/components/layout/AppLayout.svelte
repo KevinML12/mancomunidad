@@ -13,6 +13,7 @@
     { to: '/gobernanza', icon: 'gavel', label: 'Gobernanza y Actas' },
     { to: '/convenios', icon: 'handshake', label: 'Alianzas y Convenios', hasDot: true },
     { to: '/estadisticas', icon: 'bar_chart', label: 'Indicadores ASH' },
+    { to: '/inteligencia', icon: 'psychology', label: 'Inteligencia & CGC' },
     { to: '/transparencia', icon: 'public', label: 'Transparencia Abierta' },
   ];
 

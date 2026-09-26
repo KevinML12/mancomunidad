@@ -157,6 +157,15 @@
       descripcion: 'Portal ciudadano de datos abiertos bajo Decreto 57-2008 de la República de Guatemala sin autenticación.',
       badge: 'Datos Abiertos',
       color: 'teal'
+    },
+    {
+      num: '08',
+      to: '/inteligencia',
+      icon: 'psychology',
+      titulo: 'Inteligencia & Auditoría CGC',
+      descripcion: 'Algoritmo multicriterio de priorización de inversión (IPIM) y sellado criptográfico SHA-256 anti-fraude.',
+      badge: 'Matriz IPIM · SHA-256',
+      color: 'emerald'
     }
   ]);
 </script>

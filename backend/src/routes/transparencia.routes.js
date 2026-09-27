@@ -159,6 +159,12 @@ router.post('/', requireAuth, async (req, res, next) => {
       }
     });
 
+    res.status(201).json(nueva);
+  } catch (err) {
+    next(err);
+  }
+});
+
 // POST /api/v1/transparencia/solicitudes - Solicitud de Información Pública Digital (Decreto 57-2008)
 router.post('/solicitudes', async (req, res, next) => {
   try {

@@ -4,26 +4,21 @@
   import Icon from '$lib/components/ui/Icon.svelte';
   import { toast } from 'svelte-sonner';
 
-  let correo = $state('gerencia@mfn.gob.gt');
-  let contrasena = $state('mfn2026');
+  let correo = $state('');
+  let contrasena = $state('');
+  let mostrarContrasena = $state(false);
   let loading = $state(false);
-
-  const ROLES_DEMO = [
-    { label: 'Gerente Ejecutivo', correo: 'gerencia@mfn.gob.gt' },
-    { label: 'Junta Directiva', correo: 'juntadirectiva@mfn.gob.gt' },
-    { label: 'Dir. Administrativa', correo: 'diradmin@mfn.gob.gt' }
-  ];
-
-  function seleccionarRol(r) {
-    correo = r.correo;
-    contrasena = 'mfn2026';
-  }
 
   async function onSubmit(e) {
     e?.preventDefault();
+    if (!correo.trim() || !contrasena) {
+      toast.error('Ingrese correo institucional y contraseña');
+      return;
+    }
+
     loading = true;
     try {
-      await auth.login(correo, contrasena);
+      await auth.login(correo.trim(), contrasena);
       toast.success('Sesión iniciada correctamente');
       goto('/');
     } catch (err) {
@@ -58,49 +53,52 @@
       </p>
     </div>
 
-    <!-- Cuentas de demostración rápida -->
-    <div class="mb-5 p-3 rounded-2xl bg-[#F8FAFC] border border-gray-100">
-      <span class="text-[9px] font-extrabold uppercase tracking-wider text-[#0A1526]/40 block mb-2 text-center">
-        Seleccionar Rol Preconfigurado
-      </span>
-      <div class="flex items-center justify-center gap-1.5 flex-wrap">
-        {#each ROLES_DEMO as r}
-          <button 
-            type="button" 
-            onclick={() => seleccionarRol(r)}
-            class="text-[10px] font-bold px-2.5 py-1 rounded-full transition-all {correo === r.correo ? 'bg-[#0A1526] text-white shadow-xs' : 'bg-white text-[#0A1526]/70 border border-gray-200 hover:border-[#3B82F6]'}"
-          >
-            {r.label}
-          </button>
-        {/each}
-      </div>
-    </div>
-
-    <form onsubmit={onSubmit} class="space-y-4">
+    <form onsubmit={onSubmit} autocomplete="off" class="space-y-4">
       <div>
-        <label class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">
+        <label for="input-correo" class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">
           Correo Institucional
         </label>
-        <input 
-          type="email" 
-          bind:value={correo} 
-          required 
-          disabled={loading}
-          class="w-full bg-[#F4F7FA] border border-gray-100 rounded-xl px-4 py-3 text-[13px] text-[#0A1526] focus:outline-none focus:border-[#3B82F6] focus:ring-1 focus:ring-[#3B82F6] transition-all disabled:opacity-50" 
-        />
+        <div class="relative">
+          <input 
+            id="input-correo"
+            type="email" 
+            bind:value={correo} 
+            required 
+            disabled={loading}
+            autocomplete="off"
+            placeholder="usuario@mfn.gob.gt"
+            class="w-full bg-[#F4F7FA] border border-gray-100 rounded-xl pl-4 pr-10 py-3 text-[13px] text-[#0A1526] placeholder-[#0A1526]/30 focus:outline-none focus:border-[#3B82F6] focus:bg-white focus:ring-1 focus:ring-[#3B82F6] transition-all disabled:opacity-50" 
+          />
+          <div class="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#0A1526]/30 pointer-events-none">
+            <Icon name="mail" className="w-4 h-4" />
+          </div>
+        </div>
       </div>
 
       <div>
-        <label class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">
+        <label for="input-contrasena" class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">
           Contraseña
         </label>
-        <input 
-          type="password" 
-          bind:value={contrasena} 
-          required 
-          disabled={loading}
-          class="w-full bg-[#F4F7FA] border border-gray-100 rounded-xl px-4 py-3 text-[13px] text-[#0A1526] focus:outline-none focus:border-[#3B82F6] focus:ring-1 focus:ring-[#3B82F6] transition-all disabled:opacity-50" 
-        />
+        <div class="relative">
+          <input 
+            id="input-contrasena"
+            type={mostrarContrasena ? 'text' : 'password'} 
+            bind:value={contrasena} 
+            required 
+            disabled={loading}
+            autocomplete="new-password"
+            placeholder="••••••••"
+            class="w-full bg-[#F4F7FA] border border-gray-100 rounded-xl pl-4 pr-10 py-3 text-[13px] text-[#0A1526] placeholder-[#0A1526]/30 focus:outline-none focus:border-[#3B82F6] focus:bg-white focus:ring-1 focus:ring-[#3B82F6] transition-all disabled:opacity-50" 
+          />
+          <button 
+            type="button" 
+            onclick={() => mostrarContrasena = !mostrarContrasena}
+            class="absolute right-3 top-1/2 -translate-y-1/2 text-[#0A1526]/40 hover:text-[#0A1526] p-1 transition-colors"
+            title={mostrarContrasena ? 'Ocultar contraseña' : 'Ver contraseña'}
+          >
+            <Icon name={mostrarContrasena ? 'visibility_off' : 'visibility'} className="w-4 h-4" />
+          </button>
+        </div>
       </div>
 
       <button 
@@ -121,10 +119,10 @@
     <div class="mt-6 text-center">
       <a 
         href="/transparencia" 
-        class="text-[12px] font-bold text-[#3B82F6] hover:underline inline-flex items-center gap-1"
+        class="text-[12px] font-bold text-[#3B82F6] hover:underline inline-flex items-center gap-1.5 py-1 px-3 rounded-full hover:bg-blue-50 transition-colors"
       >
         <Icon name="public" className="w-4 h-4" />
-        <span>Ir al Portal Ciudadano de Transparencia (Sin Clave)</span>
+        <span>Portal Ciudadano de Transparencia (Sin Clave)</span>
       </a>
     </div>
 
@@ -133,7 +131,7 @@
         Jurisdicción Activa · 6 Municipios Miembros
       </p>
       <p class="text-[11px] font-medium text-[#0A1526]/50 mt-1">
-        San Pedro Soloma · Santa Eulalia · San Rafael la Independencia
+        Soloma · Santa Eulalia · San Mateo · San Rafael · Barillas · San Juan Ixcoy
       </p>
     </div>
   </div>

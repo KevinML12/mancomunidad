@@ -8,7 +8,7 @@ const router = Router();
 router.get('/publico', async (req, res, next) => {
   try {
     const publicaciones = await prisma.publicacionTransparencia.findMany({
-      where: { visibilidad: true },
+      where: { visibilidad: true, tipo: { not: 'SolicitudUIP' } },
       orderBy: { fechaPublicacion: 'desc' }
     });
 
@@ -20,9 +20,22 @@ router.get('/publico', async (req, res, next) => {
         agenciaFinanciadora: true,
         presupuestoMunicipal: true,
         presupuestoCooperacion: true,
+        fechaInicioPlanificada: true,
+        fechaFinPlanificada: true,
         estado: true,
         porcentajeAvanceFisico: true,
-        createdAt: true
+        createdAt: true,
+        evidencias: {
+          select: {
+            id: true,
+            urlArchivo: true,
+            latitud: true,
+            longitud: true,
+            descripcion: true,
+            fechaCaptura: true
+          },
+          take: 5
+        }
       }
     });
 
@@ -146,7 +159,73 @@ router.post('/', requireAuth, async (req, res, next) => {
       }
     });
 
-    res.status(201).json(nueva);
+// POST /api/v1/transparencia/solicitudes - Solicitud de Información Pública Digital (Decreto 57-2008)
+router.post('/solicitudes', async (req, res, next) => {
+  try {
+    const { nombre, correo, telefono, municipio, descripcion } = req.body;
+    if (!nombre || !descripcion) {
+      return res.status(400).json({ error: 'Nombre del solicitante y descripción son obligatorios según Art. 38' });
+    }
+
+    const count = await prisma.publicacionTransparencia.count({
+      where: { tipo: 'SolicitudUIP' }
+    });
+    const codigo = `EXP-UIP-2024-${(count + 1).toString().padStart(4, '0')}`;
+    
+    // Plazo legal de 10 días hábiles (~14 días calendario)
+    const fechaLimite = new Date();
+    fechaLimite.setDate(fechaLimite.getDate() + 14);
+
+    const nueva = await prisma.publicacionTransparencia.create({
+      data: {
+        codigo,
+        tipo: 'SolicitudUIP',
+        titulo: `Solicitud de Información: ${nombre} (${municipio || 'Regional'})`,
+        resumen: JSON.stringify({
+          solicitante: nombre,
+          correo: correo || 'No provisto',
+          telefono: telefono || 'No provisto',
+          municipio: municipio || 'Regional',
+          descripcion,
+          fechaLimite: fechaLimite.toISOString().split('T')[0],
+          estado: 'Admitida para Trámite (Plazo de Ley 10 Días)'
+        }),
+        visibilidad: false,
+        autorizadoPor: 'Unidad de Información Pública (UIP-MFN)'
+      }
+    });
+
+    res.status(201).json({
+      mensaje: 'Solicitud de Información Pública registrada exitosamente',
+      expediente: codigo,
+      solicitante: nombre,
+      fechaRecepcion: nueva.fechaPublicacion,
+      fechaLimiteLegal: fechaLimite.toISOString().split('T')[0],
+      marcoLegal: 'Ley de Acceso a la Información Pública (Decreto 57-2008)',
+      estado: 'Admitida para Trámite (Plazo de Ley 10 Días)'
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// GET /api/v1/transparencia/solicitudes/:codigo - Consulta de expediente ciudadano
+router.get('/solicitudes/:codigo', async (req, res, next) => {
+  try {
+    const { codigo } = req.params;
+    const sol = await prisma.publicacionTransparencia.findFirst({
+      where: { codigo, tipo: 'SolicitudUIP' }
+    });
+    if (!sol) {
+      return res.status(404).json({ error: 'Expediente no encontrado en el registro oficial de la UIP' });
+    }
+    let datos = {};
+    try { datos = JSON.parse(sol.resumen || '{}'); } catch {}
+    res.json({
+      expediente: sol.codigo,
+      fechaRecepcion: sol.fechaPublicacion,
+      ...datos
+    });
   } catch (err) {
     next(err);
   }

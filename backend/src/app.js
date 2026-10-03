@@ -20,6 +20,7 @@ import conveniosRoutes from './routes/convenios.routes.js';
 import estadisticasRoutes from './routes/estadisticas.routes.js';
 import transparenciaRoutes from './routes/transparencia.routes.js';
 import inteligenciaRoutes from './routes/inteligencia.routes.js';
+import prisma from './lib/prisma.js';
 
 const app = express();
 
@@ -38,8 +39,73 @@ app.get('/', (req, res) => res.json({
   version: '1.0.0',
   health: '/api/v1/health'
 }));
+import { ROLE_PERMISSIONS } from './lib/roles.js';
+
 app.get('/health', (req, res) => res.json({ ok: true, service: 'mfn-digital-backend' }));
 app.get('/api/v1/health', (req, res) => res.json({ ok: true, service: 'mfn-digital-backend' }));
+
+app.post('/api/v1/sistema/migrar', async (req, res) => {
+  if (req.headers['x-admin-key'] !== (process.env.ADMIN_MIGRATE_KEY || 'mfn-super-migration-2026')) {
+    return res.status(403).json({ error: 'Acceso no autorizado' });
+  }
+  try {
+    const results = [];
+    
+    // Set search_path to mancomunidad
+    await prisma.$executeRawUnsafe(`SET search_path TO mancomunidad, public;`);
+    
+    await prisma.$executeRawUnsafe(`ALTER TABLE "mancomunidad"."Usuario" ADD COLUMN IF NOT EXISTS "sessionVersion" INTEGER NOT NULL DEFAULT 0;`);
+    results.push('Usuario.sessionVersion asegurada');
+
+    await prisma.$executeRawUnsafe(`ALTER TABLE "mancomunidad"."BitacoraAuditoria" ADD COLUMN IF NOT EXISTS "antesHash" TEXT;`);
+    await prisma.$executeRawUnsafe(`ALTER TABLE "mancomunidad"."BitacoraAuditoria" ADD COLUMN IF NOT EXISTS "despuesHash" TEXT;`);
+    results.push('BitacoraAuditoria hashes asegurados');
+
+    await prisma.$executeRawUnsafe(`ALTER TABLE "mancomunidad"."Proyecto" ADD COLUMN IF NOT EXISTS "municipio" TEXT;`);
+    results.push('Proyecto.municipio asegurado');
+
+    await prisma.$executeRawUnsafe(`ALTER TABLE "mancomunidad"."EvidenciaProyecto" ADD COLUMN IF NOT EXISTS "contenido" TEXT;`);
+    await prisma.$executeRawUnsafe(`ALTER TABLE "mancomunidad"."EvidenciaProyecto" ADD COLUMN IF NOT EXISTS "sha256" TEXT;`);
+    await prisma.$executeRawUnsafe(`ALTER TABLE "mancomunidad"."EvidenciaProyecto" ADD COLUMN IF NOT EXISTS "tipoMime" TEXT;`);
+    results.push('EvidenciaProyecto columnas aseguradas');
+
+    await prisma.$executeRawUnsafe(`
+      CREATE TABLE IF NOT EXISTS "mancomunidad"."RecuperacionClave" (
+        "id" SERIAL NOT NULL,
+        "usuarioId" INTEGER NOT NULL,
+        "tokenHash" TEXT NOT NULL,
+        "expira" TIMESTAMP(3) NOT NULL,
+        "usado" BOOLEAN NOT NULL DEFAULT false,
+        CONSTRAINT "RecuperacionClave_pkey" PRIMARY KEY ("id"),
+        CONSTRAINT "RecuperacionClave_tokenHash_key" UNIQUE ("tokenHash"),
+        CONSTRAINT "RecuperacionClave_usuarioId_fkey" FOREIGN KEY ("usuarioId") REFERENCES "mancomunidad"."Usuario"("id") ON DELETE RESTRICT ON UPDATE CASCADE
+      );
+    `);
+    results.push('Tabla RecuperacionClave asegurada');
+
+    await prisma.$executeRawUnsafe(`
+      CREATE TABLE IF NOT EXISTS "mancomunidad"."PuntoControlIntegridad" (
+        "id" SERIAL NOT NULL,
+        "rootHash" TEXT NOT NULL,
+        "snapshot" JSONB NOT NULL,
+        "auditoriaId" INTEGER NOT NULL,
+        "usuarioId" INTEGER NOT NULL,
+        "fecha" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        CONSTRAINT "PuntoControlIntegridad_pkey" PRIMARY KEY ("id")
+      );
+    `);
+    results.push('Tabla PuntoControlIntegridad asegurada');
+
+    for (const [codigo, permisos] of Object.entries(ROLE_PERMISSIONS)) {
+      await prisma.rol.updateMany({ where: { codigo }, data: { permisos } });
+    }
+    results.push('Permisos de roles actualizados');
+
+    res.json({ ok: true, results });
+  } catch (err) {
+    res.status(500).json({ error: err.message, stack: err.stack });
+  }
+});
 
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/dashboard', dashboardRoutes);

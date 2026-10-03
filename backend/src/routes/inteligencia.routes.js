@@ -50,9 +50,13 @@ router.get('/dictamen', requireAuth, async (req, res, next) => {
       const factorCompromisoFiscal = 100 - porcentajeSolvencia;
 
       // 3. Saturación de Inversión y Hallazgos (25% ponderación)
-      const proysMuni = proyectos.filter(p => p.nombre && p.nombre.toLowerCase().includes(muni.toLowerCase()));
+      const proysMuni = proyectos.filter(p => 
+        (p.municipio && p.municipio.toLowerCase().includes(muni.toLowerCase())) ||
+        (p.nombre && p.nombre.toLowerCase().includes(muni.toLowerCase()))
+      );
       const montoInvertido = proysMuni.reduce((acc, p) => acc + p.presupuestoMunicipal + p.presupuestoCooperacion, 0);
       const factorDesatencionObras = proysMuni.length === 0 ? 100 : proysMuni.length === 1 ? 50 : 20;
+
 
       // Cálculo del Índice IPIM (0 a 100 pts)
       const puntajeHídrico = (defAgua * 0.45) + (defSan * 0.35) + (pctCloroRiesgo * 0.20);
@@ -109,11 +113,14 @@ router.get('/dictamen', requireAuth, async (req, res, next) => {
 
 /**
  * GET /api/v1/inteligencia/sello-forense
+ * POST /api/v1/inteligencia/sello-forense
  * Cadena de Custodia Criptográfica Forense (Anti-Fraude CGC)
- * Genera el Merkle Root y certificación de inalterabilidad de los 7 módulos en Neon DB.
+ * Genera el Merkle Root y valida o sella el estado de inalterabilidad contra la Bitácora Histórica Inmutable.
  */
-router.get('/sello-forense', requireAuth, async (req, res, next) => {
+async function procesarSelloForense(req, res, next) {
   try {
+    const sellarNuevoPunto = req.method === 'POST' || req.query.sellar === 'true';
+
     const [proys, arc, tx, actas, convs, censos, pubs] = await Promise.all([
       prisma.proyecto.findMany({ select: { id: true, nombre: true, porcentajeAvanceFisico: true, createdAt: true } }),
       prisma.tareaARC.findMany({ select: { id: true, codigo: true, estado: true, updatedAt: true } }),
@@ -137,12 +144,87 @@ router.get('/sello-forense', requireAuth, async (req, res, next) => {
 
     const totalRegistros = proys.length + arc.length + tx.length + actas.length + convs.length + censos.length + pubs.length;
 
+    // Consulta de respaldo histórico en BitacoraAuditoria
+    const ultimoPuntoControl = await prisma.bitacoraAuditoria.findFirst({
+      where: { accion: 'certificacion_merkle_root' },
+      orderBy: { fecha: 'desc' }
+    });
+
+    const totalCheckpointsHistoricos = await prisma.bitacoraAuditoria.count({
+      where: { accion: 'certificacion_merkle_root' }
+    });
+
+    let estadoIntegridad = 'INALTERADO / AUDITORÍA CONFORME';
+    let veredictoAuditoria = 'Firma Merkle Root coincide con el registro histórico de auditoría.';
+    let mutacionesRegistradas = 0;
+    let puntoControlRegistrado = ultimoPuntoControl;
+
+    if (!ultimoPuntoControl) {
+      // Punto Génesis inicial
+      puntoControlRegistrado = await prisma.bitacoraAuditoria.create({
+        data: {
+          usuarioId: req.user?.sub ?? null,
+          accion: 'certificacion_merkle_root',
+          entidad: merkleRoot,
+          entidadId: totalRegistros
+        }
+      });
+      estadoIntegridad = 'PUNTO GÉNESIS ASENTADO';
+      veredictoAuditoria = 'Primer punto de control histórico registrado en la bitácora inmutable de auditoría.';
+    } else {
+      // Contar mutaciones operativas desde el último punto de control
+      mutacionesRegistradas = await prisma.bitacoraAuditoria.count({
+        where: {
+          fecha: { gt: ultimoPuntoControl.fecha },
+          accion: { not: 'certificacion_merkle_root' }
+        }
+      });
+
+      if (merkleRoot === ultimoPuntoControl.entidad) {
+        estadoIntegridad = 'INALTERADO / AUDITORÍA CONFORME';
+        veredictoAuditoria = 'La huella criptográfica actual coincide exactamente con el último punto de control sellado en bitácora.';
+      } else {
+        if (sellarNuevoPunto) {
+          puntoControlRegistrado = await prisma.bitacoraAuditoria.create({
+            data: {
+              usuarioId: req.user?.sub ?? null,
+              accion: 'certificacion_merkle_root',
+              entidad: merkleRoot,
+              entidadId: totalRegistros
+            }
+          });
+          estadoIntegridad = 'NUEVO PUNTO DE CONTROL SELLADO';
+          veredictoAuditoria = `Se asentó un nuevo punto de control forense con ${mutacionesRegistradas} eventos auditados desde el checkpoint anterior.`;
+        } else if (mutacionesRegistradas > 0) {
+          estadoIntegridad = 'ACTUALIZADO / TRAZABILIDAD AUDITADA';
+          veredictoAuditoria = `El estado de datos contiene ${mutacionesRegistradas} transacciones autorizadas posteriores al último punto de control.`;
+        } else {
+          estadoIntegridad = 'ALERTA / DISCREPANCIA DETECTADA';
+          veredictoAuditoria = 'El Merkle Root difiere del punto de control previo sin eventos correspondientes en la bitácora de auditoría.';
+        }
+      }
+    }
+
     res.json({
       certificado: 'Certificado Forense de Integridad de Datos Intermunicipales MFN',
       organismoAuditor: 'Contraloría General de Cuentas (CGC) · República de Guatemala',
-      estadoIntegridad: 'INALTERADO / AUDITORÍA CONFORME',
+      estadoIntegridad,
       timestampCertificacion: new Date().toISOString(),
       merkleRootSha256: merkleRoot,
+      puntoControlAnterior: ultimoPuntoControl ? {
+        id: ultimoPuntoControl.id,
+        hashSha256: ultimoPuntoControl.entidad,
+        fecha: ultimoPuntoControl.fecha,
+        usuarioId: ultimoPuntoControl.usuarioId
+      } : null,
+      puntoControlActual: puntoControlRegistrado ? {
+        id: puntoControlRegistrado.id,
+        hashSha256: puntoControlRegistrado.entidad,
+        fecha: puntoControlRegistrado.fecha
+      } : null,
+      mutacionesRegistradasEnBitacora: mutacionesRegistradas,
+      totalCheckpointsHistoricos: totalCheckpointsHistoricos + (sellarNuevoPunto || !ultimoPuntoControl ? 1 : 0),
+      veredictoAuditoria,
       bloquesAuditados: {
         proyectos: { count: proys.length, hashSha256: bloqueProyectos.slice(0, 16) + '...' },
         planARC: { count: arc.length, hashSha256: bloqueARC.slice(0, 16) + '...' },
@@ -158,6 +240,9 @@ router.get('/sello-forense', requireAuth, async (req, res, next) => {
   } catch (err) {
     next(err);
   }
-});
+}
+
+router.get('/sello-forense', requireAuth, procesarSelloForense);
+router.post('/sello-forense', requireAuth, procesarSelloForense);
 
 export default router;

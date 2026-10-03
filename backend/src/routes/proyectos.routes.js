@@ -1,10 +1,11 @@
 import { Router } from 'express';
 import prisma from '../lib/prisma.js';
-import { requireAuth } from '../middleware/auth.js';
+import { requireAuth, requirePermission } from '../middleware/auth.js';
+import { logAction } from '../lib/audit.js';
 
 const router = Router();
 
-// GET /api/v1/proyectos - Obtener todos los proyectos
+// GET /api/v1/proyectos - Obtener todos los proyectos (RF3)
 router.get('/', requireAuth, async (req, res, next) => {
   try {
     const proyectos = await prisma.proyecto.findMany({
@@ -39,8 +40,8 @@ router.get('/:id', requireAuth, async (req, res, next) => {
   }
 });
 
-// POST /api/v1/proyectos - Crear nuevo proyecto
-router.post('/', requireAuth, async (req, res, next) => {
+// POST /api/v1/proyectos - Crear nuevo proyecto (RF3 - RBAC)
+router.post('/', requireAuth, requirePermission('proyectos', 'editar'), async (req, res, next) => {
   try {
     const { 
       nombre, 
@@ -65,14 +66,16 @@ router.post('/', requireAuth, async (req, res, next) => {
         porcentajeAvanceFisico: Number(porcentajeAvanceFisico) || 0
       }
     });
+
+    await logAction(req.user?.sub, 'crear_proyecto', 'proyecto', proyecto.id);
     res.status(201).json(proyecto);
   } catch (err) {
     next(err);
   }
 });
 
-// PUT /api/v1/proyectos/:id - Actualizar proyecto
-router.put('/:id', requireAuth, async (req, res, next) => {
+// PUT /api/v1/proyectos/:id - Actualizar proyecto (RBAC)
+router.put('/:id', requireAuth, requirePermission('proyectos', 'editar'), async (req, res, next) => {
   try {
     const data = { ...req.body };
     if (data.fechaInicioPlanificada) data.fechaInicioPlanificada = new Date(data.fechaInicioPlanificada);
@@ -86,14 +89,16 @@ router.put('/:id', requireAuth, async (req, res, next) => {
       where: { id: Number(req.params.id) },
       data
     });
+
+    await logAction(req.user?.sub, 'actualizar_proyecto', 'proyecto', proyecto.id);
     res.json(proyecto);
   } catch (err) {
     next(err);
   }
 });
 
-// POST /api/v1/proyectos/:id/evidencias - Añadir evidencia fotográfica
-router.post('/:id/evidencias', requireAuth, async (req, res, next) => {
+// POST /api/v1/proyectos/:id/evidencias - Añadir evidencia fotográfica (RF4 - RBAC)
+router.post('/:id/evidencias', requireAuth, requirePermission('proyectos', 'editar'), async (req, res, next) => {
   try {
     const { urlArchivo, latitud, longitud, descripcion, fechaCaptura } = req.body;
     
@@ -105,9 +110,11 @@ router.post('/:id/evidencias', requireAuth, async (req, res, next) => {
         longitud: longitud ? Number(longitud) : null,
         descripcion,
         fechaCaptura: fechaCaptura ? new Date(fechaCaptura) : new Date(),
-        cargadoPorId: req.user?.id // Assuming auth middleware injects user
+        cargadoPorId: req.user?.sub || null
       }
     });
+
+    await logAction(req.user?.sub, 'cargar_evidencia', 'evidencia_proyecto', evidencia.id);
     res.status(201).json(evidencia);
   } catch (err) {
     next(err);
@@ -115,3 +122,4 @@ router.post('/:id/evidencias', requireAuth, async (req, res, next) => {
 });
 
 export default router;
+

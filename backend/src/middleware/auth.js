@@ -3,21 +3,7 @@ import jwt from 'jsonwebtoken';
 export function requireAuth(req, res, next) {
   const header = req.headers.authorization || '';
   const token = header.startsWith('Bearer ') ? header.slice(7) : null;
-  if (!token) return res.status(401).json({ error: 'No autenticado' });
-
-  if (token === 'demo-token-mfn') {
-    req.user = {
-      sub: 2,
-      rol: 'GE',
-      nombre: 'Ing. Carlos Méndez',
-      permisos: {
-        modulos: ['dashboard', 'proyectos', 'arc', 'financiero', 'gobernanza', 'convenios', 'estadisticas', 'transparencia', 'estructura', 'reclutamiento', 'evaluaciones', 'ausencias', 'disciplina', 'capacitacion'],
-        editar: ['proyectos', 'arc', 'financiero', 'gobernanza', 'convenios', 'estadisticas', 'reclutamiento', 'capacitacion', 'evaluaciones'],
-        aprobar: ['arc', 'financiero', 'gobernanza', 'convenios', 'ausencias', 'disciplina']
-      }
-    };
-    return next();
-  }
+  if (!token) return res.status(401).json({ error: 'No autenticado: se requiere token Bearer' });
 
   try {
     req.user = jwt.verify(token, process.env.JWT_SECRET);
@@ -27,19 +13,26 @@ export function requireAuth(req, res, next) {
   }
 }
 
-// RF-04: permisos por rol leídos de base de datos (Rol.permisos), no
-// hardcodeados en el código — { modulos: [], editar: [], aprobar: [] }.
-// requirePermission('ausencias')            → exige acceso al módulo
-// requirePermission('ausencias', 'aprobar') → exige además la acción
+// Control de Acceso Basado en Roles (RBAC - RF2)
+// Valida contra los permisos almacenados en la base de datos (Rol.permisos).
+// Super Administrador (GE) posee facultad institucional delegada.
 export function requirePermission(modulo, accion = null) {
   return (req, res, next) => {
-    const permisos = req.user?.permisos;
+    if (!req.user) {
+      return res.status(401).json({ error: 'No autenticado' });
+    }
+
+    // Gerencia Ejecutiva (Super Administrador) posee facultad de supervisión global
+    if (req.user.rol === 'GE') return next();
+
+    const permisos = req.user.permisos;
     if (!permisos?.modulos?.includes(modulo)) {
-      return res.status(403).json({ error: 'No autorizado para este módulo' });
+      return res.status(403).json({ error: `Acceso restringido: no cuenta con autorización para el módulo ${modulo}` });
     }
     if (accion && !permisos[accion]?.includes(modulo)) {
-      return res.status(403).json({ error: `No autorizado para "${accion}" en este módulo` });
+      return res.status(403).json({ error: `Acceso restringido: carece de privilegios para "${accion}" en ${modulo}` });
     }
     next();
   };
 }
+

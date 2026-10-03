@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import prisma from '../lib/prisma.js';
-import { requireAuth } from '../middleware/auth.js';
+import { requireAuth, requirePermission } from '../middleware/auth.js';
+import { logAction } from '../lib/audit.js';
 
 const router = Router();
 
@@ -54,8 +55,8 @@ router.get('/acuerdos', requireAuth, async (req, res, next) => {
   }
 });
 
-// POST /api/v1/gobernanza/actas - Registrar y digitalizar acta oficial
-router.post('/actas', requireAuth, async (req, res, next) => {
+// POST /api/v1/gobernanza/actas - Registrar y digitalizar acta oficial (RF13 - RBAC)
+router.post('/actas', requireAuth, requirePermission('gobernanza', 'editar'), async (req, res, next) => {
   try {
     const { 
       numeroActa, 
@@ -81,14 +82,16 @@ router.post('/actas', requireAuth, async (req, res, next) => {
       }
     });
 
+    await logAction(req.user?.sub, 'registrar_acta', 'acta_asamblea', acta.id);
     res.status(201).json(acta);
   } catch (err) {
     next(err);
   }
 });
 
-// POST /api/v1/gobernanza/actas/:id/acuerdos - Vincular acuerdo resolutivo a acta
-router.post('/actas/:id/acuerdos', requireAuth, async (req, res, next) => {
+// POST /api/v1/gobernanza/actas/:id/acuerdos - Vincular acuerdo resolutivo a acta (RF14 - RBAC)
+router.post('/actas/:id/acuerdos', requireAuth, requirePermission('gobernanza', 'editar'), async (req, res, next) => {
+
   try {
     const actaId = Number(req.params.id);
     const { titulo, descripcion, responsable, fechaCumplimiento, estado, evidenciaUrl } = req.body;

@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import prisma from '../lib/prisma.js';
-import { requireAuth } from '../middleware/auth.js';
+import { requireAuth, requirePermission } from '../middleware/auth.js';
+import { logAction } from '../lib/audit.js';
 
 const router = Router();
 
@@ -60,8 +61,8 @@ router.get('/balance', requireAuth, async (req, res, next) => {
   }
 });
 
-// POST /api/v1/financiero/transacciones - Registrar movimiento
-router.post('/transacciones', requireAuth, async (req, res, next) => {
+// POST /api/v1/financiero/transacciones - Registrar movimiento (RF10/11 - RBAC)
+router.post('/transacciones', requireAuth, requirePermission('financiero', 'editar'), async (req, res, next) => {
   try {
     const { 
       tipo, 
@@ -105,10 +106,12 @@ router.post('/transacciones', requireAuth, async (req, res, next) => {
       }
     });
 
+    await logAction(req.user?.sub, 'registrar_transaccion', 'transaccion_financiera', nueva.id);
     res.status(201).json(nueva);
   } catch (err) {
     next(err);
   }
 });
+
 
 export default router;

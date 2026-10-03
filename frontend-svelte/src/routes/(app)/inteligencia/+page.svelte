@@ -29,9 +29,9 @@
   const revalidarSello = async () => {
     verificando = true;
     try {
-      const { data } = await apiClient.get('/inteligencia/sello-forense');
+      const { data } = await apiClient.post('/inteligencia/sello-forense');
       selloForense = data;
-      toast.success('Cadena de bloques criptográfica validada: 100% inalterada en Neon DB');
+      toast.success(data.veredictoAuditoria || 'Integridad criptográfica verificada en Neon DB');
     } catch (err) {
       toast.error('Error al auditar integridad');
     } finally {
@@ -130,6 +130,23 @@
             </span>
           </div>
         {/each}
+      </div>
+
+      <!-- TRAZABILIDAD Y RESPALDO HISTÓRICO CGC -->
+      <div class="mt-6 pt-5 border-t border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-4 text-[11px] text-white/70">
+        <div class="flex items-center gap-2">
+          <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono text-[10px] font-bold">
+            {selloForense.totalCheckpointsHistoricos || 1} checkpoints registrados
+          </span>
+          <span class="text-white/40">•</span>
+          <span class="text-white/80">{selloForense.veredictoAuditoria}</span>
+        </div>
+        {#if selloForense.puntoControlAnterior}
+          <div class="text-right text-[10px] font-mono text-white/40">
+            Último sellado: {new Date(selloForense.puntoControlAnterior.fecha).toLocaleString('es-GT')} 
+            ({selloForense.mutacionesRegistradasEnBitacora} operaciones trazadas en bitácora)
+          </div>
+        {/if}
       </div>
     </div>
   {/if}

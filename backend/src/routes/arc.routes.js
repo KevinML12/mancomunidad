@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import prisma from '../lib/prisma.js';
-import { requireAuth } from '../middleware/auth.js';
+import { requireAuth, requirePermission } from '../middleware/auth.js';
+import { logAction } from '../lib/audit.js';
 
 const router = Router();
 
@@ -78,8 +79,8 @@ router.get('/metricas', requireAuth, async (req, res, next) => {
   }
 });
 
-// POST /api/v1/arc - Crear nueva tarea operativa ARC
-router.post('/', requireAuth, async (req, res, next) => {
+// POST /api/v1/arc - Crear nueva tarea operativa ARC (RF8 - RBAC)
+router.post('/', requireAuth, requirePermission('arc', 'editar'), async (req, res, next) => {
   try {
     const { titulo, descripcion, dimension, prioridad, municipio, responsable, fechaLimite } = req.body;
 
@@ -101,14 +102,15 @@ router.post('/', requireAuth, async (req, res, next) => {
       }
     });
 
+    await logAction(req.user?.sub, 'crear_tarea_arc', 'tarea_arc', tarea.id);
     res.status(201).json(tarea);
   } catch (err) {
     next(err);
   }
 });
 
-// PUT /api/v1/arc/:id - Actualizar estado o datos de tarea (Kanban Drag/Drop)
-router.put('/:id', requireAuth, async (req, res, next) => {
+// PUT /api/v1/arc/:id - Actualizar estado o datos de tarea (Kanban Drag/Drop - RF7)
+router.put('/:id', requireAuth, requirePermission('arc', 'editar'), async (req, res, next) => {
   try {
     const id = Number(req.params.id);
     const { estado, titulo, descripcion, dimension, prioridad, responsable, fechaLimite } = req.body;
@@ -134,22 +136,25 @@ router.put('/:id', requireAuth, async (req, res, next) => {
       data
     });
 
+    await logAction(req.user?.sub, 'actualizar_tarea_arc', 'tarea_arc', id);
     res.json(updated);
   } catch (err) {
     next(err);
   }
 });
 
-// DELETE /api/v1/arc/:id - Eliminar tarea
-router.delete('/:id', requireAuth, async (req, res, next) => {
+// DELETE /api/v1/arc/:id - Eliminar tarea (RBAC)
+router.delete('/:id', requireAuth, requirePermission('arc', 'editar'), async (req, res, next) => {
   try {
     await prisma.tareaARC.delete({
       where: { id: Number(req.params.id) }
     });
+    await logAction(req.user?.sub, 'eliminar_tarea_arc', 'tarea_arc', Number(req.params.id));
     res.json({ message: 'Tarea eliminada exitosamente' });
   } catch (err) {
     next(err);
   }
 });
+
 
 export default router;

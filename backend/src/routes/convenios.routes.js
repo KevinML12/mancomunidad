@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import prisma from '../lib/prisma.js';
-import { requireAuth } from '../middleware/auth.js';
+import { requireAuth, requirePermission } from '../middleware/auth.js';
+import { logAction } from '../lib/audit.js';
 
 const router = Router();
 
@@ -58,8 +59,8 @@ router.get('/', requireAuth, async (req, res, next) => {
   }
 });
 
-// POST /api/v1/convenios - Registrar nuevo convenio
-router.post('/', requireAuth, async (req, res, next) => {
+// POST /api/v1/convenios - Registrar nuevo convenio (RF15 - RBAC)
+router.post('/', requireAuth, requirePermission('convenios', 'editar'), async (req, res, next) => {
   try {
     const {
       nombre,
@@ -92,14 +93,15 @@ router.post('/', requireAuth, async (req, res, next) => {
       }
     });
 
+    await logAction(req.user?.sub, 'registrar_convenio', 'convenio_institucional', nuevo.id);
     res.status(201).json(nuevo);
   } catch (err) {
     next(err);
   }
 });
 
-// PUT /api/v1/convenios/:id - Actualizar estado o prorrogar
-router.put('/:id', requireAuth, async (req, res, next) => {
+// PUT /api/v1/convenios/:id - Actualizar estado o prorrogar (RBAC)
+router.put('/:id', requireAuth, requirePermission('convenios', 'editar'), async (req, res, next) => {
   try {
     const id = Number(req.params.id);
     const { estado, fechaVencimiento, urlDocumento } = req.body;
@@ -114,6 +116,7 @@ router.put('/:id', requireAuth, async (req, res, next) => {
       data
     });
 
+    await logAction(req.user?.sub, 'actualizar_convenio', 'convenio_institucional', id);
     res.json(updated);
   } catch (err) {
     next(err);
@@ -121,3 +124,4 @@ router.put('/:id', requireAuth, async (req, res, next) => {
 });
 
 export default router;
+

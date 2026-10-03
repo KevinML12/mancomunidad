@@ -136,12 +136,12 @@
 <header class="flex flex-col xl:flex-row xl:items-end justify-between gap-6 mb-8 mt-2 animate-fade-in">
   <div>
     <div class="flex items-center gap-2 mb-2">
-      <span class="text-[9px] font-bold uppercase tracking-[0.15em] text-[#3B82F6]">Módulo 04</span>
-      <span class="text-[9px] text-[#0A1526]/30">•</span>
-      <span class="text-[9px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40">Órganos de Dirección y Asamblea General</span>
+      <span class="text-[12px] font-bold uppercase tracking-normal text-[#1248AA]">Módulo 04</span>
+      <span class="text-[12px] text-[#071D49]/30">•</span>
+      <span class="text-[12px] font-bold uppercase tracking-normal text-[#071D49]/40">Órganos de Dirección y Asamblea General</span>
     </div>
-    <h2 class="text-[40px] font-black tracking-[-0.04em] leading-none text-[#0A1526] mb-3">Gobernanza y Actas</h2>
-    <p class="text-[13px] text-[#0A1526]/50 leading-relaxed max-w-2xl">
+    <h2 class="text-[40px] font-semibold tracking-[-0.04em] leading-none text-[#071D49] mb-3">Gobernanza y Actas</h2>
+    <p class="text-[13px] text-[#071D49]/50 leading-relaxed max-w-2xl">
       Digitalización de actas autorizadas por Contraloría (CGC), foliado oficial y semáforo de cumplimiento de acuerdos políticos.
     </p>
   </div>
@@ -153,15 +153,15 @@
         type="text" 
         bind:value={searchQuery}
         placeholder="Buscar acta, acuerdo o folio CGC..." 
-        class="w-[280px] pl-10 pr-4 py-3 bg-white border border-gray-100 rounded-full text-[13px] text-[#0A1526] placeholder-[#0A1526]/30 shadow-sm focus:outline-none focus:border-[#3B82F6] transition-all" 
+        class="w-[280px] pl-10 pr-4 py-3 bg-white border border-gray-100 rounded-full text-[13px] text-[#071D49] placeholder-[#071D49]/30 shadow-sm focus:outline-none focus:border-[#1248AA] transition-all" 
       />
-      <Icon name="search" className="absolute left-4 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-[#0A1526]/30" />
+      <Icon name="search" className="absolute left-4 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-[#071D49]/30" />
     </div>
 
     <!-- Filtro Municipio Sede -->
     <select 
       bind:value={filtroMunicipio} 
-      class="px-4 py-3 bg-white border border-gray-100 rounded-full shadow-sm text-[12px] font-bold text-[#0A1526] focus:outline-none transition-colors"
+      class="px-4 py-3 bg-white border border-gray-100 rounded-full shadow-sm text-[12px] font-bold text-[#071D49] focus:outline-none transition-colors"
     >
       <option value="todos">Todos los Municipios Sede</option>
       <option value="Santa Eulalia">Santa Eulalia</option>
@@ -172,9 +172,9 @@
     <!-- Botón Nueva Acta -->
     <button 
       onclick={() => showModal = true}
-      class="px-6 py-3 bg-[#0A1526] hover:bg-black text-white rounded-full text-[13px] font-bold shadow-md transition-all duration-300 hover:-translate-y-0.5 flex items-center gap-2 cursor-pointer"
+      class="px-6 py-3 bg-[#071D49] hover:bg-black text-white rounded-full text-[13px] font-bold shadow-md transition-all duration-300 hover:-translate-y-0.5 flex items-center gap-2 cursor-pointer"
     >
-      <Icon name="add" className="w-[18px] h-[18px] text-[#3B82F6]" stroke={2.5} />
+      <Icon name="add" className="w-[18px] h-[18px] text-[#1248AA]" stroke={2.5} />
       <span>+ Digitalizar Acta Oficial</span>
     </button>
   </div>
@@ -183,56 +183,56 @@
 <!-- BARRA DE EFECTIVIDAD Y SEMÁFORO POLÍTICO -->
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
   <!-- Efectividad Global -->
-  <div class="bg-white border border-gray-100 rounded-[24px] p-6 shadow-[0_20px_60px_-15px_rgba(10,21,38,0.04)] transition-all duration-300 hover:-translate-y-0.5">
+  <div class="glass-light   rounded-[24px] p-6  transition-all duration-300 hover:-translate-y-0.5">
     <div class="flex items-center justify-between mb-3">
-      <span class="text-[9px] font-extrabold uppercase tracking-[0.15em] text-[#0A1526]/40">Efectividad Resolutiva</span>
-      <span class="w-8 h-8 rounded-full bg-[#EBF3FF] flex items-center justify-center text-[#3B82F6]">
+      <span class="text-[12px] font-semibold uppercase tracking-normal text-[#071D49]/40">Efectividad Resolutiva</span>
+      <span class="w-8 h-8 rounded-full bg-[#EDF4FF] flex items-center justify-center text-[#1248AA]">
         <Icon name="gavel" className="w-4 h-4" />
       </span>
     </div>
-    <p class="text-[28px] font-black tracking-[-0.04em] text-[#0A1526]">{efectividadPct}%</p>
+    <p class="text-[28px] font-semibold tracking-[-0.04em] text-[#071D49]">{efectividadPct}%</p>
     <div class="mt-3">
       <div class="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
         <div class="bg-emerald-500 h-1.5 rounded-full transition-all duration-500" style="width: {efectividadPct}%"></div>
       </div>
-      <p class="text-[10px] text-[#0A1526]/40 font-medium mt-1.5">{cumplidosCount} de {totalAcuerdos} acuerdos acatados</p>
+      <p class="text-[12px] text-[#071D49]/40 font-medium mt-1.5">{cumplidosCount} de {totalAcuerdos} acuerdos acatados</p>
     </div>
   </div>
 
   <!-- Cumplidos -->
-  <div class="bg-white border border-gray-100 rounded-[24px] p-6 shadow-[0_20px_60px_-15px_rgba(10,21,38,0.04)] card-lift">
+  <div class="glass-light   rounded-[24px] p-6  card-lift">
     <div class="flex items-center justify-between mb-3">
-      <span class="text-[9px] font-extrabold uppercase tracking-[0.15em] text-[#0A1526]/40">Acuerdos Cumplidos</span>
+      <span class="text-[12px] font-semibold uppercase tracking-normal text-[#071D49]/40">Acuerdos Cumplidos</span>
       <span class="w-8 h-8 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-600">
         <Icon name="check_circle" className="w-4 h-4" />
       </span>
     </div>
-    <p class="text-[28px] font-black tracking-[-0.04em] text-[#0A1526]">{cumplidosCount}</p>
+    <p class="text-[28px] font-semibold tracking-[-0.04em] text-[#071D49]">{cumplidosCount}</p>
     <p class="text-[11px] text-emerald-700 font-bold mt-2">Respaldados con evidencias</p>
   </div>
 
   <!-- En Proceso -->
-  <div class="bg-white border border-gray-100 rounded-[24px] p-6 shadow-[0_20px_60px_-15px_rgba(10,21,38,0.04)] card-lift">
+  <div class="glass-light   rounded-[24px] p-6  card-lift">
     <div class="flex items-center justify-between mb-3">
-      <span class="text-[9px] font-extrabold uppercase tracking-[0.15em] text-[#0A1526]/40">En Ejecución Política</span>
+      <span class="text-[12px] font-semibold uppercase tracking-normal text-[#071D49]/40">En Ejecución Política</span>
       <span class="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-600">
         <Icon name="hourglass_top" className="w-4 h-4" />
       </span>
     </div>
-    <p class="text-[28px] font-black tracking-[-0.04em] text-[#0A1526]">{enProcesoCount}</p>
-    <p class="text-[11px] text-[#0A1526]/50 font-medium mt-2">Bajo responsabilidad de comisiones</p>
+    <p class="text-[28px] font-semibold tracking-[-0.04em] text-[#071D49]">{enProcesoCount}</p>
+    <p class="text-[11px] text-[#071D49]/50 font-medium mt-2">Bajo responsabilidad de comisiones</p>
   </div>
 
   <!-- Pendientes / Alertas -->
-  <div class="bg-white border border-gray-100 rounded-[24px] p-6 shadow-[0_20px_60px_-15px_rgba(10,21,38,0.04)] card-lift">
+  <div class="glass-light   rounded-[24px] p-6  card-lift">
     <div class="flex items-center justify-between mb-3">
-      <span class="text-[9px] font-extrabold uppercase tracking-[0.15em] text-[#0A1526]/40">Pendientes / Alertas</span>
+      <span class="text-[12px] font-semibold uppercase tracking-normal text-[#071D49]/40">Pendientes / Alertas</span>
       <span class="w-8 h-8 rounded-full {pendientesCount > 0 ? 'bg-amber-50 text-amber-600' : 'bg-gray-100 text-gray-500'} flex items-center justify-center">
         <Icon name="warning" className="w-4 h-4" />
       </span>
     </div>
-    <p class="text-[28px] font-black tracking-[-0.04em] {pendientesCount > 0 ? 'text-amber-600' : 'text-[#0A1526]'}">{pendientesCount}</p>
-    <p class="text-[11px] font-bold mt-2 {pendientesCount > 0 ? 'text-amber-700' : 'text-[#0A1526]/40'}">
+    <p class="text-[28px] font-semibold tracking-[-0.04em] {pendientesCount > 0 ? 'text-amber-600' : 'text-[#071D49]'}">{pendientesCount}</p>
+    <p class="text-[11px] font-bold mt-2 {pendientesCount > 0 ? 'text-amber-700' : 'text-[#071D49]/40'}">
       {pendientesCount > 0 ? 'Plazos de directiva por vencer' : 'Sin pendientes atrasados'}
     </p>
   </div>
@@ -243,8 +243,8 @@
   <!-- Columna Izquierda: Repositorio de Actas Indexadas (5 Cols) -->
   <div class="lg:col-span-5 space-y-4">
     <div class="flex items-center justify-between px-2">
-      <span class="text-[10px] font-extrabold uppercase tracking-[0.15em] text-[#0A1526]/40">Actas Indexadas ({actasFiltradas.length})</span>
-      <span class="text-[10px] font-mono text-[#0A1526]/40">Autorizado CGC</span>
+      <span class="text-[12px] font-semibold uppercase tracking-normal text-[#071D49]/40">Actas Indexadas ({actasFiltradas.length})</span>
+      <span class="text-[12px] font-mono text-[#071D49]/40">Autorizado CGC</span>
     </div>
 
     <div class="space-y-3">
@@ -254,27 +254,27 @@
         <!-- svelte-ignore a11y_no_static_element_interactions -->
         <div 
           onclick={() => selectedActa = a}
-          class="bg-white border rounded-[24px] p-5 cursor-pointer card-lift {isSelected ? 'border-[#3B82F6] shadow-md ring-2 ring-[#3B82F6]/10' : 'border-gray-100 shadow-xs hover:shadow-sm'}"
+          class="bg-white border rounded-[24px] p-5 cursor-pointer card-lift {isSelected ? 'border-[#1248AA] shadow-md ring-2 ring-[#1248AA]/10' : 'border-gray-100 shadow-xs hover:shadow-sm'}"
         >
           <div class="flex items-center justify-between mb-2">
-            <span class="text-[11px] font-mono font-bold {isSelected ? 'text-[#3B82F6]' : 'text-[#0A1526]'}">
+            <span class="text-[11px] font-mono font-bold {isSelected ? 'text-[#1248AA]' : 'text-[#071D49]'}">
               {a.numeroActa}
             </span>
-            <span class="text-[9px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full {a.tipoSesion === 'Ordinaria' ? 'bg-blue-50 text-blue-700' : 'bg-purple-50 text-purple-700'}">
+            <span class="text-[12px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full {a.tipoSesion === 'Ordinaria' ? 'bg-blue-50 text-blue-700' : 'bg-purple-50 text-purple-700'}">
               {a.tipoSesion}
             </span>
           </div>
 
-          <h4 class="text-[14px] font-black text-[#0A1526] tracking-tight leading-snug mb-1">
+          <h4 class="text-[14px] font-semibold text-[#071D49] tracking-tight leading-snug mb-1">
             Sesión No. {a.numeroSesion} · {a.municipioSede}
           </h4>
-          <p class="text-[11px] text-[#0A1526]/50 line-clamp-1 mb-3">
+          <p class="text-[11px] text-[#071D49]/50 line-clamp-1 mb-3">
             {a.lugarReunion}
           </p>
 
           <div class="pt-3 border-t border-gray-50 flex items-center justify-between text-[11px]">
-            <span class="text-[10px] font-mono text-[#0A1526]/40">{a.libroCGCFolio}</span>
-            <div class="flex items-center gap-1.5 text-[#3B82F6] font-bold">
+            <span class="text-[12px] font-mono text-[#071D49]/40">{a.libroCGCFolio}</span>
+            <div class="flex items-center gap-1.5 text-[#1248AA] font-bold">
               <Icon name="description" className="w-3.5 h-3.5" />
               <span>PDF</span>
             </div>
@@ -285,23 +285,23 @@
   </div>
 
   <!-- Columna Derecha: Acuerdos Resolutivos y Semáforo (7 Cols) -->
-  <div class="lg:col-span-7 bg-white border border-gray-100 rounded-[32px] p-8 shadow-[0_20px_60px_-15px_rgba(10,21,38,0.05)]">
+  <div class="lg:col-span-7 glass-light   rounded-[32px] p-8 ">
     {#if selectedActa}
       {#key selectedActa.id}
       <div class="animate-scale-up space-y-6">
       <div class="pb-6 border-b border-gray-50 flex flex-col sm:flex-row sm:items-start justify-between gap-4">
         <div>
           <div class="flex items-center gap-2 mb-2">
-            <span class="text-[9px] font-extrabold uppercase tracking-[0.1em] px-2.5 py-1 rounded-md bg-[#EBF3FF] text-[#1D4ED8]">
+            <span class="text-[12px] font-semibold uppercase tracking-normal px-2.5 py-1 rounded-md bg-[#EDF4FF] text-[#1D4ED8]">
               {selectedActa.numeroActa}
             </span>
-            <span class="text-[11px] font-medium text-[#0A1526]/40">{selectedActa.fecha}</span>
+            <span class="text-[11px] font-medium text-[#071D49]/40">{selectedActa.fecha}</span>
           </div>
-          <h3 class="text-2xl font-black text-[#0A1526] tracking-tight">
+          <h3 class="text-2xl font-semibold text-[#071D49] tracking-tight">
             Acuerdos Resolutivos de la Sesión
           </h3>
-          <p class="text-[12px] text-[#0A1526]/50 mt-1">
-            Sede: <strong class="text-[#0A1526]">{selectedActa.municipioSede}</strong> · {selectedActa.libroCGCFolio}
+          <p class="text-[12px] text-[#071D49]/50 mt-1">
+            Sede: <strong class="text-[#071D49]">{selectedActa.municipioSede}</strong> · {selectedActa.libroCGCFolio}
           </p>
         </div>
 
@@ -309,9 +309,9 @@
           <a 
             href={selectedActa.urlPdfEscaneado} 
             target="_blank"
-            class="px-4 py-2.5 bg-gray-50 hover:bg-gray-100 text-[#0A1526] rounded-full text-[11px] font-bold border border-gray-200 shadow-xs flex items-center gap-2 transition-colors shrink-0"
+            class="px-4 py-2.5 bg-gray-50 hover:bg-gray-100 text-[#071D49] rounded-full text-[11px] font-bold border border-gray-200 shadow-xs flex items-center gap-2 transition-colors shrink-0"
           >
-            <Icon name="visibility" className="w-4 h-4 text-[#3B82F6]" />
+            <Icon name="visibility" className="w-4 h-4 text-[#1248AA]" />
             <span>Ver Acta con Firmas</span>
           </a>
         {/if}
@@ -320,16 +320,16 @@
       <!-- Listado de Acuerdos -->
       <div class="space-y-4">
         {#if !selectedActa.acuerdos || selectedActa.acuerdos.length === 0}
-          <div class="py-12 text-center text-xs text-[#0A1526]/40">
+          <div class="py-12 text-center text-xs text-[#071D49]/40">
             No hay acuerdos políticos registrados para esta acta.
           </div>
         {:else}
           {#each selectedActa.acuerdos as acuerdo}
             {@const esCumplido = acuerdo.estado === 'Cumplido'}
             {@const esProceso = acuerdo.estado === 'En Proceso'}
-            <div class="bg-[#F8FAFC] border border-gray-100 rounded-[20px] p-5 transition-all duration-300 hover:shadow-sm">
+            <div class="bg-[#FFFFFF] border border-gray-100 rounded-[20px] p-5 transition-all duration-300 hover:shadow-sm">
               <div class="flex items-start justify-between gap-3 mb-2">
-                <span class="text-[9px] font-mono font-bold text-[#3B82F6] bg-blue-50 px-2 py-0.5 rounded-md">
+                <span class="text-[12px] font-mono font-bold text-[#1248AA] bg-blue-50 px-2 py-0.5 rounded-md">
                   {acuerdo.codigo}
                 </span>
 
@@ -337,39 +337,39 @@
                 <div class="flex items-center gap-1 bg-white border border-gray-200 rounded-full p-1 shadow-xs">
                   <button 
                     onclick={() => actualizarEstadoAcuerdo(acuerdo, 'Pendiente')}
-                    class="px-2 py-0.5 rounded-full text-[9px] font-bold transition-all {!esCumplido && !esProceso ? 'bg-amber-500 text-white' : 'text-gray-400 hover:text-gray-700'}"
+                    class="px-2 py-0.5 rounded-full text-[12px] font-bold transition-all {!esCumplido && !esProceso ? 'bg-amber-500 text-white' : 'text-gray-400 hover:text-gray-700'}"
                   >
                     Pendiente
                   </button>
                   <button 
                     onclick={() => actualizarEstadoAcuerdo(acuerdo, 'En Proceso')}
-                    class="px-2 py-0.5 rounded-full text-[9px] font-bold transition-all {esProceso ? 'bg-[#3B82F6] text-white' : 'text-gray-400 hover:text-gray-700'}"
+                    class="px-2 py-0.5 rounded-full text-[12px] font-bold transition-all {esProceso ? 'bg-[#1248AA] text-white' : 'text-gray-400 hover:text-gray-700'}"
                   >
                     En Proceso
                   </button>
                   <button 
                     onclick={() => actualizarEstadoAcuerdo(acuerdo, 'Cumplido')}
-                    class="px-2 py-0.5 rounded-full text-[9px] font-bold transition-all {esCumplido ? 'bg-emerald-600 text-white' : 'text-gray-400 hover:text-gray-700'}"
+                    class="px-2 py-0.5 rounded-full text-[12px] font-bold transition-all {esCumplido ? 'bg-emerald-600 text-white' : 'text-gray-400 hover:text-gray-700'}"
                   >
                     Cumplido
                   </button>
                 </div>
               </div>
 
-              <h4 class="text-[14px] font-black text-[#0A1526] leading-snug tracking-tight mb-1.5">
+              <h4 class="text-[14px] font-semibold text-[#071D49] leading-snug tracking-tight mb-1.5">
                 {acuerdo.titulo}
               </h4>
-              <p class="text-[12px] text-[#0A1526]/60 leading-relaxed mb-3">
+              <p class="text-[12px] text-[#071D49]/60 leading-relaxed mb-3">
                 {acuerdo.descripcion}
               </p>
 
               <div class="pt-3 border-t border-gray-200/60 flex items-center justify-between text-[11px]">
-                <span class="text-[10px] text-[#0A1526]/50">
-                  Responsable: <strong class="text-[#0A1526]">{acuerdo.responsable}</strong>
+                <span class="text-[12px] text-[#071D49]/50">
+                  Responsable: <strong class="text-[#071D49]">{acuerdo.responsable}</strong>
                 </span>
 
                 {#if acuerdo.evidenciaUrl}
-                  <a href={acuerdo.evidenciaUrl} target="_blank" class="text-[#3B82F6] font-bold flex items-center gap-1 hover:underline">
+                  <a href={acuerdo.evidenciaUrl} target="_blank" class="text-[#1248AA] font-bold flex items-center gap-1 hover:underline">
                     <Icon name="link" className="w-3.5 h-3.5" />
                     <span>Ver Evidencia</span>
                   </a>
@@ -394,50 +394,50 @@
 {#if showModal}
   <!-- svelte-ignore a11y_click_events_have_key_events -->
   <!-- svelte-ignore a11y_no_static_element_interactions -->
-  <div transition:fade={{ duration: 180 }} class="fixed inset-0 bg-[#0A1526]/20 backdrop-blur-sm z-50 flex items-center justify-center p-4" onclick={() => showModal = false}>
-    <div transition:fly={{ y: 20, duration: 250 }} class="bg-white rounded-[32px] w-full max-w-xl shadow-[0_24px_60px_-20px_rgba(10,21,38,0.12)] p-8 border border-gray-100" onclick={e => e.stopPropagation()}>
+  <div transition:fade={{ duration: 180 }} class="fixed inset-0 bg-[#071D49]/20 backdrop-blur-sm z-50 flex items-center justify-center p-4" onclick={() => showModal = false}>
+    <div transition:fly={{ y: 20, duration: 250 }} class="glass-light rounded-[32px] w-full max-w-xl  p-8  " onclick={e => e.stopPropagation()}>
       <div class="flex justify-between items-center mb-6 border-b border-gray-50 pb-4">
         <div>
-          <span class="text-[9px] font-bold uppercase tracking-[0.15em] text-[#3B82F6]">Asamblea General MFN</span>
-          <h2 class="text-xl font-black text-[#0A1526] tracking-tight">Digitalización de Acta Oficial</h2>
+          <span class="text-[12px] font-bold uppercase tracking-normal text-[#1248AA]">Asamblea General MFN</span>
+          <h2 class="text-xl font-semibold text-[#071D49] tracking-tight">Digitalización de Acta Oficial</h2>
         </div>
         <button onclick={() => showModal = false} class="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors">
-          <Icon name="close" className="w-5 h-5 text-[#0A1526]/50" stroke={2} />
+          <Icon name="close" className="w-5 h-5 text-[#071D49]/50" stroke={2} />
         </button>
       </div>
 
       <form onsubmit={registrarActa} class="space-y-4">
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label for="field-1" class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Número de Acta</label>
-            <input id="field-1" required type="text" bind:value={nuevaActa.numeroActa} placeholder="Ej: ACTA-04-2024" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#0A1526]" />
+            <label for="field-1" class="block text-[12px] font-bold uppercase tracking-normal text-[#071D49]/40 mb-1.5">Número de Acta</label>
+            <input id="field-1" required type="text" bind:value={nuevaActa.numeroActa} placeholder="Ej: ACTA-04-2024" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#071D49]" />
           </div>
 
           <div>
-            <label for="field-2" class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Número de Sesión</label>
-            <input id="field-2" required type="number" min="1" bind:value={nuevaActa.numeroSesion} class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#0A1526]" />
+            <label for="field-2" class="block text-[12px] font-bold uppercase tracking-normal text-[#071D49]/40 mb-1.5">Número de Sesión</label>
+            <input id="field-2" required type="number" min="1" bind:value={nuevaActa.numeroSesion} class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#071D49]" />
           </div>
         </div>
 
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label for="field-3" class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Tipo de Sesión</label>
-            <select id="field-3" bind:value={nuevaActa.tipoSesion} class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[12px] text-[#0A1526]">
+            <label for="field-3" class="block text-[12px] font-bold uppercase tracking-normal text-[#071D49]/40 mb-1.5">Tipo de Sesión</label>
+            <select id="field-3" bind:value={nuevaActa.tipoSesion} class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[12px] text-[#071D49]">
               <option value="Ordinaria">Ordinaria</option>
               <option value="Extraordinaria">Extraordinaria</option>
             </select>
           </div>
 
           <div>
-            <label for="field-4" class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Fecha de Sesión</label>
-            <input id="field-4" required type="date" bind:value={nuevaActa.fecha} class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#0A1526]" />
+            <label for="field-4" class="block text-[12px] font-bold uppercase tracking-normal text-[#071D49]/40 mb-1.5">Fecha de Sesión</label>
+            <input id="field-4" required type="date" bind:value={nuevaActa.fecha} class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#071D49]" />
           </div>
         </div>
 
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label for="field-5" class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Municipio Sede</label>
-            <select id="field-5" bind:value={nuevaActa.municipioSede} class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[12px] text-[#0A1526]">
+            <label for="field-5" class="block text-[12px] font-bold uppercase tracking-normal text-[#071D49]/40 mb-1.5">Municipio Sede</label>
+            <select id="field-5" bind:value={nuevaActa.municipioSede} class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[12px] text-[#071D49]">
               <option value="Santa Eulalia">Santa Eulalia</option>
               <option value="San Pedro Soloma">San Pedro Soloma</option>
               <option value="San Rafael la Independencia">San Rafael la Independencia</option>
@@ -445,24 +445,24 @@
           </div>
 
           <div>
-            <label for="field-6" class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Folio Libro Hojas Movibles CGC</label>
-            <input id="field-6" required type="text" bind:value={nuevaActa.libroCGCFolio} placeholder="Ej: Libro No. 04 · Folio 132" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#0A1526]" />
+            <label for="field-6" class="block text-[12px] font-bold uppercase tracking-normal text-[#071D49]/40 mb-1.5">Folio Libro Hojas Movibles CGC</label>
+            <input id="field-6" required type="text" bind:value={nuevaActa.libroCGCFolio} placeholder="Ej: Libro No. 04 · Folio 132" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#071D49]" />
           </div>
         </div>
 
         <div>
-          <label for="field-7" class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Lugar Específico de Reunión</label>
-          <input id="field-7" required type="text" bind:value={nuevaActa.lugarReunion} placeholder="Ej: Salón de Honor Municipal" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#0A1526]" />
+          <label for="field-7" class="block text-[12px] font-bold uppercase tracking-normal text-[#071D49]/40 mb-1.5">Lugar Específico de Reunión</label>
+          <input id="field-7" required type="text" bind:value={nuevaActa.lugarReunion} placeholder="Ej: Salón de Honor Municipal" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#071D49]" />
         </div>
 
         <div>
-          <label for="field-8" class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">URL Archivo PDF Escaneado (Firmas Oficiales)</label>
-          <input id="field-8" type="text" bind:value={nuevaActa.urlPdfEscaneado} placeholder="https://storage.mfn.gob.gt/actas/acta.pdf" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#0A1526]" />
+          <label for="field-8" class="block text-[12px] font-bold uppercase tracking-normal text-[#071D49]/40 mb-1.5">URL Archivo PDF Escaneado (Firmas Oficiales)</label>
+          <input id="field-8" type="text" bind:value={nuevaActa.urlPdfEscaneado} placeholder="https://storage.mfn.gob.gt/actas/acta.pdf" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#071D49]" />
         </div>
 
         <div class="pt-4 flex justify-end gap-3 mt-6 border-t border-gray-50 pt-5">
-          <button type="button" onclick={() => showModal = false} class="px-6 py-3 rounded-full font-bold text-[#0A1526]/60 hover:bg-gray-50 transition-colors text-[13px]">Cancelar</button>
-          <button type="submit" disabled={formLoading} class="px-8 py-3 bg-[#0A1526] text-white rounded-full font-bold hover:bg-black shadow-md transition-all text-[13px] disabled:opacity-50">
+          <button type="button" onclick={() => showModal = false} class="px-6 py-3 rounded-full font-bold text-[#071D49]/60 hover:bg-gray-50 transition-colors text-[13px]">Cancelar</button>
+          <button type="submit" disabled={formLoading} class="px-8 py-3 bg-[#071D49] text-white rounded-full font-bold hover:bg-black shadow-md transition-all text-[13px] disabled:opacity-50">
             {formLoading ? 'Indexando...' : 'Indexar Acta Oficial'}
           </button>
         </div>

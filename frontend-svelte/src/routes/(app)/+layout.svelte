@@ -18,7 +18,7 @@
 </script>
 
 {#if auth.isAuthenticated}
-  <div class="bg-[#F4F7FA] min-h-screen text-[#0A1526] font-sans antialiased selection:bg-[#3B82F6]/15 selection:text-[#0A1526]">
+  <div class="bg-[#FFFFFF] min-h-screen text-[#071D49] font-sans antialiased selection:bg-[#1248AA]/15 selection:text-[#071D49]">
     <div class="max-w-[1500px] mx-auto flex gap-10 items-start relative z-10 p-6 lg:p-8">
       <AppLayout>
         {#key $page.url.pathname}

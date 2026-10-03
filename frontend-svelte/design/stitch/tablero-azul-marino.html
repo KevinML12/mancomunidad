@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+
+<html class="h-full bg-[#FFFFFF]" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MFN · Tablero corporativo azul marino</title>
+<!-- Google Fonts: Inter & Inter -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS v3 -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            mfn: {
+              forest: "#111111",
+              deep: "#0C2850",
+              sand: "#FFFFFF",
+              card: "#FFFFFF",
+              divider: "#D8E5FA",
+              terracotta: "#B42318",
+              slate: "#185ADB"
+            }
+          },
+          borderRadius: {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          fontFamily: {
+            headline: ["Inter", "sans-serif"],
+            display: ["Inter", "sans-serif"],
+            body: ["Inter", "sans-serif"],
+            label: ["Inter", "sans-serif"]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    /* Material symbols helper */
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+      font-size: 20px;
+      line-height: 1;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    
+
+
+    /* Strict no-glass, clean borders */
+    .clean-panel {
+      background-color: #FFFFFF;
+      border: 1px solid #D8E5FA;
+      border-radius: 0.375rem;
+    }
+  </style>
+</head>
+<body class="h-full bg-[#FFFFFF] text-[#111111] font-body antialiased flex overflow-hidden">
+<!-- ============================================================ -->
+<!-- SIDEBAR NAVIGATION (JSON Component: SideNavBar)               -->
+<!-- ============================================================ -->
+<aside class="fixed top-0 bottom-0 left-0 w-72 h-full flex flex-col justify-between rounded-none border-r border-[#D8E5FA] bg-[#12366A] text-white z-30 select-none font-body">
+<!-- Header Brand & Municipal Selector -->
+<div class="p-5 border-b border-[#0C2850]">
+<div class="space-y-1">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-[4px] bg-[#0C2850] border border-[#185ADB]/40 flex items-center justify-center text-white font-bold text-sm shrink-0">
+          MFN
+        </div>
+<h1 class="text-base font-bold text-white tracking-tight leading-tight">MFN Digital</h1>
+</div>
+<p class="text-xs text-white/90 leading-snug pt-1">
+        Mancomunidad Frontera del Norte · Coordinación Intermunicipal
+      </p>
+</div>
+<div class="mt-4 pt-3 border-t border-[#0C2850]">
+<label class="block text-xs font-semibold text-white/90 uppercase tracking-wider mb-1.5" for="municipio-select">
+        Jurisdicción operativa
+      </label>
+<div class="relative">
+<select class="w-full bg-[#0C2850] border border-[#D8E5FA]/30 text-white text-xs rounded-[4px] px-3 py-2 focus:outline-none focus:ring-1 focus:ring-[#185ADB] appearance-none pr-8 cursor-pointer" id="municipio-select">
+<option selected="" value="all">Consolidado Territorial (3 Municipios)</option>
+<option value="soloma">San Pedro Soloma</option>
+<option value="eulalia">Santa Eulalia</option>
+<option value="independencia">San Rafael la Independencia</option>
+</select>
+<span class="material-symbols-outlined pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-white/80 text-sm">unfold_more</span>
+</div>
+</div>
+</div>
+<!-- Navigation -->
+<nav class="flex-1 overflow-y-auto px-3 py-3 space-y-1 text-sm">
+<a class="flex items-center gap-3 px-3 py-2 rounded-[4px] bg-[#0C2850] text-white font-medium border-l-2 border-[#185ADB]" href="#">
+<span class="material-symbols-outlined text-sm text-white">dashboard</span>
+<span class="truncate">Tablero</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-[4px] text-white hover:bg-[#0C2850] transition-colors" href="#">
+<span class="material-symbols-outlined text-sm text-white/80">folder</span>
+<span class="truncate">Proyectos</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-[4px] text-white hover:bg-[#0C2850] transition-colors" href="#">
+<span class="material-symbols-outlined text-sm text-white/80">assignment_turned_in</span>
+<span class="truncate">Plan de mejoras ARC</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-[4px] text-white hover:bg-[#0C2850] transition-colors" href="#">
+<span class="material-symbols-outlined text-sm text-white/80">payments</span>
+<span class="truncate">Finanzas y cuotas</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-[4px] text-white hover:bg-[#0C2850] transition-colors" href="#">
+<span class="material-symbols-outlined text-sm text-white/80">gavel</span>
+<span class="truncate">Gobernanza y actas</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-[4px] text-white hover:bg-[#0C2850] transition-colors" href="#">
+<span class="material-symbols-outlined text-sm text-white/80">groups</span>
+<span class="truncate">Talento humano</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-[4px] text-white hover:bg-[#0C2850] transition-colors" href="#">
+<span class="material-symbols-outlined text-sm text-white/80">handshake</span>
+<span class="truncate">Convenios</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-[4px] text-white hover:bg-[#0C2850] transition-colors" href="#">
+<span class="material-symbols-outlined text-sm text-white/80">water_drop</span>
+<span class="truncate">Indicadores ASH</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-[4px] text-white hover:bg-[#0C2850] transition-colors" href="#">
+<span class="material-symbols-outlined text-sm text-white/80">verified_user</span>
+<span class="truncate">Control de integridad</span>
+</a>
+<!-- Separador Portal Ciudadano -->
+<div class="pt-3 mt-2 border-t border-[#0C2850]">
+<a class="flex items-center justify-between px-3 py-2 rounded-[4px] bg-[#0C2850]/80 hover:bg-[#0C2850] text-white text-xs font-medium border border-[#D8E5FA]/20 transition-colors" href="#">
+<span class="flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">public</span>
+<span>Portal Ciudadano</span>
+</span>
+<span class="material-symbols-outlined text-xs">open_in_new</span>
+</a>
+</div>
+</nav>
+<!-- Footer Institucional -->
+<div class="p-3 border-t border-[#0C2850] bg-[#0C2850] text-xs">
+<div class="space-y-1 mb-2">
+<p class="font-medium text-white">Usuario institucional: Ing. C. Morales</p>
+<p class="text-xs text-white/90">Rol Técnico Asignado</p>
+</div>
+<div class="p-2 rounded-[4px] bg-[#12366A] border border-[#D8E5FA]/30 flex items-center justify-between text-xs">
+<span class="text-white font-medium">Control de integridad interno:</span>
+<span class="font-mono text-xs font-semibold text-white">SHA-256 verificado</span>
+</div>
+</div>
+</aside>
+<!-- ============================================================ -->
+<!-- MAIN CONTENT CANVAS                                          -->
+<!-- ============================================================ -->
+<div class="flex-1 ml-72 flex flex-col h-screen overflow-hidden bg-white text-[#111111]">
+<!-- Top Bar Header (JSON Component: TopNavBar with Topo Background) -->
+<header class="relative flex justify-between items-center w-full px-8 h-16 bg-white border-b border-[#D8E5FA] z-20 shrink-0">
+<!-- Left Header Context -->
+<div class="flex items-center gap-4">
+<div>
+<div class="flex items-center gap-3">
+<h2 class="text-lg font-bold text-[#111111] tracking-tight">Tablero operativo</h2>
+<span class="inline-flex items-center px-2.5 py-1 rounded-[4px] text-xs font-semibold bg-[#EDF4FF] text-[#111111] border border-[#D8E5FA]">
+          Vista de diseño · Datos de ejemplo
+        </span>
+</div>
+<p class="text-xs text-[#111111] font-normal leading-tight mt-0.5">Seguimiento institucional y territorial · Huehuetenango Norte</p>
+</div>
+</div>
+<!-- Right Header Actions -->
+<div class="flex items-center gap-3">
+<div class="flex items-center text-xs font-medium text-[#111111] mr-2 gap-1.5">
+<span class="material-symbols-outlined text-sm text-[#185ADB]">calendar_today</span>
+<span>Sábado, 3 de octubre de 2026</span>
+</div>
+<button class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[4px] bg-[#12366A] hover:bg-[#0C2850] text-white text-xs font-medium transition-colors border border-[#12366A] cursor-pointer" type="button">
+<span class="material-symbols-outlined text-sm">refresh</span>
+<span>Actualizar datos</span>
+</button>
+<div class="h-5 w-[1px] bg-[#D8E5FA] mx-1"></div>
+<div class="flex items-center gap-1 text-[#111111]">
+<button class="p-1.5 rounded-[4px] hover:bg-[#EDF4FF] text-[#111111] transition-colors relative flex items-center justify-center" title="Notificaciones del sistema" type="button">
+<span class="material-symbols-outlined text-lg">notifications</span>
+<span class="absolute top-1 right-1 w-2 h-2 bg-[#B42318] rounded-full"></span>
+</button>
+<button class="p-1.5 rounded-[4px] hover:bg-[#EDF4FF] text-[#111111] transition-colors flex items-center justify-center" title="Perfil institucional" type="button">
+<span class="material-symbols-outlined text-xl">account_circle</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Main Workspace (Scrollable Area) -->
+<main class="flex-1 overflow-y-auto p-8 space-y-6"><!-- ========================================================== -->
+<!-- SECCIÓN 1: 'REQUIERE ATENCIÓN' (Compromisos Octubre 2026) -->
+<!-- ========================================================== -->
+<section class="space-y-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-[#B42318]"></span>
+<h3 class="text-sm font-bold text-[#111111] uppercase tracking-wider">Requiere atención</h3>
+<span class="text-xs font-medium text-[#111111]">· 3 compromisos prioritarios (Octubre 2026)</span>
+</div>
+<span class="text-xs text-[#111111]">Monitoreo de plazos con vigencia legal y técnica</span>
+</div>
+<div class="bg-white border border-[#D8E5FA] rounded-[6px] overflow-hidden">
+<table class="w-full text-left text-xs border-collapse">
+<thead>
+<tr class="bg-[#EDF4FF] border-b border-[#D8E5FA] text-[#111111] font-semibold">
+<th class="py-2.5 px-4 w-40" scope="col">Estado de plazo</th>
+<th class="py-2.5 px-4" scope="col">Asunto / Descripción del pendiente</th>
+<th class="py-2.5 px-4 w-36" scope="col">Módulo origen</th>
+<th class="py-2.5 px-4 w-44" scope="col">Técnico responsable</th>
+<th class="py-2.5 px-4 w-32" scope="col">Fecha límite</th>
+<th class="py-2.5 px-4 text-right w-36" scope="col">Acción requerida</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-[#D8E5FA] font-normal text-[#111111]">
+<!-- Fila 1: Urgente <= 15 días (Rojo #B42318) -->
+<tr class="hover:bg-[#EDF4FF]/50 transition-colors">
+<td class="py-3 px-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[4px] text-xs font-bold text-[#B42318] border border-[#B42318]/30 bg-white">
+<span class="w-1.5 h-1.5 rounded-full bg-[#B42318]"></span>
+              Urgente · Vence en 2 días
+            </span>
+</td>
+<td class="py-3 px-4">
+<div class="font-bold text-[#111111]">Adenda de prórroga técnica al convenio intermunicipal de residuos sólidos</div>
+<div class="text-xs text-[#111111] mt-0.5">Suscripción tripartita pendiente de firma por alcaldía de San Pedro Soloma</div>
+</td>
+<td class="py-3 px-4">
+<span class="px-2 py-0.5 rounded-[4px] bg-[#EDF4FF] border border-[#D8E5FA] font-mono text-xs text-[#111111]">Convenios</span>
+</td>
+<td class="py-3 px-4 font-medium text-[#111111]">Ing. E. Martínez (UTM)</td>
+<td class="py-3 px-4 font-mono text-xs font-bold text-[#B42318]">05/10/2026</td>
+<td class="py-3 px-4 text-right">
+<a class="text-xs font-semibold text-[#185ADB] hover:underline" href="#">Revisar expediente</a>
+</td>
+</tr>
+<!-- Fila 2: Urgente <= 15 días (Rojo #B42318) -->
+<tr class="hover:bg-[#EDF4FF]/50 transition-colors">
+<td class="py-3 px-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[4px] text-xs font-bold text-[#B42318] border border-[#B42318]/30 bg-white">
+<span class="w-1.5 h-1.5 rounded-full bg-[#B42318]"></span>
+              Urgente · Vence en 9 días
+            </span>
+</td>
+<td class="py-3 px-4">
+<div class="font-bold text-[#111111]">Plan de Mejoras ARC: Bitácora de calidad del agua en nacimientos comunales</div>
+<div class="text-xs text-[#111111] mt-0.5">Recepción de muestras microbiológicas del sector norte de Santa Eulalia</div>
+</td>
+<td class="py-3 px-4">
+<span class="px-2 py-0.5 rounded-[4px] bg-[#EDF4FF] border border-[#D8E5FA] font-mono text-xs text-[#111111]">Plan ARC</span>
+</td>
+<td class="py-3 px-4 font-medium text-[#111111]">Licda. K. Lucas (ASH)</td>
+<td class="py-3 px-4 font-mono text-xs font-bold text-[#B42318]">12/10/2026</td>
+<td class="py-3 px-4 text-right">
+<a class="text-xs font-semibold text-[#185ADB] hover:underline" href="#">Completar informe</a>
+</td>
+</tr>
+<!-- Fila 3: Próximo <= 30 días (Azul #185ADB) -->
+<tr class="hover:bg-[#EDF4FF]/50 transition-colors">
+<td class="py-3 px-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[4px] text-xs font-bold text-[#185ADB] border border-[#185ADB]/30 bg-white">
+<span class="w-1.5 h-1.5 rounded-full bg-[#185ADB]"></span>
+              En plazo · Vence en 21 días
+            </span>
+</td>
+<td class="py-3 px-4">
+<div class="font-bold text-[#111111]">Conciliación cuatrimestral de cuotas de sostenimiento institucional MFN</div>
+<div class="text-xs text-[#111111] mt-0.5">Consolidación de aportes ordinarios emitidos para San Rafael la Independencia</div>
+</td>
+<td class="py-3 px-4">
+<span class="px-2 py-0.5 rounded-[4px] bg-[#EDF4FF] border border-[#D8E5FA] font-mono text-xs text-[#111111]">Finanzas</span>
+</td>
+<td class="py-3 px-4 font-medium text-[#111111]">C.P. M. Alvarado (Finanzas)</td>
+<td class="py-3 px-4 font-mono text-xs font-semibold text-[#185ADB]">24/10/2026</td>
+<td class="py-3 px-4 text-right">
+<a class="text-xs font-semibold text-[#185ADB] hover:underline" href="#">Gestionar recibo</a>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- ========================================================== -->
+<!-- SECCIÓN 2: 'AVANCE POR MUNICIPIO' (3 Municipios Exactos)  -->
+<!-- ========================================================== -->
+<section class="space-y-3">
+<div class="flex items-center justify-between">
+<div>
+<h3 class="text-sm font-bold text-[#111111] uppercase tracking-wider">Avance por municipio</h3>
+<p class="text-xs text-[#111111]">Jurisdicciones constitutivas oficiales de la Mancomunidad Frontera del Norte</p>
+</div>
+<span class="text-xs font-mono bg-white border border-[#D8E5FA] px-2.5 py-1 rounded-[4px] text-[#111111] font-semibold">
+      Moneda oficial: Quetzales (GTQ)
+    </span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<!-- Municipio 1: San Pedro Soloma -->
+<div class="bg-white border border-[#D8E5FA] rounded-[6px] p-4 flex flex-col justify-between space-y-4">
+<div>
+<div class="flex items-start justify-between">
+<div>
+<span class="text-xs uppercase font-semibold text-[#185ADB] tracking-wider">Sede Regional Norte</span>
+<h4 class="text-base font-bold text-[#111111]">San Pedro Soloma</h4>
+</div>
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-[4px] text-xs font-bold text-[#176B3A] border border-[#176B3A]/30 bg-white">
+<span class="w-1.5 h-1.5 rounded-full bg-[#176B3A]"></span>
+            Concluido en plazo
+          </span>
+</div>
+<div class="grid grid-cols-2 gap-2 mt-4 pt-3 border-t border-[#D8E5FA]">
+<div>
+<span class="text-xs text-[#111111] block">Proyectos registrados</span>
+<span class="text-lg font-bold text-[#111111]">5</span>
+</div>
+<div>
+<span class="text-xs text-[#111111] block">Presupuesto programado</span>
+<span class="text-sm font-bold text-[#111111]">Q 4,850,000</span>
+</div>
+</div>
+</div>
+<div class="pt-2 border-t border-[#D8E5FA]">
+<div class="flex justify-between items-baseline mb-1.5">
+<span class="text-xs font-medium text-[#111111]">Avance físico promedio</span>
+<span class="font-mono text-sm font-bold text-[#185ADB]">68%</span>
+</div>
+<div class="w-full bg-[#EDF4FF] h-2 rounded-[4px] overflow-hidden border border-[#D8E5FA]">
+<div class="bg-[#185ADB] h-full rounded-[2px]" style="width: 68%;"></div>
+</div>
+<div class="flex justify-between text-xs text-[#111111] mt-2">
+<span>Cuota institucional: Q 45,000 / mes</span>
+<span class="text-[#176B3A] font-bold">Solvente</span>
+</div>
+</div>
+</div>
+<!-- Municipio 2: Santa Eulalia -->
+<div class="bg-white border border-[#D8E5FA] rounded-[6px] p-4 flex flex-col justify-between space-y-4">
+<div>
+<div class="flex items-start justify-between">
+<div>
+<span class="text-xs uppercase font-semibold text-[#185ADB] tracking-wider">Sector Cuchumatanes</span>
+<h4 class="text-base font-bold text-[#111111]">Santa Eulalia</h4>
+</div>
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-[4px] text-xs font-bold text-[#185ADB] border border-[#185ADB]/30 bg-white">
+<span class="w-1.5 h-1.5 rounded-full bg-[#185ADB]"></span>
+            En plazo
+          </span>
+</div>
+<div class="grid grid-cols-2 gap-2 mt-4 pt-3 border-t border-[#D8E5FA]">
+<div>
+<span class="text-xs text-[#111111] block">Proyectos registrados</span>
+<span class="text-lg font-bold text-[#111111]">4</span>
+</div>
+<div>
+<span class="text-xs text-[#111111] block">Presupuesto programado</span>
+<span class="text-sm font-bold text-[#111111]">Q 3,210,000</span>
+</div>
+</div>
+</div>
+<div class="pt-2 border-t border-[#D8E5FA]">
+<div class="flex justify-between items-baseline mb-1.5">
+<span class="text-xs font-medium text-[#111111]">Avance físico promedio</span>
+<span class="font-mono text-sm font-bold text-[#185ADB]">74%</span>
+</div>
+<div class="w-full bg-[#EDF4FF] h-2 rounded-[4px] overflow-hidden border border-[#D8E5FA]">
+<div class="bg-[#185ADB] h-full rounded-[2px]" style="width: 74%;"></div>
+</div>
+<div class="flex justify-between text-xs text-[#111111] mt-2">
+<span>Cuota institucional: Q 45,000 / mes</span>
+<span class="text-[#185ADB] font-bold">En trámite DAFIM</span>
+</div>
+</div>
+</div>
+<!-- Municipio 3: San Rafael la Independencia -->
+<div class="bg-white border border-[#D8E5FA] rounded-[6px] p-4 flex flex-col justify-between space-y-4">
+<div>
+<div class="flex items-start justify-between">
+<div>
+<span class="text-xs uppercase font-semibold text-[#185ADB] tracking-wider">Microcuenca Alta</span>
+<h4 class="text-base font-bold text-[#111111]">San Rafael la Independencia</h4>
+</div>
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-[4px] text-xs font-bold text-[#111111] border border-[#D8E5FA] bg-[#EDF4FF]">
+<span class="w-1.5 h-1.5 rounded-full bg-[#111111]"></span>
+            Parcial
+          </span>
+</div>
+<div class="grid grid-cols-2 gap-2 mt-4 pt-3 border-t border-[#D8E5FA]">
+<div>
+<span class="text-xs text-[#111111] block">Proyectos registrados</span>
+<span class="text-lg font-bold text-[#111111]">2</span>
+</div>
+<div>
+<span class="text-xs text-[#111111] block">Presupuesto programado</span>
+<span class="text-sm font-bold text-[#111111]">Q 1,150,000</span>
+</div>
+</div>
+</div>
+<div class="pt-2 border-t border-[#D8E5FA]">
+<div class="flex justify-between items-baseline mb-1.5">
+<span class="text-xs font-medium text-[#111111]">Avance físico promedio</span>
+<span class="font-mono text-sm font-bold text-[#185ADB]">42%</span>
+</div>
+<div class="w-full bg-[#EDF4FF] h-2 rounded-[4px] overflow-hidden border border-[#D8E5FA]">
+<div class="bg-[#185ADB] h-full rounded-[2px]" style="width: 42%;"></div>
+</div>
+<div class="flex justify-between text-xs text-[#111111] mt-2">
+<span>Cuota extraordinaria:</span>
+<span class="font-medium text-[#111111]">Sin datos registrados</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- ========================================================== -->
+<!-- SECCIÓN 3: PANELES LADO A LADO (Agenda y Proyectos)       -->
+<!-- ========================================================== -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+<!-- A) Próximos compromisos institucionales (5 cols) -->
+<div class="lg:col-span-5 space-y-3">
+<div class="flex items-center justify-between">
+<h3 class="text-sm font-bold text-[#111111] uppercase tracking-wider">Próximos compromisos institucionales</h3>
+<span class="text-xs text-[#185ADB] font-semibold">Octubre 2026</span>
+</div>
+<div class="bg-white border border-[#D8E5FA] rounded-[6px] p-3">
+<div class="divide-y divide-[#D8E5FA] text-xs text-[#111111]">
+<div class="py-2.5 first:pt-1">
+<div class="flex items-center justify-between text-xs mb-1">
+<span class="font-mono font-bold text-[#B42318]">06 OCT 2026 · 09:30 AM</span>
+<span class="px-2 py-0.5 rounded-[4px] bg-[#EDF4FF] border border-[#D8E5FA] text-xs font-semibold text-[#111111]">Gobernanza</span>
+</div>
+<p class="font-bold text-xs text-[#111111] leading-snug">Asamblea Ordinaria del Consejo Directivo MFN</p>
+<p class="text-xs text-[#111111] mt-0.5">Revisión de actas y validación de planes cuatrimestrales de inversión.</p>
+</div>
+<div class="py-2.5">
+<div class="flex items-center justify-between text-xs mb-1">
+<span class="font-mono font-bold text-[#185ADB]">14 OCT 2026 · 11:00 AM</span>
+<span class="px-2 py-0.5 rounded-[4px] bg-[#EDF4FF] border border-[#D8E5FA] text-xs font-semibold text-[#111111]">Indicadores ASH</span>
+</div>
+<p class="font-bold text-xs text-[#111111] leading-snug">Comisión Técnica de Agua y Saneamiento</p>
+<p class="text-xs text-[#111111] mt-0.5">Presentación de informes microbiológicos en nacimientos comunales.</p>
+</div>
+<div class="py-2.5">
+<div class="flex items-center justify-between text-xs mb-1">
+<span class="font-mono font-bold text-[#185ADB]">22 OCT 2026 · 02:00 PM</span>
+<span class="px-2 py-0.5 rounded-[4px] bg-[#EDF4FF] border border-[#D8E5FA] text-xs font-semibold text-[#111111]">Finanzas</span>
+</div>
+<p class="font-bold text-xs text-[#111111] leading-snug">Mesa de Coordinación Financiera Intermunicipal</p>
+<p class="text-xs text-[#111111] mt-0.5">Conciliación de cuotas ordinarias y aportes para saneamiento.</p>
+</div>
+<div class="py-2.5 last:pb-1">
+<div class="flex items-center justify-between text-xs mb-1">
+<span class="font-mono font-bold text-[#185ADB]">28 OCT 2026 · 10:00 AM</span>
+<span class="px-2 py-0.5 rounded-[4px] bg-[#EDF4FF] border border-[#D8E5FA] text-xs font-semibold text-[#111111]">Talento humano</span>
+</div>
+<p class="font-bold text-xs text-[#111111] leading-snug">Taller de Capacitación en Operación y Mantenimiento</p>
+<p class="text-xs text-[#111111] mt-0.5">Capacitación técnica intermunicipal para fontaneros comarcales.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- B) Proyectos recientes en territorio (7 cols) -->
+<div class="lg:col-span-7 space-y-3">
+<div class="flex items-center justify-between">
+<h3 class="text-sm font-bold text-[#111111] uppercase tracking-wider">Proyectos recientes en territorio</h3>
+<span class="text-xs text-[#111111] font-semibold">Registro técnico</span>
+</div>
+<div class="bg-white border border-[#D8E5FA] rounded-[6px] overflow-hidden">
+<table class="w-full text-left text-xs border-collapse">
+<thead>
+<tr class="bg-[#EDF4FF] border-b border-[#D8E5FA] text-[#111111] font-semibold">
+<th class="py-2.5 px-3" scope="col">Proyecto / Código</th>
+<th class="py-2.5 px-3" scope="col">Municipio</th>
+<th class="py-2.5 px-3" scope="col">Presupuesto</th>
+<th class="py-2.5 px-3 w-32" scope="col">Avance físico</th>
+<th class="py-2.5 px-3 text-right" scope="col">Estado</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-[#D8E5FA] text-[#111111]">
+<tr class="hover:bg-[#EDF4FF]/50 transition-colors">
+<td class="py-2.5 px-3">
+<div class="font-bold text-[#111111]">Construcción Sistema de Agua Potable La Cumbre</div>
+<div class="text-xs font-mono text-[#111111]">SNIP-302194</div>
+</td>
+<td class="py-2.5 px-3 font-medium text-[#111111]">San Pedro Soloma</td>
+<td class="py-2.5 px-3 font-mono font-semibold text-[#111111]">Q 1,420,000</td>
+<td class="py-2.5 px-3">
+<div class="flex items-center gap-2">
+<span class="font-mono text-xs font-bold text-[#185ADB] w-7">82%</span>
+<div class="w-16 bg-[#EDF4FF] h-2 rounded-[2px] overflow-hidden border border-[#D8E5FA]">
+<div class="bg-[#185ADB] h-full" style="width: 82%;"></div>
+</div>
+</div>
+</td>
+<td class="py-2.5 px-3 text-right">
+<span class="inline-block px-2 py-0.5 rounded-[4px] text-xs font-bold text-[#176B3A] border border-[#176B3A]/30 bg-white">
+                En ejecución
+              </span>
+</td>
+</tr>
+<tr class="hover:bg-[#EDF4FF]/50 transition-colors">
+<td class="py-2.5 px-3">
+<div class="font-bold text-[#111111]">Mejoramiento Camino Rural Ramal Cuchumatanes</div>
+<div class="text-xs font-mono text-[#111111]">SNIP-298412</div>
+</td>
+<td class="py-2.5 px-3 font-medium text-[#111111]">Santa Eulalia</td>
+<td class="py-2.5 px-3 font-mono font-semibold text-[#111111]">Q 980,000</td>
+<td class="py-2.5 px-3">
+<div class="flex items-center gap-2">
+<span class="font-mono text-xs font-bold text-[#185ADB] w-7">55%</span>
+<div class="w-16 bg-[#EDF4FF] h-2 rounded-[2px] overflow-hidden border border-[#D8E5FA]">
+<div class="bg-[#185ADB] h-full" style="width: 55%;"></div>
+</div>
+</div>
+</td>
+<td class="py-2.5 px-3 text-right">
+<span class="inline-block px-2 py-0.5 rounded-[4px] text-xs font-bold text-[#176B3A] border border-[#176B3A]/30 bg-white">
+                En ejecución
+              </span>
+</td>
+</tr>
+<tr class="hover:bg-[#EDF4FF]/50 transition-colors">
+<td class="py-2.5 px-3">
+<div class="font-bold text-[#111111]">Planta de Tratamiento Aguas Residuales Sector 2</div>
+<div class="text-xs font-mono text-[#111111]">SNIP-310450</div>
+</td>
+<td class="py-2.5 px-3 font-medium text-[#111111]">San Rafael la Indep.</td>
+<td class="py-2.5 px-3 font-mono font-semibold text-[#111111]">Q 1,150,000</td>
+<td class="py-2.5 px-3">
+<div class="flex items-center gap-2">
+<span class="font-mono text-xs font-bold text-[#185ADB] w-7">30%</span>
+<div class="w-16 bg-[#EDF4FF] h-2 rounded-[2px] overflow-hidden border border-[#D8E5FA]">
+<div class="bg-[#185ADB] h-full" style="width: 30%;"></div>
+</div>
+</div>
+</td>
+<td class="py-2.5 px-3 text-right">
+<span class="inline-block px-2 py-0.5 rounded-[4px] text-xs font-bold text-[#185ADB] border border-[#185ADB]/30 bg-white">
+                Supervisión
+              </span>
+</td>
+</tr>
+<tr class="hover:bg-[#EDF4FF]/50 transition-colors">
+<td class="py-2.5 px-3">
+<div class="font-bold text-[#111111]">Relleno Sanitario Mancomunado - Celda B</div>
+<div class="text-xs font-mono text-[#111111]">SNIP-289104</div>
+</td>
+<td class="py-2.5 px-3 font-medium text-[#111111]">Intermunicipal</td>
+<td class="py-2.5 px-3 font-mono font-semibold text-[#111111]">Q 2,230,000</td>
+<td class="py-2.5 px-3">
+<div class="flex items-center gap-2">
+<span class="font-mono text-xs font-bold text-[#185ADB] w-7">90%</span>
+<div class="w-16 bg-[#EDF4FF] h-2 rounded-[2px] overflow-hidden border border-[#D8E5FA]">
+<div class="bg-[#185ADB] h-full" style="width: 90%;"></div>
+</div>
+</div>
+</td>
+<td class="py-2.5 px-3 text-right">
+<span class="inline-block px-2 py-0.5 rounded-[4px] text-xs font-bold text-[#176B3A] border border-[#176B3A]/30 bg-white">
+                Concluido en plazo
+              </span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<!-- ========================================================== -->
+<!-- SECCIÓN 4: TRES ESTADOS DEL SISTEMA (Referencia Técnica)   -->
+<!-- ========================================================== -->
+<section class="pt-4 border-t border-[#D8E5FA]">
+<div class="mb-2 flex items-center justify-between">
+<span class="text-xs font-bold uppercase tracking-wider text-[#111111]">Estados de referencia del sistema</span>
+<span class="text-xs text-[#111111] font-mono">Inter · Bordes 1px #D8E5FA</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<!-- 1) Cargando datos -->
+<div class="bg-white border border-[#D8E5FA] rounded-[6px] p-3 flex items-center gap-3">
+<span class="material-symbols-outlined text-[#185ADB] text-lg animate-spin">sync</span>
+<div>
+<p class="text-xs font-bold text-[#111111]">Estado 1: Cargando datos</p>
+<p class="text-xs text-[#111111]">Cargando datos del territorio...</p>
+</div>
+</div>
+<!-- 2) Vacío -->
+<div class="bg-white border border-[#D8E5FA] rounded-[6px] p-3 flex items-center gap-3">
+<span class="material-symbols-outlined text-[#176B3A] text-lg">check_circle</span>
+<div>
+<p class="text-xs font-bold text-[#111111]">Estado 2: Vacío</p>
+<p class="text-xs text-[#111111]">Sin expedientes pendientes de atención</p>
+</div>
+</div>
+<!-- 3) Error con botón reintentar -->
+<div class="bg-white border border-[#B42318]/30 rounded-[6px] p-3 flex items-center justify-between gap-3">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-[#B42318] text-lg">error</span>
+<div>
+<p class="text-xs font-bold text-[#B42318]">Estado 3: Error</p>
+<p class="text-xs text-[#111111]">No se pudieron cargar los datos</p>
+</div>
+</div>
+<button class="px-2.5 py-1 rounded-[4px] bg-[#12366A] hover:bg-[#0C2850] text-white text-xs font-medium cursor-pointer border border-[#12366A]" type="button">
+        Reintentar
+      </button>
+</div>
+</div>
+</section></main>
+</div>
+<script>
+    // Micro-interactions and subtle date refresh handler
+    document.addEventListener('DOMContentLoaded', () => {
+      const selectElem = document.getElementById('municipio-select');
+      if (selectElem) {
+        selectElem.addEventListener('change', (e) => {
+          // Subtle feedback when selecting territorial jurisdiction
+          console.info(`[MFN Digital] Jurisdicción conmutada a: ${e.target.value}`);
+        });
+      }
+    });
+  </script>
+</body></html>

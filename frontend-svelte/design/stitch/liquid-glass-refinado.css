@@ -1,0 +1,27 @@
+
+/* Refined MFN material: borderless white glass and deep navy */
+:root {--mfn-navy:#071D49;--mfn-ink:#111111;}
+.glass-light,.glass-light-nested {border:0!important;}
+.glass-light {background:linear-gradient(145deg,rgba(255,255,255,.34),rgba(255,255,255,.18) 56%,rgba(255,255,255,.08));-webkit-backdrop-filter:blur(22px) saturate(145%);backdrop-filter:blur(22px) saturate(145%);box-shadow:inset 0 1px 1px rgba(255,255,255,.75),inset 0 -1px 1px rgba(255,255,255,.2),0 18px 55px -28px rgba(7,29,73,.22);}
+.glass-light-nested {background:linear-gradient(145deg,rgba(255,255,255,.24),rgba(255,255,255,.10) 60%,rgba(255,255,255,.04));-webkit-backdrop-filter:blur(12px) saturate(135%);backdrop-filter:blur(12px) saturate(135%);box-shadow:inset 0 1px 1px rgba(255,255,255,.5),0 6px 24px -20px rgba(7,29,73,.12);}
+.glass-light::after,.glass-light-nested::after {background:radial-gradient(140px 65px ellipse at var(--spec-x,50%) var(--spec-y,0%),rgba(255,255,255,.40),transparent 76%);}
+aside nav a {font-size:14px;min-height:42px;border-radius:10px;letter-spacing:0;}
+aside h1 {font-size:24px;color:#071D49;letter-spacing:-.04em;}
+aside nav {margin-top:30px;}
+.mfn-header {display:flex;align-items:center;justify-content:space-between;gap:24px;padding:32px;flex-wrap:wrap;background:transparent!important;}
+.mfn-header h2 {font-size:32px;line-height:1.15;font-weight:650;letter-spacing:-.04em;margin:8px 0;}
+.mfn-eyebrow {font-size:13px;color:#071D49;font-weight:600;}
+.mfn-subtitle {font-size:14px;color:#111;}
+.mfn-header-actions {display:flex;align-items:center;flex-wrap:wrap;gap:16px;}
+.mfn-demo,.mfn-date {font-size:12px;}
+.mfn-demo {color:#071D49;}
+.mfn-primary {background:#071D49;color:#fff;border:0;border-radius:12px;padding:12px 18px;font-size:14px;font-weight:600;min-height:44px;}
+.mfn-primary:hover {background:#04122F;}
+.mfn-section-title {font-size:19px;font-weight:650;letter-spacing:-.025em;color:#071D49;}
+.mfn-table-head {font-size:12px;font-weight:600;color:#071D49;text-transform:none;border-bottom:1px solid rgba(7,29,73,.08);}
+thead {background:rgba(255,255,255,.12);}
+table {font-size:13px;}
+th {padding-top:16px!important;padding-bottom:16px!important;}
+td {padding-top:18px!important;padding-bottom:18px!important;}
+@media(max-width:1023px) {.mfn-header {padding:24px!important;}.mfn-header h2 {font-size:28px;}.mfn-header-actions {gap:12px;} aside nav {margin-top:22px;}}
+@media(prefers-reduced-transparency:reduce) {.glass-light,.glass-light-nested {background:#fff;backdrop-filter:none;-webkit-backdrop-filter:none;}}

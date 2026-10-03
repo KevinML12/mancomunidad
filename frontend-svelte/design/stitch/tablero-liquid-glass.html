@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html class="h-full bg-[#FFFFFF]" lang="es"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>MFN · Liquid Glass blanco y azul marino</title>
+<!-- Google Fonts: Inter -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<!-- Material Symbols Outlined -->
+
+<!-- Tailwind CSS v3 -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              navy: "#071D49",
+              dark: "#04122F",
+              blue: "#1248AA",
+              border: "#D8E5FA",
+              surface: "#FFFFFF",
+              subtle: "#F5F8FC",
+              ink: "#111111"
+            },
+            status: {
+              urgent: "#D92D20",
+              ongoing: "#1248AA",
+              success: "#027A48"
+            }
+          },
+          borderRadius: {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          fontFamily: {
+            sans: ["Inter", "sans-serif"],
+            headline: ["Inter", "sans-serif"],
+            display: ["Inter", "sans-serif"],
+            body: ["Inter", "sans-serif"],
+            label: ["Inter", "sans-serif"]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    /* Material symbols helper */
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+      font-size: 20px;
+      line-height: 1;
+      display: inline-block;
+      vertical-align: middle;
+    }
+  
+.glass-light, .glass-light-nested {position:relative;isolation:isolate;overflow:hidden;border:1px solid rgba(255,255,255,.7);}
+.glass-light {background:linear-gradient(155deg,rgba(255,255,255,.62),rgba(255,255,255,.42) 55%,rgba(255,255,255,.28));-webkit-backdrop-filter:blur(26px) saturate(180%) brightness(1.06);backdrop-filter:blur(26px) saturate(180%) brightness(1.06);border-color:rgba(255,255,255,.7) rgba(255,255,255,.42) rgba(255,255,255,.42) rgba(255,255,255,.62);box-shadow:inset 1.5px 2px 4px rgba(255,255,255,.85),inset -1.5px -1.5px 6px rgba(255,255,255,.22),inset 0 1.5px 0 rgba(255,255,255,.9),inset 0 -22px 36px -24px rgba(255,255,255,.55),0 24px 60px -20px rgba(18,54,106,.20),0 4px 12px rgba(18,54,106,.08);}
+.glass-light-nested {background:linear-gradient(155deg,rgba(255,255,255,.34),rgba(255,255,255,.20) 55%,rgba(255,255,255,.10));-webkit-backdrop-filter:blur(18px) saturate(170%) brightness(1.08);backdrop-filter:blur(18px) saturate(170%) brightness(1.08);box-shadow:inset 1px 1.5px 3px rgba(255,255,255,.7),inset -1px -1px 4px rgba(255,255,255,.15),0 10px 24px -12px rgba(18,54,106,.14);}
+.glass-light::after,.glass-light-nested::after {content:'';position:absolute;inset:0;pointer-events:none;border-radius:inherit;z-index:-1;background:radial-gradient(32px 22px ellipse at var(--spec-x,50%) var(--spec-y,0%),rgba(255,255,255,.9),transparent 72%),radial-gradient(150px 90px ellipse at var(--spec-x,50%) var(--spec-y,0%),rgba(255,255,255,.35),transparent 74%);opacity:var(--spec-o,0);transition:opacity .25s ease;}
+.specular-shine {pointer-events:none;}
+input,select,textarea {min-height:44px;background-color:rgba(255,255,255,.85);}
+button,a {touch-action:manipulation;}
+:focus-visible {outline:2px solid #1248AA;outline-offset:3px;}
+thead {background:rgba(255,255,255,.72);}
+@supports not (backdrop-filter:blur(1px)) {.glass-light,.glass-light-nested {background:#fff;}}
+@media (prefers-reduced-transparency:reduce) {.glass-light,.glass-light-nested {background:#fff;backdrop-filter:none;-webkit-backdrop-filter:none;}.glass-light::after,.glass-light-nested::after {display:none;}}
+@media (prefers-reduced-motion:reduce) {*,*::before,*::after {animation:none!important;transition:none!important;}.glass-light::after,.glass-light-nested::after {display:none;}}
+@media(max-width:1023px) {body>div.relative {display:block;height:auto;overflow:visible;padding:16px;}aside.glass-light {width:100%;height:auto;margin-bottom:20px;}aside nav {display:flex;overflow:auto;gap:8px;}aside nav a {white-space:nowrap;}body {overflow:auto!important;}body>div.relative>div.flex-1 {height:auto;overflow:visible;}header {flex-wrap:wrap;gap:12px;padding:20px!important;}header>div {flex-wrap:wrap;}main {padding:20px!important;}table {min-width:700px;}main .overflow-hidden:has(>table) {overflow:auto;}}
+
+</style>
+<style>
+/* Refined MFN material: borderless white glass and deep navy */
+:root {--mfn-navy:#071D49;--mfn-ink:#111111;}
+.glass-light,.glass-light-nested {border:0!important;}
+.glass-light {background:linear-gradient(145deg,rgba(255,255,255,.34),rgba(255,255,255,.18) 56%,rgba(255,255,255,.08));-webkit-backdrop-filter:blur(22px) saturate(145%);backdrop-filter:blur(22px) saturate(145%);box-shadow:inset 0 1px 1px rgba(255,255,255,.75),inset 0 -1px 1px rgba(255,255,255,.2),0 18px 55px -28px rgba(7,29,73,.22);}
+.glass-light-nested {background:linear-gradient(145deg,rgba(255,255,255,.24),rgba(255,255,255,.10) 60%,rgba(255,255,255,.04));-webkit-backdrop-filter:blur(12px) saturate(135%);backdrop-filter:blur(12px) saturate(135%);box-shadow:inset 0 1px 1px rgba(255,255,255,.5),0 6px 24px -20px rgba(7,29,73,.12);}
+.glass-light::after,.glass-light-nested::after {background:radial-gradient(140px 65px ellipse at var(--spec-x,50%) var(--spec-y,0%),rgba(255,255,255,.40),transparent 76%);}
+aside nav a {font-size:14px;min-height:42px;border-radius:10px;letter-spacing:0;}
+aside h1 {font-size:24px;color:#071D49;letter-spacing:-.04em;}
+aside nav {margin-top:30px;}
+.mfn-header {display:flex;align-items:center;justify-content:space-between;gap:24px;padding:32px;flex-wrap:wrap;background:transparent!important;}
+.mfn-header h2 {font-size:32px;line-height:1.15;font-weight:650;letter-spacing:-.04em;margin:8px 0;}
+.mfn-eyebrow {font-size:13px;color:#071D49;font-weight:600;}
+.mfn-subtitle {font-size:14px;color:#111;}
+.mfn-header-actions {display:flex;align-items:center;flex-wrap:wrap;gap:16px;}
+.mfn-demo,.mfn-date {font-size:12px;}
+.mfn-demo {color:#071D49;}
+.mfn-primary {background:#071D49;color:#fff;border:0;border-radius:12px;padding:12px 18px;font-size:14px;font-weight:600;min-height:44px;}
+.mfn-primary:hover {background:#04122F;}
+.mfn-section-title {font-size:19px;font-weight:650;letter-spacing:-.025em;color:#071D49;}
+.mfn-table-head {font-size:12px;font-weight:600;color:#071D49;text-transform:none;border-bottom:1px solid rgba(7,29,73,.08);}
+thead {background:rgba(255,255,255,.12);}
+table {font-size:13px;}
+th {padding-top:16px!important;padding-bottom:16px!important;}
+td {padding-top:18px!important;padding-bottom:18px!important;}
+@media(max-width:1023px) {.mfn-header {padding:24px!important;}.mfn-header h2 {font-size:28px;}.mfn-header-actions {gap:12px;} aside nav {margin-top:22px;}}
+@media(prefers-reduced-transparency:reduce) {.glass-light,.glass-light-nested {background:#fff;backdrop-filter:none;-webkit-backdrop-filter:none;}}
+</style>
+</head>
+<body class="h-full bg-[#FFFFFF] text-[#111111] font-sans antialiased flex overflow-hidden"><!-- Ambient Light Diffusers for Liquid Glass Refraction -->
+<div aria-hidden="true" class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+<div class="absolute -top-32 -left-20 w-[700px] h-[700px] rounded-full bg-[#D8E5FA]/60 blur-[110px]"></div>
+<div class="absolute top-1/3 left-1/4 w-[600px] h-[600px] rounded-full bg-[#D8E5FA]/40 blur-[130px]"></div>
+<div class="absolute -bottom-40 right-10 w-[750px] h-[750px] rounded-full bg-[#D8E5FA]/50 blur-[140px]"></div>
+</div>
+<div class="relative z-10 flex w-full h-screen overflow-hidden p-4 md:p-6 gap-6 font-sans">
+<!-- ============================================================ -->
+<!-- FLOATING LIQUID GLASS SIDEBAR                                 -->
+<!-- ============================================================ -->
+<aside class="glass-light w-72 rounded-[28px] h-full flex flex-col justify-between shrink-0 select-none overflow-hidden text-[#111111] p-5 z-20">
+<div class="absolute inset-0 specular-shine"></div>
+<div class="relative z-10 flex flex-col h-full justify-between">
+<!-- Top Brand & Municipal Selector -->
+<div>
+<div class="flex items-center gap-3 pb-4">
+<div>
+<h1 class="text-base font-bold text-[#071D49] tracking-tight leading-tight">MFN Digital</h1>
+<p class="text-sm text-[#111111] leading-snug font-medium">Coordinación Intermunicipal</p>
+</div>
+</div>
+<!-- Municipal Jurisdiction Selector -->
+<div class="mt-4">
+<label class="block text-sm font-bold text-[#071D49] mb-1.5" for="municipio-select">
+            Jurisdicción operativa
+          </label>
+<div class="relative">
+<select class="w-full glass-light-nested text-sm text-[#111111] font-medium rounded-[12px] px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#071D49]/30 appearance-none pr-8 cursor-pointer" id="municipio-select">
+<option value="all">Consolidado Territorial (3 Municipios)</option>
+<option value="soloma">San Pedro Soloma</option>
+<option value="eulalia">Santa Eulalia</option>
+<option value="independencia">San Rafael la Independencia</option>
+</select>
+<svg class="w-4 h-4 text-[#071D49] pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M8 9l4-4 4 4m0 6l-4 4-4-4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+</div>
+<!-- Navigation Links -->
+<nav class="mt-5 space-y-1">
+<!-- Active Item: Solid Navy Pill with white text -->
+<a class="flex items-center gap-3 px-3.5 py-2.5 rounded-[14px] bg-[#071D49] text-white font-semibold transition-all" href="#">
+<span class="text-sm font-semibold">Tablero</span>
+</a>
+<a class="flex items-center gap-3 px-3.5 py-2 rounded-[14px] text-[#111111] hover:bg-white/50 transition-colors" href="#">
+<span class="text-sm font-medium">Proyectos</span>
+</a>
+<a class="flex items-center gap-3 px-3.5 py-2 rounded-[14px] text-[#111111] hover:bg-white/50 transition-colors" href="#">
+<span class="text-sm font-medium">Plan de mejoras ARC</span>
+</a>
+<a class="flex items-center gap-3 px-3.5 py-2 rounded-[14px] text-[#111111] hover:bg-white/50 transition-colors" href="#">
+<span class="text-sm font-medium">Finanzas y cuotas</span>
+</a>
+<a class="flex items-center gap-3 px-3.5 py-2 rounded-[14px] text-[#111111] hover:bg-white/50 transition-colors" href="#">
+<span class="text-sm font-medium">Gobernanza y actas</span>
+</a>
+<a class="flex items-center gap-3 px-3.5 py-2 rounded-[14px] text-[#111111] hover:bg-white/50 transition-colors" href="#">
+<span class="text-sm font-medium">Talento humano</span>
+</a>
+<a class="flex items-center gap-3 px-3.5 py-2 rounded-[14px] text-[#111111] hover:bg-white/50 transition-colors" href="#">
+<span class="text-sm font-medium">Convenios</span>
+</a>
+<a class="flex items-center gap-3 px-3.5 py-2 rounded-[14px] text-[#111111] hover:bg-white/50 transition-colors" href="#">
+<span class="text-sm font-medium">Indicadores ASH</span>
+</a>
+<a class="flex items-center gap-3 px-3.5 py-2 rounded-[14px] text-[#111111] hover:bg-white/50 transition-colors" href="#">
+<span class="text-sm font-medium">Control de integridad</span>
+</a>
+</nav>
+<!-- Portal Ciudadano -->
+<div class="pt-3 mt-3">
+<a class="glass-light-nested flex items-center justify-between px-3.5 py-2 rounded-[12px] text-sm font-semibold text-[#071D49] hover:bg-white/60 transition-colors" href="#">
+<span class="flex items-center gap-2">
+<span>Portal ciudadano</span>
+</span>
+</a>
+</div>
+</div>
+<!-- Footer Perfil Institucional -->
+<div class="pt-4 space-y-2.5">
+<div class="glass-light-nested p-3 rounded-[16px]">
+<div class="flex items-center gap-2.5">
+<div class="overflow-hidden">
+<p class="text-sm font-bold text-[#111111] truncate">Ing. C. Morales</p>
+<p class="text-sm text-[#111111] truncate">Rol Técnico Asignado</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</aside>
+<!-- ============================================================ -->
+<!-- MAIN WORKSPACE (Liquid Glass Enclosure)                      -->
+<!-- ============================================================ -->
+<div class="flex-1 flex flex-col h-full rounded-[28px] overflow-hidden glass-light z-20">
+<div class="absolute inset-0 specular-shine"></div>
+<!-- Header Bar -->
+<header class="mfn-header"><div><p class="mfn-eyebrow">Mancomunidad Frontera del Norte</p><h2>Tablero operativo</h2><p class="mfn-subtitle">Soloma · Santa Eulalia · San Rafael la Independencia</p></div><div class="mfn-header-actions"><span class="mfn-demo">Diseño · Datos de ejemplo</span><span class="mfn-date">3 de octubre de 2026</span><button class="mfn-primary" type="button">Actualizar datos</button></div></header><!-- Scrollable Canvas -->
+<main class="relative z-10 flex-1 overflow-y-auto p-8 space-y-7">
+<!-- ========================================================== -->
+<!-- SECCIÓN 1: 'REQUIERE ATENCIÓN'                             -->
+<!-- ========================================================== -->
+<section class="space-y-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2.5">
+<h3 class="mfn-section-title">Requiere atención</h3>
+<span class="text-sm text-[#111111] font-semibold">· 3 compromisos prioritarios (Octubre 2026)</span>
+</div>
+</div>
+<!-- Fiduciary Table in Liquid Glass -->
+<div class="glass-light-nested rounded-[20px] overflow-hidden p-1">
+<table class="w-full text-left text-sm">
+<thead>
+<tr class="mfn-table-head">
+<th class="py-3 px-4 w-44" scope="col">Estado de plazo</th>
+<th class="py-3 px-4" scope="col">Asunto / Descripción del pendiente</th>
+<th class="py-3 px-4 w-32" scope="col">Módulo</th>
+<th class="py-3 px-4 w-44" scope="col">Responsable</th>
+<th class="py-3 px-4 w-32" scope="col">Fecha límite</th>
+<th class="py-3 px-4 text-right w-36" scope="col">Acción requerida</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-[#071D49]/10 font-normal text-[#111111]">
+<tr class="hover:bg-white/40 transition-colors">
+<td class="py-3 px-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[8px] text-sm font-bold text-[#B42318] bg-white/70">
+<span class="w-1.5 h-1.5 rounded-full bg-[#B42318]"></span>
+                    Vence en 2 días
+                  </span>
+</td>
+<td class="py-3 px-4">
+<div class="font-bold text-[#111111] leading-snug">Adenda de prórroga técnica al convenio intermunicipal de residuos sólidos</div>
+<div class="text-sm text-[#111111] mt-0.5">Suscripción tripartita pendiente de firma por alcaldía de San Pedro Soloma</div>
+</td>
+<td class="py-3 px-4">
+<span class="text-sm font-medium text-[#071D49]">Convenios</span>
+</td>
+<td class="py-3 px-4 font-medium text-[#111111]">Ing. E. Martínez (UTM)</td>
+<td class="py-3 px-4 font-mono text-sm font-bold text-[#B42318]">05/10/2026</td>
+<td class="py-3 px-4 text-right">
+<a class="text-sm font-semibold text-[#1248AA] hover:underline" href="#">Revisar expediente</a>
+</td>
+</tr>
+<tr class="hover:bg-white/40 transition-colors">
+<td class="py-3 px-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[8px] text-sm font-bold text-[#B42318] bg-white/70">
+<span class="w-1.5 h-1.5 rounded-full bg-[#B42318]"></span>
+                    Vence en 9 días
+                  </span>
+</td>
+<td class="py-3 px-4">
+<div class="font-bold text-[#111111] leading-snug">Plan de Mejoras ARC: Bitácora de calidad del agua en nacimientos comunales</div>
+<div class="text-sm text-[#111111] mt-0.5">Recepción de muestras microbiológicas del sector norte de Santa Eulalia</div>
+</td>
+<td class="py-3 px-4">
+<span class="text-sm font-medium text-[#071D49]">Plan ARC</span>
+</td>
+<td class="py-3 px-4 font-medium text-[#111111]">Licda. K. Lucas (ASH)</td>
+<td class="py-3 px-4 font-mono text-sm font-bold text-[#B42318]">12/10/2026</td>
+<td class="py-3 px-4 text-right">
+<a class="text-sm font-semibold text-[#1248AA] hover:underline" href="#">Completar informe</a>
+</td>
+</tr>
+<tr class="hover:bg-white/40 transition-colors">
+<td class="py-3 px-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[8px] text-sm font-bold text-[#1248AA] bg-white/70">
+<span class="w-1.5 h-1.5 rounded-full bg-[#1248AA]"></span>
+                    En plazo · 21 días
+                  </span>
+</td>
+<td class="py-3 px-4">
+<div class="font-bold text-[#111111] leading-snug">Conciliación cuatrimestral de cuotas de sostenimiento institucional MFN</div>
+<div class="text-sm text-[#111111] mt-0.5">Consolidación de aportes ordinarios emitidos para San Rafael la Independencia</div>
+</td>
+<td class="py-3 px-4">
+<span class="text-sm font-medium text-[#071D49]">Finanzas</span>
+</td>
+<td class="py-3 px-4 font-medium text-[#111111]">C.P. M. Alvarado</td>
+<td class="py-3 px-4 font-mono text-sm font-semibold text-[#1248AA]">24/10/2026</td>
+<td class="py-3 px-4 text-right">
+<a class="text-sm font-semibold text-[#1248AA] hover:underline" href="#">Gestionar recibo</a>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- ========================================================== -->
+<!-- SECCIÓN 2: 'AVANCE POR MUNICIPIO' (3 Jurisdicciones)       -->
+<!-- ========================================================== -->
+<section class="space-y-3">
+<div class="flex items-center justify-between">
+<div>
+<h3 class="mfn-section-title">Avance por municipio</h3>
+</div>
+<span class="glass-light-nested px-3 py-1 rounded-[10px] font-mono text-sm font-semibold text-[#071D49]">
+            Moneda oficial: Quetzales (GTQ)
+          </span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+<!-- Tarjeta 1: San Pedro Soloma -->
+<div class="glass-light-nested rounded-[20px] p-5 flex flex-col justify-between space-y-4 hover:shadow-lg transition-all">
+<div>
+<div class="flex items-start justify-between">
+<div>
+<span class="text-[10px] font-bold text-[#071D49]">Sede Regional Norte</span>
+<h4 class="text-base font-bold text-[#111111]">San Pedro Soloma</h4>
+</div>
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-[8px] text-sm font-bold text-[#027A48] bg-white/70">
+<span class="w-1.5 h-1.5 rounded-full bg-[#027A48]"></span>
+                  Concluido en plazo
+                </span>
+</div>
+<div class="grid grid-cols-2 gap-2 mt-4 pt-3">
+<div>
+<span class="text-sm text-[#111111] block font-medium">Proyectos registrados</span>
+<span class="text-lg font-bold text-[#111111]">5</span>
+</div>
+<div>
+<span class="text-sm text-[#111111] block font-medium">Presupuesto programado</span>
+<span class="text-sm font-bold text-[#071D49]">Q 4,850,000</span>
+</div>
+</div>
+</div>
+<div class="pt-3">
+<div class="flex justify-between items-baseline mb-1.5">
+<span class="text-sm font-semibold text-[#111111]">Avance físico promedio</span>
+<span class="font-mono text-sm font-bold text-[#071D49]">68%</span>
+</div>
+<div class="w-full bg-white/60 h-2 rounded-[6px] overflow-hidden">
+<div class="bg-[#071D49] h-full rounded-[6px]" style="width: 68%;"></div>
+</div>
+<div class="flex justify-between text-sm text-[#111111] mt-2.5">
+<span class="text-[#111111]">Cuota institucional: Q 45,000 / mes</span>
+<span class="text-[#027A48] font-bold">Solvente</span>
+</div>
+</div>
+</div>
+<!-- Tarjeta 2: Santa Eulalia -->
+<div class="glass-light-nested rounded-[20px] p-5 flex flex-col justify-between space-y-4 hover:shadow-lg transition-all">
+<div>
+<div class="flex items-start justify-between">
+<div>
+<span class="text-[10px] font-bold text-[#071D49]">Sector Cuchumatanes</span>
+<h4 class="text-base font-bold text-[#111111]">Santa Eulalia</h4>
+</div>
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-[8px] text-sm font-bold text-[#1248AA] bg-white/70">
+<span class="w-1.5 h-1.5 rounded-full bg-[#1248AA]"></span>
+                  En plazo
+                </span>
+</div>
+<div class="grid grid-cols-2 gap-2 mt-4 pt-3">
+<div>
+<span class="text-sm text-[#111111] block font-medium">Proyectos registrados</span>
+<span class="text-lg font-bold text-[#111111]">4</span>
+</div>
+<div>
+<span class="text-sm text-[#111111] block font-medium">Presupuesto programado</span>
+<span class="text-sm font-bold text-[#071D49]">Q 3,210,000</span>
+</div>
+</div>
+</div>
+<div class="pt-3">
+<div class="flex justify-between items-baseline mb-1.5">
+<span class="text-sm font-semibold text-[#111111]">Avance físico promedio</span>
+<span class="font-mono text-sm font-bold text-[#071D49]">74%</span>
+</div>
+<div class="w-full bg-white/60 h-2 rounded-[6px] overflow-hidden">
+<div class="bg-[#071D49] h-full rounded-[6px]" style="width: 74%;"></div>
+</div>
+<div class="flex justify-between text-sm text-[#111111] mt-2.5">
+<span class="text-[#111111]">Cuota institucional: Q 45,000 / mes</span>
+<span class="text-[#1248AA] font-bold">En trámite DAFIM</span>
+</div>
+</div>
+</div>
+<!-- Tarjeta 3: San Rafael la Independencia -->
+<div class="glass-light-nested rounded-[20px] p-5 flex flex-col justify-between space-y-4 hover:shadow-lg transition-all">
+<div>
+<div class="flex items-start justify-between">
+<div>
+<span class="text-[10px] font-bold text-[#071D49]">Microcuenca Alta</span>
+<h4 class="text-base font-bold text-[#111111]">San Rafael la Independencia</h4>
+</div>
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-[8px] text-sm font-bold text-[#111111] bg-white/70">
+<span class="w-1.5 h-1.5 rounded-full bg-[#111111]/60"></span>
+                  Parcial
+                </span>
+</div>
+<div class="grid grid-cols-2 gap-2 mt-4 pt-3">
+<div>
+<span class="text-sm text-[#111111] block font-medium">Proyectos registrados</span>
+<span class="text-lg font-bold text-[#111111]">2</span>
+</div>
+<div>
+<span class="text-sm text-[#111111] block font-medium">Presupuesto programado</span>
+<span class="text-sm font-bold text-[#071D49]">Q 1,150,000</span>
+</div>
+</div>
+</div>
+<div class="pt-3">
+<div class="flex justify-between items-baseline mb-1.5">
+<span class="text-sm font-semibold text-[#111111]">Avance físico promedio</span>
+<span class="font-mono text-sm font-bold text-[#071D49]">42%</span>
+</div>
+<div class="w-full bg-white/60 h-2 rounded-[6px] overflow-hidden">
+<div class="bg-[#071D49] h-full rounded-[6px]" style="width: 42%;"></div>
+</div>
+<div class="flex justify-between text-sm text-[#111111] mt-2.5">
+<span class="text-[#111111]">Cuota extraordinaria:</span>
+<span class="font-medium text-[#111111]">Sin datos registrados</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- ========================================================== -->
+<!-- SECCIÓN 3: PANELES LADO A LADO                             -->
+<!-- ========================================================== -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+<!-- A) Próximos compromisos (5 cols) -->
+<div class="lg:col-span-5 space-y-3">
+<div class="flex items-center justify-between">
+<h3 class="mfn-section-title">Próximos compromisos</h3>
+<span class="text-sm text-[#1248AA] font-bold">Octubre 2026</span>
+</div>
+<div class="glass-light-nested rounded-[20px] p-4">
+<div class="divide-y divide-[#071D49]/10 text-sm text-[#111111]">
+<div class="py-2.5 first:pt-1">
+<div class="flex items-center justify-between text-sm mb-1">
+<span class="font-mono font-bold text-[#B42318]">06 OCT 2026 · 09:30 AM</span>
+<span class="px-2 py-0.5 rounded-[6px] bg-white/70 text-sm font-semibold text-[#071D49]">Gobernanza</span>
+</div>
+<p class="font-bold text-sm text-[#111111] leading-snug">Asamblea Ordinaria del Consejo Directivo MFN</p>
+<p class="text-sm text-[#111111] mt-0.5">Revisión de actas y validación de planes cuatrimestrales de inversión.</p>
+</div>
+<div class="py-2.5">
+<div class="flex items-center justify-between text-sm mb-1">
+<span class="font-mono font-bold text-[#071D49]">14 OCT 2026 · 11:00 AM</span>
+<span class="px-2 py-0.5 rounded-[6px] bg-white/70 text-sm font-semibold text-[#071D49]">Indicadores ASH</span>
+</div>
+<p class="font-bold text-sm text-[#111111] leading-snug">Comisión Técnica de Agua y Saneamiento</p>
+<p class="text-sm text-[#111111] mt-0.5">Presentación de informes microbiológicos en nacimientos comunales.</p>
+</div>
+<div class="py-2.5">
+<div class="flex items-center justify-between text-sm mb-1">
+<span class="font-mono font-bold text-[#071D49]">22 OCT 2026 · 02:00 PM</span>
+<span class="px-2 py-0.5 rounded-[6px] bg-white/70 text-sm font-semibold text-[#071D49]">Finanzas</span>
+</div>
+<p class="font-bold text-sm text-[#111111] leading-snug">Mesa de Coordinación Financiera Intermunicipal</p>
+<p class="text-sm text-[#111111] mt-0.5">Conciliación de cuotas ordinarias y aportes para saneamiento.</p>
+</div>
+<div class="py-2.5 last:pb-1">
+<div class="flex items-center justify-between text-sm mb-1">
+<span class="font-mono font-bold text-[#071D49]">28 OCT 2026 · 10:00 AM</span>
+<span class="px-2 py-0.5 rounded-[6px] bg-white/70 text-sm font-semibold text-[#071D49]">Talento humano</span>
+</div>
+<p class="font-bold text-sm text-[#111111] leading-snug">Taller de Capacitación en Operación y Mantenimiento</p>
+<p class="text-sm text-[#111111] mt-0.5">Capacitación técnica intermunicipal para fontaneros comarcales.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- B) Proyectos recientes en territorio (7 cols) -->
+<div class="lg:col-span-7 space-y-3">
+<div class="flex items-center justify-between">
+<h3 class="mfn-section-title">Proyectos recientes en territorio</h3>
+<span class="text-sm text-[#111111] font-semibold">Registro técnico</span>
+</div>
+<div class="glass-light-nested rounded-[20px] overflow-hidden p-1">
+<table class="w-full text-left text-sm">
+<thead>
+<tr class="mfn-table-head">
+<th class="py-3 px-3" scope="col">Proyecto / Código</th>
+<th class="py-3 px-3" scope="col">Municipio</th>
+<th class="py-3 px-3" scope="col">Presupuesto</th>
+<th class="py-3 px-3 w-32" scope="col">Avance</th>
+<th class="py-3 px-3 text-right" scope="col">Estado</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-[#071D49]/10 text-[#111111]">
+<tr class="hover:bg-white/40 transition-colors">
+<td class="py-2.5 px-3">
+<div class="font-bold text-[#111111]">Construcción Sistema de Agua Potable La Cumbre</div>
+<div class="text-sm font-mono text-[#111111]">SNIP-302194</div>
+</td>
+<td class="py-2.5 px-3 font-medium text-[#111111]">San Pedro Soloma</td>
+<td class="py-2.5 px-3 font-mono font-semibold text-[#071D49]">Q 1,420,000</td>
+<td class="py-2.5 px-3">
+<div class="flex items-center gap-2">
+<span class="font-mono text-sm font-bold text-[#071D49] w-7">82%</span>
+<div class="w-16 bg-white/60 h-2 rounded-[4px] overflow-hidden">
+<div class="bg-[#071D49] h-full" style="width: 82%;"></div>
+</div>
+</div>
+</td>
+<td class="py-2.5 px-3 text-right">
+<span class="inline-block px-2 py-0.5 rounded-[6px] text-sm font-bold text-[#027A48] bg-white/70">
+                      En ejecución
+                    </span>
+</td>
+</tr>
+<tr class="hover:bg-white/40 transition-colors">
+<td class="py-2.5 px-3">
+<div class="font-bold text-[#111111]">Mejoramiento Camino Rural Ramal Cuchumatanes</div>
+<div class="text-sm font-mono text-[#111111]">SNIP-298412</div>
+</td>
+<td class="py-2.5 px-3 font-medium text-[#111111]">Santa Eulalia</td>
+<td class="py-2.5 px-3 font-mono font-semibold text-[#071D49]">Q 980,000</td>
+<td class="py-2.5 px-3">
+<div class="flex items-center gap-2">
+<span class="font-mono text-sm font-bold text-[#071D49] w-7">55%</span>
+<div class="w-16 bg-white/60 h-2 rounded-[4px] overflow-hidden">
+<div class="bg-[#071D49] h-full" style="width: 55%;"></div>
+</div>
+</div>
+</td>
+<td class="py-2.5 px-3 text-right">
+<span class="inline-block px-2 py-0.5 rounded-[6px] text-sm font-bold text-[#027A48] bg-white/70">
+                      En ejecución
+                    </span>
+</td>
+</tr>
+<tr class="hover:bg-white/40 transition-colors">
+<td class="py-2.5 px-3">
+<div class="font-bold text-[#111111]">Planta de Tratamiento Aguas Residuales Sector 2</div>
+<div class="text-sm font-mono text-[#111111]">SNIP-310450</div>
+</td>
+<td class="py-2.5 px-3 font-medium text-[#111111]">San Rafael la Indep.</td>
+<td class="py-2.5 px-3 font-mono font-semibold text-[#071D49]">Q 1,150,000</td>
+<td class="py-2.5 px-3">
+<div class="flex items-center gap-2">
+<span class="font-mono text-sm font-bold text-[#071D49] w-7">30%</span>
+<div class="w-16 bg-white/60 h-2 rounded-[4px] overflow-hidden">
+<div class="bg-[#071D49] h-full" style="width: 30%;"></div>
+</div>
+</div>
+</td>
+<td class="py-2.5 px-3 text-right">
+<span class="inline-block px-2 py-0.5 rounded-[6px] text-sm font-bold text-[#1248AA] bg-white/70">
+                      Supervisión
+                    </span>
+</td>
+</tr>
+<tr class="hover:bg-white/40 transition-colors">
+<td class="py-2.5 px-3">
+<div class="font-bold text-[#111111]">Relleno Sanitario Mancomunado - Celda B</div>
+<div class="text-sm font-mono text-[#111111]">SNIP-289104</div>
+</td>
+<td class="py-2.5 px-3 font-medium text-[#111111]">Intermunicipal</td>
+<td class="py-2.5 px-3 font-mono font-semibold text-[#071D49]">Q 2,230,000</td>
+<td class="py-2.5 px-3">
+<div class="flex items-center gap-2">
+<span class="font-mono text-sm font-bold text-[#071D49] w-7">90%</span>
+<div class="w-16 bg-white/60 h-2 rounded-[4px] overflow-hidden">
+<div class="bg-[#071D49] h-full" style="width: 90%;"></div>
+</div>
+</div>
+</td>
+<td class="py-2.5 px-3 text-right">
+<span class="inline-block px-2 py-0.5 rounded-[6px] text-sm font-bold text-[#027A48] bg-white/70">
+                      Concluido en plazo
+                    </span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<!-- ========================================================== -->
+<!-- SECCIÓN 4: TRES ESTADOS DEL SISTEMA                       -->
+<!-- ========================================================== -->
+<section class="pt-4">
+<div class="mb-3 flex items-center justify-between">
+<span class="text-sm font-bold text-[#071D49]">Estados de referencia del sistema</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<!-- 1) Cargando datos -->
+<div class="glass-light-nested rounded-[16px] p-3.5 flex items-center gap-3.5">
+<svg class="w-5 h-5 text-[#1248AA] animate-spin shrink-0" fill="none" viewbox="0 0 24 24">
+<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+<path class="opacity-75" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" fill="currentColor"></path>
+</svg>
+<div>
+<p class="text-sm font-bold text-[#111111]">Estado 1: Cargando datos</p>
+<p class="text-sm text-[#111111] font-medium">Cargando datos del territorio...</p>
+</div>
+</div>
+<!-- 2) Vacío -->
+<div class="glass-light-nested rounded-[16px] p-3.5 flex items-center gap-3.5">
+<svg class="w-5 h-5 text-[#027A48] shrink-0" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<div>
+<p class="text-sm font-bold text-[#111111]">Estado 2: Vacío</p>
+<p class="text-sm text-[#111111] font-medium">Sin expedientes pendientes de atención</p>
+</div>
+</div>
+<!-- 3) Error con botón reintentar -->
+<div class="glass-light-nested rounded-[16px] p-3.5 flex items-center justify-between gap-3">
+<div class="flex items-center gap-2.5">
+<svg class="w-5 h-5 text-[#B42318] shrink-0" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<div>
+<p class="text-sm font-bold text-[#B42318]">Estado 3: Error</p>
+<p class="text-sm text-[#111111] font-medium">No se pudieron cargar los datos</p>
+</div>
+</div>
+<button class="px-3 py-1 rounded-[10px] bg-[#071D49] hover:bg-[#04122F] text-white text-sm font-semibold transition-all cursor-pointer" type="button">
+              Reintentar
+            </button>
+</div>
+</div>
+</section>
+</main>
+</div>
+</div>
+<script>
+const reduceMotion=window.matchMedia('(prefers-reduced-motion: reduce)');
+document.addEventListener('pointermove',e=>{if(reduceMotion.matches)return;const panel=e.target.closest('.glass-light,.glass-light-nested');if(!panel)return;const r=panel.getBoundingClientRect();panel.style.setProperty('--spec-x',(e.clientX-r.left)+'px');panel.style.setProperty('--spec-y',(e.clientY-r.top)+'px');panel.style.setProperty('--spec-o','1');});
+document.addEventListener('pointerout',e=>{const panel=e.target.closest('.glass-light,.glass-light-nested');if(panel&&!panel.contains(e.relatedTarget))panel.style.setProperty('--spec-o','0');});
+</script></body></html>

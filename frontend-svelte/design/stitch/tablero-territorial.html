@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html class="h-full bg-[#F9F8F5]" lang="es"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>MFN · Tablero operativo territorial</title>
+<!-- Google Fonts: Plus Jakarta Sans & Inter -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;display=swap" rel="stylesheet">
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS v3 -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            mfn: {
+              forest: "#16382C",
+              deep: "#1E4638",
+              sand: "#F9F8F5",
+              card: "#FFFFFF",
+              divider: "#E5E2DC",
+              terracotta: "#A84320",
+              slate: "#2B5366"
+            }
+          },
+          borderRadius: {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          fontFamily: {
+            headline: ["Plus Jakarta Sans", "sans-serif"],
+            display: ["Plus Jakarta Sans", "sans-serif"],
+            body: ["Inter", "sans-serif"],
+            label: ["Inter", "sans-serif"]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    /* Material symbols helper */
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+      font-size: 20px;
+      line-height: 1;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    
+    /* Topographic contour lines overlay at 4% */
+    .topo-pattern {
+      background-image: url("data:image/svg+xml,%3Csvg width='500' height='300' viewBox='0 0 500 300' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M-50,150 C80,80 180,220 320,130 C420,70 520,180 600,120 M-20,200 C110,120 220,260 360,170 C460,110 540,210 620,160 M-30,100 C90,30 200,160 330,90 C410,40 500,120 580,80 M-60,250 C70,180 160,290 300,210 C400,150 490,250 570,200' fill='none' stroke='%2316382C' stroke-width='1.2' stroke-linecap='round' stroke-dasharray='4 8'/%3E%3C/svg%3E");
+      opacity: 0.04;
+    }
+
+    /* Strict no-glass, clean borders */
+    .clean-panel {
+      background-color: #FFFFFF;
+      border: 1px solid #E5E2DC;
+      border-radius: 0.375rem;
+    }
+  </style>
+</head>
+<body class="h-full bg-[#F9F8F5] text-[#16382C] font-body antialiased flex overflow-hidden">
+<!-- ============================================================ -->
+<!-- SIDEBAR NAVIGATION (JSON Component: SideNavBar)               -->
+<!-- ============================================================ -->
+<aside class="fixed top-0 bottom-0 left-0 w-72 h-full flex flex-col justify-between rounded-none border-r border-[#1E4638] bg-[#16382C] text-[#E5E2DC] z-30 select-none">
+<!-- Top Brand & Municipio Filter -->
+<div class="p-5 border-b border-[#1E4638]/70">
+<div class="flex items-start gap-3">
+<div class="w-9 h-9 rounded bg-[#1E4638] border border-[#2B5366]/40 flex items-center justify-center text-white font-headline font-bold text-base tracking-tight shrink-0 shadow-none">
+          MFN
+        </div>
+<div class="min-w-0">
+<h1 class="font-headline text-lg font-bold text-[#FFFFFF] tracking-tight leading-none">MFN Digital</h1>
+<p class="font-headline text-xs text-[#E5E2DC]/75 tracking-tight mt-1 truncate">Coordinación Intermunicipal</p>
+</div>
+</div>
+<!-- Institutional Municipality Switcher -->
+<div class="mt-4 pt-3 border-t border-[#1E4638]/60">
+<label class="block text-[11px] font-medium tracking-wider text-[#E5E2DC]/60 uppercase mb-1" for="municipio-select">
+          Jurisdicción operativa
+        </label>
+<div class="relative">
+<select class="w-full bg-[#112D23] border border-[#1E4638] text-[#FFFFFF] text-xs rounded px-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-[#E5E2DC] appearance-none pr-8 cursor-pointer" id="municipio-select">
+<option selected value="all">Consolidado Territorial (3 Municipios)</option>
+<option value="soloma">San Pedro Soloma</option>
+<option value="eulalia">Santa Eulalia</option>
+<option value="independencia">San Rafael la Independencia</option>
+</select>
+<span class="material-symbols-outlined pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-[#E5E2DC]/60 text-sm">unfold_more</span>
+</div>
+</div>
+</div>
+<!-- Scrollable Navigation Tabs (9 Mandatory Items) -->
+<nav class="flex-1 overflow-y-auto px-3 py-3 space-y-1 text-sm font-headline">
+<!-- 1. Tablero (ACTIVE) -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-[#1E4638] text-[#FFFFFF] font-medium text-sm transition-colors duration-150 min-h-[44px]" href="#">
+<span class="material-symbols-outlined text-[#FFFFFF]">dashboard</span>
+<span class="truncate">Tablero</span>
+</a>
+<!-- 2. Proyectos -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#E5E2DC]/80 hover:text-[#FFFFFF] hover:bg-[#1E4638]/70 text-sm transition-colors duration-150 min-h-[44px]" href="#">
+<span class="material-symbols-outlined text-[#E5E2DC]/70">folder</span>
+<span class="truncate">Proyectos</span>
+</a>
+<!-- 3. Plan de mejoras ARC -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#E5E2DC]/80 hover:text-[#FFFFFF] hover:bg-[#1E4638]/70 text-sm transition-colors duration-150 min-h-[44px]" href="#">
+<span class="material-symbols-outlined text-[#E5E2DC]/70">assignment_turned_in</span>
+<span class="truncate">Plan de mejoras ARC</span>
+</a>
+<!-- 4. Finanzas y cuotas -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#E5E2DC]/80 hover:text-[#FFFFFF] hover:bg-[#1E4638]/70 text-sm transition-colors duration-150 min-h-[44px]" href="#">
+<span class="material-symbols-outlined text-[#E5E2DC]/70">payments</span>
+<span class="truncate">Finanzas y cuotas</span>
+</a>
+<!-- 5. Gobernanza y actas -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#E5E2DC]/80 hover:text-[#FFFFFF] hover:bg-[#1E4638]/70 text-sm transition-colors duration-150 min-h-[44px]" href="#">
+<span class="material-symbols-outlined text-[#E5E2DC]/70">gavel</span>
+<span class="truncate">Gobernanza y actas</span>
+</a>
+<!-- 6. Talento humano -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#E5E2DC]/80 hover:text-[#FFFFFF] hover:bg-[#1E4638]/70 text-sm transition-colors duration-150 min-h-[44px]" href="#">
+<span class="material-symbols-outlined text-[#E5E2DC]/70">groups</span>
+<span class="truncate">Talento humano</span>
+</a>
+<!-- 7. Convenios -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#E5E2DC]/80 hover:text-[#FFFFFF] hover:bg-[#1E4638]/70 text-sm transition-colors duration-150 min-h-[44px]" href="#">
+<span class="material-symbols-outlined text-[#E5E2DC]/70">handshake</span>
+<span class="truncate">Convenios</span>
+</a>
+<!-- 8. Indicadores ASH -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#E5E2DC]/80 hover:text-[#FFFFFF] hover:bg-[#1E4638]/70 text-sm transition-colors duration-150 min-h-[44px]" href="#">
+<span class="material-symbols-outlined text-[#E5E2DC]/70">water_drop</span>
+<span class="truncate">Indicadores ASH</span>
+</a>
+<!-- 9. Control de integridad -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#E5E2DC]/80 hover:text-[#FFFFFF] hover:bg-[#1E4638]/70 text-sm transition-colors duration-150 min-h-[44px]" href="#">
+<span class="material-symbols-outlined text-[#E5E2DC]/70">verified_user</span>
+<span class="truncate">Control de integridad</span>
+</a>
+<!-- External Portal CTA -->
+<div class="pt-3 mt-2 border-t border-[#1E4638]/60">
+<a class="flex items-center justify-between px-3 py-2.5 rounded-lg bg-[#112D23]/70 hover:bg-[#112D23] text-[#E5E2DC] hover:text-white text-xs font-medium border border-[#1E4638] transition-colors min-h-[44px]" href="#">
+<span class="flex items-center gap-2">
+<span class="material-symbols-outlined text-sm text-[#E5E2DC]/80">public</span>
+<span>Portal Ciudadano</span>
+</span>
+<span class="material-symbols-outlined text-xs text-[#E5E2DC]/50">open_in_new</span>
+</a>
+</div>
+</nav>
+<!-- Footer: Settings & Real Institutional User State -->
+<div class="p-3 border-t border-[#1E4638] bg-[#122E24] text-xs">
+<div class="space-y-0.5 mb-3">
+<a class="flex items-center gap-2 px-2.5 py-1.5 rounded text-[#E5E2DC]/70 hover:text-white hover:bg-[#1E4638]/50 transition-colors" href="#">
+<span class="material-symbols-outlined text-sm">settings</span>
+<span>Configuración institucional</span>
+</a>
+<a class="flex items-center gap-2 px-2.5 py-1.5 rounded text-[#E5E2DC]/70 hover:text-white hover:bg-[#1E4638]/50 transition-colors" href="#">
+<span class="material-symbols-outlined text-sm">help_outline</span>
+<span>Soporte técnico</span>
+</a>
+</div>
+<div class="px-2.5 py-2 rounded bg-[#16382C] border border-[#1E4638] flex items-center justify-between">
+<div class="min-w-0 pr-2">
+<p class="font-medium text-[#FFFFFF] truncate">Unidad Técnica Intermunicipal</p>
+<p class="text-[11px] text-[#E5E2DC]/60 truncate">Rol Técnico Asignado</p>
+</div>
+<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-[#1E4638] text-[#E5E2DC] border border-[#2B5366]/60">Sesión Activa</span></div>
+</div>
+</aside>
+<!-- ============================================================ -->
+<!-- MAIN CONTENT CANVAS                                          -->
+<!-- ============================================================ -->
+<div class="flex-1 ml-72 flex flex-col h-screen overflow-hidden bg-[#F9F8F5]">
+<!-- Top Bar Header (JSON Component: TopNavBar with Topo Background) -->
+<header class="relative flex justify-between items-center w-full px-8 h-16 bg-[#FFFFFF] border-b border-[#E5E2DC] z-20 shrink-0">
+<!-- Topographic Pattern Overlay -->
+<div class="topo-pattern absolute inset-0 pointer-events-none"></div>
+<!-- Left Header Context -->
+<div class="relative z-10 flex items-center gap-4">
+<div>
+<div class="flex items-center gap-2.5">
+<h2 class="font-headline text-base font-semibold text-[#16382C] tracking-tight">Tablero operativo</h2>
+<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-[#E5E2DC]/50 text-[#16382C] border border-[#E5E2DC]">
+              Vista de diseño · Datos de ejemplo
+            </span>
+</div>
+<p class="text-xs text-[#2B5366] font-normal leading-tight">Seguimiento institucional y territorial · Huehuetenango Norte</p>
+</div>
+</div>
+<!-- Right Header Actions -->
+<div class="relative z-10 flex items-center gap-3">
+<div class="hidden xl:flex items-center text-xs text-[#2B5366] mr-2"><span class="material-symbols-outlined text-sm mr-1.5 text-[#2B5366]">calendar_today</span><span>Sábado, 3 de octubre de 2026</span></div>
+<button class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[#1E4638] hover:bg-[#16382C] text-white text-xs font-medium transition-colors border border-[#16382C] min-h-[36px] shadow-none cursor-pointer" type="button">
+<span class="material-symbols-outlined text-sm">refresh</span>
+<span>Actualizar datos</span>
+</button>
+<div class="h-5 w-[1px] bg-[#E5E2DC] mx-1"></div>
+<div class="flex items-center gap-1 text-[#16382C]">
+<button class="p-1.5 rounded hover:bg-[#F9F8F5] text-[#16382C] transition-colors relative min-h-[36px] min-w-[36px] flex items-center justify-center" title="Notificaciones del sistema">
+<span class="material-symbols-outlined text-lg">notifications</span>
+<span class="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-[#A84320] rounded-full"></span>
+</button>
+<button class="p-1.5 rounded hover:bg-[#F9F8F5] text-[#16382C] transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center" title="Perfil institucional">
+<span class="material-symbols-outlined text-xl">account_circle</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Main Workspace (Scrollable Area) -->
+<main class="flex-1 overflow-y-auto p-8 space-y-6">
+<!-- ========================================================== -->
+<!-- SECCIÓN 1: 'REQUIERE ATENCIÓN' (Priority Action Matrix)    -->
+<!-- ========================================================== -->
+<section class="space-y-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-[#A84320]"></span>
+<h3 class="font-headline text-sm font-bold text-[#16382C] uppercase tracking-wider">Requiere atención</h3>
+<span class="text-xs text-[#2B5366]">· 3 compromisos prioritarios</span>
+</div>
+<span class="text-[12px] text-[#2B5366]">Monitoreo de plazos con vigencia legal y técnica</span>
+</div>
+<div class="clean-panel overflow-hidden">
+<table class="w-full text-left text-xs border-collapse">
+<thead>
+<tr class="bg-[#F9F8F5] border-b border-[#E5E2DC] text-[#2B5366] font-medium font-headline">
+<th class="py-2.5 px-4 w-36" scope="col">Estado de plazo</th>
+<th class="py-2.5 px-4" scope="col">Asunto / Descripción del pendiente</th>
+<th class="py-2.5 px-4 w-36" scope="col">Módulo origen</th>
+<th class="py-2.5 px-4 w-44" scope="col">Técnico responsable</th>
+<th class="py-2.5 px-4 w-28" scope="col">Fecha límite</th>
+<th class="py-2.5 px-4 text-right w-36" scope="col">Acción requerida</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-[#E5E2DC] font-normal">
+<!-- Item 1: <= 15 días (Terracota) -->
+<tr class="hover:bg-[#FBF4F1]/60 transition-colors"><td class="py-3 px-4"><span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-semibold bg-[#FBF4F1] text-[#A84320] border border-[#A84320]/30"><span class="w-1.5 h-1.5 rounded-full bg-[#A84320]"></span>Vence en 2 días</span></td><td class="py-3 px-4"><div class="font-medium text-[#16382C]">Adenda de prórroga técnica al convenio intermunicipal de residuos sólidos</div><div class="text-[11px] text-[#2B5366]">Suscripción tripartita pendiente de firma por alcaldía de San Pedro Soloma (Estimación)</div></td><td class="py-3 px-4 text-[#2B5366]"><span class="px-2 py-0.5 rounded bg-[#F9F8F5] border border-[#E5E2DC] font-mono text-[11px]">Convenios</span></td><td class="py-3 px-4 text-[#16382C]">Ing. E. Martínez (UTM)</td><td class="py-3 px-4 font-mono text-[#A84320] font-medium">05/10/2026</td><td class="py-3 px-4 text-right"><button class="text-xs font-semibold text-[#A84320] hover:text-[#833318] underline underline-offset-2" type="button">Revisar expediente</button></td></tr>
+<!-- Item 2: <= 15 días (Terracota) -->
+<tr class="hover:bg-[#FBF4F1]/60 transition-colors"><td class="py-3 px-4"><span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-semibold bg-[#FBF4F1] text-[#A84320] border border-[#A84320]/30"><span class="w-1.5 h-1.5 rounded-full bg-[#A84320]"></span>Vence en 9 días</span></td><td class="py-3 px-4"><div class="font-medium text-[#16382C]">Plan de Mejoras ARC: Bitácora de calidad del agua en nacimientos comunales</div><div class="text-[11px] text-[#2B5366]">Recepción de muestras microbiológicas del sector norte de Santa Eulalia (Simulado)</div></td><td class="py-3 px-4 text-[#2B5366]"><span class="px-2 py-0.5 rounded bg-[#F9F8F5] border border-[#E5E2DC] font-mono text-[11px]">Plan ARC</span></td><td class="py-3 px-4 text-[#16382C]">Licda. K. Lucas (ASH)</td><td class="py-3 px-4 font-mono text-[#A84320] font-medium">12/10/2026</td><td class="py-3 px-4 text-right"><button class="text-xs font-semibold text-[#A84320] hover:text-[#833318] underline underline-offset-2" type="button">Completar informe</button></td></tr>
+<!-- Item 3: <= 30 días (Ámbar suave sobrio) -->
+<tr class="hover:bg-[#FFFBF0]/60 transition-colors"><td class="py-3 px-4"><span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-medium bg-[#FEF9E7] text-[#8C6D1F] border border-[#8C6D1F]/25"><span class="w-1.5 h-1.5 rounded-full bg-[#8C6D1F]"></span>Vence en 21 días</span></td><td class="py-3 px-4"><div class="font-medium text-[#16382C]">Conciliación cuatrimestral de cuotas de sostenimiento institucional MFN</div><div class="text-[11px] text-[#2B5366]">Consolidación de aportes preliminares para San Rafael la Independencia (Ejemplo)</div></td><td class="py-3 px-4 text-[#2B5366]"><span class="px-2 py-0.5 rounded bg-[#F9F8F5] border border-[#E5E2DC] font-mono text-[11px]">Finanzas</span></td><td class="py-3 px-4 text-[#16382C]">C.P. M. Alvarado (Finanzas)</td><td class="py-3 px-4 font-mono text-[#2B5366]">24/10/2026</td><td class="py-3 px-4 text-right"><button class="text-xs font-semibold text-[#2B5366] hover:text-[#16382C] underline underline-offset-2" type="button">Gestionar recibo</button></td></tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- ========================================================== -->
+<!-- SECCIÓN 2: 'AVANCE POR MUNICIPIO' (Matriz 3 Municipios)    -->
+<!-- ========================================================== -->
+<section class="space-y-3">
+<div class="flex items-center justify-between">
+<div>
+<h3 class="font-headline text-sm font-bold text-[#16382C] uppercase tracking-wider">Avance por municipio</h3>
+<p class="text-xs text-[#2B5366]">Jurisdicciones constitutivas oficiales de la Mancomunidad Frontera del Norte</p>
+</div>
+<span class="text-xs font-mono bg-[#FFFFFF] border border-[#E5E2DC] px-2.5 py-1 rounded text-[#2B5366]">
+            Moneda oficial: Quetzales (GTQ)
+          </span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<!-- Municipio 1: San Pedro Soloma -->
+<div class="clean-panel p-4 flex flex-col justify-between space-y-4">
+<div>
+<div class="flex items-start justify-between">
+<div>
+<span class="text-[10px] tracking-widest uppercase font-semibold text-[#2B5366]">Sede Regional Norte</span>
+<h4 class="font-headline text-base font-bold text-[#16382C]">San Pedro Soloma</h4>
+</div>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-[#E8F1EC] text-[#16382C] border border-[#1E4638]/20">
+<span class="w-1.5 h-1.5 rounded-full bg-[#16382C]"></span>
+                  Al día
+                </span>
+</div>
+<div class="grid grid-cols-2 gap-2 mt-4 pt-3 border-t border-[#E5E2DC]">
+<div>
+<span class="text-[11px] text-[#2B5366] block">Proyectos activos</span>
+<span class="font-headline text-lg font-bold text-[#16382C]">5</span>
+<span class="text-[11px] text-[#2B5366] block">registrados</span>
+</div>
+<div>
+<span class="text-[11px] text-[#2B5366] block">Inversión prog.</span>
+<span class="font-headline text-sm font-bold text-[#16382C]">Q 4,850,000</span>
+<span class="text-[10px] text-[#2B5366] block">Presupuestado</span>
+</div>
+</div>
+</div>
+<div class="pt-2 border-t border-[#E5E2DC]">
+<div class="flex justify-between items-baseline mb-1.5">
+<span class="text-xs text-[#2B5366]">Avance físico promedio</span>
+<span class="font-mono text-sm font-bold text-[#16382C]">68%</span>
+</div>
+<div class="w-full bg-[#E5E2DC] h-2 rounded-full overflow-hidden">
+<div class="bg-[#16382C] h-full rounded-full" style="width: 68%;"></div>
+</div>
+<div class="flex justify-between text-[11px] text-[#2B5366] mt-2"><span>Cuota institucional estimada: Q 45,000 / mes</span><span class="text-[#16382C] font-medium">Registrado al día</span></div>
+</div>
+</div>
+<!-- Municipio 2: Santa Eulalia -->
+<div class="clean-panel p-4 flex flex-col justify-between space-y-4">
+<div>
+<div class="flex items-start justify-between">
+<div>
+<span class="text-[10px] tracking-widest uppercase font-semibold text-[#2B5366]">Sector Cuchumatanes</span>
+<h4 class="font-headline text-base font-bold text-[#16382C]">Santa Eulalia</h4>
+</div>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-[#FFFBF0] text-[#8C6D1F] border border-[#8C6D1F]/25">
+<span class="w-1.5 h-1.5 rounded-full bg-[#8C6D1F]"></span>
+                  En revisión
+                </span>
+</div>
+<div class="grid grid-cols-2 gap-2 mt-4 pt-3 border-t border-[#E5E2DC]">
+<div>
+<span class="text-[11px] text-[#2B5366] block">Proyectos activos</span>
+<span class="font-headline text-lg font-bold text-[#16382C]">4</span>
+<span class="text-[11px] text-[#2B5366] block">registrados</span>
+</div>
+<div>
+<span class="text-[11px] text-[#2B5366] block">Inversión prog.</span>
+<span class="font-headline text-sm font-bold text-[#16382C]">Q 3,210,000</span>
+<span class="text-[10px] text-[#2B5366] block">Presupuestado</span>
+</div>
+</div>
+</div>
+<div class="pt-2 border-t border-[#E5E2DC]">
+<div class="flex justify-between items-baseline mb-1.5">
+<span class="text-xs text-[#2B5366]">Avance físico promedio</span>
+<span class="font-mono text-sm font-bold text-[#16382C]">74%</span>
+</div>
+<div class="w-full bg-[#E5E2DC] h-2 rounded-full overflow-hidden">
+<div class="bg-[#1E4638] h-full rounded-full" style="width: 74%;"></div>
+</div>
+<div class="flex justify-between text-[11px] text-[#2B5366] mt-2">
+<span>Cuota institucional: Q 45,000 / mes</span>
+<span class="text-[#8C6D1F] font-medium">Revisión DAFIM</span>
+</div>
+</div>
+</div>
+<!-- Municipio 3: San Rafael la Independencia -->
+<div class="clean-panel p-4 flex flex-col justify-between space-y-4">
+<div>
+<div class="flex items-start justify-between">
+<div>
+<span class="text-[10px] tracking-widest uppercase font-semibold text-[#2B5366]">Microcuenca Alta</span>
+<h4 class="font-headline text-base font-bold text-[#16382C]">San Rafael la Indep.</h4>
+</div>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-[#F9F8F5] text-[#2B5366] border border-[#E5E2DC]">
+<span class="w-1.5 h-1.5 rounded-full bg-[#2B5366]"></span>
+                  Parcial
+                </span>
+</div>
+<div class="grid grid-cols-2 gap-2 mt-4 pt-3 border-t border-[#E5E2DC]">
+<div>
+<span class="text-[11px] text-[#2B5366] block">Proyectos activos</span>
+<span class="font-headline text-lg font-bold text-[#16382C]">2</span>
+<span class="text-[11px] text-[#2B5366] block">registrados</span>
+</div>
+<div>
+<span class="text-[11px] text-[#2B5366] block">Inversión prog.</span>
+<span class="font-headline text-sm font-bold text-[#16382C]">Q 1,150,000</span>
+<span class="text-[10px] text-[#2B5366] block">Presupuestado</span>
+</div>
+</div>
+</div>
+<div class="pt-2 border-t border-[#E5E2DC]">
+<div class="flex justify-between items-baseline mb-1.5">
+<span class="text-xs text-[#2B5366]">Avance físico promedio</span>
+<span class="font-mono text-sm font-bold text-[#16382C]">42%</span>
+</div>
+<div class="w-full bg-[#E5E2DC] h-2 rounded-full overflow-hidden">
+<div class="bg-[#2B5366] h-full rounded-full" style="width: 42%;"></div>
+</div>
+<div class="flex justify-between text-[11px] text-[#2B5366] mt-2">
+<span>Cuota extraordinaria:</span>
+<span class="text-[#2B5366] italic font-mono">Sin datos de campo</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- ========================================================== -->
+<!-- SECCIÓN 3: GRID 2 COLUMNAS (Compromisos vs Proyectos)       -->
+<!-- ========================================================== -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+<!-- Columna Izquierda: Cronograma institucional (5 Cols) -->
+<div class="lg:col-span-5 space-y-3">
+<div class="flex items-center justify-between">
+<h3 class="font-headline text-sm font-bold text-[#16382C] uppercase tracking-wider">Próximos compromisos y plazos</h3>
+<span class="text-xs text-[#2B5366]">Cronológico</span>
+</div>
+<div class="clean-panel p-3">
+<div class="divide-y divide-[#E5E2DC] text-xs"><div class="py-2.5 first:pt-1"><div class="flex items-center justify-between text-[11px] text-[#2B5366] mb-1"><span class="font-mono font-semibold text-[#A84320]">15 OCT 2026 · 10:00 AM</span><span class="px-1.5 py-0.5 rounded bg-[#F9F8F5] border border-[#E5E2DC] text-[10px]">Gobernanza</span></div><p class="font-medium text-[#16382C] text-xs leading-snug">Asamblea Ordinaria del Consejo Directivo MFN</p><p class="text-[11px] text-[#2B5366] mt-0.5">Aprobación del acta anterior y lectura de avances físicos trimestrales (Ilustrativo).</p></div><div class="py-2.5"><div class="flex items-center justify-between text-[11px] text-[#2B5366] mb-1"><span class="font-mono font-medium text-[#16382C]">20 OCT 2026</span><span class="px-1.5 py-0.5 rounded bg-[#F9F8F5] border border-[#E5E2DC] text-[10px]">Indicadores ASH</span></div><p class="font-medium text-[#16382C] text-xs leading-snug">Cierre de muestreo en fuentes de abastecimiento</p><p class="text-[11px] text-[#2B5366] mt-0.5">Visita técnica a caseríos El Mirador y San Luis (Soloma).</p></div><div class="py-2.5"><div class="flex items-center justify-between text-[11px] text-[#2B5366] mb-1"><span class="font-mono font-medium text-[#16382C]">26 OCT 2026</span><span class="px-1.5 py-0.5 rounded bg-[#F9F8F5] border border-[#E5E2DC] text-[10px]">Finanzas</span></div><p class="font-medium text-[#16382C] text-xs leading-snug">Informe preliminar de ejecución presupuestaria</p><p class="text-[11px] text-[#2B5366] mt-0.5">Revisión interna con tesorerías de las 3 municipalidades.</p></div><div class="py-2.5 last:pb-1"><div class="flex items-center justify-between text-[11px] text-[#2B5366] mb-1"><span class="font-mono font-medium text-[#2B5366]">30 OCT 2026</span><span class="px-1.5 py-0.5 rounded bg-[#F9F8F5] border border-[#E5E2DC] text-[10px]">Talento humano</span></div><p class="font-medium text-[#16382C] text-xs leading-snug">Taller intermunicipal de saneamiento rural y fontanería</p><p class="text-[11px] text-[#2B5366] mt-0.5">Capacitación de comités de agua en Santa Eulalia.</p></div></div>
+</div>
+</div>
+<!-- Columna Derecha: Proyectos recientes en territorio (7 Cols) -->
+<div class="lg:col-span-7 space-y-3">
+<div class="flex items-center justify-between">
+<h3 class="font-headline text-sm font-bold text-[#16382C] uppercase tracking-wider">Proyectos recientes en territorio</h3>
+<span class="text-xs text-[#2B5366]">Registro técnico</span>
+</div>
+<div class="clean-panel overflow-hidden">
+<table class="w-full text-left text-xs border-collapse">
+<thead>
+<tr class="bg-[#F9F8F5] border-b border-[#E5E2DC] text-[#2B5366] font-headline font-medium">
+<th class="py-2.5 px-3" scope="col">Proyecto / Código</th>
+<th class="py-2.5 px-3" scope="col">Municipio</th>
+<th class="py-2.5 px-3" scope="col">Presupuesto</th>
+<th class="py-2.5 px-3 w-32" scope="col">Avance físico</th>
+<th class="py-2.5 px-3 text-right" scope="col">Estado</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-[#E5E2DC]">
+<tr class="hover:bg-[#F9F8F5]/80 transition-colors">
+<td class="py-2.5 px-3">
+<div class="font-medium text-[#16382C]">Construcción Sistema de Agua Potable La Cumbre</div>
+<div class="text-[10px] font-mono text-[#2B5366]">SNIP-302194</div>
+</td>
+<td class="py-2.5 px-3 text-[#16382C]">S. P. Soloma</td>
+<td class="py-2.5 px-3 font-mono text-[#16382C]">Q 1,420,000</td>
+<td class="py-2.5 px-3">
+<div class="flex items-center gap-2">
+<span class="font-mono text-[11px] w-7">82%</span>
+<div class="w-16 bg-[#E5E2DC] h-1.5 rounded-full overflow-hidden">
+<div class="bg-[#16382C] h-full" style="width: 82%;"></div>
+</div>
+</div>
+</td>
+<td class="py-2.5 px-3 text-right">
+<span class="inline-block px-1.5 py-0.5 rounded text-[10px] font-medium bg-[#E8F1EC] text-[#16382C] border border-[#16382C]/20">
+                      En ejecución
+                    </span>
+</td>
+</tr>
+<tr class="hover:bg-[#F9F8F5]/80 transition-colors">
+<td class="py-2.5 px-3">
+<div class="font-medium text-[#16382C]">Mejoramiento Camino Rural Ramal Cuchumatanes</div>
+<div class="text-[10px] font-mono text-[#2B5366]">SNIP-298412</div>
+</td>
+<td class="py-2.5 px-3 text-[#16382C]">Santa Eulalia</td>
+<td class="py-2.5 px-3 font-mono text-[#16382C]">Q 980,000</td>
+<td class="py-2.5 px-3">
+<div class="flex items-center gap-2">
+<span class="font-mono text-[11px] w-7">55%</span>
+<div class="w-16 bg-[#E5E2DC] h-1.5 rounded-full overflow-hidden">
+<div class="bg-[#1E4638] h-full" style="width: 55%;"></div>
+</div>
+</div>
+</td>
+<td class="py-2.5 px-3 text-right">
+<span class="inline-block px-1.5 py-0.5 rounded text-[10px] font-medium bg-[#E8F1EC] text-[#16382C] border border-[#16382C]/20">
+                      En ejecución
+                    </span>
+</td>
+</tr>
+<tr class="hover:bg-[#F9F8F5]/80 transition-colors">
+<td class="py-2.5 px-3">
+<div class="font-medium text-[#16382C]">Planta de Tratamiento Aguas Residuales Sector 2</div>
+<div class="text-[10px] font-mono text-[#2B5366]">SNIP-310450</div>
+</td>
+<td class="py-2.5 px-3 text-[#16382C]">S. R. la Indep.</td>
+<td class="py-2.5 px-3 font-mono text-[#16382C]">Q 1,150,000</td>
+<td class="py-2.5 px-3">
+<div class="flex items-center gap-2">
+<span class="font-mono text-[11px] w-7">30%</span>
+<div class="w-16 bg-[#E5E2DC] h-1.5 rounded-full overflow-hidden">
+<div class="bg-[#2B5366] h-full" style="width: 30%;"></div>
+</div>
+</div>
+</td>
+<td class="py-2.5 px-3 text-right">
+<span class="inline-block px-1.5 py-0.5 rounded text-[10px] font-medium bg-[#FEF9E7] text-[#8C6D1F] border border-[#8C6D1F]/25">
+                      Supervisión
+                    </span>
+</td>
+</tr>
+<tr class="hover:bg-[#F9F8F5]/80 transition-colors">
+<td class="py-2.5 px-3">
+<div class="font-medium text-[#16382C]">Relleno Sanitario Mancomunado - Celda B</div>
+<div class="text-[10px] font-mono text-[#2B5366]">SNIP-289104</div>
+</td>
+<td class="py-2.5 px-3 text-[#16382C]">Intermunicipal</td>
+<td class="py-2.5 px-3 font-mono text-[#16382C]">Q 2,230,000</td>
+<td class="py-2.5 px-3">
+<div class="flex items-center gap-2">
+<span class="font-mono text-[11px] w-7">90%</span>
+<div class="w-16 bg-[#E5E2DC] h-1.5 rounded-full overflow-hidden">
+<div class="bg-[#16382C] h-full" style="width: 90%;"></div>
+</div>
+</div>
+</td>
+<td class="py-2.5 px-3 text-right">
+<span class="inline-block px-1.5 py-0.5 rounded text-[10px] font-medium bg-[#F9F8F5] text-[#2B5366] border border-[#E5E2DC]">
+                      Fase final
+                    </span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<!-- ========================================================== -->
+<!-- SECCIÓN 4: MICRO-ESTADOS DE REFERENCIA Y NOTAS TÉCNICAS     -->
+<!-- ========================================================== -->
+<section class="pt-2 border-t border-[#E5E2DC]"><div class="flex flex-col md:flex-row md:items-center justify-between gap-4"><div class="flex flex-wrap items-center gap-3 text-xs"><div class="inline-flex items-center gap-2 px-2.5 py-1.5 rounded clean-panel bg-[#FFFFFF]"><span class="material-symbols-outlined text-[#2B5366] text-sm animate-spin">sync</span><span class="text-[#2B5366]">Estado de carga:</span><span class="font-medium text-[#16382C]">Sincronizando</span></div><div class="inline-flex items-center gap-2 px-2.5 py-1.5 rounded clean-panel bg-[#FFFFFF]"><span class="material-symbols-outlined text-[#16382C] text-sm">check_circle</span><span class="text-[#2B5366]">Estado vacío:</span><span class="font-medium text-[#16382C]">Sin expedientes pendientes</span></div><div class="inline-flex items-center gap-2 px-2.5 py-1.5 rounded clean-panel bg-[#FBF4F1] border border-[#A84320]/30"><span class="material-symbols-outlined text-[#A84320] text-sm">error_outline</span><span class="text-[#A84320] font-medium">No se pudieron cargar los datos</span><button type="button" class="ml-1 text-[11px] font-semibold text-[#A84320] hover:text-[#833318] underline underline-offset-2 cursor-pointer">Reintentar</button></div></div><div class="text-[11px] text-[#2B5366] font-mono text-right">Plataforma de visualización y seguimiento intermunicipal</div></div></section>
+</main>
+</div>
+<script>
+    // Micro-interactions and subtle date refresh handler
+    document.addEventListener('DOMContentLoaded', () => {
+      const selectElem = document.getElementById('municipio-select');
+      if (selectElem) {
+        selectElem.addEventListener('change', (e) => {
+          // Subtle feedback when selecting territorial jurisdiction
+          console.info(`[MFN Digital] Jurisdicción conmutada a: ${e.target.value}`);
+        });
+      }
+    });
+  </script>
+</body></html>

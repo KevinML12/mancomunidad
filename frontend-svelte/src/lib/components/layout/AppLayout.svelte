@@ -11,6 +11,7 @@
     { to: '/arc', icon: 'view_kanban', label: 'Plan de Mejoras (ARC)' },
     { to: '/financiero', icon: 'account_balance', label: 'Finanzas y Cuotas' },
     { to: '/gobernanza', icon: 'gavel', label: 'Gobernanza y Actas' },
+    { to: '/personal', icon: 'badge', label: 'Talento Humano (SIRH)' },
     { to: '/convenios', icon: 'handshake', label: 'Alianzas y Convenios', hasDot: true },
     { to: '/estadisticas', icon: 'bar_chart', label: 'Indicadores ASH' },
     { to: '/inteligencia', icon: 'psychology', label: 'Inteligencia & CGC' },

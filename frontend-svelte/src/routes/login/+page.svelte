@@ -4,10 +4,21 @@
   import Icon from '$lib/components/ui/Icon.svelte';
   import { toast } from 'svelte-sonner';
 
+  import apiClient from '$lib/apiClient';
+
   let correo = $state('');
   let contrasena = $state('');
   let mostrarContrasena = $state(false);
   let loading = $state(false);
+
+  // RF1: Recuperación de Credenciales Institucionales
+  let showRecuperarModal = $state(false);
+  let pasoRecuperacion = $state(1); // 1: solicitar código, 2: ingresar token y nueva contraseña
+  let correoRecuperar = $state('');
+  let tokenRecuperacion = $state('');
+  let nuevaContrasena = $state('');
+  let confirmarContrasena = $state('');
+  let recuperando = $state(false);
 
   async function onSubmit(e) {
     e?.preventDefault();
@@ -27,6 +38,59 @@
       toast.error(`Error al iniciar sesión: ${msg}`);
     } finally {
       loading = false;
+    }
+  }
+
+  async function solicitarRecuperacion(e) {
+    e?.preventDefault();
+    if (!correoRecuperar.trim()) {
+      toast.error('Ingrese su correo institucional');
+      return;
+    }
+    recuperando = true;
+    try {
+      const { data } = await apiClient.post('/auth/recuperar', { correo: correoRecuperar.trim() });
+      toast.success(data.mensaje || 'Instrucción de recuperación generada');
+      if (data.tokenRecuperacion) {
+        tokenRecuperacion = data.tokenRecuperacion;
+      }
+      pasoRecuperacion = 2;
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Error al solicitar recuperación');
+    } finally {
+      recuperando = false;
+    }
+  }
+
+  async function ejecutarRestablecimiento(e) {
+    e?.preventDefault();
+    if (!tokenRecuperacion.trim() || !nuevaContrasena) {
+      toast.error('Todos los campos son requeridos');
+      return;
+    }
+    if (nuevaContrasena !== confirmarContrasena) {
+      toast.error('Las contraseñas no coinciden');
+      return;
+    }
+    if (nuevaContrasena.length < 6) {
+      toast.error('La contraseña debe tener al menos 6 caracteres');
+      return;
+    }
+    recuperando = true;
+    try {
+      const { data } = await apiClient.post('/auth/restablecer', {
+        token: tokenRecuperacion.trim(),
+        nuevaContrasena
+      });
+      toast.success(data.mensaje || 'Contraseña actualizada exitosamente');
+      showRecuperarModal = false;
+      pasoRecuperacion = 1;
+      correo = correoRecuperar;
+      contrasena = '';
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Error al restablecer contraseña');
+    } finally {
+      recuperando = false;
     }
   }
 </script>
@@ -101,10 +165,20 @@
         </div>
       </div>
 
+      <div class="flex items-center justify-end pt-1">
+        <button 
+          type="button" 
+          onclick={() => { showRecuperarModal = true; pasoRecuperacion = 1; }}
+          class="text-[11px] font-bold text-[#3B82F6] hover:underline cursor-pointer transition-colors"
+        >
+          ¿Olvidaste tu contraseña institucional?
+        </button>
+      </div>
+
       <button 
         type="submit" 
         disabled={loading}
-        class="w-full bg-[#0A1526] hover:bg-black text-white font-bold py-3.5 rounded-full text-[13px] shadow-md transition-colors mt-6 flex items-center justify-center gap-2 disabled:opacity-60 cursor-pointer"
+        class="w-full bg-[#0A1526] hover:bg-black text-white font-bold py-3.5 rounded-full text-[13px] shadow-md transition-colors mt-4 flex items-center justify-center gap-2 disabled:opacity-60 cursor-pointer"
       >
         {#if loading}
           <div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -136,3 +210,149 @@
     </div>
   </div>
 </div>
+
+<!-- MODAL RECUPERACIÓN DE CONTRASEÑA (RF1) -->
+{#if showRecuperarModal}
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0A1526]/70 backdrop-blur-sm">
+    <div class="bg-white rounded-[28px] max-w-md w-full p-8 shadow-2xl border border-gray-100 relative animate-fade-in">
+      <div class="flex items-center justify-between pb-4 mb-4 border-b border-gray-100">
+        <div class="flex items-center gap-2">
+          <span class="w-8 h-8 rounded-xl bg-blue-50 flex items-center justify-center text-[#3B82F6]">
+            <Icon name="lock_reset" className="w-4 h-4" />
+          </span>
+          <div>
+            <h3 class="text-[14px] font-black text-[#0A1526]">Recuperar Contraseña</h3>
+            <p class="text-[10px] text-[#0A1526]/50">Gestión de Seguridad RF1 (Decreto 57-2008)</p>
+          </div>
+        </div>
+        <button 
+          type="button" 
+          onclick={() => showRecuperarModal = false} 
+          class="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center text-[#0A1526]/60 transition-colors"
+        >
+          <Icon name="close" className="w-4 h-4" />
+        </button>
+      </div>
+
+      {#if pasoRecuperacion === 1}
+        <form onsubmit={solicitarRecuperacion} class="space-y-4">
+          <p class="text-[12px] text-[#0A1526]/60 leading-relaxed">
+            Ingrese su correo electrónico oficial registrado ante la Mancomunidad Frontera del Norte. Le generaremos un token de restablecimiento temporal (vigencia: 15 minutos).
+          </p>
+
+          <div>
+            <label for="input-correo-recuperar" class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">
+              Correo Institucional
+            </label>
+            <input 
+              id="input-correo-recuperar"
+              type="email" 
+              required
+              bind:value={correoRecuperar} 
+              placeholder="ejemplo@mfn.gob.gt"
+              class="w-full bg-[#F4F7FA] border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#0A1526] focus:outline-none focus:border-[#3B82F6] transition-all"
+            />
+          </div>
+
+          <div class="pt-2 flex justify-end gap-2">
+            <button 
+              type="button" 
+              onclick={() => showRecuperarModal = false} 
+              class="px-5 py-2.5 rounded-full font-bold text-[12px] text-[#0A1526]/60 hover:bg-gray-100 transition-colors"
+            >
+              Cancelar
+            </button>
+            <button 
+              type="submit" 
+              disabled={recuperando}
+              class="px-6 py-2.5 rounded-full font-bold text-[12px] bg-[#0A1526] hover:bg-black text-white shadow-md transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50"
+            >
+              {#if recuperando}
+                <div class="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                <span>Generando...</span>
+              {:else}
+                <span>Continuar</span>
+                <Icon name="arrow_forward" className="w-3.5 h-3.5 text-[#3B82F6]" />
+              {/if}
+            </button>
+          </div>
+        </form>
+      {:else}
+        <form onsubmit={ejecutarRestablecimiento} class="space-y-4">
+          <div class="bg-blue-50/70 p-3 rounded-xl border border-blue-100 text-[11px] text-[#0A1526]">
+            <p class="font-bold">Token temporal generado para:</p>
+            <p class="font-mono text-[#3B82F6] truncate mt-0.5">{correoRecuperar}</p>
+          </div>
+
+          <div>
+            <label for="input-token-recuperar" class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">
+              Token de Seguridad (15 min)
+            </label>
+            <input 
+              id="input-token-recuperar"
+              type="text" 
+              required
+              bind:value={tokenRecuperacion} 
+              placeholder="Pegue aquí el token recibido..."
+              class="w-full bg-[#F4F7FA] border border-gray-200 rounded-xl px-4 py-3 text-[12px] font-mono text-[#0A1526] focus:outline-none focus:border-[#3B82F6]"
+            />
+          </div>
+
+          <div>
+            <label for="input-nueva-contrasena" class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">
+              Nueva Contraseña
+            </label>
+            <input 
+              id="input-nueva-contrasena"
+              type="password" 
+              required
+              minlength="6"
+              bind:value={nuevaContrasena} 
+              placeholder="Mínimo 6 caracteres"
+              class="w-full bg-[#F4F7FA] border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#0A1526] focus:outline-none focus:border-[#3B82F6]"
+            />
+          </div>
+
+          <div>
+            <label for="input-confirmar-contrasena" class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">
+              Confirmar Nueva Contraseña
+            </label>
+            <input 
+              id="input-confirmar-contrasena"
+              type="password" 
+              required
+              minlength="6"
+              bind:value={confirmarContrasena} 
+              placeholder="Repita la nueva contraseña"
+              class="w-full bg-[#F4F7FA] border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#0A1526] focus:outline-none focus:border-[#3B82F6]"
+            />
+          </div>
+
+          <div class="pt-2 flex justify-end gap-2">
+            <button 
+              type="button" 
+              onclick={() => pasoRecuperacion = 1} 
+              class="px-5 py-2.5 rounded-full font-bold text-[12px] text-[#0A1526]/60 hover:bg-gray-100 transition-colors"
+            >
+              Atrás
+            </button>
+            <button 
+              type="submit" 
+              disabled={recuperando}
+              class="px-6 py-2.5 rounded-full font-bold text-[12px] bg-emerald-600 hover:bg-emerald-700 text-white shadow-md transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50"
+            >
+              {#if recuperando}
+                <div class="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                <span>Actualizando...</span>
+              {:else}
+                <span>Restablecer Contraseña</span>
+                <Icon name="check" className="w-3.5 h-3.5" />
+              {/if}
+            </button>
+          </div>
+        </form>
+      {/if}
+    </div>
+  </div>
+{/if}
+

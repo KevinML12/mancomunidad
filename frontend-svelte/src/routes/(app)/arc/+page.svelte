@@ -11,6 +11,10 @@
   let filtroPrioridad = $state('todas');
   let searchQuery = $state('');
 
+  // Drag and Drop (RF7)
+  let draggingTaskId = $state(null);
+  let dragOverColId = $state(null);
+
   // Modal
   let showModal = $state(false);
   let formLoading = $state(false);
@@ -125,7 +129,7 @@
     </div>
     <h2 class="text-[40px] font-black tracking-[-0.04em] leading-none text-[#0A1526] mb-3">Plan de Mejoras (ARC)</h2>
     <p class="text-[13px] text-[#0A1526]/50 leading-relaxed max-w-2xl">
-      Supervisión activa de metas estratégicas, asignación de responsabilidades y alertas preventivas de vencimiento.
+      Supervisión activa de metas estratégicas con tablero interactivo Drag & Drop (RF7), asignación de responsabilidades y alertas preventivas de vencimiento.
     </p>
   </div>
 
@@ -225,7 +229,21 @@
 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 items-start">
   {#each COLUMNAS as col, colIdx}
     {@const tareasCol = tareasFiltradas.filter(t => t.estado === col.id)}
-    <div class="bg-[#F8FAFC] border border-gray-200/60 rounded-[28px] p-5 shadow-xs flex flex-col min-h-[500px] animate-slide-up stagger-{colIdx + 1}">
+    <div 
+      class="bg-[#F8FAFC] border rounded-[28px] p-5 shadow-xs flex flex-col min-h-[500px] animate-slide-up stagger-{colIdx + 1} transition-all duration-200 {dragOverColId === col.id ? 'border-[#3B82F6] ring-2 ring-[#3B82F6]/30 bg-blue-50/30' : 'border-gray-200/60'}"
+      ondragover={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; dragOverColId = col.id; }}
+      ondragleave={() => { if (dragOverColId === col.id) dragOverColId = null; }}
+      ondrop={(e) => {
+        e.preventDefault();
+        dragOverColId = null;
+        if (draggingTaskId) {
+          cambiarEstado(draggingTaskId, col.id);
+          draggingTaskId = null;
+        }
+      }}
+      role="region"
+      aria-label={`Columna ${col.label}`}
+    >
       <!-- Header de Columna -->
       <div class="flex items-center justify-between pb-4 mb-4 border-b border-gray-200/60">
         <div class="flex items-center gap-2">
@@ -241,11 +259,23 @@
       <div class="space-y-4 flex-1">
         {#if tareasCol.length === 0}
           <div class="h-32 border-2 border-dashed border-gray-200/80 rounded-2xl flex items-center justify-center text-[11px] text-[#0A1526]/30 font-medium">
-            Sin tareas en este estado
+            Arrastra tareas aquí
           </div>
         {:else}
           {#each tareasCol as tarea}
-            <div class="bg-white border border-gray-100 rounded-[20px] p-5 shadow-[0_10px_30px_-10px_rgba(10,21,38,0.04)] card-lift group relative">
+            <div 
+              draggable="true"
+              ondragstart={(e) => {
+                draggingTaskId = tarea.id;
+                e.dataTransfer.setData('text/plain', tarea.id.toString());
+                e.dataTransfer.effectAllowed = 'move';
+              }}
+              ondragend={() => {
+                draggingTaskId = null;
+                dragOverColId = null;
+              }}
+              class="bg-white border border-gray-100 rounded-[20px] p-5 shadow-[0_10px_30px_-10px_rgba(10,21,38,0.04)] card-lift group relative cursor-grab active:cursor-grabbing transition-all {draggingTaskId === tarea.id ? 'opacity-40 scale-[0.98] border-dashed border-[#3B82F6]' : ''}"
+            >
               <!-- Top tags -->
               <div class="flex items-center justify-between gap-2 mb-2.5">
                 <span class="text-[9px] font-mono font-bold text-[#3B82F6] bg-blue-50 px-2 py-0.5 rounded-md">

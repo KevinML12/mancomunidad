@@ -1,0 +1,283 @@
+CAPÍTULO III
+MARCO METODOLÓGICO
+
+El marco metodológico constituye la estructura operativa y procedimental que orienta rigurosamente el desarrollo de la presente investigación, estableciendo de manera detallada los métodos, técnicas, instrumentos y protocolos analíticos necesarios para abordar y resolver el problema planteado en el Capítulo I. En el ámbito de la ingeniería de sistemas y ciencias de la computación aplicada al sector público, este apartado define el camino sistemático que permite transformar requerimientos normativos e institucionales en una solución tecnológica concreta, verificable y auditable. Su propósito cardinal radica en dotar al proyecto de la validez científica requerida para comprobar de forma empírica la hipótesis de acción formulada, garantizando que cada intervención sobre la realidad organizacional de la Mancomunidad de Municipios Frontera del Norte responda a un diseño metodológico estructurado, reproducible y formalmente documentado.
+
+La fundamentación metodológica resulta indispensable para articular coherentemente el diagnóstico situacional de la entidad mancomunada con la arquitectura de software construida. La Mancomunidad de Municipios Frontera del Norte, con sede en el municipio de Santa Eulalia, departamento de Huehuetenango, presenta una problemática crítica caracterizada por la fragmentación operativa, la alta dependencia de registros manuales en papel, la dispersión de datos territoriales y la ausencia de canales centralizados para el seguimiento de acuerdos y ejecución de proyectos intermunicipales de gran escala, tales como la iniciativa de agua, higiene y saneamiento financiada por la cooperación internacional. Por consiguiente, el marco metodológico aquí diseñado no solo contempla el desarrollo informático bajo estándares internacionales de ingeniería, sino que establece los procedimientos empíricos para medir objetivamente la optimización de los tiempos de procesamiento, el fortalecimiento de la seguridad documental y el incremento real en la eficiencia gerencial tras la implantación del sistema en la nube.
+
+3.1 Enfoque y ruta de la investigación
+
+La determinación de la ruta y el enfoque de investigación establece las directrices epistemológicas y operativas que rigen la recopilación, tratamiento y análisis de los datos a lo largo de todo el ciclo de vida del proyecto. De acuerdo con Hernández-Sampieri y Mendoza (2018), la elección de la ruta metodológica no obedece a preferencias arbitrarias del investigador, sino a la naturaleza intrínseca del problema formulado y a los objetivos que se pretenden alcanzar. En las investigaciones tecnológicas contemporáneas, resulta imperativo adoptar un enfoque que permita vincular la precisión métrica del rendimiento informático con la comprensión contextual de las dinámicas humanas y normativas que determinan la adopción de una plataforma de software en la administración pública.
+
+3.1.1 Enfoque metodológico de la investigación
+
+El presente estudio se desarrolla bajo un enfoque metodológico mixto, con una preponderancia cuantitativa claramente definida, complementada estratégicamente por elementos cualitativos descriptivos. Este enfoque integrado responde a la necesidad de abordar la complejidad inherente al desarrollo y evaluación de sistemas de información gubernamentales, en los cuales coexisten parámetros técnicos rigurosamente cuantificables y procesos administrativos subjetivos mediados por la cultura organizacional de los funcionarios públicos. Tal como exponen Hernández-Sampieri y Mendoza (2018), los métodos mixtos representan un conjunto de procesos sistemáticos, empíricos y críticos de investigación que implican la recolección y el análisis de datos cuantitativos y cualitativos, así como su integración y discusión conjunta, para lograr un entendimiento más amplio y profundo del fenómeno objeto de estudio.
+
+La dimensión cuantitativa asume un rol protagónico en la investigación, dado que la comprobación de la hipótesis de acción depende directamente de la medición objetiva y numérica de indicadores de rendimiento. Específicamente, se cuantifican variables operativas continuas como los tiempos cronometrados de procesamiento administrativo antes y después de la digitalización, la latencia o tiempo de respuesta del servidor en milisegundos, el porcentaje de disponibilidad de la infraestructura en la nube, y las tasas porcentuales de adopción y retención de usuarios activos en la plataforma. Asimismo, se recolectan datos cuantitativos discretos a través de instrumentos psicométricos estandarizados basados en escalas Likert, los cuales permiten tabular matemáticamente las percepciones del personal institucional en torno a la usabilidad, facilidad de interacción y satisfacción con el nuevo entorno tecnológico.
+
+Por su parte, la dimensión cualitativa interviene de manera complementaria pero fundamental durante las fases iniciales y de contextualización del estudio. Esta faceta metodológica se materializa en la revisión exhaustiva y análisis de contenido aplicado a los documentos normativos, manuales de organización, reglamentos de trabajo y actas de asambleas que rigen a la Mancomunidad de Municipios Frontera del Norte. De igual forma, la observación directa no estructurada y las entrevistas abiertas con actores institucionales clave permiten comprender a cabalidad las razones subyacentes a la resistencia al cambio, los cuellos de botella burocráticos y las expectativas operativas de los usuarios finales. De este modo, los hallazgos cualitativos proporcionan el insumo semántico para la ingeniería de requerimientos, mientras que los datos cuantitativos proporcionan la evidencia matemática para la contrastación rigurosa de las hipótesis.
+
+3.1.2 Ruta metodológica de la investigación
+
+La ruta metodológica adoptada se clasifica como cuantitativa-aplicada, enmarcada en los cánones del método científico y la ingeniería de software. Esta ruta establece un itinerario secuencial, sistemático y estructurado que parte de una etapa diagnóstica orientada al levantamiento riguroso de requerimientos, transita hacia el diseño formal de la solución informática y su posterior codificación, y culmina en una etapa de experimentación y evaluación empírica en el contexto real de trabajo. Según señala Bernal (2016), la ruta metodológica estructurada asegura que el conocimiento generado no sea producto del azar, sino el resultado de un proceso controlado donde cada decisión de diseño técnico responde directamente a una necesidad empírica demostrada previamente.
+
+Dentro de esta trayectoria, la investigación sigue un proceso deductivo donde los conceptos teóricos relativos a arquitecturas en la nube, modelos de software como servicio (SaaS), seguridad criptográfica y gestión por procesos se operacionalizan en métricas e indicadores susceptibles de medición empírica. Cada una de las fases de la ruta metodológica se conecta de manera lógica con los objetivos específicos planteados en la tesis, garantizando que la recolección de datos y la implantación del sistema web se ejecuten sin improvisaciones. De esta forma, la ruta seleccionada guía al investigador desde la identificación de las falencias administrativas en el norte de Huehuetenango hasta la entrega formal de un ecosistema funcional capaz de ser auditado mediante protocolos estadísticos de aceptación y rendimiento tecnológico.
+
+3.2 Tipo y diseño de la investigación
+
+El tipo y diseño de una investigación establecen el marco operativo que delimita la profundidad temporal, el grado de intervención experimental y la orientación teleológica del estudio. Definir con exactitud estos aspectos garantiza que el investigador emplee las herramientas conceptuales y experimentales adecuadas para recolectar evidencia confiable sobre las relaciones causales planteadas. En el marco del presente proyecto de graduación, el diseño se concibe para evaluar el impacto transformador de la ingeniería de software sobre los procesos cotidianos de la administración pública local.
+
+3.2.1 Tipo de investigación
+
+De acuerdo con los objetivos formulados y el alcance de las metas institucionales, la presente investigación se tipifica como aplicada, tecnológica, descriptiva y explicativa. En primer lugar, se clasifica como investigación aplicada y tecnológica debido a que su propósito central no reside en la mera especulación teórica o el ensanchamiento abstracto del conocimiento académico, sino en la utilización práctica de los principios de la ingeniería de sistemas para solucionar un problema real, palpable y urgente en el contexto institucional. Tal como define Bunge (2014) y complementa Bernal (2016), la investigación aplicada busca transformar situaciones deficitarias concretas mediante la creación de artefactos, metodologías o herramientas funcionales, generando un impacto directo y comprobable sobre la comunidad o la organización donde se introduce la innovación.
+
+En segundo lugar, el estudio ostenta un carácter descriptivo fundamental. Como indican Hernández-Sampieri y Mendoza (2018), los estudios descriptivos buscan especificar las propiedades, características y perfiles de personas, grupos, comunidades, procesos o cualquier otro fenómeno que se someta a un análisis minucioso. En este marco, la investigación realiza un levantamiento exhaustivo de las propiedades operativas actuales de la Mancomunidad de Municipios Frontera del Norte, describiendo con precisión técnica el flujo de tramitación de expedientes, el archivo manual de acuerdos de asamblea, el control financiero en libros auxiliares y la recolección asíncrona de datos de campo en comunidades remotas. Esta caracterización exhaustiva resulta indispensable para establecer la línea base sobre la cual se medirá la mejora alcanzada.
+
+En tercer lugar, la investigación adquiere un alcance explicativo sustancial. Arias (2012) señala que la investigación explicativa se encarga de buscar el porqué de los hechos mediante el establecimiento de relaciones de causa-efecto entre las variables objeto de estudio. En este proyecto no solo se describe el funcionamiento de los procesos administrativos y la tecnología construida, sino que se demuestra y explica de qué manera la introducción de la plataforma informática centralizada y la arquitectura multiservicio en la nube (variable independiente) causa directamente la optimización de los tiempos de procesamiento, la salvaguarda de la seguridad de la información y la elevación de la eficiencia en la toma de decisiones gerenciales dentro de la administración general (variable dependiente).
+
+3.2.2 Diseño de la investigación
+
+Para responder satisfactoriamente a las preguntas de investigación y someter a prueba la hipótesis planteada, se implementa un diseño metodológico estructurado en dos vertientes complementarias: un diseño cuasi-experimental con preprueba y posprueba para un solo grupo representativo, y un diseño no experimental transversal descriptivo. Esta configuración metodológica permite combinar la contrastación estadística de rendimiento antes y después de la intervención tecnológica con la evaluación estandarizada de la percepción usuaria una vez alcanzada la estabilización del ecosistema informático.
+
+La vertiente principal se fundamenta en un diseño cuasi-experimental (o pre-experimental de grupo único con medición pretest y postest), simbolizado formalmente bajo la notación metodológica clásica como O1 -> X -> O2. En este esquema, O1 representa la observación basal inicial (pretest), consistente en el registro cronométrico y documental de los tiempos de procesamiento, tasas de error y horas dedicadas a la reportería bajo la modalidad operativa tradicional (manual, papel y hojas de cálculo). El componente X simboliza el estímulo o tratamiento experimental, constituido por la implantación formal del ecosistema web en la nube y la capacitación intensiva de los operadores. Finalmente, O2 representa la observación posterior (postest), en la cual se recolectan de forma automatizada e independiente las mismas métricas de tiempo y rendimiento a través de las bitácoras del sistema, permitiendo comparar estadísticamente si los cambios observados resultan significativos.
+
+De forma complementaria, se incorpora un diseño no experimental transversal (transeccional) de carácter descriptivo. Tal como apuntan Hernández-Sampieri y Mendoza (2018), los diseños transversales recolectan datos en un solo momento, en un tiempo único, con el propósito de describir variables y analizar su incidencia e interrelación en un momento dado. Este componente se aplica al culminar la fase de implantación para medir de manera simultánea las dimensiones subjetivas del impacto tecnológico, tales como el nivel de satisfacción usuaria, la facilidad de uso percibida y la utilidad percibida de la plataforma, utilizando para ello un cuestionario estructurado bajo el modelo de aceptación tecnológica y la norma internacional ISO/IEC 25010.
+
+3.3 Población y muestra
+
+La delimitación precisa del universo de estudio y la selección rigurosa de los sujetos o unidades de análisis constituyen requisitos ineludibles para dotar de validez externa e interna a los resultados de la investigación. En el ámbito de los sistemas de información institucionales, la población debe circunscribirse rigurosamente a aquellos actores que poseen una interacción operativa o directiva directa con los flujos de información intervenidos, asegurando que las evidencias recabadas reflejen fidedignamente la realidad administrativa y funcional de la entidad.
+
+3.3.1 Delimitación y caracterización de la población
+
+La población o universo del presente estudio está conformada por la totalidad del personal directivo, ejecutivo, administrativo y técnico operativo adscrito a la Mancomunidad de Municipios Frontera del Norte, cuya sede central se ubica en el cantón Vista Hermosa del municipio de Santa Eulalia, departamento de Huehuetenango. Esta entidad asociativa regional ejerce jurisdicción y coordinación territorial sobre seis municipios miembros plenos del norte de Huehuetenango: San Juan Ixcoy, San Pedro Soloma, Santa Eulalia, San Sebastián Coatán, San Rafael La Independencia y San Miguel Acatán, incorporando además coordinaciones operativas con Santa Cruz Barillas y el municipio de Ixcán, perteneciente al departamento de Quiché.
+
+Desde la perspectiva orgánico-funcional y de acuerdo con el manual de funciones y la estructura de gobernanza institucional, la población de estudio se clasifica en cinco niveles o estratos claramente diferenciados: Nivel Superior Directivo (compuesto por los seis alcaldes municipales que integran la Junta Directiva y la Presidencia de la Asamblea General); Nivel Ejecutivo (integrado por la Gerencia General y la Auditoría Interna institucional); Nivel Administrativo-Financiero (conformado por el Director Administrativo Financiero, el Contador General y el Tesorero); Nivel Secretarial y Asistencial (integrado por la Secretaría Ejecutiva y los Asistentes Administrativos encargados del resguardo documental); y Nivel Operativo Territorial (conformado por los coordinadores de proyectos intermunicipales de agua y saneamiento y técnicos de campo de las Oficinas Municipales de Agua y Saneamiento - OMAS). El universo total finito está cuantificado en 22 funcionarios institucionales.
+
+3.3.2 Criterios de inclusión y exclusión
+
+Para garantizar que los datos obtenidos provengan exclusivamente de fuentes pertinentes y con conocimiento directo de los procesos institucionales a intervenir, se definen formalmente los siguientes criterios metodológicos de inclusión y exclusión:
+
+Criterios de inclusión:
+
+Se incluyen en el estudio a todos aquellos funcionarios, autoridades edilicias y colaboradores técnicos contratados formalmente por la Mancomunidad de Municipios Frontera del Norte o designados formalmente por sus respectivas municipalidades que cumplan con: a) desempeñar funciones activas en la toma de decisiones, supervisión, gestión financiera, tramitación de documentos o recolección de datos en campo durante el período de evaluación 2025-2026; b) tener acceso autorizado a equipos de cómputo o dispositivos móviles inteligentes provistos para las actividades laborales; y c) manifestar su conformidad y participación mediante la suscripción del consentimiento informado respectivo para las evaluaciones operativas y psicométricas del proyecto.
+
+Criterios de exclusión:
+
+Se excluyen expresamente del universo de análisis a: a) el personal contratado para servicios generales de mantenimiento físico y limpieza de las instalaciones que no interviene en ningún flujo de trámite documental ni manejo de expedientes; b) colaboradores o consultores externos cuya relación contractual con la Mancomunidad sea inferior a treinta días continuos de labor; y c) personal que durante el período de medición experimental se encuentre gozando de licencias médicas prolongadas, permisos sin goce de salario o en proceso formal de desvinculación laboral, asegurando así la estabilidad y continuidad de las mediciones de impacto.
+
+3.3.3 Definición de la muestra y técnica de muestreo
+
+En virtud de que el universo de funcionarios y directivos vinculados a los procesos administrativos de la Mancomunidad de Municipios Frontera del Norte constituye un grupo finito, plenamente delimitado y cuantitativamente reducido (N = 22), en la presente investigación no se efectúa ningún cálculo de muestreo probabilístico con representatividad fraccionada. Por el contrario, se aplica un censo poblacional o muestra censal exhaustiva, donde el tamaño de la muestra es idéntico al tamaño del universo (n = N = 22). Tal como establecen Arias (2012) y Hernández-Sampieri y Mendoza (2018), en poblaciones pequeñas y completamente accesibles para el investigador, el censo constituye la mejor estrategia metodológica, dado que elimina por completo el error muestral y garantiza que cada uno de los roles institucionales se encuentre representado con absoluta fidelidad.
+
+La muestra censal abarca la totalidad de los usuarios que interactúan con los siete módulos funcionales de la plataforma informática en la nube, garantizando que tanto la perspectiva política y estratégica de los alcaldes municipales como la ejecución operativa cotidiana de los técnicos de campo y personal de secretaría sean evaluadas de manera integral. A continuación, se presenta la distribución detallada de la población censal según su unidad organizativa, cargo institucional formal y el rol de seguridad que asume dentro de la arquitectura de software desarrollada.
+
+Tabla 1
+
+Distribución censal de la población de estudio según unidad organizativa y rol en el sistema
+
+Nota. La tabla detalla la estratificación completa del personal directivo, administrativo y operativo de la Mancomunidad de Municipios Frontera del Norte sujeto a evaluación censal (N = n = 22), vinculando cada posición funcional con su perfil tecnológico en el sistema de información. Elaboración propia en base al manual de organización institucional (2026).
+
+3.4 Operacionalización de variables
+
+La operacionalización de variables representa el procedimiento epistemológico y metodológico mediante el cual los constructos teóricos abstractos enunciados en la hipótesis se desagregan de forma lógica en dimensiones observables, indicadores medibles y escalas cuantificables. Según señalan Arias (2012) y Hernández-Sampieri y Mendoza (2018), un adecuado proceso de operacionalización garantiza el tránsito riguroso desde el plano conceptual hacia el plano empírico, permitiendo al investigador seleccionar las técnicas de recolección idóneas y formular instrumentos de medición dotados de validez y precisión matemática. En el presente estudio, las variables se alinean de manera estricta con las formuladas en el Capítulo I del anteproyecto.
+
+3.4.1 Variable independiente: conceptualización y dimensiones
+
+La variable independiente (causa) se define formalmente como: La implementación de la plataforma informática centralizada y la arquitectura multiservicio en la nube. Desde el punto de vista conceptual, esta variable representa el diseño, construcción, despliegue y configuración operativa de un ecosistema de software bajo el modelo de Software como Servicio (SaaS), alojado en una infraestructura de computación distribuida de alta disponibilidad. Su propósito central es reemplazar los registros analógicos y hojas de cálculo dispersas mediante siete módulos funcionales interconectados con una base de datos relacional PostgreSQL, asegurando la integridad referencial y gobernanza de la información para los municipios de la Mancomunidad Frontera del Norte.
+
+Operacionalmente, la variable independiente se manifiesta y cuantifica a través de tres dimensiones fundamentales: a) Dimensión Funcional de Software, medida mediante el indicador de Completitud Funcional (porcentaje de los siete módulos del sistema desplegados y operando conforme a los requerimientos ERS IEEE 830); b) Dimensión de Infraestructura y Rendimiento Cloud, medida a través de la Disponibilidad del Servidor (porcentaje de Uptime mensual superior al 99.9% en plataformas en la nube) y la Latencia de Respuesta (tiempo medido en milisegundos que tarda la API REST en despachar solicitudes de datos); y c) Dimensión de Seguridad Informática, cuantificada mediante el Control de Acceso Basado en Roles (porcentaje de cumplimiento irrestricto de la matriz RBAC y verificación criptográfica de tokens JWT).
+
+3.4.2 Variable dependiente: conceptualización y dimensiones
+
+La variable dependiente (efecto) se define como: La optimización de los tiempos de procesamiento, la seguridad de la información y la eficiencia gerencial del departamento de administración general. Conceptualmente, alude a la elevación cuantitativa y cualitativa en la celeridad, resguardo, integridad y asertividad con la que los funcionarios y la Junta Directiva de la Mancomunidad ejecutan los flujos administrativos, resguardan los expedientes institucionales y toman decisiones estratégicas fundamentadas en datos confiables y actualizados en tiempo real.
+
+En términos operacionales, la variable dependiente se evalúa a través de tres dimensiones empíricas: a) Dimensión de Eficiencia Temporal Operativa, medida cronométricamente a través de la Reducción en los Tiempos de Tramitación (duración media en minutos u horas para radicar, validar y archivar los seis procesos administrativos clave, comparando el estado manual frente al automatizado); b) Dimensión de Gobernanza y Reportería Gerencial, cuantificada mediante la Eficiencia en Reportería (número de horas-hombre ahorradas en la consolidación de estadísticas para asambleas y auditorías de cooperantes) y la Tasa de Incidentes de Pérdida o Fuga Documental (frecuencia nula de extravíos de actas o expedientes); y c) Dimensión de Aceptabilidad Tecnológica y Satisfacción, medida mediante la Tasa de Adopción Tecnológica (porcentaje de retención diaria de usuarios activos sobre el total del personal) y la Puntuación de Usabilidad y Satisfacción Usuaria (obtenida mediante una escala Likert estandarizada de 1 a 5 puntos).
+
+3.4.3 Matriz integral de operacionalización de variables
+
+Con el objeto de ofrecer una visión holística y sistemática del andamiaje empírico de la investigación, a continuación se presenta la matriz de operacionalización de variables, estructurada en total correspondencia con los lineamientos de las Normas APA 7ª edición y las especificaciones metodológicas del curso de Proyecto de Graduación II.
+
+Tabla 2
+
+Matriz integral de operacionalización de variables de investigación
+
+Nota. La tabla sintetiza la operacionalización de las variables independiente y dependiente de la investigación, detallando dimensiones, indicadores, escalas de medición, técnicas e instrumentos aplicados a la Mancomunidad de Municipios Frontera del Norte. Elaboración propia (2026).
+
+3.5 Técnicas e instrumentos de recolección de datos
+
+Las técnicas de recolección de datos representan los procedimientos operativos mediante los cuales el investigador recopila la información requerida para el estudio, mientras que los instrumentos constituyen los dispositivos o soportes físicos y digitales diseñados para registrar y conservar dicha información de forma sistemática y fidedigna (Arias, 2012). Dada la naturaleza mixta del proyecto y su enfoque en la ingeniería de software para el sector público, se diseñaron cuatro técnicas principales con sus respectivos instrumentos, alineadas rigurosamente con los cuatro métodos anticipados en la sección de herramientas del Capítulo I.
+
+3.5.1 Técnica de análisis documental e ingeniería de requerimientos
+
+La técnica de análisis documental se orienta a la inspección sistemática, decodificación y transformación formal de las normativas jurídicas, reglamentos de personal y manuales administrativos que regulan la operación institucional de la Mancomunidad. Como instrumento principal se diseñó una Ficha Estructurada de Análisis Documental y la plantilla formal de Especificación de Requerimientos de Software fundamentada en el estándar internacional ANSI/IEEE 830-1998. Esta técnica permitió realizar una labor de ingeniería inversa sobre los ocho documentos oficiales provistos por la Mancomunidad Frontera del Norte: el Reglamento Interno de Trabajo, el Código de Ética, el Código de Conducta, el Manual de Reclutamiento y Selección, el Manual de Evaluación del Desempeño, la Política y Plan de Salud y Seguridad Ocupacional, el Informe de Autovaloración y Reconocimiento de Capacidades (ARC), y el Plan de Mejoras Institucionales derivado del mismo.
+
+Mediante la aplicación de este instrumento, las disposiciones legales en soporte físico se tradujeron en especificaciones formales de ingeniería, categorizadas en requerimientos funcionales (RF) y requerimientos no funcionales (RNF). Cada artículo de los reglamentos fue transformado en diagramas de casos de uso, reglas de negocio de bases de datos, restricciones de validación lógica y procedimientos almacenados, asegurando que la arquitectura del sistema refleje con fidelidad milimétrica el marco normativo guatemalteco y la reglamentación municipal regional.
+
+3.5.2 Técnica de observación sistemática y cronometraje de tiempos
+
+La técnica de observación sistemática directa se utiliza para recolectar datos empíricos objetivos respecto a la dinámica operativa cotidiana de los departamentos administrativos y técnicos. El instrumento diseñado para tal efecto es la Guía de Observación y Ficha de Registro Cronométrico de Tiempos de Ciclo Administrativo (Benchmarking Operativo). Este instrumento permite cronometrar con exactitud de minutos y horas el tiempo real que demanda a un funcionario completar cada uno de los seis procesos operativos prioritarios identificados en el Capítulo IV: a) gestión y seguimiento de proyectos intermunicipales; b) monitoreo del plan estratégico y de mejoras institucionales ARC; c) control financiero y rendición de cuentas (partidas, SAT y Contraloría General de Cuentas); d) control de acuerdos y gobernanza de Junta Directiva; e) gestión de alianzas estratégicas y convenios; y f) generación continua de estadísticas territoriales de agua, saneamiento e higiene (ASH).
+
+La ficha de registro cronométrico se aplica de manera idéntica en dos fases temporales: en la etapa previa a la intervención (medición basal manual), cronometrando los traslados físicos de expedientes en papel, el llenado a mano de formularios y la transcripción en hojas de cálculo; y en la etapa posterior a la implantación del software, extrayendo las marcas temporales (timestamps) y registros de auditoría almacenados automáticamente en la base de datos relacional. La comparación estadística de estos registros cronometrados proporciona la evidencia empírica para evaluar la ganancia en velocidad y eficiencia operativa.
+
+3.5.3 Técnica de auditoría de software y pruebas de rendimiento
+
+Para evaluar la estabilidad, seguridad y resiliencia de la arquitectura multiservicio en la nube (Variable Independiente), se emplea la técnica de auditoría informática y aseguramiento de la calidad de software. Como instrumentos de medición se utilizan Baterías de Casos de Prueba Estructurados bajo los enfoques de caja blanca (cobertura de código unitario e integración) y caja negra (validación funcional de casos de uso y flujos de usuario extremo a extremo), complementadas por herramientas automatizadas de simulación de carga HTTP y telemetría de rendimiento web.
+
+La auditoría evalúa cuantitativamente: a) el tiempo medio de respuesta del servidor (latencia en milisegundos) bajo distintos escenarios de tráfico concurrente, empleando analizadores de rendimiento para registrar la velocidad de despacho de datos en las APIs; b) la tasa de disponibilidad porcentual mediante servicios de monitoreo continuo en los nodos en la nube; y c) la inviolabilidad del modelo de control de acceso basado en roles (RBAC), aplicando pruebas de penetración y escalamiento de privilegios para verificar que ningún usuario sin rol autorizado (por ejemplo, técnicos de campo o secretaría) pueda alterar estados financieros reservados a la Dirección Financiera o consultar información confidencial de la Gerencia.
+
+3.5.4 Técnica de encuesta psicométrica de usabilidad y satisfacción
+
+La evaluación del impacto humano y organizacional de la solución digital demanda medir rigurosamente las percepciones subjetivas del personal institucional. Con este fin, se utiliza la técnica de la encuesta cuantitativa a través del diseño y aplicación de un Cuestionario Estandarizado de Usabilidad y Aceptación Tecnológica estructurado en una Escala de Likert de cinco niveles: 1 (Totalmente en desacuerdo), 2 (En desacuerdo), 3 (Neutral / Indiferente), 4 (De acuerdo) y 5 (Totalmente de acuerdo). El diseño del cuestionario se sustenta teóricamente en las dimensiones de Calidad en Uso definidas por la norma internacional ISO/IEC 25010:2011 y en los postulados del Modelo de Aceptación Tecnológica (Technology Acceptance Model - TAM) formulado originalmente por Davis (1989).
+
+El instrumento psicométrico consta de 20 reactivos organizados sistemáticamente en cuatro dimensiones de evaluación: a) Utilidad Percibida (UP), que mide en qué medida los funcionarios consideran que el sistema incrementa su rendimiento laboral; b) Facilidad de Uso Percibida (FUP), orientada a evaluar la claridad e intuición de la interfaz gráfica y la curva de aprendizaje; c) Seguridad y Confianza Percibida (SCP), centrada en la percepción de resguardo y privacidad de los expedientes oficiales; y d) Satisfacción Global y Actitud hacia el Uso (SGA), que mide el agrado general con la plataforma y la disposición a utilizarla en sus labores cotidianas. A continuación, se presentan las matrices metodológicas correspondientes a las técnicas e instrumentos empleados.
+
+Tabla 3
+
+Matriz de técnicas, instrumentos y fuentes de información metodológica
+
+Nota. La tabla sistematiza la correspondencia directa entre las técnicas de recolección de datos, los instrumentos construidos, los indicadores del estudio y los objetivos específicos planteados en la tesis. Elaboración propia (2026).
+
+Tabla 4
+
+Estructura del cuestionario psicométrico de aceptabilidad y usabilidad tecnológica (Modelo TAM - ISO/IEC 25010)
+
+Nota. La tabla describe la estructura interna del instrumento psicométrico de recolección de datos, fundamentado en los modelos TAM e ISO/IEC 25010, administrado al personal censal de la Mancomunidad de Municipios Frontera del Norte. Elaboración propia (2026).
+
+3.6 Validez y confiabilidad de los instrumentos
+
+Para garantizar que los instrumentos de recolección de datos aporten información verídica, consistente y académicamente defendible, resulta indispensable someterlos a rigurosos procesos de validación técnica y estimación estadística de su confiabilidad. Tal como sostienen Hernández-Sampieri y Mendoza (2018), un instrumento de medición que carezca de validez y confiabilidad produce datos espurios que invalidan cualquier conclusión sobre la relación entre las variables de estudio. En este proyecto, se aplican criterios normativos y psicométricos estandarizados para respaldar la idoneidad de los instrumentos empleados.
+
+3.6.1 Validez de los instrumentos
+
+La validez se define como el grado en que un instrumento realmente mide la variable que pretende medir (Hernández-Sampieri & Mendoza, 2018). Para el presente estudio se evalúan dos tipos fundamentales de validez: validez de contenido y validez de constructo. La validez de contenido se determina formalmente mediante el método de Juicio de Expertos. Para ello, se conforma un comité evaluador multidisciplinario integrado por tres profesionales colegiados activos de reconocido prestigio: un profesional con grado de maestría en Metodología de la Investigación Científica, un Ingeniero en Sistemas de Información con amplia trayectoria en arquitectura de software y seguridad en la nube, y un Administrador Público especialista en gestión municipal y asociatividad regional.
+
+A cada uno de los expertos se le entrega formalmente la matriz de consistencia, los objetivos de la tesis, la matriz de operacionalización de variables y el borrador del instrumento psicométrico de 20 reactivos, acompañado de una cédula de evaluación estandarizada. Los jueces valoran cada ítem bajo cuatro criterios normativos esenciales: Claridad (redacción comprensible y sin ambigüedad), Pertinencia (relación directa con los constructos evaluados), Relevancia (importancia sustancial del reactivo para el estudio) y Suficiencia (amplitud necesaria para medir la dimensión). Para cuantificar matemáticamente el acuerdo entre los jueces, se calcula el Coeficiente de Validez de Contenido (CVC) propuesto por Hernández-Nieto (2002), exigiéndose un valor de CVC superior a 0.85 como criterio de aprobación irrestricta. Aquellos reactivos con observaciones de redacción son ajustados puntualmente antes de su aplicación definitiva a los funcionarios de la Mancomunidad.
+
+Por su parte, la validez de constructo queda sólidamente asegurada mediante el estricto anclaje teórico de los reactivos en la literatura científica internacional. La estructura del cuestionario no deriva de formulaciones arbitrarias, sino de la traslación metodológica de las dimensiones de Calidad en Uso de la norma ISO/IEC 25010:2011 y de las escalas psicométricas ampliamente validadas del Modelo de Aceptación Tecnológica (Davis, 1989), asegurando que los reactivos capturen fidedignamente los constructos psicológicos y operativos de usabilidad, confianza y adopción tecnológica.
+
+3.6.2 Confiabilidad de los instrumentos
+
+La confiabilidad de un instrumento de medición se refiere al grado en que su aplicación repetida al mismo sujeto u objeto produce resultados iguales, estables y consistentes (Arias, 2012). En el caso de los instrumentos de base cuantitativa continua (fichas de registro cronométrico y telemetría de software), la confiabilidad se garantiza mediante la calibración y estandarización de los mecanismos de captura: en la fase manual, utilizando cronómetros digitales calibrados operados por el mismo investigador bajo guías de observación idénticas; y en la fase digital, mediante marcas de tiempo (timestamps) registradas con precisión de milisegundos por el motor del servidor de bases de datos PostgreSQL sincronizado con servidores de hora oficiales (Network Time Protocol - NTP).
+
+En lo relativo al cuestionario psicométrico estructurado en Escala Likert de 5 puntos, la consistencia interna se calcula a través del coeficiente Alfa de Cronbach (alfa). Este estadístico permite determinar el grado de correlación existente entre los reactivos del instrumento, estimando su homogeneidad. La fórmula matemática para el cálculo del coeficiente se expresa como: alfa = [k / (k - 1)] * [1 - (sumatoria de varianzas individuales / varianza de la puntuación total)], donde k representa el número de ítems evaluados (k = 20).
+
+Para verificar la confiabilidad de manera previa a la recolección censal definitiva, se ejecuta una prueba piloto administrada a un grupo de control conformado por diez funcionarios administrativos pertenecientes a municipalidades mancomunadas de la región norte de Huehuetenango con características sociodemográficas y profesionales idénticas a la población de estudio. De acuerdo con la literatura psicométrica convencional (Hernández-Sampieri & Mendoza, 2018), un valor de Alfa de Cronbach igual o superior a 0.80 se interpreta como un nivel de confiabilidad muy alto, garantizando que el instrumento resulta sumamente consistente, reproducible y libre de sesgos de dispersión aleatoria.
+
+3.7 Procedimientos y fases de la investigación
+
+La ejecución de la investigación se articula a través de un procedimiento rigurosamente planificado que combina las etapas del método científico empírico con las fases del ciclo de vida de la ingeniería de software. Esta integración procedimental asegura que cada intervención técnica sobre la realidad de la Mancomunidad de Municipios Frontera del Norte responda a una necesidad previamente diagnosticada, verificada y respaldada por hitos de control. A continuación, se detallan las seis fases que estructuran el desarrollo integral de la tesis.
+
+3.7.1 Fase I: Diagnóstico institucional y levantamiento de requerimientos
+
+Esta fase inicial se centra en el relevamiento contextual y la exploración exhaustiva de la situación operativa de la Mancomunidad. Se ejecutan entrevistas a profundidad con el Gerente General y el personal de secretaría en la sede de Santa Eulalia, inspeccionando directamente los libros de actas manuales, expedientes en papel y los archivos digitales dispersos. Asimismo, se efectúa la revisión analítica de los ocho manuales normativos y el informe de autovaloración ARC, consolidando la línea base institucional. La actividad concluye formalmente con la redacción y aprobación del documento de Especificación de Requisitos de Software bajo el estándar ANSI/IEEE 830-1998, delimitando con precisión los siete módulos requeridos y los perfiles de acceso institucional.
+
+3.7.2 Fase II: Diseño arquitectónico, modelado conceptual y especificación técnica
+
+A partir de los requerimientos formales especificados, se procede a diseñar la arquitectura tecnológica del sistema bajo el patrón de desacoplamiento frontend-backend y modelo SaaS en la nube. Se elabora la totalidad de los diagramas conceptuales bajo el estándar UML (casos de uso, diagramas de clases, secuencias y diagramas de estados para el plan de mejoras ARC). De forma paralela, se diseña el modelo entidad-relación (ER) de la base de datos relacional PostgreSQL, estableciendo la integridad referencial de tablas maestras, partidas financieras, bitácoras de auditoría y convenios. Se concluye con la construcción de prototipos de interfaz de usuario de alta fidelidad (wireframes interactivos), garantizando una experiencia visual intuitiva y adaptada a la cultura institucional.
+
+3.7.3 Fase III: Desarrollo y codificación del ecosistema web bajo metodología ágil
+
+La codificación de la plataforma se ejecuta mediante la metodología ágil Scrum complementada con tableros Kanban, organizada en ciclos de desarrollo iterativos e incrementales (sprints quincenales). Se programa el backend en arquitecturas robustas y eficientes (Go / Node.js) con el ORM Prisma para la conexión relacional segura, implementando servicios de autenticación mediante tokens JWT y mecanismos de autorización RBAC. En el frontend se construyen interfaces responsivas de carga ultrarrápida diseñadas bajo la filosofía Mobile-First para asegurar su correcta visualización tanto en equipos de escritorio de las oficinas centrales como en teléfonos inteligentes utilizados por los técnicos en comunidades rurales con conectividad limitada.
+
+3.7.4 Fase IV: Validación, testing y aseguramiento de la calidad de software
+
+Durante esta etapa se somete la plataforma a un riguroso plan de aseguramiento de calidad antes de su puesta en producción. Se ejecutan pruebas unitarias y de integración para validar la lógica interna del código, pruebas funcionales de aceptación con usuarios clave para verificar que cada flujo de trabajo satisfaga los requerimientos normativos, y auditorías especializadas de seguridad informática para garantizar que ningún usuario pueda acceder a vistas ajenas a su perfil jerárquico. Asimismo, se realizan pruebas de carga y estrés concurrente utilizando herramientas automatizadas para registrar los tiempos de latencia y asegurar la resiliencia del servidor ante picos de demanda.
+
+3.7.5 Fase V: Despliegue en la nube, migración documental y capacitación institucional
+
+Una vez alcanzada la certificación de calidad técnica, se realiza el despliegue del ecosistema en plataformas de computación en la nube de alta disponibilidad (Vercel para la capa visual y Fly.io para contenedores de API y base de datos relacional). Se procede a la digitalización y migración inicial de la información histórica crítica: actas de asambleas de Junta Directiva de los últimos períodos, convenios vigentes con cooperantes y estados de avance de proyectos intermunicipales de agua y saneamiento. De manera simultánea, se ejecutan talleres presenciales y virtuales de capacitación diferenciada dirigidos a los cinco perfiles de usuarios, haciendo entrega formal de los manuales ilustrados de usuario y las guías de administración técnica.
+
+3.7.6 Fase VI: Evaluación de impacto operativo y contrastación empírica de hipótesis
+
+La fase final del proceso investigativo corresponde a la recolección de datos posprueba (postest) tras un período de dos meses de operación continua del sistema por parte del personal de la Mancomunidad. Se recolectan los registros cronométricos de tramitación a través de las marcas temporales automáticas de la base de datos, se extraen las métricas de telemetría de rendimiento cloud, y se administra el cuestionario psicométrico de usabilidad Likert a los 22 funcionarios censales. Los datos obtenidos se procesan estadísticamente para contrastar la hipótesis de acción frente a la hipótesis nula, extrayendo las conclusiones científicas de la tesis.
+
+Tabla 5
+
+Matriz procedimental de fases de la investigación, actividades operativas, productos entregables e hitos de control
+
+Nota. La tabla detalla la secuencia temporal y procedimental de las seis fases metodológicas que estructuran la investigación, especificando las actividades, instrumentos y productos entregables de cada etapa. Elaboración propia (2026).
+
+3.8 Técnicas de procesamiento y análisis de la información
+
+El procesamiento y análisis de la información recolectada constituye la etapa metodológica donde los datos brutos procedentes de las mediciones cronométricas, telemetría informática y encuestas psicométricas se someten a técnicas de sistematización, depuración, tabulación y análisis estadístico. De acuerdo con Hernández-Sampieri y Mendoza (2018), el análisis de datos tiene como finalidad describir las variables de estudio, evaluar la confiabilidad de los instrumentos aplicados y someter a prueba las hipótesis de investigación mediante métodos estadísticos acordes con el nivel de medición y el diseño experimental adoptado. En este proyecto, se articulan procedimientos de estadística descriptiva y pruebas de inferencia estadística paramétrica y no paramétrica.
+
+3.8.1 Procesamiento de datos cuantitativos y estadística descriptiva
+
+Para el tratamiento de las variables cuantitativas continuas (tiempos de tramitación de expedientes, horas dedicadas a la reportería y latencia de red en milisegundos), los datos se procesan y analizan utilizando paquetes estadísticos profesionales (tales como SPSS y lenguajes de análisis computacional como Python/R). En primer lugar, se aplican técnicas de estadística descriptiva calculando medidas de tendencia central: la media aritmética (como promedio representativo) y la mediana (como medida robusta frente a valores atípicos o asimetrías operativas). Asimismo, se calculan medidas de dispersión fundamentales: la desviación estándar, la varianza muestral y el rango intercuartílico, permitiendo cuantificar el grado de homogeneidad y variabilidad en la duración de los procesos administrativos antes y después de la sistematización.
+
+En lo correspondiente a las variables medidas en escala porcentual y discreta (tasas de disponibilidad cloud, cumplimiento de privilegios RBAC y retención de usuarios activos), se generan distribuciones de frecuencias absolutas y porcentuales relativas, acompañadas de gráficos de barras y diagramas temporales. Por último, los reactivos ordinales del cuestionario de usabilidad Likert se consolidan calculando medias ponderadas por dimensión (Utilidad Percibida, Facilidad de Uso, Seguridad y Satisfacción Global), contrastándolas contra baremos de aceptabilidad preestablecidos para evaluar el éxito de la adopción humana del sistema.
+
+3.8.2 Análisis inferencial y contrastación estadística de hipótesis
+
+La contrastación formal de la hipótesis de acción frente a la hipótesis nula se sustenta en el análisis estadístico inferencial aplicado a las diferencias pareadas observadas entre la medición pretest (operación manual tradicional) y la medición postest (operación sistematizada con la plataforma web). Formalmente, las hipótesis estadísticas a contrastar para los tiempos de procesamiento administrativo se plantean en los siguientes términos matemáticos: la hipótesis nula postula que la media de los tiempos postest es igual o superior a la media de los tiempos pretest (H0: mu_post >= mu_pre), lo que implicaría que el software no redujo los tiempos; mientras que la hipótesis de investigación o acción postula que la media de los tiempos postest es estrictamente menor que la media pretest (H1: mu_post < mu_pre), demostrando la optimización operativa significativa generada por el sistema.
+
+Con el propósito de seleccionar el estadístico de prueba inferencial adecuado, se evalúa previamente el supuesto de normalidad en la distribución de las diferencias mediante la prueba estadística de Shapiro-Wilk. Esta prueba resulta la más potente y recomendada metodológicamente cuando el tamaño muestral es menor a 30 observaciones (Shapiro & Wilk, 1965). Si el valor de probabilidad obtenido en la prueba de normalidad resulta mayor al nivel de significancia prefijado (p > 0.05), se confirma la distribución normal de los datos, procediendo a aplicar la prueba paramétrica t de Student para muestras emparejadas (relacionadas). Por el contrario, si los datos presentan una distribución asimétrica que viola el supuesto de normalidad (p <= 0.05), se utiliza la prueba no paramétrica equivalente de Rangos con Signo de Wilcoxon para muestras relacionadas.
+
+Para todas las pruebas inferenciales se establece un nivel de significancia alfa de 0.05 (confianza estadística del 95%). La regla de decisión metodológica determina que si el valor de significancia asintótica bilateral (p-valor) obtenido es estrictamente menor a 0.05 (p < 0.05), se rechaza categóricamente la hipótesis nula (H0) y se acepta con validez científica la hipótesis de investigación (H1), concluyendo que la implantación del ecosistema web en la nube optimizó de manera estadísticamente significativa los tiempos de procesamiento y la eficiencia de la Mancomunidad. Adicionalmente, se calcula el tamaño del efecto mediante la d de Cohen para cuantificar la magnitud práctica del impacto tecnológico logrado.
+
+3.8.3 Procesamiento de telemetría y observabilidad en la nube
+
+Los datos generados automáticamente por la infraestructura en la nube se procesan mediante técnicas de minería de bitácoras (log analysis) y cuadros de mando de telemetría. Se extraen periódicamente los registros de solicitudes HTTP procesadas por el servidor, computando el percentil 95 (P95) y percentil 99 (P99) de los tiempos de latencia para evaluar la estabilidad del sistema ante cargas concurrentes. Asimismo, se filtran las alertas de disponibilidad emitidas por los monitores externos de infraestructura para certificar matemáticamente el cumplimiento del acuerdo de nivel de servicio (SLA) del 99.9% de Uptime. En materia de seguridad, se auditan los intentos fallidos de autenticación y transacciones no autorizadas registradas en la base de datos relacional, demostrando la solidez defensiva del control RBAC frente a incidentes informáticos.
+
+3.8.4 Análisis e interpretación de datos psicométricos de satisfacción usuaria
+
+Los resultados arrojados por el cuestionario estructurado bajo el Modelo TAM y la norma ISO/IEC 25010 se consolidan y analizan estableciendo un baremo de interpretación cuantitativo para la escala Likert de 1 a 5 puntos. Se calculan las medias y desviaciones estándar para cada uno de los 20 reactivos y se agrupan en las cuatro dimensiones evaluativas. Puntuaciones medias comprendidas entre 1.00 y 2.49 se tipifican como nivel insatisfactorio o baja aceptabilidad; promedios entre 2.50 y 3.49 se interpretan como nivel medio o aceptabilidad moderada; mientras que puntuaciones iguales o superiores a 3.50 (con meta institucional orientada a superar los 4.20 puntos) se catalogan como nivel óptimo de usabilidad, confianza y alta adopción tecnológica. A continuación, se presenta la matriz de contraste inferencial para la contrastación de la hipótesis de investigación.
+
+Tabla 6
+
+Matriz de contraste inferencial para la validación estadística de la hipótesis de investigación
+
+Nota. La tabla especifica la matriz metodológica para la prueba inferencial de las hipótesis del estudio, detallando las variables analizadas, pruebas de bondad de ajuste, estadísticos aplicados y la regla de decisión matemática bajo alfa = 0.05. Elaboración propia (2026).
+
+3.9 Consideraciones éticas y de confidencialidad institucional
+
+Toda investigación científica que interviene en el ámbito de la administración pública y maneja información de carácter gubernamental debe guiarse por estrictos estándares éticos, de probidad y de respeto irrestricto a los derechos fundamentales de las personas involucradas. En el desarrollo del presente proyecto, se observan rigurosamente los principios éticos establecidos en el Código de Ética y el Código de Conducta de la Mancomunidad de Municipios Frontera del Norte, así como los lineamientos institucionales de la Universidad Mariano Gálvez de Guatemala.
+
+3.9.1 Consentimiento informado y salvaguarda de participantes
+
+La participación de los funcionarios, técnicos y autoridades edilicias en los ejercicios de cronometraje operativo, pruebas piloto y encuestas psicométricas se fundamenta en el principio de autonomía y voluntariedad. De manera previa a la recolección de cualquier dato primario, a cada participante se le entrega un formulario impreso de Consentimiento Informado donde se expone con total claridad el objetivo puramente académico de la investigación, el carácter confidencial de sus respuestas individuales y la garantía expresa de que sus opiniones no generarán repercusiones laborales, disciplinarias ni perjuicios de ninguna índole en su desempeño dentro de la institución. Los participantes conservan el derecho irrenunciable de retirarse de las evaluaciones en cualquier momento sin necesidad de justificación.
+
+3.9.2 Confidencialidad y resguardo de datos institucionales sensibles
+
+En estricto apego al Decreto Número 57-2008 del Congreso de la República de Guatemala (Ley de Acceso a la Información Pública) y al Decreto Número 12-2002 (Código Municipal), el investigador asume un compromiso formal de reserva y secreto administrativo respecto a la documentación institucional clasificada a la que se tiene acceso. Los expedientes individuales del personal, las actas reservadas de la Junta Directiva que aborden asuntos disciplinarios en trámite y la información financiera pormenorizada de convenios de cooperación internacional son tratados bajo protocolos de anonimización estricta. Ninguna credencial de acceso real, número de identificación personal ni dato confidencial de cuentas bancarias se expone en el cuerpo del informe de tesis ni en anexos públicos.
+
+3.9.3 Rigor científico, transparencia algorítmica y prevención del plagio documental
+
+La investigación mantiene un compromiso absoluto con la integridad académica y la transparencia técnica. Cada una de las fuentes bibliográficas, normas técnicas y documentos institucionales citados a lo largo del capítulo ha sido debidamente acreditada según las Normas APA 7ª edición, respetando rigurosamente los derechos de autor intelectual. De igual forma, el código fuente desarrollado para la Mancomunidad Frontera del Norte se rige por principios de auditoría de software abierto y transparencia algorítmica, garantizando que no contenga puertas traseras, vulnerabilidades deliberadas ni mecanismos que atenten contra la seguridad informática de la entidad. El documento se somete formalmente a herramientas informáticas de detección de plagio para certificar la originalidad absoluta del texto.
+
+Referencias
+
+Arias, F. G. (2012). El proyecto de investigación: Introducción a la metodología científica (6ª ed.). Editorial Episteme.
+
+Bernal, C. A. (2016). Metodología de la investigación: Administración, economía, humanidades y ciencias sociales (4ª ed.). Pearson Educación.
+
+Bunge, M. (2014). La ciencia, su método y su filosofía. Editorial Sudamericana.
+
+CEPAL. (2021). Panorama de las tecnologías digitales en América Latina y el Caribe: La transformación digital hacia el desarrollo sostenible. Naciones Unidas.
+
+Congreso de la República de Guatemala. (2002). Decreto Número 12-2002: Código Municipal. Diario de Centro América.
+
+Congreso de la República de Guatemala. (2008). Decreto Número 57-2008: Ley de Acceso a la Información Pública. Diario de Centro América.
+
+Davis, F. D. (1989). Perceived usefulness, perceived ease of use, and user acceptance of information technology. MIS Quarterly, 13(3), 319-340. https://doi.org/10.2307/249008
+
+Hernández-Nieto, R. A. (2002). Contribuciones al análisis estadístico: Instrumentos de recolección de datos y medición psicológica. Universidad de Los Andes.
+
+Hernández-Sampieri, R., & Mendoza, C. P. (2018). Metodología de la investigación: Las rutas cuantitativa, cualitativa y mixta. McGraw-Hill Education.
+
+IEEE Computer Society. (1998). IEEE Recommended Practice for Software Requirements Specifications (IEEE Std 830-1998). Institute of Electrical and Electronics Engineers. https://doi.org/10.1109/IEEESTD.1998.88286
+
+ISO/IEC. (2011). Systems and software engineering — Systems and software Quality Requirements and Evaluation (SQuaRE) — System and software quality models (ISO/IEC Standard No. 25010:2011). International Organization for Standardization.
+
+Mancomunidad de Municipios Frontera del Norte. (2023). Informe de autovaloración y reconocimiento de capacidades (ARC) y plan de mejoras institucionales. MMFNdH.
+
+Mancomunidad de Municipios Frontera del Norte. (2025). Reglamento interno de trabajo, códigos de ética y conducta y manuales administrativos. MMFNdH.
+
+Pressman, R. S., & Maxim, B. R. (2020). Software engineering: A practitioner's approach (9ª ed.). McGraw-Hill Education.
+
+Shapiro, S. S., & Wilk, M. B. (1965). An analysis of variance test for normality (complete samples). Biometrika, 52(3-4), 591-611. https://doi.org/10.1093/biomet/52.3-4.591
+
+Sommerville, I. (2019). Ingeniería del software (10ª ed.). Pearson Educación.
+
+Universidad Mariano Gálvez de Guatemala. (2026). Lineamientos generales y reglamento de tesis de la Facultad de Ingeniería en Sistemas de Información y Ciencias de la Computación. UMG.
+

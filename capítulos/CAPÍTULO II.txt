@@ -1,0 +1,267 @@
+CAPÍTULO II
+MARCO TEÓRICO
+
+El marco teórico constituye el pilar epistemológico y conceptual que sustenta científicamente la investigación, estableciendo los fundamentos doctrinarios, modelos tecnológicos y principios de gestión pública necesarios para comprender la interacción sistémica entre las variables de estudio. En la ingeniería de sistemas aplicada a la administración pública, el software debe responder a una fundamentación rigurosa que dialogue con el contexto organizacional. Este capítulo integra de forma unificada el desarrollo teórico de la variable independiente y de la variable dependiente, articulando el conocimiento computacional avanzado con las doctrinas contemporáneas de modernización institucional y asociatividad municipal en el departamento de Huehuetenango.
+
+Dicha articulación responde a la problemática diagnosticada en la Mancomunidad de Municipios Frontera del Norte, con sede en Santa Eulalia, donde la prevalencia de prácticas analógicas y la dispersión documental han limitado la capacidad institucional para supervisar proyectos estratégicos de desarrollo regional, tales como las iniciativas de agua potable y saneamiento financiadas por la cooperación internacional. Ante ello, el marco teórico profundiza en la arquitectura de software en la nube como agente causal (variable independiente), y en la optimización de los tiempos de procesamiento, la seguridad informativa y la eficiencia gerencial como efecto transformador medible (variable dependiente).
+
+2.1 Marco teórico de la variable independiente: Plataforma informática centralizada y arquitectura multiservicio en la nube
+
+La variable independiente representa el artefacto tecnológico introducido para transformar positivamente la dinámica operativa de la organización. En la ingeniería de software moderna, esta variable agrupa definiciones, patrones arquitectónicos, protocolos de seguridad y herramientas de programación que permiten construir un ecosistema digital resiliente, escalable y accesible de manera ubicua. En los siguientes apartados se examinan sus componentes teóricos esenciales, categorizados en definiciones conceptuales, características técnicas, modelos arquitectónicos y herramientas de implementación.
+
+2.1.1 Definición y fundamentos conceptuales
+
+Definición de plataforma web y ecosistema SaaS:
+
+Una plataforma web constituye un entorno de software que opera sobre la World Wide Web, permitiendo a múltiples usuarios interactuar dinámicamente con servicios lógicos, bases de datos y flujos centralizados mediante un navegador estándar, prescindiendo de instalaciones locales (Sommerville, 2019). Al estructurarse bajo el modelo de Software como Servicio (SaaS), las aplicaciones y datos se alojan en servidores de computación en la nube mantenidos por el proveedor (Pressman & Maxim, 2020). Este paradigma democratiza el acceso a tecnología avanzada en gobiernos locales, eliminando costosas inversiones en servidores físicos y personal de soporte en cada ayuntamiento asociado.
+
+Arquitectura cliente-servidor y modelo multiservicio (Multi-tenant):
+
+La arquitectura cliente-servidor reparte tareas entre proveedores de recursos (servidores) y demandantes (clientes) mediante redes de comunicación (Tanenbaum & Wetherall, 2012). En plataformas institucionales, esta arquitectura evoluciona hacia el modelo multiservicio o Multi-tenant, donde una única instancia de software atiende a múltiples entidades manteniendo una estricta segregación lógica de datos. Para la Mancomunidad Frontera del Norte, este modelo permite centralizar el motor computacional en la nube mientras cada municipio miembro administra de forma autónoma y reservada sus expedientes territoriales y presupuestarios.
+
+Experiencia de usuario (UX/UI), accesibilidad y principios Mobile-First:
+
+La interfaz de usuario (UI) comprende los elementos visuales de interacción, mientras que la experiencia de usuario (UX) engloba las percepciones cognitivas y funcionales experimentadas durante el uso del sistema (Nielsen & Budiu, 2013). En la administración municipal, donde conviven diversos niveles de alfabetización digital y conectividad heterogénea, el diseño debe ceñirse a las Pautas de Accesibilidad Web (WCAG 2.1) y adoptar la filosofía Mobile-First. Este enfoque prioriza la ergonomía y velocidad de carga en dispositivos móviles antes de adaptar la vista a ordenadores de escritorio, garantizando que los técnicos capturen datos en campo sin fricciones operativas.
+
+Seguridad en aplicaciones web: autenticación JWT, criptografía y control de acceso RBAC:
+
+La seguridad en plataformas públicas exige salvaguardar la confidencialidad, integridad y disponibilidad de la información (Stallings, 2018). El protocolo JSON Web Tokens (JWT) permite el intercambio seguro y compacto de asertos firmados digitalmente sin sobrecargar la memoria del servidor. De forma complementaria, el modelo de Control de Acceso Basado en Roles (RBAC) restringe los privilegios en función del cargo orgánico del funcionario (Sandhu et al., 1996), impidiendo que operadores no facultados alteren partidas presupuestarias o accedan a actas disciplinarias reservadas de la Junta Directiva.
+
+2.1.2 Características tecnológicas de la variable independiente
+
+Las plataformas informáticas centralizadas en la nube se distinguen por atributos técnicos que maximizan su eficiencia, adaptabilidad y confiabilidad frente a los sistemas legados. En la gestión pública intermunicipal, estas características aseguran una operación continua, transparente y blindada ante fallos, adaptándose a las condiciones geográficas y de conectividad del altiplano regional.
+
+Centralización e interoperabilidad mediante APIs RESTful:
+
+La interoperabilidad permite a sistemas heterogéneos intercambiar y utilizar datos compartidos sin reprocesamiento manual (Sommerville, 2019). Las plataformas modernas logran esta integración mediante interfaces de programación basadas en transferencia de estado representacional (APIs RESTful). Al emplear métodos universales HTTP y estructuras ligeras JSON, facilitan que la Mancomunidad intercambie datos en tiempo real con las municipalidades socias, aplicaciones móviles de campo y portales de transparencia y fiscalización estatal.
+
+Resiliencia, alta disponibilidad (Uptime) y computación distribuida en la nube:
+
+La alta disponibilidad alude a la capacidad de un sistema para operar de manera ininterrumpida, reduciendo al mínimo paradas no programadas (Bass et al., 2015). Las arquitecturas cloud distribuyen las cargas sobre servidores redundantes geográficamente dispersos, ofreciendo acuerdos de nivel de servicio con Uptime superior al 99.9%. Para la Mancomunidad, esta característica neutraliza el riesgo de suspensión de labores derivado de cortes eléctricos o averías en las oficinas de Santa Eulalia, garantizando la continuidad de las funciones administrativas.
+
+Integridad referencial y transaccionalidad en bases de datos relacionales:
+
+La integridad de los datos en sistemas transaccionales se fundamenta en las propiedades ACID: Atomicidad, Consistencia, Aislamiento y Durabilidad (Silberschatz et al., 2020). En la gestión municipal, las operaciones sobre donaciones, presupuestos y acuerdos exigen exactitud matemática. El uso de motores relacionales como PostgreSQL asegura la consistencia de tablas maestras, mientras que el uso de mapeadores objeto-relacional (ORM) previene eficazmente vulnerabilidades críticas de inyección de código SQL.
+
+Telemetría, trazabilidad y auditoría inmutable de eventos (Logging):
+
+La trazabilidad informática permite reconstruir cronológicamente el historial de consultas, modificaciones y eliminaciones ejecutadas en el sistema (Pressman & Maxim, 2020). Una plataforma gubernamental debe integrar bitácoras automáticas de auditoría que graben la IP de origen, usuario, marcas de tiempo en milisegundos y cambios de estado de cada registro. Esto fortalece la probidad institucional, brindando pistas de auditoría verificables ante la Auditoría Interna y la Contraloría General de Cuentas.
+
+2.1.3 Modelos arquitectónicos y de desarrollo de software
+
+Los modelos teóricos en ingeniería de software disciplinan el ciclo constructivo del sistema y definen la organización interna de sus componentes lógicos. La selección deliberada de un modelo arquitectónico y metodológico determina directamente la mantenibilidad del código, la capacidad de escalamiento horizontal y la celeridad con la que el artefacto digital se adapta a los cambios normativos y funcionales de la administración regional.
+
+Ciclo de vida del desarrollo de software (SDLC):
+
+El ciclo de vida del software define las fases sucesivas que abarcan desde la concepción del sistema hasta su retiro o reemplazo (Pressman & Maxim, 2020). Los modelos secuenciales rígidos tradicionales presentaban severas limitaciones en el sector público por su dificultad para incorporar ajustes sobrevenidos. Por el contrario, los modelos evolutivos e iterativos estructuran el proyecto en etapas continuas de análisis, diseño, codificación, pruebas y retroalimentación, facilitando entregas parciales funcionales desde fases tempranas a las dependencias de la Mancomunidad.
+
+Metodologías ágiles: marcos Scrum y Kanban en la ingeniería pública:
+
+Las metodologías ágiles, respaldadas en el Manifiesto Ágil (Beck et al., 2001), priorizan la colaboración con el usuario y el software funcional sobre la documentación excesiva. El marco Scrum organiza el desarrollo en ciclos temporales fijos o Sprints de dos semanas, entregando incrementos de software potencialmente desplegables (Schwaber & Sutherland, 2020). De forma complementaria, Kanban visualiza el flujo de trabajo mediante tableros dinámicos y limita el trabajo en curso (WIP) para erradicar cuellos de botella (Anderson, 2010). Este enfoque combinado (Scrumban) optimiza la entrega continua de los siete módulos del sistema y responde ágilmente a las necesidades de la Junta Directiva.
+
+Arquitectura de tres capas, desacoplamiento y servicios web:
+
+El modelo arquitectónico de tres capas segmenta la solución en presentación (frontend), lógica de negocio (backend) y persistencia (base de datos) (Fowler, 2002). Dicho desacoplamiento garantiza que las modificaciones visuales no afecten los algoritmos financieros ni la integridad de la base de datos. Asimismo, la comunicación mediante servicios web estandarizados asegura que futuros módulos se integren armónicamente al ecosistema sin requerir reescrituras estructurales del núcleo informático.
+
+Modelos de computación en la nube: IaaS, PaaS y SaaS en el ámbito municipal:
+
+La computación en la nube abarca tres modelos principales según el NIST: Infraestructura como Servicio (IaaS), Plataforma como Servicio (PaaS) y Software como Servicio (SaaS) (Mell & Grance, 2011). Para mancomunidades y gobiernos locales pequeños, el modelo SaaS administrado en la nube elimina los costos de soporte local, permitiendo que entidades rurales accedan a la misma potencia, redundancia y seguridad tecnológica que las grandes instituciones metropolitanas.
+
+2.1.4 Herramientas tecnológicas de desarrollo, despliegue y aseguramiento de calidad
+
+La materialización productiva de los conceptos y modelos exige herramientas computacionales avanzadas, seleccionadas bajo criterios de rendimiento, seguridad criptográfica, soporte comunitario y estabilidad en entornos de producción con alta demanda.
+
+Tecnologías de desarrollo frontend y componentes reactivos:
+
+En la capa visual se seleccionan entornos fundamentados en componentes reactivos y compilación eficiente, como SvelteKit y React. Al procesar los componentes en tiempo de construcción, generan código JavaScript ligero y optimizado (Harris, 2021), logrando tiempos de carga ultrarrápidos y mínimo consumo de datos móviles, aspecto indispensable para operadores y técnicos que acceden mediante redes 3G/4G en comunidades rurales de Huehuetenango.
+
+Tecnologías de desarrollo backend y APIs de alto rendimiento:
+
+Para el procesamiento lógico y despacho de APIs se utilizan tecnologías de alta concurrencia como Go (Golang) y entornos asíncronos en Node.js. Go destaca por su modelo de concurrencia ligera mediante Goroutines y su compilación binaria nativa (Cox, 2012), procesando múltiples peticiones simultáneas con latencia mínima en milisegundos, garantizando que el módulo de reportería gerencial y estadísticas territoriales despache consultas multidimensionales de forma instantánea.
+
+Sistemas de gestión de bases de datos relacionales (RDBMS) y ORM:
+
+La persistencia documental se encomienda a PostgreSQL, gestor relacional de código abierto reconocido por su solvencia transaccional y soporte nativo para extensiones geoespaciales como PostGIS (Stonebraker & Kemnitz, 1991). Este soporte geográfico resulta clave para georreferenciar obras de agua y saneamiento en el proyecto IWASH. La interacción segura con la base de datos se realiza mediante Prisma ORM, el cual ofrece tipado estricto en el esquema y previene inyecciones de código malicioso.
+
+Herramientas de testing automatizado, auditoría de código y despliegue continuo (CI/CD):
+
+El aseguramiento de la calidad de software se fundamenta en flujos de integración y despliegue continuo (CI/CD) vinculados a repositorios Git, ejecutando pruebas unitarias con Jest/Vitest y pruebas de integración con Playwright. Para el despliegue productivo, plataformas en la nube como Vercel y Fly.io permiten administrar contenedores Docker ligeros y redes CDN distribuidas, asegurando actualizaciones sin interrupción del servicio (Zero-Downtime Deployment).
+
+Tabla 1
+
+Comparativa técnica de modelos arquitectónicos y herramientas de desarrollo para la plataforma web
+
+Nota. La tabla compara las soluciones tecnológicas tradicionales con la arquitectura moderna en la nube implementada para la variable independiente, especificando las herramientas y su impacto operativo en la Mancomunidad. Elaboración propia (2026).
+
+2.2 Marco teórico de la variable dependiente: Optimización de tiempos, seguridad de la información y eficiencia gerencial
+
+La variable dependiente encarna la dimensión organizacional, administrativa y humana sobre la cual impacta la intervención tecnológica. En la administración pública contemporánea, evaluar la eficiencia gerencial y la optimización de procesos exige trascender el análisis puramente técnico para abordar modelos de gobernanza, el régimen municipal y las metodologías de mejora continua. En este apartado se desarrolla el cuerpo teórico que fundamenta la modernización de los procesos y la toma de decisiones en la Mancomunidad de Municipios Frontera del Norte.
+
+2.2.1 Definición y fundamentos conceptuales
+
+Gestión pública local y el régimen jurídico de las mancomunidades de municipios:
+
+La gestión pública local abarca decisiones y acciones destinadas a administrar eficazmente recursos y prestar servicios básicos en un territorio delimitado (Chiavenato, 2017). En Guatemala, el Código Municipal (Decreto Número 12-2002) consagra en sus artículos 49 al 53 a las Mancomunidades como entidades de derecho público con personalidad jurídica propia, constituidas voluntariamente para ejecutar obras y programas de desarrollo regional sostenible. Esta asociatividad supera la atomización presupuestaria y resuelve problemas territoriales complejos que rebasan la capacidad individual de cada alcaldía.
+
+Gestión y optimización de procesos de negocio (Business Process Management - BPM):
+
+La Gestión de Procesos de Negocio (BPM) es una disciplina metodológica orientada a descubrir, modelar, analizar, medir y mejorar continuamente los flujos operativos de una organización (Dumas et al., 2018). En el ámbito público, el BPM establece que la automatización debe estar precedida por la reingeniería de procesos, eliminando pasos innecesarios y duplicidades de autorizaciones. Modelar los flujos bajo la notación estándar BPMN 2.0 y sistematizarlos en código web garantiza una reducción drástica de tiempos de respuesta hacia la población y los cooperantes.
+
+Gobierno electrónico (E-Government) y transformación digital en la administración pública:
+
+El Gobierno Electrónico comprende el uso estratégico de las TIC por parte de las entidades públicas para incrementar la eficiencia, mejorar la transparencia y transformar las relaciones con la ciudadanía (CEPAL, 2021). La OCDE (2019) recalca que la transformación digital no se limita a digitalizar formularios estáticos en papel, sino a rediseñar integralmente los servicios sobre arquitecturas interoperables que operen en tiempo real y promuevan una gobernanza abierta y participativa.
+
+Eficiencia gerencial y toma de decisiones basada en evidencia:
+
+La eficiencia gerencial representa la capacidad de la dirección para alcanzar objetivos institucionales optimizando el uso de los recursos disponibles (Chiavenato, 2017). En organizaciones intermunicipales donde los alcaldes disponen de agendas breves de asamblea, la toma de decisiones no puede fundarse en conjeturas empíricas. Exige un enfoque de gestión basado en evidencia, donde los cuadros de mando ejecutivos (Dashboards) consoliden datos territoriales y presupuestarios precisos para orientar con certeza las inversiones.
+
+2.2.2 Características de la gestión administrativa y gobernanza municipal
+
+La operatividad cotidiana de las administraciones locales en el occidente de Guatemala enfrenta dinámicas sociotécnicas complejas. Comprender estas características permite que las soluciones informáticas superen eficazmente los cuellos de botella históricos de la burocracia regional.
+
+Problemática de la burocracia analógica y dependencia del soporte físico en papel:
+
+El modelo burocrático basado exclusivamente en expedientes escritos suele degenerar en lentitud burocrática, duplicidad y pérdida frecuente de documentación (Crozier, 1964). En la Mancomunidad Frontera del Norte, la dependencia de archivos físicos manuscritos genera retrasos de semanas en la tramitación de expedientes, expone la información histórica a deterioro por humedad en la región de Santa Eulalia y multiplica los costos de fotocopias y traslados físicos entre municipios distantes.
+
+Trazabilidad, certeza jurídica y resguardo de resoluciones y libros de actas:
+
+Los libros de actas de Asambleas Generales y Junta Directiva constituyen el soporte legal que formaliza la voluntad asociativa y sustenta la suscripción de convenios interinstitucionales (Congreso de la República, 2002). El registro manuscrito tradicional dificulta auditar el grado de cumplimiento de los acuerdos aprobados. Su digitalización e indexación electrónica dota a la entidad de trazabilidad jurídica absoluta, proveyendo fe pública digital y blindando las actuaciones de las autoridades locales.
+
+Transparencia activa, auditoría social y rendición de cuentas (Accountability):
+
+El principio de rendición de cuentas impone el deber ineludible de hacer públicas las decisiones y transparentar el manejo de los caudales públicos (Schedler, 1999). El Decreto 57-2008 (Ley de Acceso a la Información Pública) obliga a mantener portales de transparencia actualizados de oficio. La incorporación de módulos de datos abiertos fortalece la auditoría social de las comunidades y eleva la confianza pública hacia la entidad mancomunada.
+
+Coordinación intermunicipal y articulación de convenios con la cooperación internacional:
+
+La captación de fondos internacionales depende de la solvencia demostrada ante agencias como USAID y sus socios implementadores (Global Communities) en proyectos como IWASH. Estos programas demandan estrictos estándares de monitoreo, georreferenciación de obras, justificación de contrapartidas y seguimiento a convenios. Una plataforma web centralizada se convierte en la herramienta idónea para integrar datos de los municipios miembros y atender con solidez auditorías internacionales.
+
+2.2.3 Modelos de gestión, mejora continua y evaluación institucional
+
+Para disciplinar la variable dependiente y evaluar científicamente la optimización gerencial, se articulan modelos teóricos consagrados en la literatura de la administración pública, la gestión de calidad y la psicología aplicada a la tecnología.
+
+Modelos de mejora continua: el Ciclo de Deming (PDCA) en la administración local:
+
+El modelo PDCA estructura la gestión organizacional en cuatro fases continuas: Planear, Hacer, Verificar y Actuar (Deming, 1986). En el proyecto, este ciclo guía la intervención: en Planear se diagnostican requerimientos; en Hacer se despliega el software; en Verificar se miden tiempos de respuesta y seguridad; y en Actuar se aplican manuales y capacitaciones, asegurando que la mejora en la eficiencia gerencial se vuelva permanente e institucionalizada.
+
+Modelo de Autovaloración y Reconocimiento de Capacidades Institucionales (Modelo ARC):
+
+El Modelo ARC es el marco metodológico adoptado por la Mancomunidad en septiembre de 2023 para diagnosticar capacidades operativas en Planificación, Gestión de Proyectos y Transparencia (MMFN, 2023). Al evidenciar la fragmentación de datos, dio origen al Plan de Mejoras Institucionales. El sistema web implementa este marco mediante un tablero Kanban automatizado que rastrea en tiempo real el cumplimiento de las metas institucionales de gobernanza.
+
+Modelo de Aceptación Tecnológica (Technology Acceptance Model - TAM de Davis):
+
+El Modelo TAM demuestra que la adopción efectiva de un software depende de dos constructos cognitivos: la Utilidad Percibida (creencia de que el sistema optimiza el trabajo) y la Facilidad de Uso Percibida (creencia de que su operación demanda un esfuerzo mínimo) (Davis, 1989). Este modelo resulta indispensable para evaluar la variable dependiente, asegurando que los funcionarios asimilen la herramienta sin resistencias culturales.
+
+Estándares internacionales de calidad en uso y usabilidad (ISO/IEC 25010):
+
+La norma internacional ISO/IEC 25010:2011 define la Calidad en Uso a través de cinco características centrales: eficacia, eficiencia temporal, satisfacción del usuario, seguridad frente a riesgos y cobertura de contexto (ISO/IEC, 2011). Este estándar provee el marco de referencia universal para cuantificar el impacto humano y funcional de la solución informática en la administración general.
+
+Tabla 2
+
+Matriz comparativa de modelos de gestión institucional, mejora continua y calidad de software
+
+Nota. La tabla compara los modelos conceptuales de gestión pública, mejora continua y evaluación tecnológica que sustentan el desarrollo y la medición empírica de la variable dependiente. Elaboración propia (2026).
+
+2.2.4 Aplicaciones operativas en la administración general de la mancomunidad
+
+Las doctrinas, características y modelos examinados encuentran su concreción práctica en la sistematización de los flujos de trabajo cotidianos de la Mancomunidad de Municipios Frontera del Norte. Cada módulo de software desarrollado en la variable independiente responde directamente a una necesidad operativa identificada en la variable dependiente. A continuación, se examinan las siete aplicaciones operativas sistematizadas mediante la plataforma web en la nube.
+
+Aplicaciones en la gestión y supervisión territorial de proyectos intermunicipales:
+
+La supervisión de proyectos de infraestructura en municipios como San Mateo Ixtatán, Santa Eulalia o Barillas sufría históricamente de un desfase informativo severo por el uso de reportes informales. El sistema implementa un módulo que vincula coordenadas geográficas de obras comunitarias con repositorios fotográficos inmutables y curvas de avance financiero. Esta aplicación reduce los tiempos de supervisión técnica de semanas a segundos, brindando a la Gerencia y cooperantes de USAID monitoreo continuo en tiempo real.
+
+Aplicaciones en el monitoreo y seguimiento del plan de mejoras institucionales (ARC):
+
+El informe ARC diagnosticó la carencia de mecanismos activos para cumplir las recomendaciones de fortalecimiento. El módulo del plan de mejoras incorpora un tablero interactivo Kanban que transforma los compromisos en tarjetas operativas con responsables y plazos perentorios. Al generar alertas automáticas y reportes de avance porcentual para la Junta Directiva, se erradica la pasividad burocrática y se garantiza el cumplimiento oportuno de las metas de gobernanza.
+
+Aplicaciones en el control financiero presupuestario y conciliación fiscal:
+
+La gestión de aportes municipales ordinarios y donaciones internacionales se realizaba mediante tabulaciones en hojas de cálculo aisladas y cajas fiscales físicas a máquina de escribir. El módulo financiero automatiza el cruce de partidas, centraliza el registro de recibos oficiales emitidos en la Agencia Virtual de la SAT y organiza la reportería exigida por la Contraloría General de Cuentas (Formas 63-A2). Esto elimina errores de cuadre y reduce las jornadas de conciliación contable de días a minutos.
+
+Aplicaciones en la gobernanza, control de acuerdos y actas de Junta Directiva:
+
+Las asambleas de alcaldes conllevan acuerdos políticos y administrativos que solían quedar archivados en libros encuadernados de difícil consulta. La plataforma integra un gestor documental que digitaliza e indexa cada acta, vinculando cada resolución a un responsable y un estado de cumplimiento verificable. Los alcaldes pueden consultar en tiempo real desde dispositivos móviles el avance de acuerdos, elevando sustancialmente la efectividad de la Junta Directiva.
+
+Aplicaciones en la gestión de alianzas estratégicas y convenios interinstitucionales:
+
+La sostenibilidad institucional depende de convenios vigentes con ministerios, embajadas y ONGs cooperantes. En el pasado, la falta de seguimiento provocaba el vencimiento involuntario de acuerdos clave. La plataforma incorpora un motor cronológico automatizado que evalúa la vigencia de convenios y emite alertas preventivas ante vencimientos próximos, consolidando el historial de contrapartidas y fortaleciendo la reputación institucional ante cooperantes.
+
+Aplicaciones en la generación continua de datos y estadísticas territoriales (ASH):
+
+La priorización de inversiones en agua, saneamiento e higiene exige estadísticas actualizadas. El sistema estandariza la captura de datos en campo por los técnicos de las Oficinas Municipales de Agua y Saneamiento (OMAS), consolidando automáticamente indicadores de agua clorada y letrinización. Esto permite generar mapas y gráficos que fundamentan con evidencia científica la formulación de nuevas propuestas de proyectos competitivos.
+
+Aplicaciones en el portal de datos abiertos y transparencia ciudadana:
+
+En cumplimiento de los mandatos de transparencia activa consagrados en el Decreto 57-2008, la plataforma cuenta con un portal de datos abiertos que publica de forma comprensible los avances de proyectos, ejecución presupuestaria y acuerdos públicos. Esta herramienta empodera a comités de agua y ciudadanos del norte de Huehuetenango, promoviendo la auditoría social y consolidando a la Mancomunidad como modelo de gobierno abierto.
+
+Tabla 3
+
+Matriz de correspondencia entre los módulos tecnológicos y los procesos administrativos de la mancomunidad
+
+Nota. La tabla vincula los siete módulos de software desarrollados en la variable independiente con los procesos y deficiencias operativas de la variable dependiente en la Mancomunidad Frontera del Norte. Elaboración propia (2026).
+
+Referencias
+
+Anderson, D. J. (2010). Kanban: Successful evolutionary change for your technology business. Blue Hole Press.
+
+Bass, L., Clements, P., & Kazman, R. (2015). Software architecture in practice (3ª ed.). Addison-Wesley.
+
+Beck, K., Beedle, M., van Bennekum, A., Cockburn, A., Cunningham, W., Fowler, M., Grenning, J., Highsmith, J., Hunt, A., Jeffries, R., Kern, J., Marick, B., Martin, R. C., Mellor, S., Schwaber, K., Sutherland, J., & Thomas, D. (2001). Manifesto for agile software development. http://agilemanifesto.org/
+
+Bernal, C. A. (2016). Metodología de la investigación: Administración, economía, humanidades y ciencias sociales (4ª ed.). Pearson Educación.
+
+Bunge, M. (2014). La ciencia, su método y su filosofía. Editorial Sudamericana.
+
+CEPAL. (2021). Panorama de las tecnologías digitales en América Latina y el Caribe: La transformación digital hacia el desarrollo sostenible. Comisión Económica para América Latina y el Caribe. Naciones Unidas.
+
+Chiavenato, I. (2017). Introducción a la teoría general de la administración (9ª ed.). McGraw-Hill Interamericana.
+
+Congreso de la República de Guatemala. (2002). Decreto Número 12-2002: Código Municipal. Diario de Centro América.
+
+Congreso de la República de Guatemala. (2008). Decreto Número 57-2008: Ley de Acceso a la Información Pública. Diario de Centro América.
+
+Cox, R. (2012). Go: A language for system programming. Google Developers.
+
+Crozier, M. (1964). The bureaucratic phenomenon. University of Chicago Press.
+
+Davis, F. D. (1989). Perceived usefulness, perceived ease of use, and user acceptance of information technology. MIS Quarterly, 13(3), 319-340. https://doi.org/10.2307/249008
+
+Deming, W. E. (1986). Out of the crisis. Massachusetts Institute of Technology, Center for Advanced Educational Services.
+
+Dumas, M., La Rosa, M., Mendling, J., & Reijers, H. A. (2018). Fundamentals of business process management (2ª ed.). Springer. https://doi.org/10.1007/978-3-662-56509-4
+
+Fowler, M. (2002). Patterns of enterprise application architecture. Addison-Wesley.
+
+Harris, R. (2021). Svelte and the future of web reactive frameworks. Svelte Society.
+
+ISO/IEC. (2011). Systems and software engineering — Systems and software Quality Requirements and Evaluation (SQuaRE) — System and software quality models (ISO/IEC Standard No. 25010:2011). International Organization for Standardization.
+
+Mancomunidad de Municipios Frontera del Norte. (2023). Informe de autovaloración y reconocimiento de capacidades (ARC) y plan de mejoras institucionales. MMFNdH.
+
+Mancomunidad de Municipios Frontera del Norte. (2025). Reglamento interno de trabajo, códigos de ética y conducta y manuales administrativos. MMFNdH.
+
+Mell, P., & Grance, T. (2011). The NIST definition of cloud computing (Special Publication 800-145). National Institute of Standards and Technology. https://doi.org/10.6028/NIST.SP.800-145
+
+Nielsen, J., & Budiu, R. (2013). Mobile usability. New Riders.
+
+OCDE. (2019). Recomendación del Consejo de la OCDE sobre Gobierno Digital. Organización para la Cooperación y el Desarrollo Económicos.
+
+Pressman, R. S., & Maxim, B. R. (2020). Software engineering: A practitioner's approach (9ª ed.). McGraw-Hill Education.
+
+Sandhu, R. S., Coyne, E. J., Feinstein, H. L., & Youman, C. E. (1996). Role-based access control models. IEEE Computer, 29(2), 38-47. https://doi.org/10.1109/2.485845
+
+Schedler, A. (1999). Conceptualizing accountability. En A. Schedler, L. Diamond, & M. F. Plattner (Eds.), The self-restraining state: Power and accountability in new democracies (pp. 13-28). Lynne Rienner Publishers.
+
+Schwaber, K., & Sutherland, J. (2020). The Scrum guide: The definitive guide to Scrum: The rules of the game. Scrum.org.
+
+Silberschatz, A., Korth, H. F., & Sudarshan, S. (2020). Database system concepts (7ª ed.). McGraw-Hill Education.
+
+Sommerville, I. (2019). Ingeniería del software (10ª ed.). Pearson Educación.
+
+Stallings, W. (2018). Cryptography and network security: Principles and practice (7ª ed.). Pearson Education.
+
+Stonebraker, M., & Kemnitz, G. (1991). The POSTGRES next-generation database management system. Communications of the ACM, 34(10), 78-92. https://doi.org/10.1145/125223.125262
+
+Tanenbaum, A. S., & Wetherall, D. J. (2012). Redes de computadoras (5ª ed.). Pearson Educación.
+
+Universidad Mariano Gálvez de Guatemala. (2026). Lineamientos generales para la elaboración de trabajos de graduación. Facultad de Ingeniería en Sistemas de Información y Ciencias de la Computación.
+

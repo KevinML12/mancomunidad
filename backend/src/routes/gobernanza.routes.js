@@ -1,12 +1,12 @@
 import { Router } from 'express';
 import prisma from '../lib/prisma.js';
 import { requireAuth, requirePermission } from '../middleware/auth.js';
-import { logAction } from '../lib/audit.js';
 
 const router = Router();
+router.use(requireAuth, requirePermission('gobernanza'));
 
 // GET /api/v1/gobernanza/actas - Listar actas oficiales e indexadas
-router.get('/actas', requireAuth, async (req, res, next) => {
+router.get('/actas', async (req, res, next) => {
   try {
     const { tipoSesion, municipioSede, search } = req.query;
     const where = {};
@@ -35,7 +35,7 @@ router.get('/actas', requireAuth, async (req, res, next) => {
 });
 
 // GET /api/v1/gobernanza/acuerdos - Semáforo de acuerdos políticos
-router.get('/acuerdos', requireAuth, async (req, res, next) => {
+router.get('/acuerdos', async (req, res, next) => {
   try {
     const { estado } = req.query;
     const where = {};
@@ -56,7 +56,7 @@ router.get('/acuerdos', requireAuth, async (req, res, next) => {
 });
 
 // POST /api/v1/gobernanza/actas - Registrar y digitalizar acta oficial (RF13 - RBAC)
-router.post('/actas', requireAuth, requirePermission('gobernanza', 'editar'), async (req, res, next) => {
+router.post('/actas', requirePermission('gobernanza', 'editar'), async (req, res, next) => {
   try {
     const { 
       numeroActa, 
@@ -82,7 +82,6 @@ router.post('/actas', requireAuth, requirePermission('gobernanza', 'editar'), as
       }
     });
 
-    await logAction(req.user?.sub, 'registrar_acta', 'acta_asamblea', acta.id);
     res.status(201).json(acta);
   } catch (err) {
     next(err);
@@ -90,7 +89,7 @@ router.post('/actas', requireAuth, requirePermission('gobernanza', 'editar'), as
 });
 
 // POST /api/v1/gobernanza/actas/:id/acuerdos - Vincular acuerdo resolutivo a acta (RF14 - RBAC)
-router.post('/actas/:id/acuerdos', requireAuth, requirePermission('gobernanza', 'editar'), async (req, res, next) => {
+router.post('/actas/:id/acuerdos', requirePermission('gobernanza', 'editar'), async (req, res, next) => {
 
   try {
     const actaId = Number(req.params.id);
@@ -120,7 +119,7 @@ router.post('/actas/:id/acuerdos', requireAuth, requirePermission('gobernanza', 
 });
 
 // PUT /api/v1/gobernanza/acuerdos/:id - Actualizar estado en semáforo de cumplimiento
-router.put('/acuerdos/:id', requireAuth, async (req, res, next) => {
+router.put('/acuerdos/:id', requirePermission('gobernanza', 'editar'), async (req, res, next) => {
   try {
     const id = Number(req.params.id);
     const { estado, evidenciaUrl } = req.body;

@@ -5,10 +5,11 @@ import { logAction } from '../lib/audit.js';
 import { colaboradoresVisiblesPara } from '../lib/scope.js';
 
 const router = Router();
+router.use(requireAuth, requirePermission('disciplina'));
 
 // RF-27: el expediente disciplinario solo es visible para RRHH, Gerencia,
 // Junta Directiva, Auditoría Interna, y el jefe inmediato del colaborador.
-router.get('/', requireAuth, async (req, res) => {
+router.get('/', async (req, res) => {
   const scope = await colaboradoresVisiblesPara(req.user);
   const faltas = await prisma.faltaDisciplinaria.findMany({
     where: scope ? { colaboradorId: { in: scope } } : undefined,
@@ -20,7 +21,7 @@ router.get('/', requireAuth, async (req, res) => {
 
 // RF-24/25/26: registra la falta y escala la sanción según el conteo de
 // amonestaciones del colaborador en el mes calendario vigente.
-router.post('/', requireAuth, requirePermission('disciplina', 'editar'), async (req, res) => {
+router.post('/', requirePermission('disciplina', 'editar'), async (req, res) => {
   const { colaboradorId, tipo, descripcion } = req.body;
   if (!colaboradorId || !tipo || !descripcion) return res.status(400).json({ error: 'colaboradorId, tipo y descripcion son requeridos' });
 
@@ -55,7 +56,7 @@ router.post('/', requireAuth, requirePermission('disciplina', 'editar'), async (
 });
 
 // RF-26: resolver audiencia de suspensión.
-router.put('/sancion/:id', requireAuth, requirePermission('disciplina', 'aprobar'), async (req, res) => {
+router.put('/sancion/:id', requirePermission('disciplina', 'aprobar'), async (req, res) => {
   const id = Number(req.params.id);
   const { resultado } = req.body;
   const sancion = await prisma.sancion.update({

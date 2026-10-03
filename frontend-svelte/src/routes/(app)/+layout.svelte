@@ -7,6 +7,10 @@
   let { children } = $props();
 
   $effect(() => {
+    if (auth.isAuthenticated) {
+      const modulo = $page.url.pathname.split('/')[1] || 'dashboard';
+      if (!auth.puedeVer(modulo === 'personal' ? 'estructura' : modulo)) goto('/');
+    }
     if (!auth.isAuthenticated) {
       goto('/login');
     }

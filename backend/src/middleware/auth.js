@@ -1,38 +1,26 @@
 import jwt from 'jsonwebtoken';
-
-export function requireAuth(req, res, next) {
-  const header = req.headers.authorization || '';
-  const token = header.startsWith('Bearer ') ? header.slice(7) : null;
-  if (!token) return res.status(401).json({ error: 'No autenticado: se requiere token Bearer' });
-
+import prisma from '../lib/prisma.js';
+import { auditContext } from '../lib/integrity.js';
+export async function requireAuth(req, res, next) {
   try {
-    req.user = jwt.verify(token, process.env.JWT_SECRET);
-    next();
-  } catch {
-    return res.status(401).json({ error: 'Token inválido o expirado' });
+    const header = req.headers.authorization || '';
+    if (!header.startsWith('Bearer ')) return res.status(401).json({ error: 'No autenticado' });
+    const payload = jwt.verify(header.slice(7), process.env.JWT_SECRET, { algorithms: ['HS256'] });
+    if (payload.type !== 'session' || !Number.isInteger(payload.sub)) return res.status(401).json({ error: 'Token inválido para una sesión' });
+    const user = await prisma.usuario.findUnique({ where: { id: payload.sub }, include: { rol: true } });
+    if (!user || payload.version !== user.sessionVersion) return res.status(401).json({ error: 'Sesión revocada' });
+    req.user = { sub: user.id, rol: user.rol.codigo, permisos: user.rol.permisos, nombre: payload.nombre, colaboradorId: user.colaboradorId };
+    return auditContext.run({ usuarioId: user.id }, next);
+  } catch (err) {
+    if (['JsonWebTokenError','TokenExpiredError','NotBeforeError'].includes(err.name)) return res.status(401).json({ error: 'Token inválido o expirado' });
+    return next(err);
   }
 }
-
-// Control de Acceso Basado en Roles (RBAC - RF2)
-// Valida contra los permisos almacenados en la base de datos (Rol.permisos).
-// Super Administrador (GE) posee facultad institucional delegada.
 export function requirePermission(modulo, accion = null) {
   return (req, res, next) => {
-    if (!req.user) {
-      return res.status(401).json({ error: 'No autenticado' });
-    }
-
-    // Gerencia Ejecutiva (Super Administrador) posee facultad de supervisión global
-    if (req.user.rol === 'GE') return next();
-
+    if (!req.user) return res.status(401).json({ error: 'No autenticado' });
     const permisos = req.user.permisos;
-    if (!permisos?.modulos?.includes(modulo)) {
-      return res.status(403).json({ error: `Acceso restringido: no cuenta con autorización para el módulo ${modulo}` });
-    }
-    if (accion && !permisos[accion]?.includes(modulo)) {
-      return res.status(403).json({ error: `Acceso restringido: carece de privilegios para "${accion}" en ${modulo}` });
-    }
+    if (!permisos?.modulos?.includes(modulo) || (accion && !permisos[accion]?.includes(modulo))) return res.status(403).json({ error: 'No autorizado para esta operación' });
     next();
   };
 }
-

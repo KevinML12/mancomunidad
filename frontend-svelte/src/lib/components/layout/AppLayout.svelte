@@ -86,7 +86,7 @@
       </div>
 
       <div class="space-y-1">
-        {#each NAV_ITEMS as item}
+        {#each NAV_ITEMS.filter(item => item.to === '/transparencia' || auth.puedeVer(item.to === '/' ? 'dashboard' : item.to === '/personal' ? 'estructura' : item.to.slice(1))) as item}
           {@const isActive = $page.url.pathname === item.to || (!item.exact && item.to !== '/' && $page.url.pathname.startsWith(item.to))}
           <a 
             href={item.to} 
@@ -138,7 +138,7 @@
     <div class="space-y-1">
       <p class="text-[9px] font-extrabold uppercase tracking-[0.15em] text-[#0A1526]/40 px-3 mb-3">Módulos de Gobierno</p>
       
-      {#each NAV_ITEMS as item}
+      {#each NAV_ITEMS.filter(item => item.to === '/transparencia' || auth.puedeVer(item.to === '/' ? 'dashboard' : item.to === '/personal' ? 'estructura' : item.to.slice(1))) as item}
         {@const isActive = $page.url.pathname === item.to || (!item.exact && item.to !== '/' && $page.url.pathname.startsWith(item.to))}
         {#if isActive}
           <!-- Ítem Activo -->

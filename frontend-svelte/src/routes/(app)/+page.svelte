@@ -145,7 +145,7 @@
       to: '/estadisticas',
       icon: 'bar_chart',
       titulo: 'Indicadores ASH',
-      descripcion: 'Censo de agua, saneamiento y vigilancia bacteriológica de cloro residual (COGUANOR) en 6 municipios.',
+      descripcion: 'Censo de agua, saneamiento y vigilancia bacteriológica de cloro residual (COGUANOR) en 3 municipios activos.',
       badge: stats.totalViviendas > 0 ? `${stats.totalViviendas.toLocaleString()} Viviendas` : 'Censos ASH',
       color: 'cyan'
     },
@@ -196,7 +196,7 @@
           Tablero de Control Estratégico
         </h1>
         <p class="text-sm lg:text-base text-white/70 max-w-2xl font-normal leading-relaxed">
-          Plataforma Institucional de Coordinación Territorial · Mancomunidad de Municipios de la Frontera del Norte de Huehuetenango (Santa Eulalia, Soloma, San Mateo, Barillas, Independencia, Acatán).
+          Plataforma Institucional de Coordinación Territorial · Mancomunidad de Municipios de la Frontera del Norte de Huehuetenango (San Pedro Soloma, Santa Eulalia y San Rafael la Independencia).
         </p>
       </div>
 

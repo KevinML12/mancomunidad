@@ -5,8 +5,9 @@ import { logAction } from '../lib/audit.js';
 import { colaboradoresVisiblesPara } from '../lib/scope.js';
 
 const router = Router();
+router.use(requireAuth, requirePermission('ausencias'));
 
-router.get('/', requireAuth, async (req, res) => {
+router.get('/', async (req, res) => {
   const scope = await colaboradoresVisiblesPara(req.user);
   const solicitudes = await prisma.solicitudAusencia.findMany({
     where: scope ? { colaboradorId: { in: scope } } : undefined,
@@ -16,7 +17,7 @@ router.get('/', requireAuth, async (req, res) => {
   res.json(solicitudes);
 });
 
-router.get('/saldo/:colaboradorId', requireAuth, async (req, res) => {
+router.get('/saldo/:colaboradorId', async (req, res) => {
   const colaboradorId = Number(req.params.colaboradorId);
   const anio = new Date().getFullYear();
   const saldo = await prisma.saldoVacaciones.findUnique({ where: { colaboradorId_anio: { colaboradorId, anio } } });
@@ -24,7 +25,7 @@ router.get('/saldo/:colaboradorId', requireAuth, async (req, res) => {
 });
 
 // RF-20/23: valida saldo antes de aceptar la solicitud de vacaciones.
-router.post('/', requireAuth, async (req, res) => {
+router.post('/', async (req, res) => {
   const { colaboradorId, tipo, desde, hasta, motivo } = req.body;
   if (!colaboradorId || !tipo || !desde || !hasta) return res.status(400).json({ error: 'colaboradorId, tipo, desde y hasta son requeridos' });
 
@@ -46,7 +47,7 @@ router.post('/', requireAuth, async (req, res) => {
 });
 
 // RF-21: el jefe inmediato aprueba/rechaza.
-router.put('/:id', requireAuth, requirePermission('ausencias', 'aprobar'), async (req, res) => {
+router.put('/:id', requirePermission('ausencias', 'aprobar'), async (req, res) => {
   const id = Number(req.params.id);
   const { estado } = req.body;
   if (!['Aprobado', 'Rechazado'].includes(estado)) return res.status(400).json({ error: 'estado debe ser Aprobado o Rechazado' });

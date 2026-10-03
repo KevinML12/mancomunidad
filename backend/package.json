@@ -11,7 +11,11 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:generate": "prisma generate",
     "prisma:seed": "node prisma/seed.js",
-    "prisma:studio": "prisma studio"
+    "prisma:studio": "prisma studio",
+    "test:integration": "prisma generate --schema prisma/schema.prisma && node --test tests/integration/*.test.js",
+    "permissions:update": "node prisma/update-permissions.js",
+    "migrate:production": "prisma db execute --file prisma/production-additions.sql --schema prisma/schema.production.prisma",
+    "migrate:production:bootstrap": "prisma db execute --file prisma/production-bootstrap.sql --schema prisma/schema.production.prisma"
   },
   "prisma": {
     "seed": "node prisma/seed.js"

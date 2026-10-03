@@ -4,9 +4,10 @@ import { requireAuth, requirePermission } from '../middleware/auth.js';
 import { logAction } from '../lib/audit.js';
 
 const router = Router();
+router.use(requireAuth, requirePermission('estructura'));
 
 // RF-01
-router.get('/', requireAuth, async (req, res) => {
+router.get('/', async (req, res) => {
   const puestos = await prisma.puesto.findMany({
     include: { unidad: true, jefeInmediato: true, _count: { select: { colaboradores: true } } },
     orderBy: { id: 'asc' },
@@ -14,7 +15,7 @@ router.get('/', requireAuth, async (req, res) => {
   res.json(puestos);
 });
 
-router.post('/', requireAuth, requirePermission('estructura', 'editar'), async (req, res) => {
+router.post('/', requirePermission('estructura', 'editar'), async (req, res) => {
   const { nombre, categoria, formaPago, unidadId, jefeInmediatoId } = req.body;
   if (!nombre || !categoria) return res.status(400).json({ error: 'nombre y categoria son requeridos' });
   const puesto = await prisma.puesto.create({
@@ -24,7 +25,7 @@ router.post('/', requireAuth, requirePermission('estructura', 'editar'), async (
   res.status(201).json(puesto);
 });
 
-router.put('/:id', requireAuth, requirePermission('estructura', 'editar'), async (req, res) => {
+router.put('/:id', requirePermission('estructura', 'editar'), async (req, res) => {
   const id = Number(req.params.id);
   const { nombre, categoria, formaPago, unidadId, jefeInmediatoId } = req.body;
   const puesto = await prisma.puesto.update({

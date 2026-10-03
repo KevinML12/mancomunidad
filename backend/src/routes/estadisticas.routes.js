@@ -1,11 +1,13 @@
+import { MUNICIPIOS_MFN } from '../lib/municipios.js';
 import { Router } from 'express';
 import prisma from '../lib/prisma.js';
-import { requireAuth } from '../middleware/auth.js';
+import { requireAuth, requirePermission } from '../middleware/auth.js';
 
 const router = Router();
+router.use(requireAuth, requirePermission('estadisticas'));
 
 // GET /api/v1/estadisticas/censos - Listado de censos comunitarios
-router.get('/censos', requireAuth, async (req, res, next) => {
+router.get('/censos', async (req, res, next) => {
   try {
     const { municipio, search } = req.query;
     const where = {};
@@ -30,9 +32,9 @@ router.get('/censos', requireAuth, async (req, res, next) => {
 });
 
 // GET /api/v1/estadisticas/consolidado - Motor estadístico de cobertura y déficit regional (RF16)
-router.get('/consolidado', requireAuth, async (req, res, next) => {
+router.get('/consolidado', async (req, res, next) => {
   try {
-    const censos = await prisma.censoComunitarioASH.findMany();
+    const censos = await prisma.censoComunitarioASH.findMany({ where: { municipio: { in: MUNICIPIOS_MFN } } });
 
     let totalViviendas = 0;
     let conAgua = 0;
@@ -86,7 +88,7 @@ router.get('/consolidado', requireAuth, async (req, res, next) => {
 });
 
 // POST /api/v1/estadisticas/censos - Registrar levantamiento de campo
-router.post('/censos', requireAuth, async (req, res, next) => {
+router.post('/censos', requirePermission('estadisticas', 'editar'), async (req, res, next) => {
   try {
     const {
       municipio,
@@ -99,6 +101,7 @@ router.post('/censos', requireAuth, async (req, res, next) => {
       tecnicoResponsable
     } = req.body;
 
+    if (!MUNICIPIOS_MFN.includes(municipio)) return res.status(400).json({ error: 'Seleccione un municipio activo' });
     const count = await prisma.censoComunitarioASH.count();
     const cleanMun = municipio.toUpperCase().slice(0, 3);
     const codigo = `ASH-2024-${cleanMun}-${(count + 1).toString().padStart(3, '0')}`;

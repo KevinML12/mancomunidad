@@ -38,19 +38,12 @@
   let resultadoConsulta = $state(null);
   let consultando = $state(false);
 
-  const MUNICIPIOS_MFN = [
-    'Santa Eulalia',
-    'San Pedro Soloma',
-    'San Mateo Ixtatán',
-    'San Rafael la Independencia',
-    'Barillas',
-    'San Juan Ixcoy'
-  ];
+  import { MUNICIPIOS_MFN } from '$lib/municipios.js';
 
   const fetchTransparencia = async () => {
     loading = true;
     try {
-      const endpoint = auth.isAuthenticated ? '/transparencia/gestion' : '/transparencia/publico';
+      const endpoint = auth.puedeVer('transparencia') ? '/transparencia/gestion' : '/transparencia/publico';
       const { data } = await apiClient.get(endpoint);
       
       const publicaciones = data?.publicaciones || (Array.isArray(data) ? data : []);
@@ -75,14 +68,7 @@
 
       if (Array.isArray(proys)) {
         proyectos = proys.map(p => {
-          // Detectar municipio del nombre si existe
-          let muni = 'Regional';
-          for (const m of MUNICIPIOS_MFN) {
-            if (p.nombre.toLowerCase().includes(m.toLowerCase())) {
-              muni = m;
-              break;
-            }
-          }
+          const muni = p.municipio || 'Regional';
 
           const totalMonto = (p.presupuestoMunicipal || 0) + (p.presupuestoCooperacion || 0);
 
@@ -589,7 +575,7 @@
           <Icon name="water_drop" className="w-5 h-5 text-[#3B82F6]" />
         </div>
         <p class="text-[36px] font-black text-[#0A1526]">{estadisticas.coberturaAgua}%</p>
-        <p class="text-[12px] text-[#0A1526]/50 mt-1">Hogares con servicio continuo en los 6 municipios ({estadisticas.totalViviendas} viviendas en base de datos).</p>
+        <p class="text-[12px] text-[#0A1526]/50 mt-1">Hogares con servicio continuo en los 3 municipios activos ({estadisticas.totalViviendas} viviendas en base de datos).</p>
       </div>
 
       <div class="bg-white border border-gray-100 rounded-[28px] p-7 shadow-xs">
@@ -777,12 +763,12 @@
                 <span class="text-sm font-black text-[#0A1526]">{resultadoConsulta.expediente}</span>
                 <span class="px-3 py-1 rounded-full bg-blue-50 text-[#3B82F6] font-bold">{resultadoConsulta.estado}</span>
               </div>
-              <p><strong>Solicitante:</strong> {resultadoConsulta.solicitante}</p>
-              <p><strong>Municipio:</strong> {resultadoConsulta.municipio}</p>
+
+
               <p><strong>Fecha de Radicación:</strong> {new Date(resultadoConsulta.fechaRecepcion).toLocaleDateString('es-GT')}</p>
               <p><strong>Plazo Legal Límite:</strong> {resultadoConsulta.fechaLimite}</p>
               <div class="p-3 bg-white rounded-lg border border-gray-200 font-sans text-xs text-[#0A1526]">
-                <strong>Información Requerida:</strong> {resultadoConsulta.descripcion}
+                El código permite consultar el estado. Los datos personales se conservan en el expediente interno.
               </div>
             </div>
           {/if}

@@ -167,7 +167,6 @@
       <option value="Santa Eulalia">Santa Eulalia</option>
       <option value="San Pedro Soloma">San Pedro Soloma</option>
       <option value="San Rafael la Independencia">San Rafael la Independencia</option>
-      <option value="San Mateo Ixtatán">San Mateo Ixtatán</option>
     </select>
 
     <!-- Botón Nueva Acta -->
@@ -410,58 +409,55 @@
       <form onsubmit={registrarActa} class="space-y-4">
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Número de Acta</label>
-            <input required type="text" bind:value={nuevaActa.numeroActa} placeholder="Ej: ACTA-04-2024" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#0A1526]" />
+            <label for="field-1" class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Número de Acta</label>
+            <input id="field-1" required type="text" bind:value={nuevaActa.numeroActa} placeholder="Ej: ACTA-04-2024" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#0A1526]" />
           </div>
 
           <div>
-            <label class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Número de Sesión</label>
-            <input required type="number" min="1" bind:value={nuevaActa.numeroSesion} class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#0A1526]" />
+            <label for="field-2" class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Número de Sesión</label>
+            <input id="field-2" required type="number" min="1" bind:value={nuevaActa.numeroSesion} class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#0A1526]" />
           </div>
         </div>
 
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Tipo de Sesión</label>
-            <select bind:value={nuevaActa.tipoSesion} class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[12px] text-[#0A1526]">
+            <label for="field-3" class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Tipo de Sesión</label>
+            <select id="field-3" bind:value={nuevaActa.tipoSesion} class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[12px] text-[#0A1526]">
               <option value="Ordinaria">Ordinaria</option>
               <option value="Extraordinaria">Extraordinaria</option>
             </select>
           </div>
 
           <div>
-            <label class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Fecha de Sesión</label>
-            <input required type="date" bind:value={nuevaActa.fecha} class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#0A1526]" />
+            <label for="field-4" class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Fecha de Sesión</label>
+            <input id="field-4" required type="date" bind:value={nuevaActa.fecha} class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#0A1526]" />
           </div>
         </div>
 
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Municipio Sede</label>
-            <select bind:value={nuevaActa.municipioSede} class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[12px] text-[#0A1526]">
+            <label for="field-5" class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Municipio Sede</label>
+            <select id="field-5" bind:value={nuevaActa.municipioSede} class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[12px] text-[#0A1526]">
               <option value="Santa Eulalia">Santa Eulalia</option>
               <option value="San Pedro Soloma">San Pedro Soloma</option>
               <option value="San Rafael la Independencia">San Rafael la Independencia</option>
-              <option value="San Mateo Ixtatán">San Mateo Ixtatán</option>
-              <option value="Barillas">Santa Cruz Barillas</option>
-              <option value="San Miguel Acatán">San Miguel Acatán</option>
             </select>
           </div>
 
           <div>
-            <label class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Folio Libro Hojas Movibles CGC</label>
-            <input required type="text" bind:value={nuevaActa.libroCGCFolio} placeholder="Ej: Libro No. 04 · Folio 132" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#0A1526]" />
+            <label for="field-6" class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Folio Libro Hojas Movibles CGC</label>
+            <input id="field-6" required type="text" bind:value={nuevaActa.libroCGCFolio} placeholder="Ej: Libro No. 04 · Folio 132" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#0A1526]" />
           </div>
         </div>
 
         <div>
-          <label class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Lugar Específico de Reunión</label>
-          <input required type="text" bind:value={nuevaActa.lugarReunion} placeholder="Ej: Salón de Honor Municipal" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#0A1526]" />
+          <label for="field-7" class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Lugar Específico de Reunión</label>
+          <input id="field-7" required type="text" bind:value={nuevaActa.lugarReunion} placeholder="Ej: Salón de Honor Municipal" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#0A1526]" />
         </div>
 
         <div>
-          <label class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">URL Archivo PDF Escaneado (Firmas Oficiales)</label>
-          <input type="text" bind:value={nuevaActa.urlPdfEscaneado} placeholder="https://storage.mfn.gob.gt/actas/acta.pdf" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#0A1526]" />
+          <label for="field-8" class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">URL Archivo PDF Escaneado (Firmas Oficiales)</label>
+          <input id="field-8" type="text" bind:value={nuevaActa.urlPdfEscaneado} placeholder="https://storage.mfn.gob.gt/actas/acta.pdf" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#0A1526]" />
         </div>
 
         <div class="pt-4 flex justify-end gap-3 mt-6 border-t border-gray-50 pt-5">

@@ -354,14 +354,14 @@
 
       <form onsubmit={guardarConvenio} class="space-y-4">
         <div>
-          <label class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Nombre del Convenio o Acuerdo</label>
-          <input required type="text" bind:value={nuevoConvenio.nombre} placeholder="Ej: Convenio de Cooperación No Reembolsable..." class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#0A1526]" />
+          <label for="field-1" class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Nombre del Convenio o Acuerdo</label>
+          <input id="field-1" required type="text" bind:value={nuevoConvenio.nombre} placeholder="Ej: Convenio de Cooperación No Reembolsable..." class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#0A1526]" />
         </div>
 
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Tipo de Organización</label>
-            <select bind:value={nuevoConvenio.tipoOrganizacion} class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[12px] text-[#0A1526]">
+            <label for="field-2" class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Tipo de Organización</label>
+            <select id="field-2" bind:value={nuevoConvenio.tipoOrganizacion} class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[12px] text-[#0A1526]">
               <option value="Cooperación Internacional">Cooperación Internacional</option>
               <option value="Sector Público">Sector Público</option>
               <option value="ONG">ONG y Sociedad Civil</option>
@@ -369,43 +369,43 @@
           </div>
 
           <div>
-            <label class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Entidad Cooperante</label>
-            <input required type="text" bind:value={nuevoConvenio.entidadCooperante} placeholder="Ej: USAID, AECID, BID" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#0A1526]" />
+            <label for="field-3" class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Entidad Cooperante</label>
+            <input id="field-3" required type="text" bind:value={nuevoConvenio.entidadCooperante} placeholder="Ej: USAID, AECID, BID" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#0A1526]" />
           </div>
         </div>
 
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Monto Cooperación ($ USD)</label>
-            <input required type="number" min="0" step="1000" bind:value={nuevoConvenio.montoCooperacion} class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] font-bold text-[#0A1526]" />
+            <label for="field-4" class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Monto Cooperación ($ USD)</label>
+            <input id="field-4" required type="number" min="0" step="1000" bind:value={nuevoConvenio.montoCooperacion} class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] font-bold text-[#0A1526]" />
           </div>
 
           <div>
-            <label class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Contrapartida MFN (Q GTQ)</label>
-            <input required type="number" min="0" step="1000" bind:value={nuevoConvenio.contrapartidaMFN} class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] font-bold text-[#0A1526]" />
+            <label for="field-5" class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Contrapartida MFN (Q GTQ)</label>
+            <input id="field-5" required type="number" min="0" step="1000" bind:value={nuevoConvenio.contrapartidaMFN} class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] font-bold text-[#0A1526]" />
           </div>
         </div>
 
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Fecha Suscripción</label>
-            <input required type="date" bind:value={nuevoConvenio.fechaSuscripcion} class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#0A1526]" />
+            <label for="field-6" class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Fecha Suscripción</label>
+            <input id="field-6" required type="date" bind:value={nuevoConvenio.fechaSuscripcion} class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#0A1526]" />
           </div>
 
           <div>
-            <label class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Fecha Vencimiento (Motor 90D)</label>
-            <input required type="date" bind:value={nuevoConvenio.fechaVencimiento} class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#0A1526]" />
+            <label for="field-7" class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Fecha Vencimiento (Motor 90D)</label>
+            <input id="field-7" required type="date" bind:value={nuevoConvenio.fechaVencimiento} class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#0A1526]" />
           </div>
         </div>
 
         <div>
-          <label class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Coordinador MFN Designado</label>
-          <input required type="text" bind:value={nuevoConvenio.coordinadorMFN} class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#0A1526]" />
+          <label for="field-8" class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Coordinador MFN Designado</label>
+          <input id="field-8" required type="text" bind:value={nuevoConvenio.coordinadorMFN} class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#0A1526]" />
         </div>
 
         <div>
-          <label class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">URL Instrumento Legal PDF</label>
-          <input type="text" bind:value={nuevoConvenio.urlDocumento} placeholder="https://storage.mfn.gob.gt/convenios/convenio.pdf" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#0A1526]" />
+          <label for="field-9" class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">URL Instrumento Legal PDF</label>
+          <input id="field-9" type="text" bind:value={nuevoConvenio.urlDocumento} placeholder="https://storage.mfn.gob.gt/convenios/convenio.pdf" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#0A1526]" />
         </div>
 
         <div class="pt-4 flex justify-end gap-3 mt-6 border-t border-gray-50 pt-5">

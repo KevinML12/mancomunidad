@@ -5,14 +5,7 @@
   import { toast } from 'svelte-sonner';
   import { fade, fly } from 'svelte/transition';
 
-  const LISTA_MUNICIPIOS = [
-    'Santa Eulalia',
-    'San Pedro Soloma',
-    'San Rafael la Independencia',
-    'San Mateo Ixtatán',
-    'Santa Cruz Barillas',
-    'San Miguel Acatán'
-  ];
+  import { MUNICIPIOS_MFN as LISTA_MUNICIPIOS } from '$lib/municipios.js';
 
   let transacciones = $state([]);
   let balance = $state({
@@ -261,7 +254,7 @@
           <span class="text-[9px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40">Cuenta Monetaria No. 1</span>
         </div>
         <h3 class="text-xl font-black text-[#0A1526] tracking-tight">Fondos Públicos e Ingresos Propios</h3>
-        <p class="text-[12px] text-[#0A1526]/50 mt-0.5">Recibos Forma 63-A2 (CGC) · Cuotas ordinarias de los 6 municipios</p>
+        <p class="text-[12px] text-[#0A1526]/50 mt-0.5">Recibos Forma 63-A2 (CGC) · Cuotas ordinarias de los 3 municipios activos</p>
       </div>
       <span class="px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-[10px] font-extrabold uppercase tracking-wider border border-blue-100">
         Banrural Oficial
@@ -321,7 +314,7 @@
   </div>
 </div>
 
-<!-- SEMÁFORO DE SOLVENCIA MUNICIPAL (6 MUNICIPIOS MIEMBROS) -->
+<!-- SEMÁFORO DE SOLVENCIA MUNICIPAL (3 MUNICIPIOS ACTIVOS) -->
 <section class="bg-white border border-gray-100/60 rounded-[32px] p-8 mb-8 shadow-[0_20px_60px_-15px_rgba(10,21,38,0.05)]">
   <div class="flex items-center justify-between pb-6 mb-2 border-b border-gray-50">
     <div>
@@ -492,61 +485,61 @@
       <form onsubmit={guardarTransaccion} class="space-y-4">
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Cuenta Bancaria</label>
-            <select bind:value={nuevaTx.cuentaBancaria} class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[12px] text-[#0A1526]">
+            <label for="field-1" class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Cuenta Bancaria</label>
+            <select id="field-1" bind:value={nuevaTx.cuentaBancaria} class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[12px] text-[#0A1526]">
               <option value="Fondos Públicos">Fondos Públicos (Banrural)</option>
               <option value="Cooperación Internacional">Cooperación Internacional</option>
             </select>
           </div>
 
           <div>
-            <label class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Monto (Quetzales)</label>
-            <input required type="number" step="0.01" min="1" bind:value={nuevaTx.monto} class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] font-bold text-[#0A1526]" />
+            <label for="field-2" class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Monto (Quetzales)</label>
+            <input id="field-2" required type="number" step="0.01" min="1" bind:value={nuevaTx.monto} class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] font-bold text-[#0A1526]" />
           </div>
         </div>
 
         {#if modalTipo === 'Cuota'}
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <label class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Municipio Miembro</label>
-              <select bind:value={nuevaTx.municipio} class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[12px] text-[#0A1526]">
+              <label for="field-3" class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Municipio Miembro</label>
+              <select id="field-3" bind:value={nuevaTx.municipio} class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[12px] text-[#0A1526]">
                 {#each LISTA_MUNICIPIOS as mun}
                   <option value={mun}>{mun}</option>
                 {/each}
               </select>
             </div>
             <div>
-              <label class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">No. Recibo CGC (Forma 63-A2)</label>
-              <input required type="text" bind:value={nuevaTx.comprobanteNumero} placeholder="Ej: Serie AG-88925" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#0A1526]" />
+              <label for="field-4" class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">No. Recibo CGC (Forma 63-A2)</label>
+              <input id="field-4" required type="text" bind:value={nuevaTx.comprobanteNumero} placeholder="Ej: Serie AG-88925" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#0A1526]" />
             </div>
           </div>
         {:else}
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <label class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Tipo de Comprobante</label>
-              <select bind:value={nuevaTx.comprobanteTipo} class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[12px] text-[#0A1526]">
+              <label for="field-5" class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Tipo de Comprobante</label>
+              <select id="field-5" bind:value={nuevaTx.comprobanteTipo} class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[12px] text-[#0A1526]">
                 <option value="Factura SAT FEL">Factura SAT FEL</option>
                 <option value="Recibo CGC 63-A2">Recibo CGC 63-A2</option>
               </select>
             </div>
             <div>
-              <label class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">No. Factura / Autorización</label>
-              <input required type="text" bind:value={nuevaTx.comprobanteNumero} placeholder="Ej: FEL-D891-2201" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#0A1526]" />
+              <label for="field-6" class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">No. Factura / Autorización</label>
+              <input id="field-6" required type="text" bind:value={nuevaTx.comprobanteNumero} placeholder="Ej: FEL-D891-2201" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#0A1526]" />
             </div>
           </div>
 
           <!-- RF11: Evidencia obligatoria de factura en Caja Chica -->
           <div>
-            <label class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">
+            <label for="field-7" class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">
               URL / Fotografía de Factura (Obligatorio RF11)
             </label>
-            <input required type="text" bind:value={nuevaTx.urlComprobante} placeholder="https://..." class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#0A1526]" />
+            <input id="field-7" required type="text" bind:value={nuevaTx.urlComprobante} placeholder="https://..." class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#0A1526]" />
           </div>
         {/if}
 
         <div>
-          <label class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Concepto / Descripción</label>
-          <textarea required rows="2" bind:value={nuevaTx.descripcion} class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#0A1526]" placeholder="Justificación del movimiento financiero..."></textarea>
+          <label for="field-8" class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Concepto / Descripción</label>
+          <textarea id="field-8" required rows="2" bind:value={nuevaTx.descripcion} class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#0A1526]" placeholder="Justificación del movimiento financiero..."></textarea>
         </div>
 
         <div class="pt-4 flex justify-end gap-3 mt-6 border-t border-gray-50 pt-5">

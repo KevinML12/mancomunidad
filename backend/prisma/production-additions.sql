@@ -1,0 +1,79 @@
+BEGIN;
+
+-- AlterTable
+ALTER TABLE "Usuario" ADD COLUMN     "sessionVersion" INTEGER NOT NULL DEFAULT 0;
+
+-- AlterTable
+ALTER TABLE "BitacoraAuditoria" ADD COLUMN     "antesHash" TEXT,
+ADD COLUMN     "despuesHash" TEXT;
+
+-- AlterTable
+ALTER TABLE "Proyecto" ADD COLUMN     "municipio" TEXT;
+
+-- AlterTable
+ALTER TABLE "EvidenciaProyecto" ADD COLUMN     "contenido" TEXT,
+ADD COLUMN     "sha256" TEXT,
+ADD COLUMN     "tipoMime" TEXT;
+
+-- CreateTable
+CREATE TABLE "RecuperacionClave" (
+    "id" SERIAL NOT NULL,
+    "usuarioId" INTEGER NOT NULL,
+    "tokenHash" TEXT NOT NULL,
+    "expira" TIMESTAMP(3) NOT NULL,
+    "usado" BOOLEAN NOT NULL DEFAULT false,
+
+    CONSTRAINT "RecuperacionClave_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "PuntoControlIntegridad" (
+    "id" SERIAL NOT NULL,
+    "rootHash" TEXT NOT NULL,
+    "snapshot" JSONB NOT NULL,
+    "auditoriaId" INTEGER NOT NULL,
+    "usuarioId" INTEGER NOT NULL,
+    "fecha" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "PuntoControlIntegridad_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateIndex
+CREATE UNIQUE INDEX "RecuperacionClave_tokenHash_key" ON "RecuperacionClave"("tokenHash");
+
+-- AddForeignKey
+ALTER TABLE "RecuperacionClave" ADD CONSTRAINT "RecuperacionClave_usuarioId_fkey" FOREIGN KEY ("usuarioId") REFERENCES "Usuario"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+
+-- Las tablas privadas no deben exponerse mediante la API REST de Supabase.
+ALTER TABLE "UnidadOrganizacional" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "Puesto" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "Colaborador" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "Rol" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "Usuario" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "Convocatoria" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "Candidato" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "Contrato" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "EvaluacionDesempeno" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "EvaluacionFactor" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "PlanMejora" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "SolicitudAusencia" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "SaldoVacaciones" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "FaltaDisciplinaria" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "Sancion" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "Capacitacion" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "CertificacionCapacitacion" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "BitacoraAuditoria" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "Proyecto" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "EvidenciaProyecto" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "TareaARC" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "TransaccionFinanciera" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "ActaAsamblea" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "AcuerdoGobernanza" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "ConvenioInstitucional" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "CensoComunitarioASH" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "PublicacionTransparencia" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "RecuperacionClave" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "PuntoControlIntegridad" ENABLE ROW LEVEL SECURITY;
+
+COMMIT;

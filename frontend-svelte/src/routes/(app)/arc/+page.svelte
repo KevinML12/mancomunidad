@@ -264,6 +264,8 @@
         {:else}
           {#each tareasCol as tarea}
             <div 
+              role="group"
+              aria-label={tarea.titulo}
               draggable="true"
               ondragstart={(e) => {
                 draggingTaskId = tarea.id;
@@ -378,19 +380,19 @@
 
       <form onsubmit={crearTarea} class="space-y-4">
         <div>
-          <label class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Título de la Meta</label>
-          <input required bind:value={nuevaTarea.titulo} type="text" class="w-full bg-white border border-gray-200 focus:border-[#3B82F6] focus:ring-1 focus:ring-[#3B82F6] rounded-xl px-4 py-3 text-[13px] text-[#0A1526] shadow-sm transition-all" placeholder="Ej: Implementación de Módulo Financiero..." />
+          <label for="field-1" class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Título de la Meta</label>
+          <input id="field-1" required bind:value={nuevaTarea.titulo} type="text" class="w-full bg-white border border-gray-200 focus:border-[#3B82F6] focus:ring-1 focus:ring-[#3B82F6] rounded-xl px-4 py-3 text-[13px] text-[#0A1526] shadow-sm transition-all" placeholder="Ej: Implementación de Módulo Financiero..." />
         </div>
 
         <div>
-          <label class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Instrucción y Descripción</label>
-          <textarea required bind:value={nuevaTarea.descripcion} rows="3" class="w-full bg-white border border-gray-200 focus:border-[#3B82F6] focus:ring-1 focus:ring-[#3B82F6] rounded-xl px-4 py-3 text-[13px] text-[#0A1526] shadow-sm transition-all" placeholder="Detalle los compromisos institucionales derivados del informe ARC..."></textarea>
+          <label for="field-2" class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Instrucción y Descripción</label>
+          <textarea id="field-2" required bind:value={nuevaTarea.descripcion} rows="3" class="w-full bg-white border border-gray-200 focus:border-[#3B82F6] focus:ring-1 focus:ring-[#3B82F6] rounded-xl px-4 py-3 text-[13px] text-[#0A1526] shadow-sm transition-all" placeholder="Detalle los compromisos institucionales derivados del informe ARC..."></textarea>
         </div>
 
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Dimensión ARC</label>
-            <select bind:value={nuevaTarea.dimension} class="w-full bg-white border border-gray-200 focus:border-[#3B82F6] rounded-xl px-4 py-3 text-[12px] text-[#0A1526]">
+            <label for="field-3" class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Dimensión ARC</label>
+            <select id="field-3" bind:value={nuevaTarea.dimension} class="w-full bg-white border border-gray-200 focus:border-[#3B82F6] rounded-xl px-4 py-3 text-[12px] text-[#0A1526]">
               <option value="Planificación y Monitoreo">Planificación y Monitoreo</option>
               <option value="Gestión de Proyectos e Inversión">Gestión de Proyectos e Inversión</option>
               <option value="Probidad, Transparencia y Eficiencia Institucional">Probidad, Transparencia y Eficiencia</option>
@@ -398,8 +400,8 @@
           </div>
 
           <div>
-            <label class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Prioridad</label>
-            <select bind:value={nuevaTarea.prioridad} class="w-full bg-white border border-gray-200 focus:border-[#3B82F6] rounded-xl px-4 py-3 text-[12px] text-[#0A1526]">
+            <label for="field-4" class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Prioridad</label>
+            <select id="field-4" bind:value={nuevaTarea.prioridad} class="w-full bg-white border border-gray-200 focus:border-[#3B82F6] rounded-xl px-4 py-3 text-[12px] text-[#0A1526]">
               <option value="Alta">Alta</option>
               <option value="Media">Media</option>
               <option value="Baja">Baja</option>
@@ -409,13 +411,13 @@
 
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Responsable Asignado</label>
-            <input required bind:value={nuevaTarea.responsable} type="text" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#0A1526]" placeholder="Ej: Ing. Carlos Méndez" />
+            <label for="field-5" class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Responsable Asignado</label>
+            <input id="field-5" required bind:value={nuevaTarea.responsable} type="text" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#0A1526]" placeholder="Ej: Ing. Carlos Méndez" />
           </div>
 
           <div>
-            <label class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Fecha Límite Estricta</label>
-            <input required bind:value={nuevaTarea.fechaLimite} type="date" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#0A1526]" />
+            <label for="field-6" class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Fecha Límite Estricta</label>
+            <input id="field-6" required bind:value={nuevaTarea.fechaLimite} type="date" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#0A1526]" />
           </div>
         </div>
 

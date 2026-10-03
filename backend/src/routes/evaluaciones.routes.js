@@ -6,6 +6,7 @@ import { FACTORES_EVALUACION } from '../lib/constants.js';
 import { colaboradoresVisiblesPara } from '../lib/scope.js';
 
 const router = Router();
+router.use(requireAuth, requirePermission('evaluaciones'));
 const NIVEL_PUNTOS = { Sobresaliente: 4, Bueno: 3, Regular: 2, Deficiente: 1 };
 
 function consolidar(calificaciones) {
@@ -17,7 +18,7 @@ function consolidar(calificaciones) {
   return 'Deficiente';
 }
 
-router.get('/', requireAuth, async (req, res) => {
+router.get('/', async (req, res) => {
   const { colaboradorId } = req.query;
   const scope = await colaboradoresVisiblesPara(req.user);
   const solicitado = colaboradorId ? Number(colaboradorId) : null;
@@ -40,10 +41,10 @@ router.get('/', requireAuth, async (req, res) => {
   res.json(evaluaciones);
 });
 
-router.get('/factores', requireAuth, (req, res) => res.json(FACTORES_EVALUACION));
+router.get('/factores', (req, res) => res.json(FACTORES_EVALUACION));
 
 // RF-15/16/17/18 — registra el jefe inmediato del colaborador evaluado.
-router.post('/', requireAuth, requirePermission('evaluaciones', 'editar'), async (req, res) => {
+router.post('/', requirePermission('evaluaciones', 'editar'), async (req, res) => {
   const { colaboradorId, periodo, calificaciones } = req.body;
   if (!colaboradorId || !periodo || !Array.isArray(calificaciones) || calificaciones.length !== FACTORES_EVALUACION.length) {
     return res.status(400).json({ error: 'colaboradorId, periodo y 15 calificaciones son requeridos' });

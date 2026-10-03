@@ -3,8 +3,9 @@
 // No se usa para el dev local (eso sigue en schema.prisma / SQLite, para
 // no depender de un servicio corriendo en la máquina); esta es la que se
 // usa para migrar y desplegar contra la base de datos real en la nube:
-//   npx prisma migrate deploy --schema prisma/schema.production.prisma
-// con DATABASE_URL apuntando al Postgres real (Neon/Supabase/Fly Postgres).
+//   npm run migrate:production (sobre una base MFN existente y respaldada)
+// Base nueva: npm run migrate:production:bootstrap.
+// DATABASE_URL debe apuntar al proyecto de MFN en Supabase.
 
 datasource db {
   provider = "postgresql"
@@ -77,6 +78,8 @@ model Rol {
 model Usuario {
   id             Int                 @id @default(autoincrement())
   correo         String              @unique
+  sessionVersion Int @default(0)
+  recuperaciones RecuperacionClave[]
   hashContrasena String
   rolId          Int
   rol            Rol                 @relation(fields: [rolId], references: [id])
@@ -233,6 +236,8 @@ model BitacoraAuditoria {
   accion    String
   entidad   String?
   entidadId Int?
+  antesHash String?
+  despuesHash String?
   fecha     DateTime @default(now())
 }
 
@@ -241,6 +246,7 @@ model BitacoraAuditoria {
 // ==========================================
 
 model Proyecto {
+  municipio String?
   id                     Int                  @id @default(autoincrement())
   nombre                 String
   agenciaFinanciadora    String
@@ -255,6 +261,9 @@ model Proyecto {
 }
 
 model EvidenciaProyecto {
+  contenido String?
+  tipoMime String?
+  sha256 String?
   id           Int      @id @default(autoincrement())
   proyectoId   Int
   proyecto     Proyecto @relation(fields: [proyectoId], references: [id])
@@ -392,4 +401,21 @@ model PublicacionTransparencia {
   fechaPublicacion DateTime @default(now())
   autorizadoPor    String   @default("Gerencia Ejecutiva")
   createdAt        DateTime @default(now())
+}
+
+model RecuperacionClave {
+ id Int @id @default(autoincrement())
+ usuarioId Int
+ usuario Usuario @relation(fields: [usuarioId], references: [id])
+ tokenHash String @unique
+ expira DateTime
+ usado Boolean @default(false)
+}
+model PuntoControlIntegridad {
+ id Int @id @default(autoincrement())
+ rootHash String
+ snapshot Json
+ auditoriaId Int
+ usuarioId Int
+ fecha DateTime @default(now())
 }

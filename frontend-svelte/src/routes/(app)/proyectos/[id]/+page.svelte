@@ -10,6 +10,16 @@
   let proyecto = $state(null);
   let loading = $state(true);
 
+  let archivoBase64 = $state('');
+  let tipoMime = $state('');
+  async function seleccionarArchivo(event) {
+    const file = event.target.files?.[0];
+    archivoBase64 = ''; tipoMime = '';
+    if (!file || !['image/png', 'image/jpeg'].includes(file.type) || file.size > 5 * 1024 * 1024) { toast.error('Seleccione una fotografía PNG o JPEG de hasta 5 MB'); return; }
+    const bytes = new Uint8Array(await file.arrayBuffer());
+    let binary = ''; for (const byte of bytes) binary += String.fromCharCode(byte);
+    archivoBase64 = btoa(binary); tipoMime = file.type;
+  }
   // Evidencia Form State
   let showModal = $state(false);
   let formLoading = $state(false);
@@ -57,16 +67,17 @@
 
   const handleAddEvidencia = async (e) => {
     e.preventDefault();
+    if (!archivoBase64) { toast.error('Adjunte la fotografía'); return; }
     formLoading = true;
     try {
       await apiClient.post(`/proyectos/${projectId}/evidencias`, {
-        urlArchivo: formData.urlArchivo,
+        archivoBase64, tipoMime,
         latitud: formData.latitud ? parseFloat(formData.latitud) : null,
         longitud: formData.longitud ? parseFloat(formData.longitud) : null,
         descripcion: formData.descripcion
       });
       toast.success('Evidencia guardada exitosamente en la base de datos');
-      showModal = false;
+      showModal = false; archivoBase64 = ''; tipoMime = '';
       formData = { urlArchivo: '', latitud: '', longitud: '', descripcion: '' };
       await fetchProyecto();
     } catch (err) {
@@ -158,7 +169,7 @@
           </span>
         </div>
         <p class="text-[22px] font-black tracking-[-0.03em] text-[#0A1526]">Q {(proyecto.presupuestoMunicipal || 0).toLocaleString('es-GT')}</p>
-        <p class="text-[11px] text-[#0A1526]/50 font-medium mt-2">Contrapartida 6 municipios MFN</p>
+        <p class="text-[11px] text-[#0A1526]/50 font-medium mt-2">Contrapartida 3 municipios activos MFN</p>
       </div>
 
       <!-- Card 4: Cooperación Externa -->
@@ -278,19 +289,13 @@
 
       <form onsubmit={handleAddEvidencia} class="space-y-4">
         <div>
-          <label class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/50 mb-1.5">URL o Almacenamiento de Fotografía</label>
-          <input 
-            required 
-            bind:value={formData.urlArchivo} 
-            type="text" 
-            placeholder="https://images.unsplash.com/... o bucket R2" 
-            class="w-full bg-white border border-gray-200 focus:border-[#3B82F6] focus:ring-1 focus:ring-[#3B82F6] rounded-xl px-4 py-3 text-[13px] text-[#0A1526] transition-all outline-none" 
-          />
+          <label for="field-1" class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/50 mb-1.5">Fotografía PNG o JPEG (hasta 5 MB)</label>
+          <input id="field-1" type="file" accept="image/png,image/jpeg" onchange={seleccionarArchivo} required class="w-full p-3 border rounded-xl" />
         </div>
         
         <div>
           <div class="flex justify-between items-center mb-1.5">
-            <label class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/50">Geolocalización GPS</label>
+            <span class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/50">Geolocalización GPS</span>
             <button 
               type="button" 
               onclick={handleGeoCapture} 
@@ -317,8 +322,8 @@
         </div>
 
         <div>
-          <label class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/50 mb-1.5">Descripción de Avance de Obra</label>
-          <textarea 
+          <label for="field-2" class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/50 mb-1.5">Descripción de Avance de Obra</label>
+          <textarea id="field-2"
             required 
             bind:value={formData.descripcion} 
             rows="3" 

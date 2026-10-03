@@ -1,6 +1,9 @@
+import { MUNICIPIOS_MFN } from '../lib/municipios.js';
+import crypto from 'node:crypto';
+import { auditContext } from '../lib/integrity.js';
 import { Router } from 'express';
 import prisma from '../lib/prisma.js';
-import { requireAuth } from '../middleware/auth.js';
+import { requireAuth, requirePermission } from '../middleware/auth.js';
 
 const router = Router();
 
@@ -13,10 +16,11 @@ router.get('/publico', async (req, res, next) => {
     });
 
     const proyectosPublicos = await prisma.proyecto.findMany({
-      where: { estado: { not: 'Cancelado' } },
+      where: { estado: { not: 'Cancelado' }, id: { in: publicaciones.filter(p => p.tipo === 'Proyecto' && p.referenciaId !== null).map(p => p.referenciaId) } },
       select: {
         id: true,
         nombre: true,
+        municipio: true,
         agenciaFinanciadora: true,
         presupuestoMunicipal: true,
         presupuestoCooperacion: true,
@@ -24,22 +28,11 @@ router.get('/publico', async (req, res, next) => {
         fechaFinPlanificada: true,
         estado: true,
         porcentajeAvanceFisico: true,
-        createdAt: true,
-        evidencias: {
-          select: {
-            id: true,
-            urlArchivo: true,
-            latitud: true,
-            longitud: true,
-            descripcion: true,
-            fechaCaptura: true
-          },
-          take: 5
-        }
+        createdAt: true
       }
     });
 
-    const censos = await prisma.censoComunitarioASH.findMany();
+    const censos = await prisma.censoComunitarioASH.findMany({ where: { municipio: { in: MUNICIPIOS_MFN } } });
     let totalViviendas = 0;
     let conAgua = 0;
     let conSaneamiento = 0;
@@ -72,7 +65,7 @@ router.get('/publico', async (req, res, next) => {
 });
 
 // GET /api/v1/transparencia/gestion - Control interno para rol de Gerente (RF5)
-router.get('/gestion', requireAuth, async (req, res, next) => {
+router.get('/gestion', requireAuth, requirePermission('transparencia'), async (req, res, next) => {
   try {
     const publicaciones = await prisma.publicacionTransparencia.findMany({
       orderBy: { createdAt: 'desc' }
@@ -83,6 +76,7 @@ router.get('/gestion', requireAuth, async (req, res, next) => {
       select: {
         id: true,
         nombre: true,
+        municipio: true,
         agenciaFinanciadora: true,
         presupuestoMunicipal: true,
         presupuestoCooperacion: true,
@@ -92,7 +86,7 @@ router.get('/gestion', requireAuth, async (req, res, next) => {
       }
     });
 
-    const censos = await prisma.censoComunitarioASH.findMany();
+    const censos = await prisma.censoComunitarioASH.findMany({ where: { municipio: { in: MUNICIPIOS_MFN } } });
     let totalViviendas = 0;
     let conAgua = 0;
     let conSaneamiento = 0;
@@ -123,10 +117,12 @@ router.get('/gestion', requireAuth, async (req, res, next) => {
 });
 
 // PUT /api/v1/transparencia/:id/visibilidad - Habilitar o dar de baja publicación (RF5)
-router.put('/:id/visibilidad', requireAuth, async (req, res, next) => {
+router.put('/:id/visibilidad', requireAuth, requirePermission('transparencia', 'editar'), async (req, res, next) => {
   try {
     const id = Number(req.params.id);
     const { visibilidad } = req.body;
+    const publication = await prisma.publicacionTransparencia.findUnique({ where: { id } });
+    if (publication?.tipo === 'SolicitudUIP') return res.status(400).json({ error: 'Los expedientes de solicitudes son privados' });
 
     const updated = await prisma.publicacionTransparencia.update({
       where: { id },
@@ -140,7 +136,7 @@ router.put('/:id/visibilidad', requireAuth, async (req, res, next) => {
 });
 
 // POST /api/v1/transparencia - Publicar nuevo contenido al portal ciudadano
-router.post('/', requireAuth, async (req, res, next) => {
+router.post('/', requireAuth, requirePermission('transparencia', 'editar'), async (req, res, next) => {
   try {
     const { tipo, titulo, resumen, referenciaId } = req.body;
 
@@ -166,17 +162,14 @@ router.post('/', requireAuth, async (req, res, next) => {
 });
 
 // POST /api/v1/transparencia/solicitudes - Solicitud de Información Pública Digital (Decreto 57-2008)
-router.post('/solicitudes', async (req, res, next) => {
+router.post('/solicitudes', (req, res, next) => auditContext.run({ usuarioId: null }, next), async (req, res, next) => {
   try {
     const { nombre, correo, telefono, municipio, descripcion } = req.body;
     if (!nombre || !descripcion) {
       return res.status(400).json({ error: 'Nombre del solicitante y descripción son obligatorios según Art. 38' });
     }
 
-    const count = await prisma.publicacionTransparencia.count({
-      where: { tipo: 'SolicitudUIP' }
-    });
-    const codigo = `EXP-UIP-2024-${(count + 1).toString().padStart(4, '0')}`;
+    const codigo = `UIP-${crypto.randomBytes(24).toString('hex')}`;
     
     // Plazo legal de 10 días hábiles (~14 días calendario)
     const fechaLimite = new Date();
@@ -227,11 +220,8 @@ router.get('/solicitudes/:codigo', async (req, res, next) => {
     }
     let datos = {};
     try { datos = JSON.parse(sol.resumen || '{}'); } catch {}
-    res.json({
-      expediente: sol.codigo,
-      fechaRecepcion: sol.fechaPublicacion,
-      ...datos
-    });
+    if (!/^UIP-[a-f0-9]{48}$/.test(codigo)) return res.status(404).json({ error: 'Código de consulta no disponible' });
+    res.json({ expediente: sol.codigo, fechaRecepcion: sol.fechaPublicacion, estado: datos.estado, fechaLimite: datos.fechaLimite });
   } catch (err) {
     next(err);
   }

@@ -1,12 +1,12 @@
 import { Router } from 'express';
 import prisma from '../lib/prisma.js';
 import { requireAuth, requirePermission } from '../middleware/auth.js';
-import { logAction } from '../lib/audit.js';
 
 const router = Router();
+router.use(requireAuth, requirePermission('arc'));
 
 // GET /api/v1/arc - Listar tareas del Plan de Mejoras ARC
-router.get('/', requireAuth, async (req, res, next) => {
+router.get('/', async (req, res, next) => {
   try {
     const { estado, dimension, prioridad, municipio, search } = req.query;
     const where = {};
@@ -50,7 +50,7 @@ router.get('/', requireAuth, async (req, res, next) => {
 });
 
 // GET /api/v1/arc/metricas - Métricas ejecutivas y alertas
-router.get('/metricas', requireAuth, async (req, res, next) => {
+router.get('/metricas', async (req, res, next) => {
   try {
     const tareas = await prisma.tareaARC.findMany();
     const ahora = new Date();
@@ -80,7 +80,7 @@ router.get('/metricas', requireAuth, async (req, res, next) => {
 });
 
 // POST /api/v1/arc - Crear nueva tarea operativa ARC (RF8 - RBAC)
-router.post('/', requireAuth, requirePermission('arc', 'editar'), async (req, res, next) => {
+router.post('/', requirePermission('arc', 'editar'), async (req, res, next) => {
   try {
     const { titulo, descripcion, dimension, prioridad, municipio, responsable, fechaLimite } = req.body;
 
@@ -102,7 +102,6 @@ router.post('/', requireAuth, requirePermission('arc', 'editar'), async (req, re
       }
     });
 
-    await logAction(req.user?.sub, 'crear_tarea_arc', 'tarea_arc', tarea.id);
     res.status(201).json(tarea);
   } catch (err) {
     next(err);
@@ -110,7 +109,7 @@ router.post('/', requireAuth, requirePermission('arc', 'editar'), async (req, re
 });
 
 // PUT /api/v1/arc/:id - Actualizar estado o datos de tarea (Kanban Drag/Drop - RF7)
-router.put('/:id', requireAuth, requirePermission('arc', 'editar'), async (req, res, next) => {
+router.put('/:id', requirePermission('arc', 'editar'), async (req, res, next) => {
   try {
     const id = Number(req.params.id);
     const { estado, titulo, descripcion, dimension, prioridad, responsable, fechaLimite } = req.body;
@@ -136,7 +135,6 @@ router.put('/:id', requireAuth, requirePermission('arc', 'editar'), async (req, 
       data
     });
 
-    await logAction(req.user?.sub, 'actualizar_tarea_arc', 'tarea_arc', id);
     res.json(updated);
   } catch (err) {
     next(err);
@@ -144,12 +142,11 @@ router.put('/:id', requireAuth, requirePermission('arc', 'editar'), async (req, 
 });
 
 // DELETE /api/v1/arc/:id - Eliminar tarea (RBAC)
-router.delete('/:id', requireAuth, requirePermission('arc', 'editar'), async (req, res, next) => {
+router.delete('/:id', requirePermission('arc', 'editar'), async (req, res, next) => {
   try {
     await prisma.tareaARC.delete({
       where: { id: Number(req.params.id) }
     });
-    await logAction(req.user?.sub, 'eliminar_tarea_arc', 'tarea_arc', Number(req.params.id));
     res.json({ message: 'Tarea eliminada exitosamente' });
   } catch (err) {
     next(err);

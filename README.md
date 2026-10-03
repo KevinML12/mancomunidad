@@ -1,130 +1,75 @@
-# MFN Digital · Plataforma de Gestión y Coordinación Intermunicipal
-### Mancomunidad de Municipios de la Frontera del Norte de Huehuetenango · República de Guatemala
-*Proyecto de Graduación — Licenciatura en Ingeniería en Sistemas de Información y Ciencias de la Computación*
+# MFN Digital
 
----
+Plataforma de gestión y seguimiento intermunicipal para la Mancomunidad Frontera del Norte. Centraliza proyectos, acciones del plan ARC, movimientos financieros, actas, convenios e indicadores ASH, con un portal de transparencia. Recursos humanos conserva su subsistema SIRH.
 
-## 🏛️ Definición e Identidad Institucional
+La investigación delimita siete módulos funcionales: proyectos, ARC, finanzas, gobernanza, convenios, ASH y transparencia. Autenticación y permisos son transversales. Inteligencia territorial y talento humano son extensiones del prototipo; su existencia no amplía automáticamente el alcance académico aprobado.
 
-> **MFN Digital** es una plataforma de gestión y coordinación intermunicipal que centraliza proyectos de inversión pública territorial, plan de mejoras institucionales (ARC), ejecución presupuestaria y tesorería (CGC), gobernanza asamblearia, convenios de cooperación internacional, censos de agua y saneamiento (ASH), transparencia ciudadana y talento humano (SIRH) de la Mancomunidad Frontera del Norte, facilitando la toma de decisiones gerenciales, la optimización operativa y la rendición de cuentas irrefutable.
+## Cobertura territorial
 
-La Mancomunidad Frontera del Norte (MFN) está integrada legal y territorialmente por **seis municipios canónicos** del departamento de Huehuetenango:
-1. **Santa Eulalia** (Sede administrativa institucional)
-2. **San Pedro Soloma**
-3. **San Mateo Ixtatán**
-4. **San Rafael la Independencia**
-5. **Santa Cruz Barillas**
-6. **San Juan Ixcoy**
+La membresía activa utilizada para esta implementación es **San Pedro Soloma, Santa Eulalia y San Rafael la Independencia**, según la lista del capítulo IV del PG y la confirmación del responsable del proyecto el 3 de octubre de 2026. Los otros municipios mencionados en los antecedentes corresponden a cobertura histórica. El municipio se guarda explícitamente en cada proyecto; los registros históricos sin municipio no se asignan por inferencias del nombre. Los registros de municipios históricos se conservan; el IPIM y los nuevos formularios utilizan el catálogo activo.
 
----
+## Implementación
 
-## 🧩 Arquitectura Modular del Sistema
+- Svelte 5 y SvelteKit 2, Vite 8 y Tailwind CSS 3 en `frontend-svelte/`.
+- Node.js, Express 4 y Prisma 6 en `backend/`.
+- SQLite para desarrollo; esquema PostgreSQL separado para producción.
+- La carpeta React `frontend/` corresponde a la interfaz anterior.
+- Go es una alternativa futura, no el backend implementado.
 
-El ecosistema integra 8 módulos estratégicos interconectados en una base de datos relacional PostgreSQL con bitácora inmutable:
+No se ha demostrado en esta entrega un SLA de 99.9%, una mejora estadística de tiempos ni la ausencia de sesgos del índice IPIM. Las mediciones requieren datos y validación institucional.
 
-| Módulo | Denominación | Funcionalidad Clave y Base Normativa |
-|---|---|---|
-| **01** | **Proyectos Intermunicipales** | Formulación, ejecución física y financiera de obras territoriales, geolocalización satelital y cadena de evidencias fotográficas. |
-| **02** | **Plan de Mejoras (ARC)** | Matriz de Desempeño Institucional y seguimiento de hallazgos de consultoría (2023-2024) mediante tablero Kanban interactivo drag & drop. |
-| **03** | **Finanzas y Tesorería** | Registro de cuotas ordinarias municipales, fondos de cooperación, emisión oficial del **Recibo Forma 63-A2 (CGC)** con conversión de cifras a letras y dictamen de rendición de cuentas para la Asamblea. |
-| **04** | **Gobernanza Asamblearia** | Archivo digital de actas ordinarias y extraordinarias, foliatura autorizada por la CGC y seguimiento vinculante de acuerdos suscritos por los alcaldes. |
-| **05** | **Convenios y Cooperación** | Matriz de compromisos y plazos con agencias internacionales (USAID, HELVETAS, BID) y ministerios de Estado con semáforo de vencimientos. |
-| **06** | **Agua y Saneamiento (ASH)** | Censos comunitarios, monitoreo microbiológico y cloro residual (PPM) en acueductos rurales en articulación con las OMAS municipales. |
-| **07** | **Transparencia Ciudadana** | Portal público conforme al Decreto 57-2008 (Ley de Acceso a la Información Pública), publicación de informes de gestión y buzón de peticiones comunitarias. |
-| **08** | **Inteligencia Territorial** | **Algoritmo IPIM** (Priorización de Inversión Intermunicipal Multicriterio) para asignación de fondos sin sesgo político y **Certificación Forense SHA-256 (Merkle Root)** verificada contra la bitácora histórica. |
-| **SIRH** | **Talento Humano (Submódulo)** | Directorio laboral, cálculo de antigüedad de servicio, control de balance de vacaciones (Art. 38 RIT, 20 días hábiles), catálogo jerárquico de puestos (A, B, C, D) y régimen disciplinario. |
+## Seguridad y alcance del control interno
 
----
+Las sesiones JWT incluyen tipo y versión. Cada petición autenticada consulta el rol y los permisos vigentes en la base. Restablecer la contraseña revoca las sesiones anteriores. No existen tokens fijos de demostración.
 
-## 💻 Pila Tecnológica Implementada
+La recuperación utiliza un código aleatorio de un solo uso, almacenado como hash y válido por 15 minutos. El código no se entrega a quien solicita la recuperación: un servicio HTTPS configurado debe enviarlo al correo propietario. Sin configuración, el endpoint devuelve 503.
 
-La arquitectura actual corresponde a una solución desacoplada de alto rendimiento y bajo acoplamiento:
+Las altas, cambios y bajas de los nueve modelos operativos incluidos en el control de integridad se registran junto con su auditoría en una misma transacción. Se guardan huellas del registro antes y después. La verificación reproduce esos eventos desde un punto de control y compara todos los campos de los registros. Un GET no crea puntos de control; el POST exige permiso de aprobación y rechaza discrepancias.
 
-- **Frontend SPA**: SvelteKit 5 (arquitectura de reactividad basada en *Runes*: `$state`, `$derived`, `$props`), Vite 6, Tailwind CSS, Heroicons / Lucide.
-- **Backend API REST**: Node.js v20 LTS, Express v4, Prisma ORM v5, autenticación JWT criptográfica (`HS256`) con caducidad estricta y control de acceso basado en roles y permisos (RBAC).
-- **Base de Datos**: PostgreSQL v16 serverless alojado en **Neon DB** con esquema relacional normalizado y bitácora de auditoría transaccional (`BitacoraAuditoria`).
-- **Seguridad Forense**: Motor de sellado criptográfico mediante árbol de Merkle SHA-256 que contrasta el estado actual contra puntos de control históricos asentados en el libro mayor de auditoría.
-- **Despliegue Cloud**: Vercel Serverless Platform con pipelines de integración y entrega continua (CI/CD).
+Este control es interno. No es una certificación de la CGC, un árbol de Merkle formal ni un almacenamiento inmutable frente a quien administra la base. La protección y respaldo de la base de datos continúan siendo necesarios.
 
-*(Nota metodológica: La arquitectura actual satisface plenamente las métricas de concurrencia y latencia del estudio pre-experimental. Los servicios de procesamiento asíncrono pesado quedan documentados para una eventual fase de migración a Go conforme evolucione el volumen transaccional de los municipios).*
+Las evidencias nuevas conservan el archivo PNG/JPEG y su SHA-256 en la base, con un límite de 5 MB. Las coordenadas proceden del cliente y no prueban la ubicación real. Los enlaces externos históricos se señalan como no verificados. No hay extracción EXIF ni funcionamiento sin conexión implementados.
 
----
+Las consultas públicas de solicitudes emplean un código aleatorio y solo devuelven estado y fechas, sin contactos ni descripción. Los códigos secuenciales históricos no se consultan por la ruta pública.
 
-## 🔒 Modelo de Seguridad y Auditoría
+## Desarrollo y migraciones
 
-1. **Autenticación Estricta**: Tokens JWT firmados con secreto criptográfico de 256 bits; se eliminó cualquier vía de acceso bypass o token fijo de prueba en entornos productivos.
-2. **RBAC Granular**: Middleware `requirePermission` aplicado a todas las operaciones mutantes (`POST`, `PUT`, `DELETE`), verificando roles institucionales:
-   - `ADMIN`: Control total de configuración y seguridad.
-   - `GERENCIA`: Aprobación gerencial, dictámenes de asamblea y supervisión global.
-   - `TECNICO`: Formulación y actualización de proyectos, tareas ARC y censos ASH.
-   - `AUDITOR`: Acceso de fiscalización, consulta forense e inspección CGC.
-   - `COMUNICACION`: Publicación en el portal de transparencia ciudadana.
-3. **Trazabilidad Total**: Cada mutación ejecuta `logAction(usuarioId, accion, entidad, entidadId)` en `BitacoraAuditoria`, registrando marca temporal ISO inmutable.
-4. **Recuperación de Credenciales**: Flujo seguro de dos pasos mediante `POST /api/v1/auth/recuperar` y `POST /api/v1/auth/restablecer` con tokens criptográficos de expiración de 15 minutos.
-
----
-
-## 🌐 URLs de Producción
-
-- **Frontend Web Institucional**: [https://frontend-svelte-vert.vercel.app](https://frontend-svelte-vert.vercel.app)
-- **Backend API REST**: [https://backend-eosin-omega-81.vercel.app](https://backend-eosin-omega-81.vercel.app)
-- **Endpoint de Integridad Forense**: `https://backend-eosin-omega-81.vercel.app/api/v1/inteligencia/sello-forense`
-
----
-
-## 🛠️ Instalación y Ejecución Local
-
-### Prerrequisitos
-- Node.js >= 20.0.0
-- npm >= 10.0.0
-- Instancia de PostgreSQL (local o cadena de conexión a Neon DB en `.env`)
-
-### 1. Backend API
-```bash
+```sh
 cd backend
-npm install
-npx prisma generate
-npm run prisma:seed
+npm ci
+# Configurar .env con DATABASE_URL local y JWT_SECRET aleatorio.
+npx prisma generate --schema prisma/schema.prisma
+npx prisma migrate deploy --schema prisma/schema.prisma
+npm run permissions:update
 npm run dev
 ```
-> Servidor disponible en: `http://localhost:8080/api/v1`
 
-### 2. Frontend SvelteKit
-```bash
+En otra terminal:
+
+```sh
 cd frontend-svelte
-npm install
+npm ci
 npm run dev
 ```
-> Aplicación disponible en: `http://localhost:5173`
 
-### 3. Ejecución de Pruebas Unitarias
-```bash
+El script de permisos actualiza los roles existentes sin eliminar cuentas. El seed de datos ficticios es destructivo y exige `ALLOW_DEMO_SEED=true`; no debe ejecutarse sobre datos institucionales.
+
+Para PostgreSQL existente: respaldar la base, revisar `backend/prisma/production-additions.sql` y ejecutar `npm run migrate:production` con la conexión correspondiente. Luego generar el cliente con `npx prisma generate --schema prisma/schema.production.prisma` y ejecutar `npm run permissions:update`. El historial `prisma/migrations/` es SQLite y no debe aplicarse a PostgreSQL. Para una base nueva e identificada de MFN, usar `npm run migrate:production:bootstrap`; crea el esquema sin cuentas ni datos ficticios y habilita RLS para impedir acceso directo a las tablas privadas mediante la API de Supabase. La conexión del backend debe utilizar el propietario de las tablas.
+
+## Entrega del correo de recuperación
+
+Configurar `RESET_DELIVERY_URL` y `RESET_DELIVERY_SECRET` en el backend. El servicio recibe un POST HTTPS con `{correo, token, expira}` y `Authorization: Bearer <secreto>`. Debe enviar el código solamente al correo indicado y no registrar el token en logs. Las pruebas usan un receptor local simulado y no envían correos.
+
+## Verificación
+
+```sh
 cd backend
 npm test
+npm run test:integration
 ```
-> Ejecuta la suite completa de **120 pruebas unitarias** que certifican las reglas de negocio de los 8 módulos institucionales.
 
----
+Las 120 pruebas históricas comprueban funciones aisladas. Las pruebas en `tests/integration/` ejercitan las rutas Express con una base temporal migrada y cubren permisos, recuperación, archivos, privacidad, persistencia y auditoría. No constituyen por sí mismas la evaluación institucional de la investigación.
 
-## 📋 Cuentas de Acceso Institucional (Credenciales Reales en Neon DB)
+## Documentación académica
 
-| Rol Institucional | Correo Electrónico | Contraseña | Atribuciones Principales |
-|---|---|---|---|
-| **Gerencia Ejecutiva** | `gerencia@mfn.gob.gt` | `mfn2026` | Aprobación de planes, dictamen de asamblea, priorización IPIM y sello CGC |
-| **Dirección Administrativa Financiera (DAF)** | `daf@mfn.gob.gt` | `mfn2026` | Emisión de Recibo 63-A2, ejecución presupuestaria y tesorería |
-| **Coordinación Técnica (DMP)** | `proyectos@mfn.gob.gt` | `mfn2026` | Registro de obras intermunicipales, carga de evidencias y geolocalización |
-| **Oficial de Monitoreo (ARC)** | `monitoreo@mfn.gob.gt` | `mfn2026` | Gestión del tablero Kanban de mejoras institucionales |
-| **Especialista de Agua y Saneamiento** | `ash@mfn.gob.gt` | `mfn2026` | Censos rurales, medición de cloro residual y alertas OMAS |
-| **Auditoría Interna / CGC** | `auditoria@mfn.gob.gt` | `mfn2026` | Verificación de actas, libro foliado y cadena de custodia criptográfica |
-
----
-
-## ⚖️ Marco Normativo y Fuentes Institucionales
-
-- **Código Municipal de Guatemala** (Decreto Número 12-2002 del Congreso de la República).
-- **Ley Orgánica de la Contraloría General de Cuentas** (Decreto Número 31-2002).
-- **Ley de Acceso a la Información Pública** (Decreto Número 57-2008).
-- **Estatutos de Constitución de la Mancomunidad Frontera del Norte**.
-- **Reglamento Interno de Trabajo (RIT)** de la Mancomunidad Frontera del Norte.
-- **Manual de Evaluación del Desempeño por Competencias** (Consultoría MFN 2023).
-- **Plan de Mejoras Institucionales ARC** (Trimestre 3, Versión Final 2024).
+Consultar `capítulos/CONTROL_DE_VERSIONES.md` para identificar los documentos de trabajo y las verificaciones institucionales pendientes. El diagnóstico inicial de 2023 debe distinguirse del informe final de consultoría y de los avances del plan de mejoras: el problema de investigación se formula como integración y seguimiento de procesos existentes.

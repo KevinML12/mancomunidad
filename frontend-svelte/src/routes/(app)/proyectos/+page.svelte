@@ -434,36 +434,33 @@
 
       <form onsubmit={handleSubmit} class="space-y-5">
         <div>
-          <label class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/50 mb-1.5">Nombre del Proyecto</label>
-          <input required bind:value={formData.nombre} type="text" class="w-full bg-white border border-gray-200 focus:border-[#3B82F6] focus:ring-1 focus:ring-[#3B82F6] rounded-xl px-4 py-3 text-[13px] text-[#0A1526] shadow-sm transition-all" placeholder="Ej: Sistema de Agua Potable..." />
+          <label for="field-1" class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/50 mb-1.5">Nombre del Proyecto</label>
+          <input id="field-1" required bind:value={formData.nombre} type="text" class="w-full bg-white border border-gray-200 focus:border-[#3B82F6] focus:ring-1 focus:ring-[#3B82F6] rounded-xl px-4 py-3 text-[13px] text-[#0A1526] shadow-sm transition-all" placeholder="Ej: Sistema de Agua Potable..." />
         </div>
         
         <div class="grid grid-cols-2 gap-5">
           <div>
-            <label class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/50 mb-1.5">Agencia Cooperante</label>
-            <input required bind:value={formData.agenciaFinanciadora} type="text" class="w-full bg-white border border-gray-200 focus:border-[#3B82F6] focus:ring-1 focus:ring-[#3B82F6] rounded-xl px-4 py-3 text-[13px] text-[#0A1526] shadow-sm transition-all" placeholder="Ej: USAID / AECID" />
+            <label for="field-2" class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/50 mb-1.5">Agencia Cooperante</label>
+            <input id="field-2" required bind:value={formData.agenciaFinanciadora} type="text" class="w-full bg-white border border-gray-200 focus:border-[#3B82F6] focus:ring-1 focus:ring-[#3B82F6] rounded-xl px-4 py-3 text-[13px] text-[#0A1526] shadow-sm transition-all" placeholder="Ej: USAID / AECID" />
           </div>
           <div>
-            <label class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/50 mb-1.5">Municipio</label>
-            <select bind:value={formData.municipio} class="w-full bg-white border border-gray-200 focus:border-[#3B82F6] focus:ring-1 focus:ring-[#3B82F6] rounded-xl px-4 py-3 text-[13px] text-[#0A1526] shadow-sm transition-all">
+            <label for="field-3" class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/50 mb-1.5">Municipio</label>
+            <select id="field-3" bind:value={formData.municipio} class="w-full bg-white border border-gray-200 focus:border-[#3B82F6] focus:ring-1 focus:ring-[#3B82F6] rounded-xl px-4 py-3 text-[13px] text-[#0A1526] shadow-sm transition-all">
               <option value="Santa Eulalia">Santa Eulalia</option>
               <option value="San Pedro Soloma">San Pedro Soloma</option>
               <option value="San Rafael la Independencia">San Rafael la Independencia</option>
-              <option value="San Mateo Ixtatán">San Mateo Ixtatán</option>
-              <option value="Barillas">Santa Cruz Barillas</option>
-              <option value="San Miguel Acatán">San Miguel Acatán</option>
             </select>
           </div>
         </div>
 
         <div class="grid grid-cols-2 gap-5">
           <div>
-            <label class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/50 mb-1.5">Aporte Municipal (Q)</label>
-            <input required bind:value={formData.presupuestoMunicipal} type="number" min="0" step="0.01" class="w-full bg-white border border-gray-200 focus:border-[#3B82F6] focus:ring-1 focus:ring-[#3B82F6] rounded-xl px-4 py-3 text-[13px] text-[#0A1526] shadow-sm transition-all" />
+            <label for="field-4" class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/50 mb-1.5">Aporte Municipal (Q)</label>
+            <input id="field-4" required bind:value={formData.presupuestoMunicipal} type="number" min="0" step="0.01" class="w-full bg-white border border-gray-200 focus:border-[#3B82F6] focus:ring-1 focus:ring-[#3B82F6] rounded-xl px-4 py-3 text-[13px] text-[#0A1526] shadow-sm transition-all" />
           </div>
           <div>
-            <label class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/50 mb-1.5">Aporte Cooperación (Q)</label>
-            <input required bind:value={formData.presupuestoCooperacion} type="number" min="0" step="0.01" class="w-full bg-white border border-gray-200 focus:border-[#3B82F6] focus:ring-1 focus:ring-[#3B82F6] rounded-xl px-4 py-3 text-[13px] text-[#0A1526] shadow-sm transition-all" />
+            <label for="field-5" class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/50 mb-1.5">Aporte Cooperación (Q)</label>
+            <input id="field-5" required bind:value={formData.presupuestoCooperacion} type="number" min="0" step="0.01" class="w-full bg-white border border-gray-200 focus:border-[#3B82F6] focus:ring-1 focus:ring-[#3B82F6] rounded-xl px-4 py-3 text-[13px] text-[#0A1526] shadow-sm transition-all" />
           </div>
         </div>
 

@@ -29,17 +29,17 @@ const allowedOrigins = (process.env.CLIENT_URL || '*').split(',').map((s) => s.t
 app.use(cors({
   origin: allowedOrigins.includes('*') ? '*' : allowedOrigins,
 }));
-app.use(express.json());
+app.use(express.json({ limit: '8mb' }));
 app.use(morgan('dev'));
 
 app.get('/', (req, res) => res.json({
   ok: true,
-  name: 'SIRH-MFN Backend API',
+  name: 'MFN Digital API',
   version: '1.0.0',
   health: '/api/v1/health'
 }));
-app.get('/health', (req, res) => res.json({ ok: true, service: 'sirh-mfn-backend' }));
-app.get('/api/v1/health', (req, res) => res.json({ ok: true, service: 'sirh-mfn-backend' }));
+app.get('/health', (req, res) => res.json({ ok: true, service: 'mfn-digital-backend' }));
+app.get('/api/v1/health', (req, res) => res.json({ ok: true, service: 'mfn-digital-backend' }));
 
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/dashboard', dashboardRoutes);

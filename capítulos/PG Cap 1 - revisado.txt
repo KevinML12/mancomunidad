@@ -1,0 +1,340 @@
+Versión de trabajo revisada el 3 de octubre de 2026. La propuesta se centra en integrar y dar seguimiento a procedimientos existentes. El diagnóstico inicial de 2023 es antecedente histórico: el informe final de la consultoría documenta la elaboración de herramientas administrativas y capacitación. La membresía activa para el proyecto corresponde a San Pedro Soloma, Santa Eulalia y San Rafael la Independencia, confirmada por el responsable el 3 de octubre de 2026 a partir del PG. El padrón de participantes y los resultados pretest/postest requieren confirmación y evidencia institucional. Este documento no acredita esas mediciones.
+
+CAPÍTULO I 
+ANTEPROYECTO DE INVESTIGACIÓN 
+
+Este capítulo fundamenta el anteproyecto de investigación, integrando el marco conceptual y metodológico del estudio. En las siguientes secciones se exponen los antecedentes que motivan el desarrollo del ecosistema digital, definiendo con claridad el planteamiento del problema, los objetivos y la viabilidad del sistema.  
+
+Antecedentes
+
+El presente apartado expone el fundamento histórico e investigativo que sustenta el desarrollo del proyecto. A continuación, se examina la evolución del gobierno electrónico y las carencias documentales previas que justifican la modernización urgente del sistema administrativo y documental.
+
+Evolución del gobierno electrónico y plataformas en la nube
+
+La transformación digital del sector público representa una exigencia fundamental para la gobernanza moderna en las administraciones latinoamericanas. La transición tecnológica requiere superar las arquitecturas tradicionales de software para adoptar infraestructuras modernas y flexibles. 
+
+Las instalaciones locales convencionales generan costos excesivos a largo plazo y presentan vulnerabilidades críticas frente a fallas técnicas o desastres. En respuesta a estas limitaciones estructurales, el modelo de software como servicio emerge como el estándar indispensable para optimizar los recursos estatales. 
+
+Las municipalidades pequeñas sufren una brecha digital severa a causa de su dependencia de servidores físicos que retrasan la ejecución de proyectos. La migración hacia servicios gestionados externos constituye la estrategia más viable para gobiernos locales con limitaciones presupuestarias e infraestructura precaria. La adopción de este modelo permite a las mancomunidades enfocar sus recursos financieros directamente en las labores puramente sociales y operativas. Las entidades gubernamentales ya no necesitan contratar equipos masivos de ingenieros para mantener servidores encendidos de forma ininterrumpida durante las veinticuatro horas.
+
+El rol de las mancomunidades y sus desafíos tecnológicos
+
+El andamiaje administrativo del Estado de Guatemala deposita una enorme responsabilidad en los gobiernos locales para impulsar el desarrollo territorial. Las municipalidades enfrentan severas limitaciones financieras derivadas de la alta disparidad en la recaudación fiscal de sus respectivos territorios. Para mitigar esta limitante, el Código Municipal fomenta activamente la creación de figuras asociativas para la prestación de servicios públicos. 
+
+Las mancomunidades surgen como una solución estratégica para la ejecución de obras regionales mediante la unificación de presupuestos municipales. La integración de estos recursos en un fondo común permite alcanzar economías de escala indispensables para el progreso comunitario. Sin embargo, esta figura asociativa conlleva una enorme complejidad técnica y administrativa en su labor diaria frente a la población. La coordinación intermunicipal exige mecanismos de control interno sumamente rigurosos para garantizar el manejo transparente de los aportes públicos. El impacto de la opacidad administrativa recae directamente en la baja captación de fondos internacionales para el desarrollo municipal.  
+
+Las agencias cooperantes exigen rigurosos estándares de transparencia antes de realizar desembolsos millonarios para proyectos de agua y saneamiento. La falta de auditoría digital y registros confiables aleja sistemáticamente a los donantes internacionales de las instituciones públicas locales vulnerables. Las mancomunidades necesitan herramientas informáticas precisas para generar reportes consolidados sobre la ejecución de sus recursos de manera instantánea. La tecnología constituye el principal instrumento para mitigar los riesgos operativos en la gestión de los fondos económicos mancomunados. 
+
+La transición hacia plataformas digitales unificadas deja de ser un lujo administrativo para convertirse en un mecanismo de supervivencia financiera. El acceso a la información fidedigna garantiza el cumplimiento irrestricto de las normativas de probidad exigidas por los organismos internacionales. Las autoridades locales demandan sistemas capaces de segregar lógicamente los fondos públicos de los aportes provenientes de la cooperación externa. La ausencia de estas plataformas expone a los directivos a sanciones administrativas severas por parte de la Contraloría General de Cuentas.
+
+Análisis de la digitalización de la administración pública y recursos humanos
+
+La administración del talento humano constituye el eje central que sostiene la operatividad de cualquier institución pública guatemalteca moderna. Tradicionalmente, este departamento relega sus acciones a funciones operativas, enfocadas casi exclusivamente en la firma de contratos y pagos salariales. Las exigencias contemporáneas obligan a los gobiernos a transformar radicalmente sus áreas de recursos humanos en verdaderas divisiones estratégicas. La profesionalización del servicio civil a nivel municipal requiere herramientas informáticas modernas para evaluar el desempeño de los colaboradores. 
+
+El reclutamiento en el contexto municipal guatemalteco carece frecuentemente de metodologías estandarizadas que aseguren la contratación de personal técnico idóneo. Las autoridades formalizan las contrataciones mediante actas físicas vulnerables al desgaste natural, la humedad o la pérdida por descuidos humanos. La excesiva dependencia del papel en el área de recursos humanos imposibilita auditar los expedientes laborales de forma remota. Esta laguna documental expone a las mancomunidades a contingencias legales frente a inspecciones regulares del Ministerio de Trabajo y Previsión Social.
+
+La implementación de un ecosistema moderno en la nube facilita la creación de un repositorio histórico del desempeño institucional. Los gerentes pueden rastrear la evolución profesional de cada colaborador para identificar brechas de capacitación técnica en las operaciones. La plataforma tecnológica provee un entorno seguro para registrar y documentar las amonestaciones, permisos y vacaciones de los trabajadores. 
+
+La sistematización de estos procedimientos otorga certeza jurídica a la administración pública ante posibles conflictos laborales con ex empleados. Las entidades gubernamentales deben abandonar los sistemas descentralizados tradicionales para adoptar soluciones informáticas que garanticen la retención del talento humano. Las instituciones que migran hacia herramientas en la nube reportan mejoras inmediatas en la productividad de sus cuadros técnicos. La adopción de infraestructura computacional externa democratiza el acceso a herramientas de gestión reservadas históricamente para grandes corporaciones privadas. El software como servicio elimina las barreras económicas que marginan a los municipios rurales del avance tecnológico mundial.
+
+Marco histórico de la Mancomunidad de Municipios Frontera del Norte
+
+La Mancomunidad de Municipios Frontera del Norte inició sus operaciones el dos de noviembre del año dos mil cinco. Esta entidad asociativa regional agrupa diversas alcaldías del noroccidente de Guatemala para promover el desarrollo económico local sostenible. Su fundación responde a la necesidad de unificar esfuerzos políticos y financieros para enfrentar retos compartidos de infraestructura comunitaria. La institución trasladó su sede central al municipio de San Mateo Ixtatán durante el año dos mil doce. Posteriormente, las autoridades establecieron las oficinas principales en el municipio de Santa Eulalia, departamento de Huehuetenango, para facilitar sus operaciones logísticas. 
+
+La crisis sanitaria mundial paralizó las funciones administrativas de la organización durante el año dos mil veinte. Los alcaldes reorganizaron la junta directiva en abril del año dos mil veintiuno para reanudar la ejecución de obras. A partir de esa fecha, la gerencia inició nuevas gestiones para captar fondos e implementar programas de desarrollo integral.  El crecimiento orgánico de la institución enfocó sus esfuerzos en la ejecución acelerada de obras públicas para las comunidades. Este enfoque operativo provocó el abandono completo de la formalización de la estructura administrativa interna de la asociación regional. 
+
+El volumen de proyectos intermunicipales y el personal técnico contratado incrementaron significativamente durante los últimos dos años de gestión. Este crecimiento desordenado generó una fricción evidente entre las urgentes necesidades de campo y la capacidad de la administración. Las autoridades detectaron la urgencia de modernizar los procesos internos para cumplir con las exigencias de la cooperación internacional. La gerencia promovió la contratación de consultorías especializadas para evaluar el estado real de la documentación normativa de la entidad. 
+
+Las evaluaciones confirmaron que los manuales operativos de la asociación carecían de vigencia frente a las crecientes demandas operativas. La institución operaba bajo un reglamento interno obsoleto que omitía normativas modernas sobre salud ocupacional y prevención de riesgos.
+
+Impacto de la obsolescencia normativa en la gestión institucional
+
+El consultor Juan Us Vicente elaboró un diagnóstico situacional inicial para la mancomunidad durante diciembre del año dos mil veintitrés. Este informe oficial reveló la carencia absoluta de ocho herramientas administrativas clave para el funcionamiento legal de la organización. La entidad operaba sin un reglamento interno de trabajo actualizado, manual de procedimientos y manual de evaluación de desempeño. El estudio identificó la falta de una política de salud y seguridad ocupacional para proteger a los trabajadores técnicos. Asimismo, la institución carecía de una política de protección de información, un código de conducta y un código de ética. 
+
+Finalmente, la ausencia de un manual de reclutamiento obligaba a los directivos a contratar personal mediante métodos puramente empíricos. Esta obsolescencia normativa representa un factor de riesgo letal para el funcionamiento transparente del sector público guatemalteco. Las regulaciones internas desfasadas provocan que la organización opere en un estado de vulnerabilidad legal y administrativa permanente.  
+
+La anacronía documental paraliza la toma de decisiones y expone a los directivos a sanciones administrativas por mala gestión. Las operaciones diarias de la mancomunidad transcurren mediante procesos analógicos fragmentados que dificultan la consolidación de la información oficial. Los técnicos de campo reportan sus avances en formatos físicos que imposibilitan la trazabilidad exacta de los proyectos ejecutados. La contabilidad institucional mezcla los fondos públicos de la Contraloría General de Cuentas con los recursos de aportes privados. 
+
+Esta opacidad financiera impide a la junta directiva reportar métricas precisas sobre los indicadores de agua, saneamiento e higiene. La digitalización exige a las instituciones revisar y sanear sus normativas antes de la implementación de un ecosistema de software. Una plataforma informática requiere flujos de aprobación claros, perfiles de puesto definidos y reglas de negocio lógicas sin ambigüedades. El mayor reto de la modernización radica en la reingeniería de los procesos jurídicos internos que soportan la tecnología.
+
+Estudios previos y casos de éxito en la adopción de ecosistemas SaaS
+
+La revisión de la literatura sobre modernización municipal demuestra que la obsolescencia administrativa afecta a múltiples asociaciones en Latinoamérica. Diversas investigaciones evidencian que las debilidades en la gestión administrativa limitan drásticamente la capacidad para impulsar el desarrollo territorial. Frente a este escenario recurrente, varios países implementan proyectos de digitalización compartida como solución definitiva a la burocracia institucional. La adopción de plataformas tecnológicas unificadas reduce significativamente la corrupción al transparentar la administración de los recursos públicos locales. 
+
+El desarrollo de ecosistemas digitales bajo el modelo de software como servicio optimiza la gestión del talento humano. Las herramientas en la nube facilitan la captura asíncrona de datos desde dispositivos móviles en zonas de baja conectividad. Los técnicos documentan sus labores mediante evidencias fotográficas y coordenadas geoespaciales precisas que el sistema procesa de forma automática. La arquitectura de alta concurrencia asegura que las solicitudes simultáneas no colapsen los servidores de la institución gubernamental.
+
+La programación estructurada en lenguajes modernos permite manejar grandes volúmenes de información sin incurrir en altos costos de infraestructura. La utilización de bases de datos relacionales garantiza la integridad referencial de los archivos financieros de forma permanente. Esta segregación lógica separa estrictamente las diferentes fuentes de financiamiento para facilitar auditorías externas sin márgenes de error. 
+
+La integración de repositorios de almacenamiento económico asegura el resguardo histórico de expedientes y actas sin saturar el sistema. Las plataformas de vanguardia mejoran el posicionamiento web de los portales de transparencia para la auditoría ciudadana activa. El ecosistema tecnológico propuesto materializa las ocho herramientas normativas ausentes dentro de flujos de trabajo automatizados en su totalidad. La adopción de infraestructuras externas democratiza el acceso a tecnología avanzada para alcaldías con presupuestos sumamente reducidos. Las instituciones del Estado superan su rezago tecnológico al adoptar modelos innovadores que cumplen estándares internacionales de calidad.
+
+Auditoría social y el rol de los datos abiertos en la cooperación internacional 
+
+La rendición de cuentas trasciende la mera presentación de informes financieros ante las entidades fiscalizadoras tradicionales. En la actualidad, el paradigma de gobierno abierto exige que las instituciones públicas habiliten canales directos para el escrutinio ciudadano constante. Las mancomunidades, al administrar fondos combinados de diversas municipalidades y donaciones extranjeras, operan bajo una presión social particularmente intensa. 
+
+El acceso irrestricto a la información pública no solo constituye un mandato legal derivado del Decreto 57-2008, sino una herramienta indispensable para legitimar las acciones políticas de los alcaldes ante la población. La opacidad documental fomenta la desconfianza ciudadana y debilita la gobernabilidad en los territorios rurales. Por el contrario, la exposición pública de los convenios, presupuestos y avances físicos de las obras en tiempo real fortalece el tejido social y promueve una cultura de paz. 
+
+Un ecosistema digital verdaderamente integral debe contemplar un módulo de solo lectura que democratice el acceso a las métricas del desarrollo. La publicación de índices de agua, saneamiento e higiene permite a la academia, medios de comunicación y comités de desarrollo comunitario evaluar objetivamente el impacto real de la gestión administrativa. La cooperación internacional condiciona cada vez más sus desembolsos a la existencia comprobable de portales de transparencia electrónica. 
+
+Las agencias donantes requieren verificar que sus inversiones se reflejen en plataformas accesibles sin ningún tipo de barreras burocráticas o políticas. La integración de tecnologías de renderizado desde el servidor optimiza la indexación de estos portales en los motores de búsqueda globales. Esta visibilidad internacional proyecta a la Mancomunidad Frontera del Norte como una institución vanguardista, transparente y confiable, atrayendo sistemáticamente nuevas fuentes de financiamiento para asegurar el desarrollo regional. La tecnología web elimina definitivamente las paredes de la administración pública para construir verdaderas vitrinas digitales de progreso.
+
+Ciberseguridad y soberanía de los datos intermunicipales 	
+
+La transición hacia entornos digitales exige mitigar proactivamente los riesgos asociados a la vulneración de información gubernamental. Las instituciones públicas administran datos territoriales sensibles que requieren estándares de protección criptográfica para prevenir alteraciones malintencionadas. La implementación de protocolos de autenticación modernos, como el Control de Acceso Basado en Roles (RBAC), garantiza que únicamente el personal validado interactúe con los módulos críticos del ecosistema. 
+
+En el contexto asociativo, asegurar la inmutabilidad de los registros financieros y el resguardo de las actas de asamblea constituye el pilar fundamental para dar cumplimiento a la Política de Protección de Información y preservar la soberanía digital de los municipios.
+
+Justificación 
+
+La presente investigación se justifica en la imperativa necesidad de transformar el modelo operativo tradicional de la Mancomunidad de Municipios Frontera del Norte (MFNdH). El diagnóstico situacional elaborado en diciembre de 2023 evidenció una carencia absoluta de ocho herramientas administrativas críticas, entre ellas el Manual de Procedimientos, los Códigos de Ética y Conducta, y el Reglamento Interno de Trabajo. 
+
+Al materializar estas normativas ausentes en un ecosistema digital integrado, la propuesta provee a la institución de un mecanismo infalible para estructurar sus flujos de trabajo. La plataforma sustituye la gestión analógica y empírica por procesos estandarizados que garantizan el cumplimiento institucional, lo cual erradica la redundancia operativa y dota a la Junta Directiva de cuadros de mando analíticos de precisión para una toma de decisiones basada en evidencia.
+
+Desde una perspectiva técnica, el proyecto constituye un aporte invaluable a la ingeniería de software aplicada a la administración pública al proponer una arquitectura centralizada bajo el modelo de Software como Servicio (SaaS). El desarrollo emplea tecnologías de vanguardia alojadas en la nube —SvelteKit en la capa de presentación y Node.js con Express en la capa lógica— que aseguran una alta disponibilidad, el manejo de concurrencia masiva para el procesamiento asíncrono de evidencias de campo (coordenadas GPS y fotografías) y la eliminación de licencias propietarias costosas. Asimismo, la estructuración de la base de datos relacional en Tercera Forma Normal (3FN) garantiza una separación lógica y estricta entre los fondos públicos sujetos a la fiscalización de la Contraloría General de Cuentas (CGC) y los recursos privados regulados por la Superintendencia de Administración Tributaria (SAT). Este blindaje arquitectónico elimina la vulnerabilidad de la información y optimiza drásticamente los tiempos de respuesta operativos.
+
+En el ámbito estratégico y social, el impacto de esta modernización resulta fundamental para la sostenibilidad financiera de la institución frente a la cooperación externa y la sociedad civil. La capacidad de contar con módulos de inteligencia de negocios que automaticen el reporte de los índices territoriales en Agua, Saneamiento e Higiene (ASH) es un factor vital para retener y atraer el financiamiento de agencias internacionales que exigen absoluta claridad en la ejecución. 
+
+De manera simultánea, la habilitación de un portal ciudadano de datos abiertos materializa directamente los principios de transparencia gubernamental, con el fin de facultar a la población para ejercer una auditoría social activa. En consecuencia, la implementación del ecosistema mitiga la opacidad financiera histórica y consolida a la MFNdH como un referente regional de administración electrónica íntegra y orientada al desarrollo territorial sostenible.
+
+Planteamiento del problema
+
+La Mancomunidad de Municipios Frontera del Norte experimenta una crisis estructural severa a causa de una ejecución administrativa fragmentada y obsoleta. Las operaciones diarias dependen de manera exclusiva de archivos físicos y hojas de cálculo desvinculadas, situación que provoca una desconexión crítica entre el trabajo de campo y las instrucciones de la gerencia. El diagnóstico situacional emitido en diciembre del año dos mil veintitrés evidenció la carencia absoluta de normativas y manuales esenciales, condición que obliga a la institución a operar a ciegas. Esta anacronía tecnológica y documental debilita los controles internos e incapacita a la entidad para gestionar sus recursos con la eficiencia requerida por la administración pública moderna.  
+
+Esta crisis operativa se manifiesta a través de cuatro deficiencias medulares que exigen una solución de software urgente:
+
+Opacidad financiera y vulnerabilidad
+
+La institución mezcla de forma empírica los fondos públicos fiscalizados por la Contraloría General de Cuentas con los recursos privados de la administración tributaria. Sumado a esto, la carencia de roles de seguridad lógicos en los flujos de trabajo vulnera por completo la Política de Protección de Información.  
+
+
+
+Pérdida de trazabilidad
+
+Los técnicos de campo reportan los avances de obra mediante formatos de papel susceptibles a alteraciones o extravíos. La recolección de datos omite la captura de archivos fotográficos conservados con huella SHA-256 y coordenadas geográficas precisas, situación que transgrede flagrantemente las directrices de un Manual de Procedimientos estandarizado.  
+
+Ineficiencia gerencial
+
+La directiva carece de tableros de control consolidados para medir el desempeño institucional. Esta limitación analítica impide a las autoridades emitir y reportar métricas exactas sobre los indicadores territoriales de Agua, Saneamiento e Higiene ante las agencias internacionales cooperantes.
+
+Carencia de auditoría social 
+
+La asociación territorial opera con una ausencia total de un portal ciudadano transparente. Esta barrera informática imposibilita el escrutinio público y debilita la confianza de la sociedad civil en la administración de los recursos comunales.
+
+Si la institución posterga la adopción de un ecosistema informático en la nube para resolver estas fallas, las consecuencias comprometerán su supervivencia legal y financiera. La persistencia de la opacidad contable detonará inevitablemente sanciones severas e intervenciones por parte de la Contraloría General de Cuentas. A nivel estratégico, la pérdida de credibilidad ante la incapacidad de sustentar la trazabilidad de las obras provocará el retiro definitivo de los fondos otorgados por las organizaciones no gubernamentales. El estancamiento tecnológico condenará a la Mancomunidad a la inoperancia absoluta, barrera que destruirá cualquier posibilidad de desarrollo territorial sostenible en la región.
+
+Objetivos
+
+La formulación de objetivos establece el rumbo metodológico que guiará el desarrollo íntegro del proyecto. En las siguientes líneas se define el propósito central y las metas operativas necesarias para garantizar una modernización administrativa exitosa, auditable y definitiva.
+
+Objetivo general
+
+Diseñar e implementar un ecosistema digital estructurado bajo el modelo de Software como Servicio para ejecutar la modernización administrativa integral de la Mancomunidad de Municipios Frontera del Norte. Esta transformación tecnológica facilitará la aplicación y el seguimiento de los procedimientos existentes, fortalecerá la gobernanza territorial y optimizará la eficiencia operativa, para asegurar una trazabilidad de los registros financieros ante las agencias de cooperación internacional mediante una arquitectura web de alta disponibilidad.
+
+Objetivos específicos
+
+Para el efecto de cumplimiento del objetivo general, se complementa con el cumplimiento de los siguientes objetivos:
+
+Sistematizar el seguimiento de los proyectos intermunicipales en campo para erradicar la dependencia del formato físico y certificar la ejecución real de las obras mediante la captura asíncrona de archivos fotográficos conservados con huella SHA-256 y coordenadas geográficas.
+
+Asegurar la integridad verificable dentro del alcance del sistema de las auditorías externas a través de la segregación lógica de los fondos públicos fiscalizados por la Contraloría General de Cuentas frente a los aportes administrados desde la cooperación internacional.
+
+Mitigar el riesgo de incumplimiento o vencimiento de convenios políticos mediante el despliegue de alertas visuales automatizadas y un repositorio documental centralizado para salvaguardar las actas del concejo directivo.
+
+Estandarizar la medición del desempeño operativo intermunicipal mediante tableros de control interactivos ágiles, con el fin de eliminar la subjetividad evaluativa y coordinar eficazmente las responsabilidades del talento humano.
+
+Consolidar la capacidad analítica institucional para generar métricas dinámicas y tableros estadísticos que certifiquen el desempeño territorial en materia de Agua, Saneamiento e Higiene ante las instituciones donantes.
+
+Fomentar el escrutinio público y dar cumplimiento a las directrices de rendición de cuentas a través de un portal ciudadano de acceso irrestricto que materialice los preceptos del nuevo Código de Ética y Conducta.
+
+Garantizar la soberanía de la información administrativa de la entidad mediante protocolos de acceso estandarizados por jerarquías operativas y validaciones criptográficas, para acatar estrictamente la Política de Protección de Información.
+
+Viabilidad
+
+La viabilidad de esta investigación se fundamenta en la factibilidad integral para desarrollar e implementar el ecosistema digital bajo el modelo de software como servicio en la Mancomunidad de Municipios Frontera del Norte. Desde la perspectiva técnica y económica, el proyecto garantiza su ejecución mediante la utilización de arquitecturas de vanguardia y servicios de plataforma en la nube (PaaS) de muy bajo costo, prescindiendo por completo del pago de licencias propietarias. Asimismo, la propuesta cuenta con el absoluto respaldo operativo, político e institucional de la gerencia para estandarizar los procesos internos, asegurando además el rigor legal exigido por la Ley de Acceso a la Información Pública para retener el apoyo de la cooperación internacional.
+
+Competencias y recursos operativos
+
+La formulación y el despliegue del ecosistema digital resultan completamente viables desde una perspectiva técnica y operativa para la institución. El investigador posee las competencias teóricas y técnicas avanzadas en ingeniería de software requeridas para construir la arquitectura multiservicio, configurar las bases de datos relacionales en la tercera forma normal y desplegar los aplicativos web de alta concurrencia. 
+
+Existe una disponibilidad de tiempo estructurada de forma precisa para cubrir todas las fases del ciclo de vida del desarrollo del sistema informático. Asimismo, el proyecto cuenta con un acceso irrestricto a la información, respaldo formalizado mediante el permiso oficial otorgado por la Gerencia Ejecutiva para analizar a profundidad los manuales normativos, reglamentos internos y actas oficiales de la Mancomunidad de Municipios Frontera del Norte.
+
+Factibilidad económica y tecnológica
+
+En el ámbito financiero, la propuesta destaca por su alta factibilidad al no requerir desembolsos económicos institucionales. El proyecto será autofinanciado en su totalidad por el investigador, quien aprovechará arquitecturas de Plataforma como Servicio (PaaS) que ofrecen capas gratuitas robustas para el alojamiento en la nube. La implementación técnica incorpora proveedores de vanguardia como Vercel para la interfaz interactiva y Supabase para el almacenamiento estructurado. Esta estrategia cuantifica la inversión inicial de infraestructura en cero costos comerciales, escenario que elimina las barreras presupuestarias y asegura la sostenibilidad material del software a corto plazo.
+
+Alcances
+
+Los alcances de la presente investigación delimitan las fronteras funcionales, institucionales y técnicas del ecosistema tecnológico propuesto. A nivel funcional, el proyecto se circunscribe a la digitalización estricta de siete módulos operativos diseñados para subsanar las carencias normativas reveladas en el diagnóstico situacional inicial, excluyendo explícitamente la contabilidad gubernamental profunda (SICOIN) y la gestión de nóminas. Institucional y técnicamente, la arquitectura en la nube restringe su radio de acción a la gerencia, auditores, técnicos de campo y ciudadanos a través de una base de datos relacional normalizada, asegurando una modernización centralizada, específica y de alto impacto operativo.  
+
+Alcances de la investigación
+
+El alcance de la presente investigación aborda dimensiones descriptivas y correlacionales para validar el impacto estructural de la herramienta tecnológica en la administración pública. El estudio carece de un alcance exploratorio debido a que la problemática administrativa y las normativas institucionales ya se encuentran formalmente diagnosticadas y documentadas por consultorías previas, condición que elimina por completo la necesidad de indagar sobre fenómenos operacionales desconocidos. 
+
+Por otro lado, la investigación asume un alcance descriptivo porque especifica, detalla y caracteriza las propiedades del flujo de información analógico actual frente a la arquitectura del ecosistema tecnológico bajo el modelo de software como servicio propuesto. Adicionalmente, el estudio adopta un alcance correlacional porque busca conocer el grado de asociación directa entre la variable independiente, definida como la implementación de la plataforma web, y la variable dependiente, establecida como la optimización de la trazabilidad operativa y la toma de decisiones gerenciales.
+
+Límites y obstáculos del estudio
+
+El desarrollo de la investigación enfrentó diversas barreras que dificultaron la fluidez de las fases iniciales del levantamiento técnico y operativo. La principal limitante consistió en la resistencia inicial al cambio tecnológico mostrada por el personal de campo, quienes evidenciaron aprehensión ante la inminente transición de los reportes en papel hacia herramientas digitales automatizadas. 
+
+Otra barrera significativa fue la escasa infraestructura de red e internet en los municipios más remotos de la región, situación que exigió adaptar la arquitectura del sistema para tolerar conexiones inestables sin perder datos críticos. Finalmente, la inexistencia previa de registros digitales estructurados retrasó de forma considerable la fase de análisis de requerimientos, circunstancia que obligó al investigador a reconstruir lógicas de negocio complejas a partir de documentos físicos sumamente deteriorados.
+
+Delimitación integral del proyecto
+
+La cobertura activa del proyecto comprende San Pedro Soloma, Santa Eulalia y San Rafael la Independencia, de acuerdo con la delimitación del capítulo IV del PG y la confirmación del responsable del proyecto. Los municipios citados en los antecedentes se distinguen de esta membresía activa.
+
+El proceso investigativo y la implementación tecnológica se circunscriben geográfica e institucionalmente a las sedes de las municipalidades que integran la Mancomunidad de Municipios Frontera del Norte, con particular énfasis en su infraestructura central de operaciones. En el ámbito personal, la herramienta involucra de manera directa a la gerencia ejecutiva responsable de la toma de decisiones, a los técnicos de campo encargados de la recolección de datos y a los ciudadanos que interactúan con el portal público. 
+
+Temáticamente, el proyecto se delimita al desarrollo de una plataforma informática bajo el modelo de software como servicio para la gestión intermunicipal, la digitalización de normativas y la transparencia financiera. A nivel temporal, el estudio, el levantamiento de requerimientos y la construcción del ecosistema digital se enmarcan de forma estricta en el período comprendido desde enero del año dos mil veinticuatro hasta agosto del año dos mil veintiséis.
+
+Preguntas de investigación 
+
+La formulación de las preguntas de investigación define el eje analítico del proyecto y direcciona la búsqueda de soluciones tecnológicas para las deficiencias administrativas detectadas.
+
+La Mancomunidad de Municipios Frontera del Norte enfrenta una crisis operativa derivada de su dependencia absoluta de archivos físicos y procesos analógicos fragmentados. El diagnóstico situacional inicial ejecutado durante el año dos mil veintitrés reveló la carencia de herramientas administrativas fundamentales, tales como el manual de procedimientos, las políticas de seguridad y los códigos de conducta. Esta obsolescencia documental obliga a los colaboradores a ejecutar sus labores diarias mediante métodos empíricos carentes de estandarización. La institución procesa su información sin el respaldo de una plataforma tecnológica integral, situación que produce un entorno de trabajo ineficiente y sumamente susceptible a errores humanos.  
+
+La ausencia de una sistematización adecuada provoca consecuencias severas sobre la administración del erario público y la gestión intermunicipal. Esta opacidad financiera y la falta de trazabilidad en las operaciones de campo exponen a la directiva a un riesgo legal inminente frente a las auditorías estatales. Además, la entidad experimenta dificultades críticas para rendir cuentas claras ante los organismos cooperantes internacionales, condición que amenaza la continuidad del financiamiento para proyectos de desarrollo territorial. Ante este escenario, surge la necesidad imperativa de formular interrogantes precisas que orienten el diseño y la implementación del ecosistema digital propuesto.  
+
+Pregunta central
+
+¿De qué manera la implementación de una plataforma web bajo el modelo de software como servicio optimiza la trazabilidad operativa y la transparencia financiera dentro de la Mancomunidad de Municipios Frontera del Norte?
+
+Preguntas auxiliares
+
+¿Cómo garantiza el control de acceso basado en roles la soberanía y protección de la información confidencial de la institución?
+
+¿Cómo la captura asíncrona de coordenadas espaciales y evidencias fotográficas asegura la trazabilidad exacta de los proyectos en campo?
+
+¿Por qué la integración de un tablero visual interactivo estandariza la evaluación del rendimiento operativo intermunicipal?
+
+¿Cómo la segregación lógica de los fondos públicos y privados en la base de datos agiliza la rendición de cuentas institucional?
+
+¿Qué efecto produce la implementación de alertas visuales automatizadas en la mitigación del riesgo de incumplimiento de los acuerdos políticos?
+
+¿Por qué la consolidación de métricas dinámicas sobre agua e higiene incrementa la capacidad analítica frente a las agencias cooperantes?
+
+¿De qué manera un portal ciudadano de datos abiertos fomenta el escrutinio público y materializa los principios de transparencia gubernamental?
+
+Hipótesis
+
+La hipótesis constituye la respuesta anticipada al problema de investigación planteado y se someterá a comprobación empírica mediante el desarrollo e implementación del software.
+
+Hipótesis de investigación
+
+La implementación de un ecosistema digital centralizado bajo el modelo de software como servicio —estructurado mediante una arquitectura de alta concurrencia y bases de datos relacionales normalizadas— optimizará significativamente la trazabilidad operativa, asegurará el control financiero mediante la segregación estricta de fondos y agilizará la toma de decisiones gerenciales dentro de la Mancomunidad de Municipios Frontera del Norte.
+
+Hipótesis nula
+
+La implementación de un ecosistema digital centralizado bajo el modelo de software como servicio —estructurado mediante una arquitectura de alta concurrencia y bases de datos relacionales normalizadas— no optimizará significativamente la trazabilidad operativa, no asegurará el control financiero mediante la segregación estricta de fondos, ni agilizará la toma de decisiones gerenciales dentro de la Mancomunidad de Municipios Frontera del Norte.
+
+Variables
+
+La operativización de las variables define las dimensiones de análisis que permitirán medir, evaluar y cuantificar el impacto técnico y gerencial del proyecto. A continuación, se estructuran las variables de estudio con sus respectivas conceptualizaciones y métodos de medición empírica.
+
+Variable independiente (causa): Implementación de la plataforma web centralizada bajo arquitectura SaaS 
+
+Constituye el ecosistema tecnológico modular alojado en la nube, diseñado bajo el modelo de Software como Servicio (SaaS), estructurado para sistematizar la administración gubernamental de la Mancomunidad. Combina una capa de presentación interactiva con tecnologías Mobile-first y una capa lógica de alta concurrencia apoyada en bases de datos relacionales normalizadas.
+
+Su ejecución se medirá de forma directa a través de la integración y el despliegue en el entorno de producción de los siete módulos funcionales del sistema (Seguridad RBAC, Trazabilidad GPS, Tablero Kanban, Finanzas 3FN, Repositorio de Actas, Estadísticas ASH y Portal Público Ciudadano).
+
+Variable dependiente (efecto): Optimización de la trazabilidad operativa, el control financiero y la transparencia institucional
+
+Representa la capacidad analítica y procedimental de la Mancomunidad para documentar, auditar y visibilizar en tiempo real el cumplimiento irrestricto de los procedimientos administrativos, así como el uso legítimo de los fondos públicos y privados.
+
+Se evaluará y cuantificará contrastando los tiempos de ejecución, la precisión documental y los flujos de información del sistema analógico anterior (basado en papel y hojas de cálculo fragmentadas) versus el rendimiento y la seguridad del nuevo entorno digital.
+
+Indicadores
+
+Los indicadores establecen las métricas paramétricas necesarias para comprobar la viabilidad y el éxito del ecosistema tecnológico. Se dividen estrictamente en unidades de medida informáticas para evaluar el rendimiento de la arquitectura y en métricas operativas para medir el impacto gerencial dentro de la Mancomunidad.
+
+
+
+Tabla 1
+
+Matriz de Indicadores Técnicos y Gerenciales del Ecosistema SaaS
+
+Nota. La tabla detalla los parámetros de medición para evaluar el impacto del ecosistema digital en la Mancomunidad de Municipios Frontera del Norte. Las métricas técnicas cuantifican el rendimiento y la estabilidad de la arquitectura en la nube (SvelteKit y Node.js con Express), mientras que las métricas gerenciales miden la optimización empírica de la trazabilidad operativa y el incremento de la transparencia institucional. Elaboración propia.
+
+Supuestos
+
+El diseño y la implementación del ecosistema digital se fundamentan en un conjunto de premisas técnicas, operativas y normativas que se asumen como ciertas para garantizar el éxito y la funcionalidad de la plataforma. Como supuesto tecnológico, se da por sentado que las municipalidades que conforman la Mancomunidad Frontera del Norte cuentan con la infraestructura mínima de red y la conectividad a internet indispensable para acceder y operar de manera ininterrumpida el entorno SaaS alojado en la nube. 
+
+A nivel institucional, se asume la existencia de una genuina apertura y disposición al cambio tecnológico por parte del personal de campo y la Junta Directiva, condición necesaria para asegurar la adopción de los nuevos flujos digitales. Finalmente, como supuesto legal, se establece que las leyes vigentes —particularmente la Ley de Acceso a la Información Pública (Decreto 57-2008)— y los manuales administrativos recientes, diagnosticados y elaborados en la consultoría del año 2023, mantendrán su vigencia absoluta durante todo el ciclo de desarrollo del software. Este marco documental y jurídico servirá como la base inmutable sobre la cual se codificarán las reglas lógicas del negocio y los niveles de autorización dentro del sistema.
+
+Herramientas
+
+La investigación emplea el análisis documental y la ingeniería de requerimientos como métodos fundamentales para conceptualizar la arquitectura técnica del sistema. El investigador escrutó exhaustivamente el Diagnóstico Situacional Inicial y el Informe Final de Consultoría elaborados por Juan Us Vicente durante el año dos mil veintitrés. 
+
+Este análisis técnico permitió extraer con precisión las reglas de negocio institucionales para transformarlas en la lógica computacional de los siete módulos del ecosistema digital. Simultáneamente, el proyecto aplica el prototipado evolutivo para el diseño interactivo de la interfaz web en la capa de presentación. La adopción de la tecnología SvelteKit facilita la validación continua de las rutas y los flujos de usuario directamente con los actores administrativos. Esta iteración constante asegura la adaptabilidad ergonómica de la herramienta tecnológica antes de su despliegue definitivo en el entorno de producción.  
+
+
+
+Estado de implementación y límites de la investigación
+
+MFN Digital comprende siete módulos funcionales del alcance de investigación: proyectos, ARC, finanzas, gobernanza, convenios, indicadores ASH y transparencia. Autenticación y permisos son transversales. Talento humano e inteligencia territorial son extensiones del prototipo y no amplían automáticamente el alcance aprobado.
+
+La implementación revisada utiliza Svelte 5, SvelteKit 2, Node.js, Express 4 y Prisma 6. SQLite se utiliza para desarrollo; PostgreSQL cuenta con un esquema y un SQL de actualización separados. Go se reserva como alternativa futura. Los diagramas o antecedentes que indiquen Go o servicios externos de archivos describen una propuesta anterior y no acreditan una integración implementada.
+
+Las evidencias nuevas conservan el archivo PNG o JPEG y su huella SHA-256 en la base de datos. Las coordenadas son suministradas por el dispositivo cliente; no se garantiza precisión satelital ni ubicación auténtica. No se implementa extracción EXIF, integración CommCare ni sincronización sin conexión en esta versión.
+
+Las escrituras de los nueve modelos operativos incluidos en el control de integridad y sus eventos antes/después se confirman en una misma transacción. El control compara registros completos con puntos históricos y rechaza sellar discrepancias. Es una verificación interna; no es una certificación de la CGC ni una garantía de inmutabilidad frente al administrador de la base.
+
+La reducción de tiempos, satisfacción, disponibilidad y rendimiento son indicadores a medir. No se presentan como resultados demostrados. El diseño principal es pre-experimental de un solo grupo con mediciones pareadas antes y después; la encuesta posterior es descriptiva transversal. Se deben conservar los datos, fechas, tareas comparables y limitaciones de atribución causal.
+
+La muestra propuesta de 22 participantes requiere padrón y consentimientos actualizados. Los municipios activos son San Pedro Soloma, Santa Eulalia y San Rafael la Independencia, según el PG y la confirmación del responsable (3 de octubre de 2026). Las otras localidades corresponden a antecedentes históricos.
+
+El índice IPIM es una orientación preliminar con pesos que requieren validación institucional. La ausencia de datos se identifica como información insuficiente. El índice no emite decisiones vinculantes ni demuestra ausencia de sesgos.
+
+Tipo de Métrica
+
+Variable Asociada
+
+Indicador Evaluado
+
+Descripción y Método de Medición
+
+Métrica Técnica
+
+Independiente
+
+Completitud Funcional
+
+Porcentaje de entrega y despliegue exitoso de los 7 módulos funcionales requeridos por la institución.
+
+Métrica Técnica
+
+Independiente
+
+Disponibilidad (Uptime)
+
+Garantía de estabilidad del servidor operando al 99.9% de tiempo en línea mediante los nodos de Vercel y contenedores en Fly.io.
+
+Métrica Técnica
+
+Independiente
+
+Tiempo de Respuesta
+
+Latencia registrada en la generación y exportación de reportes financieros mediante la API construida en Node.js con Express, medida estrictamente en milisegundos.
+
+Métrica Gerencial
+
+Dependiente
+
+Reducción de Tiempos de Trazabilidad
+
+Comparativa estadística (antes vs. después) del tiempo efectivo requerido para que la gerencia valide una evidencia de campo asíncrona (Coordenada GPS/Fotografía).
+
+Métrica Gerencial
+
+Dependiente
+
+Adopción Tecnológica
+
+Porcentaje de retención y uso del personal técnico y administrativo que interactúa activamente con el tablero ágil Kanban ARC.
+
+Métrica Gerencial
+
+Dependiente
+
+Índice de Transparencia Activa
+
+Volumen de tráfico de red, descargas y consultas ciudadanas realizadas orgánicamente a través del Módulo 7 (Portal de Datos Abiertos).

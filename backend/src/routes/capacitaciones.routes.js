@@ -4,8 +4,9 @@ import { requireAuth, requirePermission } from '../middleware/auth.js';
 import { logAction } from '../lib/audit.js';
 
 const router = Router();
+router.use(requireAuth, requirePermission('capacitacion'));
 
-router.get('/', requireAuth, async (req, res) => {
+router.get('/', async (req, res) => {
   const capacitaciones = await prisma.capacitacion.findMany({
     include: { certificaciones: { include: { colaborador: true } } },
     orderBy: { id: 'asc' },
@@ -18,7 +19,7 @@ router.get('/', requireAuth, async (req, res) => {
   })));
 });
 
-router.post('/', requireAuth, requirePermission('capacitacion', 'editar'), async (req, res) => {
+router.post('/', requirePermission('capacitacion', 'editar'), async (req, res) => {
   const { nombreHerramienta, fecha } = req.body;
   if (!nombreHerramienta) return res.status(400).json({ error: 'nombreHerramienta es requerido' });
   const capacitacion = await prisma.capacitacion.create({
@@ -29,7 +30,7 @@ router.post('/', requireAuth, requirePermission('capacitacion', 'editar'), async
 });
 
 // RF-30: certificación firmada por colaborador y por documento.
-router.post('/:id/certificar', requireAuth, requirePermission('capacitacion', 'editar'), async (req, res) => {
+router.post('/:id/certificar', requirePermission('capacitacion', 'editar'), async (req, res) => {
   const capacitacionId = Number(req.params.id);
   const { colaboradorId } = req.body;
   if (!colaboradorId) return res.status(400).json({ error: 'colaboradorId es requerido' });

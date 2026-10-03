@@ -1,12 +1,12 @@
 import { Router } from 'express';
 import prisma from '../lib/prisma.js';
 import { requireAuth, requirePermission } from '../middleware/auth.js';
-import { logAction } from '../lib/audit.js';
 
 const router = Router();
+router.use(requireAuth, requirePermission('financiero'));
 
 // GET /api/v1/financiero/transacciones - Listar movimientos
-router.get('/transacciones', requireAuth, async (req, res, next) => {
+router.get('/transacciones', async (req, res, next) => {
   try {
     const { tipo, cuentaBancaria, categoria, municipio } = req.query;
     const where = {};
@@ -26,7 +26,7 @@ router.get('/transacciones', requireAuth, async (req, res, next) => {
 });
 
 // GET /api/v1/financiero/balance - Balance con separación bancaria (RF12)
-router.get('/balance', requireAuth, async (req, res, next) => {
+router.get('/balance', async (req, res, next) => {
   try {
     const transacciones = await prisma.transaccionFinanciera.findMany();
 
@@ -62,7 +62,7 @@ router.get('/balance', requireAuth, async (req, res, next) => {
 });
 
 // POST /api/v1/financiero/transacciones - Registrar movimiento (RF10/11 - RBAC)
-router.post('/transacciones', requireAuth, requirePermission('financiero', 'editar'), async (req, res, next) => {
+router.post('/transacciones', requirePermission('financiero', 'editar'), async (req, res, next) => {
   try {
     const { 
       tipo, 
@@ -106,7 +106,6 @@ router.post('/transacciones', requireAuth, requirePermission('financiero', 'edit
       }
     });
 
-    await logAction(req.user?.sub, 'registrar_transaccion', 'transaccion_financiera', nueva.id);
     res.status(201).json(nueva);
   } catch (err) {
     next(err);

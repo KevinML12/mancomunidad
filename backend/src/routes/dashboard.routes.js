@@ -1,9 +1,10 @@
 import { Router } from 'express';
 import prisma from '../lib/prisma.js';
-import { requireAuth } from '../middleware/auth.js';
+import { requireAuth, requirePermission } from '../middleware/auth.js';
 import { colaboradoresVisiblesPara } from '../lib/scope.js';
 
 const router = Router();
+router.use(requireAuth, requirePermission('dashboard'));
 
 // Cap. V 5.4: cada rol accede a un tablero adaptado — Junta Directiva/
 // Gerencia/Dirección Admin/Auditoría ven cumplimiento institucional, RRHH
@@ -16,7 +17,7 @@ const TIER_POR_ROL = {
   EMP: 'personal',
 };
 
-router.get('/', requireAuth, async (req, res) => {
+router.get('/', async (req, res) => {
   const tier = TIER_POR_ROL[req.user.rol] || 'institucional';
   if (tier === 'personal') return res.json(await tableroPersonal(req.user));
   if (tier === 'equipo') return res.json(await tableroEquipo(req.user));

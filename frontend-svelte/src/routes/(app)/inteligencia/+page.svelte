@@ -1,4 +1,5 @@
 <script>
+  import { auth } from '$lib/stores/auth.svelte.js';
   import { onMount } from 'svelte';
   import apiClient from '$lib/apiClient';
   import Icon from '$lib/components/ui/Icon.svelte';
@@ -29,7 +30,7 @@
   const revalidarSello = async () => {
     verificando = true;
     try {
-      const { data } = await apiClient.post('/inteligencia/sello-forense');
+      const { data } = await apiClient.get('/inteligencia/sello-forense');
       selloForense = data;
       toast.success(data.veredictoAuditoria || 'Integridad criptográfica verificada en Neon DB');
     } catch (err) {
@@ -39,15 +40,22 @@
     }
   };
 
+  async function registrarPuntoControl() {
+    try { const { data } = await apiClient.post('/inteligencia/sello-forense'); selloForense = data; toast.success('Punto de control registrado'); }
+    catch (err) { toast.error(err.response?.data?.error || 'No se pudo registrar el punto de control'); }
+  }
   onMount(() => {
     fetchData();
   });
 </script>
 
 <svelte:head>
-  <title>Inteligencia Territorial y Auditoría CGC | MFN Digital</title>
+  <title>Inteligencia Territorial y Control de Integridad | MFN Digital</title>
 </svelte:head>
 
+{#if auth.puedeAprobar('inteligencia')}
+  <button onclick={registrarPuntoControl} class="mb-4 px-4 py-2 bg-blue-700 text-white rounded-xl">Registrar punto de control</button>
+{/if}
 <!-- HEADER PRINCIPAL -->
 <header class="flex flex-col xl:flex-row xl:items-end justify-between gap-6 mb-8 mt-2 animate-fade-in">
   <div>
@@ -57,10 +65,10 @@
       <span class="text-[9px] font-bold uppercase tracking-[0.15em] text-emerald-600">Innovación Pública Regional</span>
     </div>
     <h2 class="text-[36px] md:text-[40px] font-black tracking-[-0.04em] leading-none text-[#0A1526] mb-3">
-      Inteligencia Territorial y Certificación Forense CGC
+      Inteligencia Territorial y Control de Integridad
     </h2>
     <p class="text-[13px] text-[#0A1526]/50 leading-relaxed max-w-3xl">
-      Algoritmo Multicriterio de Priorización de Inversión Intermunicipal (IPIM) sin sesgo político y Sellado Criptográfico SHA-256 de Inmutabilidad auditado para la Contraloría General de Cuentas.
+      Orientación de inversión con pesos pendientes de validación institucional y control interno de integridad mediante huellas SHA-256.
     </p>
   </div>
 
@@ -107,12 +115,12 @@
         </div>
 
         <div class="text-left lg:text-right shrink-0">
-          <span class="text-[9px] font-mono uppercase tracking-widest text-white/40 block mb-1">Merkle Root SHA-256</span>
+          <span class="text-[9px] font-mono uppercase tracking-widest text-white/40 block mb-1">Huella SHA-256 del estado</span>
           <span class="text-[11px] font-mono bg-white/10 px-3 py-1.5 rounded-lg border border-white/10 text-emerald-300 font-bold block max-w-sm truncate">
             {selloForense.merkleRootSha256}
           </span>
           <span class="text-[10px] text-white/40 mt-1 block">
-            {selloForense.totalRegistrosCertificados} registros certificados en Neon DB
+            {selloForense.totalRegistrosCertificados} registros incluidos en el control interno
           </span>
         </div>
       </div>
@@ -182,7 +190,7 @@
         </div>
       </div>
 
-      <!-- MATRIZ TERRITORIAL RANKING DE LOS 6 MUNICIPIOS -->
+      <!-- MATRIZ TERRITORIAL RANKING DE LOS 3 MUNICIPIOS ACTIVOS -->
       <div>
         <h4 class="text-xs font-black uppercase tracking-wider text-[#0A1526]/40 mb-4">
           Matriz Multicriterio Regional (Ranking Oficial de Vulnerabilidad y Desatención)

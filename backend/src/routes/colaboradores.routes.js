@@ -4,8 +4,9 @@ import { requireAuth, requirePermission } from '../middleware/auth.js';
 import { logAction } from '../lib/audit.js';
 
 const router = Router();
+router.use(requireAuth, requirePermission('estructura'));
 
-router.get('/', requireAuth, async (req, res) => {
+router.get('/', async (req, res) => {
   const colaboradores = await prisma.colaborador.findMany({
     include: { puesto: true },
     orderBy: { nombre: 'asc' },
@@ -13,7 +14,7 @@ router.get('/', requireAuth, async (req, res) => {
   res.json(colaboradores);
 });
 
-router.get('/:id', requireAuth, async (req, res) => {
+router.get('/:id', async (req, res) => {
   const id = Number(req.params.id);
   const colaborador = await prisma.colaborador.findUnique({
     where: { id },
@@ -30,7 +31,7 @@ router.get('/:id', requireAuth, async (req, res) => {
   res.json(colaborador);
 });
 
-router.post('/', requireAuth, requirePermission('estructura', 'editar'), async (req, res) => {
+router.post('/', requirePermission('estructura', 'editar'), async (req, res) => {
   const { nombre, dpi, puestoId, fechaIngreso, tipoContrato } = req.body;
   if (!nombre || !puestoId || !fechaIngreso) return res.status(400).json({ error: 'nombre, puestoId y fechaIngreso son requeridos' });
   const colaborador = await prisma.colaborador.create({

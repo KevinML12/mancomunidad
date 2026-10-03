@@ -1,8 +1,4 @@
-// Schema del SIRH-MFN — traduce el modelo entidad-relación del Capítulo V
-// (5.2) a Prisma. Provider "sqlite" para desarrollo local sin servicios
-// pesados; para producción basta cambiar provider a "postgresql" y
-// DATABASE_URL a la cadena de conexión real (ver README.md), sin tocar
-// el resto del schema — coincide con el stack PostgreSQL del Cap. V.
+// Esquema SQLite para desarrollo. Producción utiliza schema.production.prisma.
 
 datasource db {
   provider = "sqlite"
@@ -75,6 +71,8 @@ model Rol {
 model Usuario {
   id             Int                 @id @default(autoincrement())
   correo         String              @unique
+  sessionVersion Int @default(0)
+  recuperaciones RecuperacionClave[]
   hashContrasena String
   rolId          Int
   rol            Rol                 @relation(fields: [rolId], references: [id])
@@ -231,6 +229,8 @@ model BitacoraAuditoria {
   accion    String
   entidad   String?
   entidadId Int?
+  antesHash String?
+  despuesHash String?
   fecha     DateTime @default(now())
 }
 
@@ -239,6 +239,7 @@ model BitacoraAuditoria {
 // ==========================================
 
 model Proyecto {
+  municipio String?
   id                     Int                  @id @default(autoincrement())
   nombre                 String
   agenciaFinanciadora    String
@@ -253,6 +254,9 @@ model Proyecto {
 }
 
 model EvidenciaProyecto {
+  contenido String?
+  tipoMime String?
+  sha256 String?
   id           Int      @id @default(autoincrement())
   proyectoId   Int
   proyecto     Proyecto @relation(fields: [proyectoId], references: [id])
@@ -397,3 +401,20 @@ model PublicacionTransparencia {
 
 
 
+
+model RecuperacionClave {
+ id Int @id @default(autoincrement())
+ usuarioId Int
+ usuario Usuario @relation(fields: [usuarioId], references: [id])
+ tokenHash String @unique
+ expira DateTime
+ usado Boolean @default(false)
+}
+model PuntoControlIntegridad {
+ id Int @id @default(autoincrement())
+ rootHash String
+ snapshot Json
+ auditoriaId Int
+ usuarioId Int
+ fecha DateTime @default(now())
+}

@@ -4,9 +4,10 @@ import { requireAuth, requirePermission } from '../middleware/auth.js';
 import { logAction } from '../lib/audit.js';
 
 const router = Router();
+router.use(requireAuth, requirePermission('reclutamiento'));
 
 // RF-06/07
-router.get('/', requireAuth, async (req, res) => {
+router.get('/', async (req, res) => {
   const convocatorias = await prisma.convocatoria.findMany({
     include: { puesto: true, candidatos: true },
     orderBy: { fechaPublicacion: 'desc' },
@@ -14,7 +15,7 @@ router.get('/', requireAuth, async (req, res) => {
   res.json(convocatorias);
 });
 
-router.post('/', requireAuth, requirePermission('reclutamiento', 'editar'), async (req, res) => {
+router.post('/', requirePermission('reclutamiento', 'editar'), async (req, res) => {
   const { puestoId, tipo, fechaCierre, requisitos } = req.body;
   if (!puestoId || !tipo || !fechaCierre) return res.status(400).json({ error: 'puestoId, tipo y fechaCierre son requeridos' });
   const convocatoria = await prisma.convocatoria.create({
@@ -25,7 +26,7 @@ router.post('/', requireAuth, requirePermission('reclutamiento', 'editar'), asyn
 });
 
 // Actualizar estado de convocatoria (Abierta / Cerrada)
-router.patch('/:id/estado', requireAuth, requirePermission('reclutamiento', 'editar'), async (req, res) => {
+router.patch('/:id/estado', requirePermission('reclutamiento', 'editar'), async (req, res) => {
   const id = Number(req.params.id);
   const { estado } = req.body;
   if (!['Abierta', 'Cerrada'].includes(estado)) return res.status(400).json({ error: 'Estado inválido' });
@@ -40,7 +41,7 @@ router.patch('/:id/estado', requireAuth, requirePermission('reclutamiento', 'edi
 });
 
 // RF-08/09 - Registrar candidato
-router.post('/:id/candidatos', requireAuth, requirePermission('reclutamiento', 'editar'), async (req, res) => {
+router.post('/:id/candidatos', requirePermission('reclutamiento', 'editar'), async (req, res) => {
   const convocatoriaId = Number(req.params.id);
   const { nombre, puntajeCompetencias = 0, puntajeExperiencia = 0, puntajeEntrevista = 0, puntajeReferencias = 0, expedienteCompleto = false } = req.body;
   if (!nombre) return res.status(400).json({ error: 'nombre es requerido' });
@@ -56,7 +57,7 @@ router.post('/:id/candidatos', requireAuth, requirePermission('reclutamiento', '
 });
 
 // Actualizar puntuación o expediente de candidato
-router.put('/:id/candidatos/:candidatoId', requireAuth, requirePermission('reclutamiento', 'editar'), async (req, res) => {
+router.put('/:id/candidatos/:candidatoId', requirePermission('reclutamiento', 'editar'), async (req, res) => {
   const candidatoId = Number(req.params.candidatoId);
   const { nombre, puntajeCompetencias, puntajeExperiencia, puntajeEntrevista, puntajeReferencias, expedienteCompleto } = req.body;
 

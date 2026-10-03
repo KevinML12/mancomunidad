@@ -1,0 +1,1107 @@
+Versión de trabajo revisada el 3 de octubre de 2026. La propuesta se centra en integrar y dar seguimiento a procedimientos existentes. El diagnóstico inicial de 2023 es antecedente histórico: el informe final de la consultoría documenta la elaboración de herramientas administrativas y capacitación. La membresía activa para el proyecto corresponde a San Pedro Soloma, Santa Eulalia y San Rafael la Independencia, confirmada por el responsable el 3 de octubre de 2026 a partir del PG. El padrón de participantes y los resultados pretest/postest requieren confirmación y evidencia institucional. Este documento no acredita esas mediciones.
+
+CAPÍTULO IV
+ANÁLISIS DEL ENTORNO 
+
+El presente capítulo desarrolla el análisis situacional de la Mancomunidad de Municipios Frontera del Norte, identificando su estructura administrativa y los procesos operativos actuales. A partir de este diagnóstico, se fundamenta la necesidad de digitalización y se establecen los requerimientos de *software* necesarios para automatizar la gestión documental institucional. 
+
+Descripción de la institución, procesos actuales y contexto del problema
+
+En este apartado se describirá y delimitará el entorno institucional, fundamental para comprender el ecosistema administrativo sobre el cual se implementará la nueva herramienta tecnológica.
+
+Descripción general 
+
+La Mancomunidad de Municipios Frontera del Norte es una entidad de derecho público, de carácter asociativo municipal y estrictamente no lucrativa. Fue constituida jurídicamente para promover el desarrollo integral de los municipios asociados, amparada en el marco legal del Código Municipal de la República de Guatemala, el cual faculta a los gobiernos locales a unificar esfuerzos territoriales.
+
+Sector
+
+La Mancomunidad de Municipios Frontera del Norte opera dentro del sector de la Administración Pública Local y Desarrollo Territorial, fungiendo como un puente estratégico e indispensable entre el gobierno central, las administraciones municipales individuales y los grandes organismos de cooperación internacional.  
+
+Su operatividad dentro de este sector depende de la correcta formulación, gestión y ejecución de políticas públicas y proyectos intermunicipales. Estos esfuerzos se concentran en frentes críticos de desarrollo, que incluyen el fortalecimiento de la infraestructura de agua y saneamiento, la conservación del medio ambiente, el fomento económico local y el impulso del turismo sostenible. La eficiencia en este sector impacta de manera directa, tangible y cotidiana en el bienestar socioeconómico de la población fronteriza.  
+
+Para dar cumplimiento a estos frentes críticos y alinear las herramientas tecnológicas con la visión institucional, la operatividad de la Mancomunidad se rige y fundamenta en los ejes estratégicos rectores establecidos en su Plan Estratégico Territorial (PET):  
+
+Eje Desarrollo Económico Territorial.  
+
+Eje de gestión ambiental y cambio climático.  
+
+Eje de fortalecimiento político / institucional.  
+
+Eje participación ciudadana, equidad e inclusión social.  
+
+Eje de desarrollo social integral.  
+
+Área 
+
+El área de intervención y cobertura de la Mancomunidad presenta características geográficas y demográficas únicas que elevan la complejidad logística de cualquier operación. La región se caracteriza por ubicarse en las estribaciones de la Sierra de los Cuchumatanes, constituyendo territorios de alta vulnerabilidad climática, con una topografía sumamente montañosa y de difícil acceso. Además, posee una riqueza antropológica invaluable, con una alta predominancia de pueblos originarios, principalmente de las comunidades lingüísticas Q'anjob'al, Chuj y Akateko.
+
+Históricamente, los municipios que han conformado su territorio en su totalidad (incluyendo fundadores) son:  
+
+San Juan Ixcoy. 
+
+San Pedro Soloma. 
+
+Santa Eulalia 
+
+San Sebastián Coatán.
+
+San Rafael la Independencia.
+
+San Miguel Acatán.
+
+San Mateo Ixtatán.
+
+Santa Cruz Barillas.
+
+Ixcan del departamento de Quiché. 
+
+No obstante, para efectos operativos y de la presente implementación tecnológica, la jurisdicción activa se conforma por los siguientes municipios miembros:  
+
+San Pedro Soloma.
+
+Santa Eulalia.
+
+San Rafael la Independencia.
+
+La extrema dispersión geográfica de esta área, sumada a las precarias condiciones de la infraestructura vial regional, como caminos de terracería susceptibles a deslaves durante la temporada de lluvias, representan un desafío logístico colosal. Esta realidad territorial vuelve absolutamente imperativa la adopción de plataformas tecnológicas centralizadas y basadas en la nube, que permitan la coordinación a distancia, la transmisión de datos en tiempo real y la eliminación de la dependencia del traslado físico de documentos.
+
+Datos institucionales
+
+Para efectos de registro formal y legal, la institución se identifica con los siguientes parámetros:
+
+Fecha de fundación: 02 de noviembre de 2005.
+
+Ubicación geográfica: Cantón Vista Hermosa, Santa Eulalia, departamento de Huehuetenango, Guatemala.
+
+Número de Identificación Tributaria: 47337753.
+
+Misión institucional
+
+Impulsar, formular y ejecutar políticas públicas, planes, programas y proyectos municipales e intermunicipales para el desarrollo sostenible de la región, mediante el esfuerzo propio mancomunado, estableciendo mecanismos de coordinación efectiva y promoviendo la participación ciudadana integral.
+
+Análisis Estratégico de la misión: 
+
+El cumplimiento de esta misión requiere una articulación logística perfecta. La "coordinación efectiva" mencionada en su declaración no puede sostenerse en el siglo XXI mediante procesos analógicos. La tecnología de la información se convierte en el vehículo principal para materializar esta coordinación entre los tres municipios activos.
+
+Visión institucional
+
+Consolidarse como la institución rectora y modelo de administración pública transparente y eficiente en el norte de Huehuetenango, garantizando servicios de excelencia, agilidad burocrática y modernización tecnológica constante para elevar la calidad de vida en los municipios que la integran.
+
+Proyección de la visión: 
+
+La visión institucional menciona explícitamente la "modernización tecnológica constante" y la "agilidad burocrática". El presente proyecto de software se alinea de manera directa con este postulado, buscando erradicar la burocracia del papel y transicionar hacia una administración pública verdaderamente digital, auditable y transparente.
+
+Valores y principios rectores
+
+De acuerdo con el Código de Conducta institucional y el marco ético de la administración general, la Mancomunidad rige sus operaciones bajo los siguientes principios:
+
+Integridad y Probidad.
+
+Eficiencia y Eficacia.
+
+Equidad e Inclusión.
+
+Responsabilidad y Transparencia.
+
+Estructura organizacional y grupo de personas
+
+La compleja arquitectura administrativa, la jerarquía de toma de decisiones y el grupo humano que conforma la Mancomunidad se estructuran en tres grandes niveles orgánicos. Cada uno de estos niveles interactúa con la información de manera radicalmente distinta, lo que define los roles de usuario dentro del sistema a desarrollar:
+
+Nivel Superior (Asamblea General y Junta Directiva)
+
+Integrado por los alcaldes titulares de los tres municipios activos. Este grupo de personas asume el rol estratégico y político de la Mancomunidad. Debido a sus múltiples ocupaciones en sus respectivas municipalidades, requieren información altamente sintetizada, indicadores clave visuales y reportes ejecutivos en tiempo real para la toma de decisiones rápidas durante las asambleas.
+
+Nivel Ejecutivo (Gerencia Ejecutiva y Auditoría Interna) 
+
+Liderado por el Gerente General, este grupo es el núcleo operativo de la organización. Tienen la responsabilidad de consolidar datos de múltiples fuentes, administrar los fondos de la cooperación y mantener vigentes los convenios. Su mayor necesidad es contar con tableros de control y sistemas de seguimiento de tareas para garantizar que los planes estratégicos no se detengan.
+
+Nivel Operativo y Asesoría
+
+Compuesto por la Dirección Administrativa y Financiera, Dirección de Proyectos, Desarrollo Económico Territorial, Gestión Ambiental, entre otras. Este grupo humano incluye ingenieros, técnicos de campo y coordinadores que operan directamente en los municipios. Ellos generan la información primaria, los reportes fotográficos y los avances físicos que alimentan a toda la institución.
+
+Contexto del problema y desafíos operativos
+
+A lo largo de sus casi dos décadas de operación, la Mancomunidad de Municipios Frontera del Norte ha superado grandes retos, logrando éxitos notables en la administración de recursos naturales y en forjar alianzas estratégicas de alto nivel. Un ejemplo paradigmático de su capacidad de gestión es la actual ejecución del Proyecto Integral de Agua, Higiene y Saneamiento (IWASH), una iniciativa multimillonaria financiada por USAID e implementada en estrecha colaboración con Global Communities, la cual busca reducir drásticamente las brechas de desigualdad en el acceso a agua segura en la región norte.
+
+Sin embargo, el éxito y el crecimiento acelerado de sus operaciones han sobrepasado por completo la capacidad instalada de sus herramientas administrativas tradicionales, generando cuellos de botella que amenazan la sostenibilidad de la institución. Según el riguroso Informe de Autovaloración y Reconocimiento de Capacidades (ARC), presentado a la Junta Directiva en septiembre de 2023, la Mancomunidad de Municipios Frontera del Norte presenta deficiencias y estancamientos críticos en tres dimensiones organizacionales fundamentales: Planificación y Monitoreo, Gestión de Proyectos e Inversión y Probidad, Transparencia e Eficiencia Institucional.
+
+El diagnóstico mencionado reveló un problema sistémico: la administración depende de un ecosistema metodológico fragmentado. Aunque recientemente se ha introducido el uso de plataformas de recolección de datos móviles como CommCare para algunas tareas de campo, el flujo de información carece de integración sistémica. Los datos quedan aislados en tableros independientes, obligando al personal a realizar extracciones manuales para cruzarlos con hojas de cálculo en Microsoft Excel, minutas transcritas a mano y reportes informales enviados a través de aplicaciones de mensajería instantánea. Esta falta de interoperabilidad anula las ventajas de la recolección digital.  
+
+Esta fragmentación de los datos genera un impacto en cadena. En primer lugar, impide materialmente que la Gerencia consolide reportes operativos precisos y en tiempo real, transformando el monitoreo gerencial en una labor puramente reactiva que consume incontables horas de trabajo en recopilación manual de datos, aumentando exponencialmente el margen de error humano. En segundo lugar, y como consecuencia directa, la Junta Directiva carece de la visibilidad y transparencia necesaria para supervisar la ejecución del presupuesto de los proyectos de manera continua, tomando decisiones basadas en datos rezagados.
+
+Por último, esta desconexión retrasa la implementación de las recomendaciones del Plan de Mejoras Institucionales derivado del mismo informe, ya que no existe un mecanismo centralizado para rastrear qué departamento es responsable de qué tarea. Ante las rigurosas exigencias de auditoría, trazabilidad y rendición de cuentas que demandan los cooperantes internacionales, la digitalización integral de la Mancomunidad ha dejado de ser una simple innovación opcional para convertirse en un mandato urgente y una necesidad de supervivencia institucional operativa.
+
+Descripción del proceso del proyecto
+
+En el siguiente apartado se describen de manera analítica y exhaustiva los procesos operativos actuales de la Gerencia y la Junta Directiva que presentan deficiencias críticas y que serán automatizados mediante la nueva plataforma web. Para cada proceso se desglosa el flujo manual actual, las herramientas rudimentarias utilizadas y el diagrama de flujo propuesto para su sistematización.
+
+Gestión y seguimiento de proyectos intermunicipales 
+
+Descripción del proceso actual
+
+La Mancomunidad coordina intervenciones físicas en los tres municipios activos en los que tiene intervención. Si bien históricamente el flujo de información desde el campo hacia la sede central dependía de libretas físicas y aplicaciones de mensajería informal, la institución ha incorporado el uso de la herramienta COMMCARE para la recopilación de datos primarios por parte de los técnicos de campo.  
+
+Sin embargo, esta adopción tecnológica parcial ha generado un cuello de botella administrativo debido a la falta de interoperabilidad y automatización. El proceso operativo actual dicta que, al regresar de campo, el apartado de Monitoreo y Evaluación debe ingresar al tablero aislado de COMMCARE, revisar los datos de forma individual, y proceder a extraerlos para insertarlos manualmente en los informes físicos y digitales de la institución. En consecuencia, la Gerencia aún debe ensamblar laboriosamente los reportes para presentar el avance a los donantes internacionales.  
+
+Esta desconexión sistémica provoca que, cuando la Junta Directiva solicita el estatus de ejecución de un proyecto, la Gerencia invierta hasta una semana recopilando, transcribiendo y consolidando los datos, lo que impide una toma de decisiones ágil ante retrasos en la obra. Esta problemática hace imperativa la adopción de una plataforma integral propia que elimine los silos de información y automatice el flujo de los indicadores desde su captura en campo hasta su visualización en tiempo real.  
+
+Herramientas, métodos y técnicas actuales
+
+Para operar bajo este esquema asíncrono, el personal depende de herramientas informales y manuales que limitan la trazabilidad, tales como:
+
+Plataforma de recolección de datos móviles (CommCare), utilizada para la captura de información primaria, pero cuya arquitectura aislada exige la exportación y tabulación manual de los registros por parte del departamento de Monitoreo y Evaluación.
+
+Aplicaciones de mensajería instantánea para el envío asíncrono de reportes no estructurados y comunicación informal.
+
+  Libretas de campo y formularios impresos, susceptibles a pérdida o daño por factores climáticos durante las visitas a las comunidades.
+
+Hojas de cálculo en Microsoft Excel y presentaciones de Microsoft PowerPoint, ensambladas laboriosamente de forma manual para la rendición de cuentas.
+
+
+
+Propuesta de sistematización del proyecto
+
+La Figura 1 representa una propuesta conceptual de captura en campo y consolidación del seguimiento. Las capacidades sin conexión y de sincronización automática que muestra son requisitos pendientes; no están implementadas en la versión revisada. El prototipo actual requiere conexión para registrar avances y evidencias.
+
+
+
+Figura 4.1 
+
+Diagrama de flujo del proceso de gestión y seguimiento de proyectos
+
+
+
+Nota. Elaboración propia
+
+Monitoreo, seguimiento y evaluación el plan de mejoras
+
+Descripción del proceso actual
+
+A partir de los resultados obtenidos en el proceso de Autovaloración y Reconocimiento de Capacidades (ARC), la institución formuló un plan de mejoras enfocado en subsanar las deficiencias identificadas en materia de gobernanza y planificación. En la actualidad, el monitoreo, seguimiento y evaluación de dicho plan carece de una metodología activa sistémica, quedando relegado a una matriz impresa que se archiva físicamente en la Gerencia. La delegación de responsabilidades se efectúa de manera verbal durante las sesiones de trabajo, careciendo de un sistema de alertas que notifique el vencimiento de los plazos establecidos para cada meta. Este enfoque pasivo ocasiona que las tareas estratégicas sean postergadas o invisibilizadas frente a las urgencias operativas diarias, lo cual compromete severamente el cumplimiento de los compromisos adquiridos y pone en riesgo futuras evaluaciones ante los organismos cooperantes.  
+
+Herramientas, métodos y técnicas actuales
+
+El monitoreo, seguimiento y evaluación de este plan de mejoras se ejecuta actualmente mediante los siguientes recursos administrativos convencionales:  
+
+Soportes documentales en papel, organizados en sistemas de archivo tradicional que limitan la accesibilidad y aumentan el riesgo de extravío. 
+
+Gestión de comunicaciones mediante correos electrónicos fragmentados, lo que imposibilita la trazabilidad unificada y la auditoría del avance de las tareas.  
+
+Asignación de responsabilidades a través de directrices verbales, sujetas a la retentiva individual de los involucrados y carentes de un registro formal vinculante.  
+
+Instrumentos de control visual de carácter efímero, cuya naturaleza impide conservar el histórico de los indicadores de logro institucionales.  
+
+Propuesta de sistematización del proceso
+
+El diagrama de flujo (ver Figura 4.2) detalla la implementación de un sistema de seguimiento activo basado en notificaciones preventivas. Esta solución transforma el monitoreo pasivo actual en un modelo dinámico, alineado estructuralmente con las funciones de la dependencia de Monitoreo y Evaluación de la Mancomunidad. En el organigrama actual, esta dependencia es la encargada de revisar las metas de los técnicos, extraer los datos de las visitas de campo registrados aisladamente en CommCare, y verificar que los avances coincidan con la programación establecida.  
+
+Al centralizar estas validaciones en la nueva plataforma, el sistema proporciona a la dependencia de Monitoreo y Evaluación un tablero interactivo (Kanban) que automatiza las alertas sobre el vencimiento de metas estratégicas. Esto erradica la dependencia de cruces de datos manuales y permite a la Gerencia validar el cumplimiento normativo mediante la auditoría de evidencias digitales en tiempo real.  
+
+
+
+Figura 4.2. 
+
+Diagrama de estados del plan de mejoras institucionales
+
+ 
+
+Nota. Elaboración propia.
+
+Control financiero y rendición de cuentas
+
+La Mancomunidad administra fondos provenientes de múltiples fuentes, incluyendo aportes de los municipios miembros, transferencias del gobierno central y donaciones de la cooperación internacional. Actualmente, la consolidación presupuestaria se realiza mediante tabulación manual en libros auxiliares y hojas de cálculo aisladas. Además, la rendición de cuentas ante la Contraloría General de Cuentas (CGC) se realiza mediante cajas fiscales elaboradas en máquina de escribir, debido a que la institución aún no ha adoptado la entrega de estos reportes en formato digital. Para informar a la Junta Directiva sobre el saldo disponible, la ejecución presupuestaria o los gastos operativos, el departamento financiero ejecuta procesos de conciliación manual que demandan jornadas extendidas. Esta carencia de acceso a información financiera consolidada en tiempo real vulnera los principios de probidad y transparencia, resultando en la presentación de estados contables con un rezago significativo ante los entes fiscalizadores.
+
+Herramientas, métodos y técnicas actuales
+
+La administración y consolidación financiera se soporta en las siguientes herramientas limitantes:
+
+Libros de cálculo descentralizados y no interconectados, que impiden la automatización y el cruce de datos financieros en tiempo real.
+
+Cajas fiscales físicas elaboradas a máquina de escribir, utilizadas exclusivamente para los reportes exigidos por la Contraloría General de Cuentas.
+
+Recibos físicos emitidos por la Contraloría General de Cuentas (Serie AG, Forma 63-A2) para la recepción y legalización de fondos públicos.
+
+Recibos de donaciones emitidos a través de la Agencia Virtual de la Superintendencia de Administración Tributaria (SAT), utilizando el Número de Identificación Tributaria (NIT) institucional, para la gestión de fondos provenientes de cooperación internacional u ONG.
+
+Sistemas de cálculo manual que incrementan la susceptibilidad al error humano durante el cuadre de las partidas presupuestarias.
+
+Propuesta de sistematización del proceso
+
+El diagrama de flujo (ver Figura 4.3) ilustra la centralización del procesamiento contable dentro de la plataforma. La solución tecnológica unifica el ingreso de gastos operativos y cuotas en un solo módulo financiero, el cual es procesado por un motor de cálculo automatizado. Es imperativo destacar que la arquitectura del sistema respetará la separación bancaria institucional, gestionando de manera independiente la cuenta de fondos públicos y la cuenta destinada a fondos de entidades privadas o cooperación. Esta estructura elimina las hojas de cálculo aisladas y la conciliación manual, permitiendo exportar reportes consolidados auditables y alimentar un tablero directivo de transparencia con gráficas dinámicas en tiempo real.
+
+
+
+Figura 4.3 
+
+Diagrama de flujo del control financiero y rendición de cuenta
+
+Nota. Elaboración propia.
+
+Control de acuerdos y gobernanza de la Junta Directiva
+
+Descripción del proceso actual
+
+El proceso de toma de decisiones, llevado a cabo durante las sesiones de la Asamblea General y la Junta Directiva, se documenta mediante la redacción de resoluciones que, por mandato legal, deben imprimirse obligatoriamente en un libro de hojas movibles autorizado por la Contraloría General de Cuentas. Estas actas requieren firmas físicas de los involucrados para habilitar su posterior fiscalización por parte del ente encargado. Sin embargo, al concluir cada sesión y firmar el documento, se carece de un mecanismo sistémico y activo que garantice el seguimiento y cumplimiento de los acuerdos pactados. Esta desconexión operativa provoca que directrices políticas y administrativas críticas queden invisibilizadas durante meses en el archivo físico, lo cual resta autoridad ejecutiva a los órganos de gobierno y fomenta la ineficiencia burocrática dentro de la institución.
+
+Herramientas, métodos y técnicas actuales
+
+El seguimiento de la gobernanza institucional está restringido por los siguientes medios:
+
+Libro de hojas movibles autorizado por la Contraloría General de Cuentas (CGC) para la impresión de actas, cuyo formato estrictamente físico restringe la consulta concurrente y el acceso remoto a las resoluciones históricas.
+
+Dependencia absoluta de la memoria del personal para el seguimiento de tareas, omitiendo cualquier protocolo de alertas o notificaciones automatizadas.
+
+Procesos de legalización dependientes de firmas y sellos físicos obligatorios para auditoría que, al carecer de un respaldo digital indexado, ralentizan significativamente los flujos de consulta y ejecución operativa.
+
+Propuesta de sistematización del proceso
+
+El diagrama de secuencia (ver Figura 4.4) modela la automatización del seguimiento a las resoluciones emitidas por la Asamblea General. Esta arquitectura sistémica no sustituye el mandato legal del libro impreso, sino que complementa el flujo mediante un repositorio de gobernanza digital activo. El sistema permite la generación estructurada del acta para su impresión oficial y, paralelamente, orquesta automáticamente la notificación a los responsables designados para iniciar un ciclo de monitoreo continuo. Este motor envía alertas preventivas a la Gerencia sobre los plazos críticos y, tras la carga de evidencias, actualiza en tiempo real el estatus de ejecución en el tablero directivo de los alcaldes.
+
+Figura 4.4. 
+
+Diagrama de secuencia del control de acuerdos y gobernanza
+
+
+
+Nota. Elaboración propia.
+
+Gestión de alianzas estratégicas y convenios interinstitucionales
+
+Descripción del proceso actual
+
+El portafolio de convenios de la Mancomunidad incluye tanto acuerdos de cooperación internacional como alianzas estratégicas con el sector público y organizaciones no gubernamentales. La gestión actual de estos instrumentos se realiza de forma empírica y descentralizada en archivos físicos, lo que dificulta el control oportuno de sus fechas de vencimiento. Al no existir un sistema de alertas automatizado, la institución se entera de la expiración de un convenio cuando este ya ha vencido, lo que pone en riesgo la continuidad de los fondos y proyectos estratégicos. Asimismo, el intercambio de comunicaciones internas mediante memorándums impresos retrasa la coordinación interdepartamental necesaria para la renovación y cumplimiento de los acuerdos.
+
+Herramientas, métodos y técnicas actuales
+
+El seguimiento de las alianzas y convenios se soporta en los siguientes recursos limitantes:
+
+Archivos físicos y carpetas locales desconectadas, que impiden la visibilidad global del portafolio vigente por parte de la Gerencia.
+
+Tablas de control estáticas en hojas de cálculo que dependen de la revisión visual manual y periódica del personal administrativo.
+
+Comunicaciones internas mediante memorándums impresos que retrasan la coordinación interdepartamental necesaria para la renovación y cumplimiento de los acuerdos.
+
+Propuesta de sistematización del proceso
+
+El diagrama de flujo (ver Figura 4.5) ilustra la automatización en la gestión del portafolio de convenios interinstitucionales y públicos. La propuesta sustituye el archivo físico y el control empírico por un repositorio digital integrado con un motor cronológico. Este sistema evalúa de forma continua la vigencia de los instrumentos legales y clasifica su estado operativo, detonando alertas preventivas automáticas (por ejemplo, notificaciones a 90 días de su vencimiento) para garantizar que la Gerencia gestione oportunamente las renovaciones y mitigue el riesgo de perder financiamiento estratégico.
+
+
+
+Figura 4.5. 
+
+Diagrama de flujo de la gestión de alianzas estratégicas y convenios públicos y privados.
+
+
+
+Nota. Elaboración propia.
+
+Generación continua de datos y estadísticas territoriales
+
+Descripción del proceso actual
+
+El proceso de evaluación institucional evidenció una vulnerabilidad crítica respecto a la capacidad instalada para generar métricas y estadísticas continuas en materia de Agua, Saneamiento e Higiene (ASH). En el modelo operativo vigente, la recolección de indicadores territoriales, tales como los índices de cobertura de agua potable, exige la emisión de requerimientos formales (oficios) a las seis Oficinas Municipales de Agua y Saneamiento (OMAS). Esta metodología de recolección fragmentada provoca que la información sea despachada en formatos heterogéneos, desfasados en el tiempo y predominantemente en soportes físicos. La carencia absoluta de un repositorio de datos regional centralizado y estandarizado obstaculiza severamente la formulación de nuevas propuestas de inversión o proyectos competitivos que requieran fundamentación basada en evidencia científica y estadística.
+
+Herramientas, métodos y técnicas actuales
+
+La recopilación y manejo de la información territorial se encuentra limitada por el uso de los siguientes medios desarticulados:
+
+Sistemas de recolección mixtos (formularios en papel y herramientas móviles de captura aisladas) que, al carecer de una Interfaz de Programación de Aplicaciones (API) integrada al sistema financiero y operativo de la Mancomunidad, ralentizan la tabulación de datos y la consolidación estadística.
+
+Sistemas de digitación descentralizados, donde cada municipio emplea estructuras de datos independientes, imposibilitando la consolidación algorítmica y automatizada a nivel regional.
+
+Registros censales esporádicos manejados en hojas de cálculo sin estandarización de variables, lo que impide el análisis estadístico histórico y proyectivo.
+
+Bancos de imágenes y archivos fotográficos desprovistos de metadatos espaciales, restando rigor técnico y validez probatoria a las evidencias de campo presentadas ante los cooperantes internacionales.
+
+Propuesta de sistematización del proceso
+
+El diagrama de flujo (ver Figura 4.6) esquematiza la arquitectura de datos propuesta para resolver la fragmentación de la información territorial. El modelo establece un flujo estandarizado donde los técnicos locales digitan la información primaria directamente hacia una base de datos central. Posteriormente, un motor de consolidación procesa y limpia los datos, generando automáticamente gráficos de cobertura ASH (Agua, Saneamiento e Higiene) e indicadores de déficit. Finalmente, estos datos convergen en un tablero de visualización directiva en tiempo real, proveyendo a la institución de evidencia estadística sólida para la fundamentación de nuevos proyectos.
+
+
+
+Figura 4.6. 
+
+Diagrama de flujo para la generación continua de datos y estadísticas territoriales
+
+
+
+Nota. Elaboración propia.
+
+Levantamiento de requerimientots
+
+A partir del diagnóstico situacional y la identificación de las deficiencias críticas en los procesos operativos, en el presente apartado se definen las especificaciones del software necesarias para solventar dichas necesidades. Para asegurar el rigor metodológico del diseño, el levantamiento se ha estructurado tomando como referencia las directrices de la Especificación de Requisitos de Software (ERS) del estándar IEEE 830-1998.  
+
+Introducción
+
+Este documento constituye la Especificación de Requisitos de Software (ERS) para la Plataforma de Gestión Documental y Operativa de la Mancomunidad de Municipios Frontera del Norte. Esta especificación se ha estructurado basándose estrictamente en las directrices dictadas por el estándar de Práctica Recomendada para Especificaciones de Requisitos de Software ANSI/IEEE 830-1998.
+
+Propósito
+
+El presente documento tiene como propósito definir detalladamente las especificaciones funcionales y no funcionales para el diseño y desarrollo de un sistema de información web orientado a la automatización institucional. Este sistema permitirá gestionar, consolidar y auditar los distintos procesos operativos, financieros y estratégicos de la Mancomunidad, proveyendo una herramienta centralizada que será utilizada por la Junta Directiva (Alcaldes), la Gerencia Ejecutiva y el personal técnico de campo.
+
+Alcance
+
+Esta especificación de requisitos delimita el entorno del nuevo ecosistema digital, cuyo objetivo principal es erradicar la dependencia de flujos de trabajo analógicos y desarticulados. El alcance del sistema abarca la digitalización de reportes físicos de campo (con sincronización asíncrona), la consolidación financiera automatizada, el control activo de convenios interinstitucionales mediante motores cronológicos, el monitoreo del plan de mejoras (ARC) y la generación de estadísticas territoriales (ASH). La plataforma busca centralizar la información para proveer tableros de control en tiempo real que faciliten la toma de decisiones gerenciales y políticas.
+
+Personal involucrado
+
+
+
+
+
+
+
+
+
+Definiciones, acrónimos y abreviaturas
+
+
+
+Referencias
+
+
+
+
+
+Resumen
+
+Este documento consta de tres secciones. En la primera sección se realiza una introducción al mismo y se proporciona una visión general de la especificación de recursos del sistema.
+
+En la segunda sección del documento se realiza una descripción general del sistema, con el fin de conocer las principales funciones que éste debe realizar, los datos asociados y los factores, restricciones, supuestos y dependencias que afectan al desarrollo, sin entrar en excesivos detalles.
+
+Por último, la tercera sección del documento es aquella en la que se definen detalladamente los requisitos que debe satisfacer el sistema (Requerimientos Funcionales y No Funcionales).
+
+Descripción general
+
+Perspectiva del producto
+
+La plataforma de la Mancomunidad de Municipios Frontera del Norte será un producto diseñado para operar en entornos WEB bajo una arquitectura basada en la nube. Esto permitirá su utilización de forma rápida, descentralizada y eficaz en los tres municipios activos. Dada la topografía de la región, el sistema contará con capacidades asíncronas en las interfaces móviles de los técnicos de campo, garantizando la captura de datos sin depender de internet y sincronizándose automáticamente al detectar conectividad.
+
+Funcionalidad del producto
+
+El sistema integrará múltiples módulos operativos para centralizar la administración institucional. Las funcionalidades principales abarcan:
+
+
+
+Figura 4.7. 
+
+Diagrama de casos de uso macro del sistema.
+
+
+
+Nota. El diagrama modela la interacción funcional del sistema, estructurada en seis roles granulares de seguridad, un rol de de visitante anónimo y su interconexión restringida con los siete módulos operativos de la Mancomunidad. Elaboración propia.
+
+
+
+Características de los usuarios
+
+
+
+
+
+
+
+
+
+
+
+Restricciones 
+
+El desarrollo, despliegue y operatividad del sistema de información están condicionados por un conjunto de limitaciones técnicas, ambientales y arquitectónicas que el software debe respetar de forma estricta. Estas restricciones son las siguientes:
+
+Interfaz para ser usada con internet. 
+
+Uso de dominio institucional oficial.
+
+Lenguajes y tecnologías en uso: SvelteKit (Frontend) y Node.js con Express y Prisma (Backend); SQLite en desarrollo y PostgreSQL como destino de producción. 
+
+Los servidores deben ser capaces de atender consultas concurrentemente. 
+
+El sistema se diseñará según un modelo cliente/servidor mediante API RESTful. 
+
+El sistema deberá tener un diseño adaptable, independiente del dispositivo o sistema operativo. 
+
+El acceso estará restringido y asegurado mediante JSON Web Tokens.
+
+Suposiciones y dependencias
+
+El correcto funcionamiento y la adopción exitosa del proyecto están sujetos a diversas premisas operativas, voluntad política y factores externos que escapan al control directo de la ingeniería del software. Las principales dependencias son:
+
+Se asume que los requisitos operativos y funcionales aquí descritos son estables.
+
+Los dispositivos en los que se ejecute el sistema deben contar con conexión a red para garantizar una correcta sincronización.
+
+Se asume la voluntad política institucional para abandonar el uso del papel.
+
+El personal operativo recibirá inducción técnica básica para el uso de la plataforma.
+
+La Mancomunidad asignará un presupuesto anual para el pago del alojamiento en la nube y dominio web.
+
+
+
+Requisitos específicos
+
+Requisitos comunes de las interfaces 
+
+Interfaces de usuario 
+
+La interfaz con el usuario consistirá en un conjunto de tableros de control interactivos, formularios web, botones y listas desplegables. Ésta deberá ser construida específicamente bajo principios de diseño responsivo, siendo adaptable tanto a teléfonos celulares como a computadoras de escritorio. Su visualización se realizará exclusivamente a través de un navegador de internet y no requerirá la instalación de ningún archivo ejecutable local en los equipos de la institución.
+
+Interfaces de hardware 
+
+Para el uso y correcta ejecución del sistema será estrictamente necesario disponer de equipos de cómputo o dispositivos móviles inteligentes en óptimo estado operativo. Dichos dispositivos deberán cumplir con especificaciones técnicas mínimas para evitar cuellos de botella, requiriendo obligatoriamente conectividad a una red Wi-Fi o a una red de datos móviles para lograr la sincronización de la información. A nivel de procesamiento, exigirán como mínimo un procesador de un gigahercio y medio de velocidad, acompañado de una memoria RAM no menor a dos gigabytes. Finalmente, requerirán una pantalla táctil o periféricos básicos de entrada, tales como teclado y ratón, para facilitar la digitación de los reportes.
+
+Interfaces de software 
+
+El entorno de ejecución del sistema exigirá un sistema operativo multiplataforma, asegurando una total compatibilidad con entornos modernos como Windows, macOS, Linux, Android o iOS. Para ingresar a la plataforma y operar los módulos, los técnicos únicamente necesitarán un navegador web en sus versiones más recientes, pudiendo utilizar alternativas estándar como Google Chrome, Mozilla Firefox, Safari o Microsoft Edge. De igual forma, será un requerimiento contar con un programa visor de documentos preinstalado que tenga la capacidad de abrir y leer actas oficiales en formato PDF.
+
+Interfaces de comunicación 
+
+Los servidores, la base de datos centralizada y los diferentes clientes se comunicarán entre sí de forma ininterrumpida mediante protocolos estándares de internet. Todo el flujo de transferencia de información, abarcando la subida de evidencias fotográficas desde el campo y la descarga de documentos financieros, utilizará el protocolo seguro de transferencia de hipertexto HTTPS. Lo anterior garantizará estructuralmente que los datos viajen totalmente encriptados a través de la red hacia una arquitectura de servicios web consolidada.
+
+Requisitos funcionales 
+
+Requisito funcional 1: 
+
+Autenticación de Usuarios: El sistema validará las credenciales de los usuarios mediante correo electrónico y contraseña para acceder a cualquier parte del sistema.
+
+Inicio de Sesión: Si las credenciales son correctas, se concederá el acceso al sistema dependiendo del módulo en el cual se encuentre y su nivel de accesibilidad.
+
+Recuperación de Credenciales: Permitirá a los usuarios restablecer su contraseña olvidada.
+
+Envío de enlace de recuperación temporal al correo electrónico registrado.
+
+Formulario seguro para ingresar y confirmar la nueva contraseña.
+
+Requisito funcional 2 
+
+Gestión de Roles y Permisos: Permitirá al administrador asignar, modificar o revocar los roles de los usuarios registrados. El sistema restringirá automáticamente las opciones del menú de navegación dependiendo del rol específico asignado al usuario activo.
+
+Requisito funcional 3 
+
+Creación de Fichas Técnicas de Proyectos: El sistema permitirá registrar la información general de los proyectos intermunicipales de infraestructura.
+
+Ingreso de Metadatos: El usuario deberá ingresar el nombre del proyecto, la agencia financiadora y las fechas planificadas.
+
+Asignación de Presupuesto: Permitirá desglosar el financiamiento total según aportes municipales y aportes de cooperación internacional.
+
+Requisito funcional 4
+
+Carga de Evidencias Fotográficas: El sistema permitirá a los técnicos operativos adjuntar archivos fotográficos asociados a una meta física del proyecto.
+
+Extracción de Geodatos: El sistema extraerá y almacenará automáticamente las coordenadas geográficas de las fotografías subidas desde los dispositivos móviles para validación de ubicación.
+
+Requisito funcional 5 
+
+Portal de Transparencia y Datos Abiertos: El sistema proveerá una interfaz pública de libre acceso para la ciudadanía, y a su vez, un módulo interno para que la gerencia gestione la información expuesta.
+
+Visualización Ciudadana: Permitirá a cualquier visitante externo, sin necesidad de autenticación, consultar el avance físico de los proyectos intermunicipales, indicadores y acuerdos institucionales.
+
+Gestión de Contenido Público: El sistema permitirá al rol de Gerente seleccionar, habilitar, modificar o dar de baja qué proyectos, estadísticas y actas específicas son visibles en el portal ciudadano, garantizando el control político e institucional de la información.
+
+Requisito funcional 6
+
+Cálculo de Avance Físico: El motor del sistema calculará automáticamente el porcentaje de avance físico del proyecto basándose en las evidencias registradas, generando un gráfico comparativo en tiempo real entre el avance real y el cronograma planificado.
+
+Requisito funcional 7
+
+Visualización de Tablero Operativo: El sistema mostrará una interfaz gráfica interactiva tipo Kanban para representar el estado de las tareas del personal.
+
+Transición de Estados: Las tareas podrán arrastrarse visualmente entre las columnas de pendiente, en proceso, en revisión y finalizado.
+
+Filtros de Búsqueda: Los usuarios podrán filtrar las tarjetas visibles por municipio, responsable o nivel de prioridad.
+
+Requisito funcional 8
+
+Asignación de Tareas ARC: El sistema permitirá a la gerencia crear nuevas acciones operativas y delegarlas al equipo.
+
+Crear Nueva Tarea: El gerente podrá redactar las instrucciones precisas para cumplir la meta institucional.
+
+Asignación directa de un usuario responsable.
+
+Definición de una fecha límite estricta para su cumplimiento.
+
+Requisito funcional 9
+
+Generación de Alertas de Vencimiento: El sistema evaluará diariamente las fechas límite y activará una notificación visual de color rojo para aquellas asignaciones que no hayan sido finalizadas a tiempo.
+
+Requisito funcional 10
+
+Registro de Ingresos Municipales: El sistema ofrecerá al usuario del área financiera las herramientas para el registro transaccional de cuotas.
+
+Ingreso de Aportes: Permitirá registrar los pagos ordinarios y extraordinarios realizados por las seis municipalidades.
+
+Emisión de Comprobantes: El sistema autogenerará un comprobante digital en formato PDF por cada transacción guardada.
+
+Historial Financiero: Mostrará una tabla cronológica con todos los ingresos percibidos durante el año fiscal en curso.
+
+Requisito funcional 11
+
+Administración de Caja Chica: El sistema habilitará un módulo exclusivo para documentar los egresos operativos cotidianos de la oficina central, exigiendo obligatoriamente adjuntar una fotografía de la factura para habilitar el guardado del registro.
+
+Requisito funcional 12
+
+Emisión de Reportes Financieros: El sistema agrupará los ingresos y egresos para autogenerar informes de ejecución presupuestaria, listos para su exportación documental e impresión para las asambleas de alcaldes.
+
+Requisito funcional 13
+
+Repositorio de Actas Oficiales: Permite al asistente administrativo digitalizar y resguardar el historial de reuniones de asamblea.
+
+Subir Documentos: Permitirá adjuntar archivos PDF escaneados de las actas oficiales.
+
+Indexación de Actas: El sistema clasificará los documentos por fecha, número de sesión y municipio anfitrión para facilitar su búsqueda futura.
+
+Requisito funcional 14
+
+Trazabilidad de Acuerdos Políticos: El sistema permitirá vincular acuerdos específicos a un acta previamente cargada.
+
+Auditoría Visual: Se asignará un semáforo visual de cumplimiento a cada acuerdo para auditar si las acciones determinadas por la junta directiva fueron acatadas.
+
+Requisito funcional 15
+
+Monitoreo de Convenios Interinstitucionales: El sistema calculará continuamente los días calendario restantes para la expiración de los convenios de cooperación.
+
+Alertas Tempranas: La plataforma notificará a la gerencia con noventa días de anticipación cuando un convenio esté próximo a caducar.
+
+Requisito funcional 16
+
+Consolidación de Censos de Agua y Saneamiento (ASH): El sistema permitirá tabular los índices de déficit de infraestructura comunitaria.
+
+Digitar Resultados Locales: Cada técnico ingresará los datos de las encuestas realizadas en las comunidades de su respectivo municipio.
+
+Renderizado de Déficits: El sistema procesará los datos locales para generar gráficos estadísticos consolidados a nivel regional.
+
+Requisitos no funcionales
+
+Los requerimientos no funcionales definen los atributos de calidad, rendimiento y restricciones tecnológicas de la arquitectura del software.
+
+Requisitos de rendimiento
+
+Garantizar que el tiempo de respuesta del servidor backend para procesar consultas complejas y renderizar los tableros de control financiero no exceda los dos segundos bajo condiciones de carga normal.
+
+Optimizar el diseño de las consultas a la base de datos relacional para evitar cuellos de botella y sobrecarga en el tráfico de red durante la sincronización masiva de datos de campo.
+
+Seguridad
+
+Garantizar la protección de la información sensible mediante el cifrado estricto de contraseñas utilizando algoritmos seguros de derivación de claves como Bcrypt, empleado en el prototipo.
+
+Implementar mecanismos de control de acceso basados en roles y políticas de seguridad a nivel de fila para restringir la visualización y modificación de datos según el municipio y cargo del usuario.
+
+Registrar en una bitácora inmutable de auditoría cualquier alteración crítica del sistema, tal como la eliminación o actualización de registros financieros y actas oficiales, permitiendo la trazabilidad y el análisis forense.
+
+Fiabilidad
+
+El sistema debe contar con validaciones estrictas en los formularios de captura de datos para prevenir inconsistencias y entradas erróneas en los registros contables y censos territoriales.
+
+Asegurar la integridad de la información recolectada en campo mediante mecanismos de almacenamiento local temporal en los dispositivos móviles, garantizando que no se pierdan datos ante fallos de conexión o cierres imprevistos de la aplicación.
+
+Disponibilidad
+
+La disponibilidad de la plataforma debe ser continua bajo un esquema de 24 horas al día los 7 días de la semana, asegurando el acceso ininterrumpido a los tableros de toma de decisiones.
+
+Contar con políticas de respaldo periódico automatizado de la base de datos y esquemas de recuperación ante contingencias para garantizar la continuidad operativa institucional.
+
+Mantenibilidad
+
+La arquitectura del software debe estructurarse de forma modular y desacoplada, facilitando la incorporación de nuevos módulos institucionales sin alterar el núcleo funcional existente.
+
+El modelo de datos debe diseñarse en tercera forma normal para asegurar la integridad referencial y permitir futuras ampliaciones del esquema con un impacto mínimo en el código fuente.
+
+
+
+Portabilidad y Usabilidad
+
+La interfaz de usuario debe desarrollarse bajo el enfoque Mobile First, garantizando un diseño totalmente responsivo, intuitivo y adaptable a pantallas de teléfonos inteligentes, tabletas y computadoras de escritorio.
+
+El sistema debe operar de manera homogénea en los principales navegadores web modernos sobre sistemas operativos Windows, macOS, Linux, Android e iOS, sin requerir la instalación de dependencias nativas en los clientes.
+
+
+
+CAPÍTULO V
+DISEÑO DE LA APLICACIÓN
+
+El presente capítulo aborda la estructuración técnica y arquitectónica de la plataforma web destinada a optimizar los procesos operativos de la Mancomunidad de Municipios de Huehuetenango. A partir de los requerimientos analizados en la fase anterior, se establecen los modelos lógicos y visuales que guiarán la construcción definitiva del software. El diseño actúa como el puente fundamental entre las necesidades de la institución y la implementación del código fuente, asegurando que la solución tecnológica sea escalable, segura y altamente eficiente frente a las limitaciones de conectividad de la región.
+
+Para ilustrar el comportamiento del sistema, se presenta una serie de diagramas técnicos que modelan la interacción entre los distintos niveles de usuarios y los módulos de la plataforma. A través de esquemas de casos de uso, modelos de baases de datos relacionales y diagramas de arquitectura, se define con precisión el flujo de la información, sentando una base estructurada que elimina la ambigüedad y facilita el desarrollo unificado del backend y frontend.
+
+Casos de uso 
+
+En el modelado UML para sistemas complejos, el estándar metodológico exige iniciar con un diagrama de casos de uso general a nivel macro para delimitar las fronteras del software; dicho modelo fue expuesto y analizado previamente en el Capítulo IV (Requerimientos del Sistema).
+
+Habiendo establecido esa arquitectura funcional global, el presente apartado omite la vista macroscópica para desglosar directamente la lógica interna de la plataforma. 
+
+Cada uno de los modelos presentados a continuación ha sido estructurado respetando rigurosamente la notación estándar de UML. En ellos se identifican los límites de cada paquete, los casos de uso individuales y los actores involucrados, demostrando de forma gráfica cómo la plataforma web facilita la automatización de tareas, la trazabilidad de la información institucional y la auditoría constante de los recursos intermunicipales.
+
+
+
+Módulo 0: Seguridad y control de acceso
+
+Para detallar el control de acceso y salvaguardar la integridad de la información institucional, el siguiente diagrama expone las acciones permitidas dentro de la gestión de usuarios, la autenticación mediante tokens (JWT) y la protección del sistema basada en roles (RBAC).
+
+Figura 5.1.
+
+Módulo de seguridad y control de acceso (RBAC).
+
+
+
+Nota. Se detallan los casos de uso relacionados con el ingreso seguro a la plataforma, donde el sistema aplica políticas de seguridad a nivel de fila (RLS) para los técnicos y permite al administrador la gestión centralizada de los privilegios y restricciones. Elaboración propia
+
+
+
+Caso de uso: Módulo 1 - Gesión de proyectos intermuncipales
+
+En cuanto al manejo interno de la infraestructura comunitaria, es necesario definir cómo se estructuran y monitorean las obras de la Mancomunidad. El siguiente diagrama ilustra las funciones de registro, ejecución en campo y supervisión del progreso.
+
+Figura 5.2.
+
+Módulo de gestión de proyectos intermunicipales.
+
+
+
+Nota. Diagrama conceptual de seguimiento de proyectos. La validación frente a CommCare representa una integración propuesta y pendiente. La versión actual conserva evidencias y coordenadas suministradas por el cliente, con acceso sujeto a permisos.
+
+
+
+Caso de uso: Módulo 2 - Monitoreo ARC (Kanban)
+
+El proceso operativo y la asignación de tareas dentro de la oficina central requieren un flujo estructurado y visual. El siguiente diagrama modela la interacción del equipo con el tablero interactivo para la gestión de acciones ARC.
+
+Figura 5.3.
+
+Módulo de monitoreo ARC (Tablero Kanban).
+
+
+
+Nota. Describe la interacción administrativa con el tablero Kanban, permitiendo a la gerencia crear tarjetas operativas, asignar responsables y generar notificaciones automáticas cuando se supera el plazo establecido.Elaboración propia.
+
+
+
+Caso de uso: Módulo 3 - Transparencia financiera y caja chica
+
+Para garantizar la correcta ejecución presupuestaria y la auditoría de los recursos, el sistema cuenta con un apartado contable. El siguiente diagrama modela el registro de ingresos, el control de caja chica y la generación de informes.
+
+Figura 5.4.
+
+Módulo de transparencia financiera y caja chica.
+
+
+
+Nota. Representa el flujo transaccional donde el Gestor Financiero opera los ingresos bajo una estricta separación de cuentas (fondos públicos fiscalizados por la CGC y fondos privados gestionados vía SAT), permitiendo a la gerencia y a los alcaldes descargar la ejecución presupuestaria consolidada para la rendición de cuentas. Elaboración propia.
+
+
+
+
+
+Caso de uso: Módulo 4 - Gobernanza y repositorio de actas
+
+El resguardo del historial de reuniones y asambleas, junto con su cumplimiento legal, es fundamental para la transparencia institucional. El siguiente diagrama modela el proceso de gobernanza híbrido, el cual facilita la generación de formatos oficiales para su impresión obligatoria, la posterior digitalización del documento firmado y el seguimiento activo de las decisiones políticas mediante indicadores visuales.
+
+Figura 5.5.
+
+Módulo de gobernanza y repositorio de actas oficiales.
+
+
+
+Nota. Ilustra el flujo híbrido de la secretaría para generar las actas compatibles con los requerimientos de la Contraloría General de Cuentas, mantener el archivo digital y permitir a las autoridades auditar el nivel de acatamiento de los acuerdos mediante un semáforo de cumplimiento. Elaboración propia.
+
+
+
+Caso de uso: Módulo 5 - Convenios ASH
+
+El seguimiento de las alianzas estratégicas, tanto con agencias de cooperación internacional como con entidades del sector público, requiere un control estricto de tiempos. El siguiente diagrama modela la gestión del portafolio de convenios y el sistema de alertas diseñado para prevenir el vencimiento de acuerdos sin renovación previa.
+
+Figura 5.6.
+
+Módulo de convenios interinstitucionales.
+
+
+
+Nota. Detalla el flujo de trabajo donde la secretaría registra los datos de las alianzas (públicas, privadas y de cooperación), mientras el motor del sistema calcula la vigencia para alertar automáticamente a la gerencia con tres meses de anticipación sobre próximos vencimientos. Elaboración propia.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Caso de uso: Módulo 6 - Estadísticas ASH
+
+Para la formulación de políticas públicas basadas en evidencia, la plataforma permite medir el nivel de acceso a los servicios básicos en las comunidades. El siguiente diagrama modela el flujo de recolección descentralizada de información territorial y la posterior auditoría visual de los índices de carencia a nivel regional.
+
+Figura 5.7.
+
+Módulo de estadísticas y censos ASH.
+
+
+
+Nota. Representa el flujo de recolección de datos donde los técnicos operativos ingresan los resultados de los censos de su municipio, permitiendo a la gerencia (Super Administrador) y a los alcaldes (Validador Estratégico) auditar y visualizar los gráficos consolidados para identificar el déficit de infraestructura de agua y saneamiento (ASH). Elaboración propia.
+
+
+
+
+
+
+
+
+
+Caso de uso: Módulo 7 - Portal de transparencia y datos abiertso 
+
+Para dar cumplimiento a la transparencia institucional, el sistema integra una interfaz de libre acceso. El siguiente diagrama modela la interacción del ciudadano con el portal público y las facultades de la gerencia para autorizar la publicación de los datos.
+
+Figura 5.8.
+
+Módulo de portal de transparencia y datos abiertos.
+
+
+
+Nota. Modela el control de la información donde la Gerencia Ejecutiva gestiona qué datos operativos se hacen públicos, permitiendo a los Alcaldes y al Ciudadano consultar los avances físicos de forma externa. Elaboración propia.
+
+Modelo entidad-relación (ER)
+
+El modelo entidad-relación ilustra la arquitectura física de la base de datos relacional implementada en el backend. Este esquema central ha sido rigurosamente diseñado bajo las reglas de la Tercera Forma Normal (3FN), lo cual erradica la redundancia de datos y garantiza la consistencia, escalabilidad e integridad referencial de la información institucional. En este modelo se definen de manera explícita las 22 entidades que dan soporte a las operaciones de la Mancomunidad, detallando sus atributos, llaves primarias (PK), llaves foráneas (FK) y las cardinalidades que dictan las reglas de negocio, incluyendo la estricta separación contable y la trazabilidad de la auditoría.
+
+Figura 5.9. 
+
+Modelo entidad-relación global y normalizado de la plataforma MFNdH
+
+
+
+Nota. El diagrama ilustra la estructura física de la base de datos agrupada en seis esquemas lógicos. Se mapean las 22 entidades transaccionales y de catálogo, definiendo sus llaves y cardinalidades bajo la notación de ingeniería de datos (patas de gallo). El diseño normalizado en 3FN asegura la integridad para el manejo independiente de fondos públicos (CGC) y privados (SAT), así como el control estricto de acceso al sistema. Elaboración propia.
+
+Diagrmas UML de arquitectura y comportamiento
+
+Para comprender a profundidad el funcionamiento interno de la plataforma desarrollada para la MFNdH, se utiliza el Lenguaje Unificado de Modelado (UML). Esta sección se divide en dos grandes áreas: primero, el modelado estructural que define la infraestructura y los componentes del software; y segundo, el modelado de comportamiento que detalla el flujo dinámico de la información y la lógica de negocio en los procesos transaccionales.
+
+Diagramas estructurales y de arquitectura
+
+El modelado estructural proporciona una visión estática del sistema. Define cómo se organizan los módulos en el código y cómo se distribuyen físicamente a través de la infraestructura en la nube para garantizar la alta disponibilidad de los servicios en la región.
+
+Para comprender esta separación de responsabilidades, el siguiente diagrama de componentes ilustra la arquitectura lógica del software, dividida en capas de presentación, lógica de negocio y persistencia de datos.
+
+Figura 5.10.
+
+Diagrama de componentes de la arquitectura del sistema.
+
+
+
+Nota. Figura de una propuesta arquitectónica anterior. Supabase, Cloudflare R2 y Go no corresponden al backend ni al almacenamiento de evidencias implementados en esta revisión. La arquitectura actual utiliza SvelteKit estático, API Express, Prisma y una base relacional; las evidencias se conservan en esa base. El dibujo deberá sustituirse en la edición final. Elaboración propia.
+
+
+
+
+
+
+
+
+
+
+
+Una vez establecida la arquitectura lógica, es fundamental definir su topología física. El siguiente diagrama de despliegue detalla cómo los componentes previamente descritos se distribuyen sobre la infraestructura real en la nube, mostrando las conexiones de red y los protocolos de seguridad que utilizan los dispositivos cliente para comunicarse con los servidores.
+
+Figura 5.11. 
+
+Diagrama de despliegue de la infraestructura en la nube.
+
+
+
+Nota. Topología de despliegue propuesta, pendiente de comprobar en infraestructura real. La versión revisada incluye un contenedor Express para PostgreSQL, pero no acredita integración con Cloudflare R2 ni operación de esta topología. El dibujo deberá actualizarse antes de la entrega definitiva. Elaboración propia.
+
+Diagramas de comportamiento e interacción 
+
+A diferencia de los diagramas estructurales que muestran la disposición estática del sistema, los diagramas de comportamiento modelan cómo la plataforma de la MFNdH responde a las transacciones a lo largo del tiempo.
+
+Para ilustrar la lógica de negocio, se modela uno de los flujos críticos para la transparencia institucional: el registro de avances en los proyectos intermunicipales. El diagrama de secuencia detalla el intercambio de mensajes entre los componentes de la arquitectura cuando un usuario en campo captura una fotografía con coordenadas geográficas.
+
+
+
+Figura 5.12. 
+
+Diagrama de secuencia del registro de evidencias de campo.
+
+
+
+Nota. Secuencia de una propuesta anterior de almacenamiento externo. Actualmente la API valida el archivo, calcula SHA-256 y conserva su contenido junto con los datos de evidencia en la base relacional; el evento de auditoría se confirma en la misma transacción. El dibujo de R2 y Supabase debe actualizarse. Elaboración propia.
+
+
+
+El control y seguimiento de responsabilidades compartidas exige un ciclo de vida estricto. Para modelar esta lógica, se emplea un diagrama de máquina de estados que define las transiciones permitidas para una tarea dentro del módulo Kanban ARC, garantizando la trazabilidad de las acciones desde su asignación hasta su cierre institucional.
+
+Figura 5.13.
+
+Diagrama de máquina de estados del ciclo de vida de una tarea ARC
+
+
+
+Nota. El diagrama de máquina de estados modela las transiciones permitidas para las tareas en el tablero Kanban de la MFNdH. Cada cambio de estado se registra automáticamente en el sistema para mantener la trazabilidad de las responsabilidades asignadas entre los diferentes municipios asociados.
+
+Para ilustrar el flujo de trabajo operativo entre el usuario y la plataforma, se emplea un diagrama de actividad. Este modelo detalla los pasos secuenciales y las decisiones lógicas que ocurren durante el registro de indicadores críticos de desarrollo territorial, específicamente en el área de infraestructura sanitaria.
+
+Figura 5.14.
+
+Diagrama de actividad del registro de censos de agua y saneamiento (ASH)
+
+
+
+Nota. El diagrama de actividad representa el flujo lógico del módulo de estadísticas ASH (Agua, Saneamiento e Higiene). Se divide en swimlanes (carriles) para delimitar las responsabilidades de procesamiento entre la interfaz del usuario en campo, las reglas de validación en el servidor y la persistencia final en la base de datos relacional.
+
+Prototipos 
+
+El diseño de la interfaz gráfica de usuario (GUI) es el componente crítico que asegura la adopción tecnológica por parte del personal operativo y los alcaldes de la Mancomunidad de Municipios Frontera del Norte. Los prototipos presentados a continuación ilustran la capa de presentación del sistema, desarrollada bajo el framework SvelteKit.
+
+El diseño se fundamenta en principios de usabilidad y diseño responsivo (Responsive Web Design), garantizando una navegación fluida tanto en las estaciones de trabajo de las oficinas municipales como en los dispositivos móviles utilizados durante el trabajo de campo. A continuación, se presentan las interfaces que dan solución a los módulos transaccionales de la plataforma.
+
+Prototipo: Módulo 0 – Seguridad y control de acceso 
+
+El diseño preliminar de este módulo se fundamenta en la arquitectura cliente-servidor, separando estrictamente la capa de presentación en SvelteKit de la lógica de autenticación en Node.js con Express. A nivel de interfaz gráfica (UI), el prototipo inicia con el componente Login.svelte, el cual presenta un formulario minimalista estilizado con Tailwind CSS. La validación de credenciales se realiza de forma asíncrona mediante peticiones HTTP seguras hacia la API REST en Node.js con Express. Una vez que el backend valida y firma el token JWT, SvelteKit almacena la sesión y redirige al usuario al área administrativa (/dashboard). En esta vista principal, se renderiza un componente estructural (+layout.svelte) que contiene la barra lateral oscura de navegación (sidebar). Gracias a la reactividad nativa de Svelte, este sidebar utiliza los permisos (RBAC) de la sesión y renderiza dinámicamente solo los enlaces a los módulos autorizados para el usuario, ocultando proactivamente las opciones restringidas y complementando la autorización que el servidor verifica con los permisos vigentes de la base en cada petición.
+
+Prototipo: Módulo 1 – Gestión de proyectos intermuncipales
+
+El módulo de proyectos presenta un listado y una ruta de detalle (/proyectos/[id]) para consultar presupuesto, avance y evidencias. El registro conserva explícitamente el municipio. Al adjuntar una evidencia, la interfaz transmite un archivo PNG o JPEG de hasta 5 MB a la API Express, que valida su firma, calcula SHA-256 y conserva el contenido en la base. El navegador puede suministrar coordenadas, sin garantizar su exactitud ni autenticidad. La imagen se devuelve para consulta interna mediante una URL de datos; no se transfiere a un servicio externo de objetos.
+
+Prototipo: Módulo 2 – Monitoreo ARC (Kanban) 
+
+El módulo ARC organiza las tareas en cuatro estados: Pendiente, En Proceso, En Revisión y Finalizado. La interfaz permite arrastrar tarjetas o usar botones para cambiar de estado y muestra responsables, fechas y alertas de vencimiento. La API Express valida el permiso de edición y registra la modificación y su auditoría en una transacción. La respuesta actualiza la vista; no se acredita sincronización sin conexión.
+
+Prototipo: Módulo 3 – Transparencia financiera y caja chica 
+
+El módulo financiero permite registrar y consultar transacciones, distinguir su origen y resumir ingresos, egresos y cuotas. La interfaz consulta la API Express, cuyo acceso y operaciones dependen de los permisos vigentes. Los movimientos incluidos en el control interno se registran con huellas antes y después. Las etiquetas contables y los resúmenes apoyan el seguimiento; no acreditan cumplimiento tributario ni certificación de la CGC.
+
+Prototipo: Módulo 4 – Gobernanza y repositorio de actas 
+
+El módulo de gobernanza conserva registros de actas y acuerdos con sus fechas, responsables y estados. La API autoriza la lectura y exige permiso de edición para modificar actas o acuerdos. Ambos modelos forman parte de la verificación de integridad. La conservación del registro y de sus enlaces no acredita por sí misma autenticidad legal ni almacenamiento permanente de los documentos externos.
+
+Prototipo: Módulo 5 – alianzas y convenios 
+
+El módulo de convenios permite consultar y registrar acuerdos institucionales con agencias cooperantes, montos, vigencia y estado. La API Express calcula información de seguimiento y exige autorización para editar. Los convenios forman parte de la auditoría transaccional y del control de integridad. Las alertas y filtros son apoyo operativo y requieren datos completos y actualizados.
+
+Prototipo: Módulo 6 – Estadísticas ASH 
+
+El módulo ASH registra censos comunitarios y calcula indicadores agregados de agua, saneamiento y cloro residual con los datos disponibles. La interfaz presenta resultados y formularios según los permisos de acceso. La API Express y Prisma consultan la base configurada, sin requerir Supabase ni PgBouncer. El índice territorial adicional identifica municipios sin datos suficientes y mantiene carácter preliminar; requiere validar fuentes y ponderaciones antes de su uso institucional.
+
+Prototipo: Módulo 7 – Portal de transparencia y datos abiertos 
+
+El portal de transparencia dispone de una interfaz pública adaptable a pantallas pequeñas y separada de la administración. La versión actual se compila mediante el adaptador estático de SvelteKit y consulta la API Express. Solo se muestran publicaciones declaradas visibles y los proyectos expresamente referenciados por ellas. Las evidencias fotográficas y las coordenadas precisas no se publican en esta versión. La consulta de una solicitud requiere su código aleatorio y devuelve únicamente estado y fechas, sin información de contacto ni descripción.
+
+
+
+
+
+Estado de implementación y límites de la investigación
+
+MFN Digital comprende siete módulos funcionales del alcance de investigación: proyectos, ARC, finanzas, gobernanza, convenios, indicadores ASH y transparencia. Autenticación y permisos son transversales. Talento humano e inteligencia territorial son extensiones del prototipo y no amplían automáticamente el alcance aprobado.
+
+La implementación revisada utiliza Svelte 5, SvelteKit 2, Node.js, Express 4 y Prisma 6. SQLite se utiliza para desarrollo; PostgreSQL cuenta con un esquema y un SQL de actualización separados. Go se reserva como alternativa futura. Los diagramas o antecedentes que indiquen Go o servicios externos de archivos describen una propuesta anterior y no acreditan una integración implementada.
+
+Las evidencias nuevas conservan el archivo PNG o JPEG y su huella SHA-256 en la base de datos. Las coordenadas son suministradas por el dispositivo cliente; no se garantiza precisión satelital ni ubicación auténtica. No se implementa extracción EXIF, integración CommCare ni sincronización sin conexión en esta versión.
+
+Las escrituras de los nueve modelos operativos incluidos en el control de integridad y sus eventos antes/después se confirman en una misma transacción. El control compara registros completos con puntos históricos y rechaza sellar discrepancias. Es una verificación interna; no es una certificación de la CGC ni una garantía de inmutabilidad frente al administrador de la base.
+
+La reducción de tiempos, satisfacción, disponibilidad y rendimiento son indicadores a medir. No se presentan como resultados demostrados. El diseño principal es pre-experimental de un solo grupo con mediciones pareadas antes y después; la encuesta posterior es descriptiva transversal. Se deben conservar los datos, fechas, tareas comparables y limitaciones de atribución causal.
+
+La muestra propuesta de 22 participantes requiere padrón y consentimientos actualizados. Los municipios activos son San Pedro Soloma, Santa Eulalia y San Rafael la Independencia, según el PG y la confirmación del responsable (3 de octubre de 2026). Las otras localidades corresponden a antecedentes históricos.
+
+El índice IPIM es una orientación preliminar con pesos que requieren validación institucional. La ausencia de datos se identifica como información insuficiente. El índice no emite decisiones vinculantes ni demuestra ausencia de sesgos.
+
+Nombre
+
+Kevin Alexander Méndez López
+
+Rol
+
+Analista y Desarrollador
+
+Categoría Profesional
+
+Estudiante de Ingeniería en Sistemas
+
+Responsabilidad
+
+Análisis de información, arquitectura de software y programación del sistema web.
+
+Información de contacto
+
+Kevnml12@gmail.com
+
+Nombre
+
+Celia Catalina José Pascual
+
+Rol
+
+Operador de Sistema / Asistente Administrativo
+
+Categoría Profesional
+
+Secretaria Ejecutiva
+
+Responsabilidad
+
+Digitalización de actas de asambleas, registro en el sistema de los acuerdos institucionales, carga de convenios y soporte operativo directo a la Gerencia General.
+
+Información de contacto
+
+mancosedesantaeulalia@gmail.com
+
+Término
+
+Descripción
+
+MFNdH
+
+Mancomunidad de Municipios Frontera del Norte.
+
+ARC
+
+Autovaloración y Reconocimiento de Capacidades (Evaluación institucional).
+
+ASH
+
+Agua, Saneamiento e Higiene (Sector de proyectos de cooperación).
+
+OMAS
+
+Oficinas Municipales de Agua y Saneamiento.
+
+Dashboard
+
+Tablero de control visual interactivo para la toma de decisiones.
+
+KPI
+
+Indicador Clave de Rendimiento (Key Performance Indicator).
+
+Kanban
+
+Metodología ágil y visual para la gestión y seguimiento de tareas.
+
+ERS
+
+Especificación de Requisitos de Software.
+
+RF
+
+Requerimiento Funcional.
+
+RNF
+
+Requerimiento No Funcional.
+
+Título del Documento
+
+Referencia
+
+Práctica Recomendada para Especificaciones de Requisitos de Software
+
+Estándar ANSI/IEEE 830-1998
+
+Requisitos y Evaluación de la Calidad de Sistemas y de Software (SQuaRE)
+
+Estándar ISO/IEC 25010:2011
+
+Código Municipal de la República de Guatemala
+
+Decreto Número 12-2002 del Congreso de la República
+
+Ley de Acceso a la Información Pública
+
+Decreto Número 57-2008 del Congreso de la República
+
+Lineamientos para la Elaboración de Trabajos de Graduación
+
+Facultad de Ingeniería en Sistemas, Universidad Mariano Gálvez
+
+Informe de Autovaloración y Reconocimiento de Capacidades (ARC)
+
+Documento interno institucional de la MFNdH (2023)
+
+Pautas de Accesibilidad para el Contenido Web (WCAG) 2.1
+
+Consorcio World Wide Web (W3C)
+
+
+
+
+
+Tipo de usuario
+
+Super Administrador (Gerencia Ejecutiva)
+
+Formación
+
+Perito, técnico universitario o persona con experiencia práctica en administración municipal.
+
+Actividades
+
+Control total del sistema, aprobación de reportes, delegación de tareas operativas y supervisión de convenios interinstitucionales.
+
+
+
+
+
+Tipo de usuario
+
+Gestor Financiero (Dirección Administrativa Financiera)
+
+Formación
+
+Perito Contador o Bachiller con experiencia en contabilidad gubernamental.
+
+Actividades
+
+Acceso exclusivo a los módulos financieros para el registro de facturas, control de caja chica y exportación de ejecución presupuestaria.
+
+
+
+
+
+Tipo de usuario
+
+Asistente Administrativo (Secretaría)
+
+Formación
+
+Secretaria Bilingüe, Secretaria Comercial o nivel medio.
+
+Actividades
+
+Digitalización de actas de asambleas, registro de acuerdos de gobernanza y seguimiento de fechas de vencimiento de alianzas.
+
+
+
+
+
+Tipo de usuario
+
+Técnico Operativo (Coordinador de Campo / OMAS)
+
+Formación
+
+Promotor comunitario, técnico agropecuario, fontanero o líder local capacitado.
+
+Actividades
+
+Acceso restringido (solo a su municipio asignado) para la recolección en campo de estadísticas ASH y carga de evidencias físicas de proyectos.
+
+
+
+
+
+Tipo de usuario
+
+Validador Estratégico (Alcaldes y Junta Directiva)
+
+Formación
+
+Líder político, representante de la comunidad (no requiere nivel académico formal).
+
+Actividades
+
+Acceso de solo lectura a los tableros de indicadores (Dashboards) para la toma de decisiones e informes de rendición de cuentas.

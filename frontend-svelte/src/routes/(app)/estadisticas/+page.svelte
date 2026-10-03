@@ -177,9 +177,6 @@
       <option value="Santa Eulalia">Santa Eulalia</option>
       <option value="San Pedro Soloma">San Pedro Soloma</option>
       <option value="San Rafael la Independencia">San Rafael la Independencia</option>
-      <option value="San Mateo Ixtatán">San Mateo Ixtatán</option>
-      <option value="Barillas">Barillas</option>
-      <option value="San Miguel Acatán">San Miguel Acatán</option>
     </select>
 
     <!-- Botón Nuevo Censo -->
@@ -396,58 +393,55 @@
       <form onsubmit={guardarCenso} class="space-y-4">
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Municipio</label>
-            <select bind:value={nuevoCenso.municipio} class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[12px] text-[#0A1526]">
+            <label for="field-1" class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Municipio</label>
+            <select id="field-1" bind:value={nuevoCenso.municipio} class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[12px] text-[#0A1526]">
               <option value="Santa Eulalia">Santa Eulalia</option>
               <option value="San Pedro Soloma">San Pedro Soloma</option>
               <option value="San Rafael la Independencia">San Rafael la Independencia</option>
-              <option value="San Mateo Ixtatán">San Mateo Ixtatán</option>
-              <option value="Barillas">Barillas</option>
-              <option value="San Miguel Acatán">San Miguel Acatán</option>
             </select>
           </div>
 
           <div>
-            <label class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Nombre Comunidad / Aldea</label>
-            <input required type="text" bind:value={nuevoCenso.comunidad} placeholder="Ej: Aldea Ixcanac" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#0A1526]" />
+            <label for="field-2" class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Nombre Comunidad / Aldea</label>
+            <input id="field-2" required type="text" bind:value={nuevoCenso.comunidad} placeholder="Ej: Aldea Ixcanac" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#0A1526]" />
           </div>
         </div>
 
         <div class="grid grid-cols-3 gap-3">
           <div>
-            <label class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Total Hogares</label>
-            <input required type="number" min="1" bind:value={nuevoCenso.viviendasTotales} class="w-full bg-white border border-gray-200 rounded-xl px-3 py-3 text-[13px] font-bold text-[#0A1526]" />
+            <label for="field-3" class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Total Hogares</label>
+            <input id="field-3" required type="number" min="1" bind:value={nuevoCenso.viviendasTotales} class="w-full bg-white border border-gray-200 rounded-xl px-3 py-3 text-[13px] font-bold text-[#0A1526]" />
           </div>
 
           <div>
-            <label class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Con Agua de Red</label>
-            <input required type="number" min="0" bind:value={nuevoCenso.viviendasConAgua} class="w-full bg-white border border-gray-200 rounded-xl px-3 py-3 text-[13px] font-bold text-[#0A1526]" />
+            <label for="field-4" class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Con Agua de Red</label>
+            <input id="field-4" required type="number" min="0" bind:value={nuevoCenso.viviendasConAgua} class="w-full bg-white border border-gray-200 rounded-xl px-3 py-3 text-[13px] font-bold text-[#0A1526]" />
           </div>
 
           <div>
-            <label class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Con Saneamiento</label>
-            <input required type="number" min="0" bind:value={nuevoCenso.viviendasConSaneamiento} class="w-full bg-white border border-gray-200 rounded-xl px-3 py-3 text-[13px] font-bold text-[#0A1526]" />
+            <label for="field-5" class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Con Saneamiento</label>
+            <input id="field-5" required type="number" min="0" bind:value={nuevoCenso.viviendasConSaneamiento} class="w-full bg-white border border-gray-200 rounded-xl px-3 py-3 text-[13px] font-bold text-[#0A1526]" />
           </div>
         </div>
 
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">¿Sistema con Clorador?</label>
-            <select bind:value={nuevoCenso.sistemaCloracion} class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[12px] text-[#0A1526]">
+            <label for="field-6" class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">¿Sistema con Clorador?</label>
+            <select id="field-6" bind:value={nuevoCenso.sistemaCloracion} class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[12px] text-[#0A1526]">
               <option value={true}>Sí, dosificador instalado</option>
               <option value={false}>No, agua cruda sin tratar</option>
             </select>
           </div>
 
           <div>
-            <label class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Cloro Residual (ppm)</label>
-            <input required type="number" step="0.1" min="0" bind:value={nuevoCenso.ppmCloroResidual} class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#0A1526]" />
+            <label for="field-7" class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Cloro Residual (ppm)</label>
+            <input id="field-7" required type="number" step="0.1" min="0" bind:value={nuevoCenso.ppmCloroResidual} class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#0A1526]" />
           </div>
         </div>
 
         <div>
-          <label class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Técnico OMAS Responsable</label>
-          <input required type="text" bind:value={nuevoCenso.tecnicoResponsable} placeholder="Nombre del inspector de campo" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#0A1526]" />
+          <label for="field-8" class="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#0A1526]/40 mb-1.5">Técnico OMAS Responsable</label>
+          <input id="field-8" required type="text" bind:value={nuevoCenso.tecnicoResponsable} placeholder="Nombre del inspector de campo" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#0A1526]" />
         </div>
 
         <div class="pt-4 flex justify-end gap-3 mt-6 border-t border-gray-50 pt-5">

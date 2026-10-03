@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { ROLE_PERMISSIONS } from '../src/lib/roles.js';
 import bcrypt from 'bcryptjs';
 import { FACTORES_EVALUACION, HERRAMIENTAS_ADMINISTRATIVAS } from '../src/lib/constants.js';
 
@@ -93,6 +94,7 @@ const ROLES_DATA = [
 ];
 
 async function main() {
+  if (process.env.NODE_ENV === 'production' || process.env.ALLOW_DEMO_SEED !== 'true') throw new Error('Seed destructivo solo para una base local de demostración: configure ALLOW_DEMO_SEED=true.');
   console.log('Limpiando datos previos...');
   await prisma.bitacoraAuditoria.deleteMany();
   await prisma.certificacionCapacitacion.deleteMany();
@@ -107,6 +109,7 @@ async function main() {
   await prisma.candidato.deleteMany();
   await prisma.convocatoria.deleteMany();
   await prisma.contrato.deleteMany();
+  await prisma.recuperacionClave.deleteMany();
   await prisma.usuario.deleteMany();
   await prisma.colaborador.deleteMany();
   await prisma.puesto.deleteMany();
@@ -116,7 +119,7 @@ async function main() {
   console.log('Creando catálogo de 8 roles con permisos...');
   const roles = {};
   for (const r of ROLES_DATA) {
-    roles[r.codigo] = await prisma.rol.create({ data: r });
+    roles[r.codigo] = await prisma.rol.create({ data: { ...r, permisos: ROLE_PERMISSIONS[r.codigo] } });
   }
 
   console.log('Creando unidades organizacionales...');

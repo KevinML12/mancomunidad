@@ -51,9 +51,7 @@
     try {
       const { data } = await apiClient.post('/auth/recuperar', { correo: correoRecuperar.trim() });
       toast.success(data.mensaje || 'Instrucción de recuperación generada');
-      if (data.tokenRecuperacion) {
-        tokenRecuperacion = data.tokenRecuperacion;
-      }
+
       pasoRecuperacion = 2;
     } catch (err) {
       toast.error(err.response?.data?.error || 'Error al solicitar recuperación');
@@ -72,8 +70,8 @@
       toast.error('Las contraseñas no coinciden');
       return;
     }
-    if (nuevaContrasena.length < 6) {
-      toast.error('La contraseña debe tener al menos 6 caracteres');
+    if (nuevaContrasena.length < 12) {
+      toast.error('La contraseña debe tener al menos 12 caracteres');
       return;
     }
     recuperando = true;
@@ -205,7 +203,7 @@
         Jurisdicción Activa · 6 Municipios Miembros
       </p>
       <p class="text-[11px] font-medium text-[#0A1526]/50 mt-1">
-        Soloma · Santa Eulalia · San Mateo · San Rafael · Barillas · San Juan Ixcoy
+        San Pedro Soloma · Santa Eulalia · San Rafael la Independencia
       </p>
     </div>
   </div>
@@ -280,7 +278,7 @@
       {:else}
         <form onsubmit={ejecutarRestablecimiento} class="space-y-4">
           <div class="bg-blue-50/70 p-3 rounded-xl border border-blue-100 text-[11px] text-[#0A1526]">
-            <p class="font-bold">Token temporal generado para:</p>
+            <p class="font-bold">Si la cuenta existe, consulte el código enviado al correo:</p>
             <p class="font-mono text-[#3B82F6] truncate mt-0.5">{correoRecuperar}</p>
           </div>
 
@@ -306,9 +304,9 @@
               id="input-nueva-contrasena"
               type="password" 
               required
-              minlength="6"
+              minlength="12"
               bind:value={nuevaContrasena} 
-              placeholder="Mínimo 6 caracteres"
+              placeholder="Mínimo 12 caracteres"
               class="w-full bg-[#F4F7FA] border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#0A1526] focus:outline-none focus:border-[#3B82F6]"
             />
           </div>
@@ -321,7 +319,7 @@
               id="input-confirmar-contrasena"
               type="password" 
               required
-              minlength="6"
+              minlength="12"
               bind:value={confirmarContrasena} 
               placeholder="Repita la nueva contraseña"
               class="w-full bg-[#F4F7FA] border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#0A1526] focus:outline-none focus:border-[#3B82F6]"

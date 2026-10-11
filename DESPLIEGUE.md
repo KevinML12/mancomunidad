@@ -1,7 +1,7 @@
 # Estado y Guía de Despliegue de MFN Digital
 
 **Referencia del despliegue:** 3 de octubre de 2026.
-**Estado:** El despliegue descrito abajo fue verificado en esa fecha. Los cambios de seguridad y arquitectura documentados en `ARQUITECTURA.md` aún requieren publicación y verificación en producción.
+**Estado:** El despliegue descrito abajo fue verificado en esa fecha. Los cambios de seguridad, arquitectura y presentación ya están en `main`, pero aún requieren publicación y verificación en Vercel.
 
 ---
 
@@ -18,13 +18,13 @@ En la base de datos PostgreSQL en la nube conviven dos esquemas independientes:
    - `Proyecto.municipio` (asignación explícita a la jurisdicción canónica).
    - `EvidenciaProyecto.contenido`, `sha256`, `tipoMime` (carga binaria de evidencias en Base64 con verificación de huella digital SHA-256).
    - Tabla `RecuperacionClave` (tokens criptográficos expirables de un solo uso).
-   - Tabla `PuntoControlIntegridad` (libro mayor de checkpoints de Merkle Root).
+   - Tabla `PuntoControlIntegridad` (puntos de control de huellas internas; no es una certificación externa ni un árbol Merkle formal).
 2. Se actualizaron los permisos institucionales en la tabla `Rol` según el catálogo RBAC `ROLE_PERMISSIONS`.
 3. Se generó y selló el primer punto de control criptográfico en `PuntoControlIntegridad`.
 
 ---
 
-## 🌐 URLs Oficiales de Producción
+## 🌐 URLs de producción (estado observado el 3 de octubre de 2026)
 
 | Componente | URL de Producción | Estado |
 |---|---|---|
@@ -57,7 +57,7 @@ cd /Users/kevv/Documents/proyectos/mancomunidad/backend
 # Generar cliente de Prisma para producción
 npm run build
 
-# Ejecutar pruebas unitarias de validación
+# Ejecutar pruebas de integración
 npm test
 
 # Desplegar directamente a producción en Vercel

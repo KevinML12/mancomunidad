@@ -3,12 +3,12 @@
 @tailwind utilities;
 
 /* ═══════════════════════════════════════════════════════════════════
-   CASA DEL REY — LIQUID GLASS LIGHT MODE  ·  Apple HIG
-   Canvas navy · Tinta blanca · Acento cálido de las fotos · Squircles
+   MFN DIGITAL — LIQUID GLASS CLARO
+   Vidrio blanco translúcido · Azul marino · Texto negro
 ═══════════════════════════════════════════════════════════════════ */
 
 :root {
-  color-scheme: dark;
+  color-scheme: light;
 
   /* ── PALETTE ──────────────────────────────────────────────────── */
   --bg:           #0A1526;      /* Deep Navy Canvas */
@@ -143,11 +143,7 @@ html.lenis, html.lenis body { height: auto; }
    stack de Apple de fallback. Ojo: Arimo NO pasa de 700 (Bold), igual
    que Helvetica — los display en 800 se muestran en 700, que es lo
    correcto tipográficamente. */
-@font-face {
-  font-family: 'Arimo';
-  src: url('/fonts/Arimo.woff2') format('woff2');
-  font-weight: 400 700; font-style: normal; font-display: swap;
-}
+
 
 /* Material Symbols self-hosted (antes @import de Google Fonts en la línea 1
    — bloqueaba el parseo del CSS entero para TODOS los visitantes). Solo lo
@@ -156,11 +152,7 @@ html.lenis, html.lenis body { height: auto; }
    archivo (el navegador solo baja una fuente cuando algo la renderiza).
    font-display:block a propósito: si aún no carga, mejor no mostrar nada
    que mostrar el nombre de la ligadura ("dashboard") como texto. */
-@font-face {
-  font-family: 'Material Symbols Rounded';
-  src: url('/fonts/MaterialSymbolsRounded.woff2') format('woff2');
-  font-weight: 400; font-style: normal; font-display: block;
-}
+
 
 @layer base {
   html {
@@ -846,3 +838,36 @@ html.lenis, html.lenis body { height: auto; }
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
 }
+
+/* Approved MFN material; shared by internal and public interfaces. */
+
+/* Refined MFN material: borderless white glass and deep navy */
+:root {--mfn-navy:#071D49;--mfn-ink:#111111;}
+.glass-light,.glass-light-nested {border:0!important;}
+.glass-light {background:linear-gradient(145deg,rgba(255,255,255,.34),rgba(255,255,255,.18) 56%,rgba(255,255,255,.08));-webkit-backdrop-filter:blur(22px) saturate(145%);backdrop-filter:blur(22px) saturate(145%);box-shadow:inset 0 1px 1px rgba(255,255,255,.75),inset 0 -1px 1px rgba(255,255,255,.2),0 18px 55px -28px rgba(7,29,73,.22);}
+.glass-light-nested {background:linear-gradient(145deg,rgba(255,255,255,.24),rgba(255,255,255,.10) 60%,rgba(255,255,255,.04));-webkit-backdrop-filter:blur(12px) saturate(135%);backdrop-filter:blur(12px) saturate(135%);box-shadow:inset 0 1px 1px rgba(255,255,255,.5),0 6px 24px -20px rgba(7,29,73,.12);}
+.glass-light::after,.glass-light-nested::after {background:radial-gradient(140px 65px ellipse at var(--spec-x,50%) var(--spec-y,0%),rgba(255,255,255,.40),transparent 76%);}
+
+:root {--bg:#071D49;--acento:#1248AA;--acento-hov:#071D49;--sh-ring:0 0 0 3px rgba(18,72,170,.15);}
+body {background:#fff;color:#111;}
+.mfn-canvas {position:relative;isolation:isolate;background:#fff;min-height:100vh;}
+.mfn-canvas::before {content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(ellipse at 12% 12%,rgba(216,229,250,.75),transparent 55%),radial-gradient(ellipse at 80% 68%,rgba(216,229,250,.55),transparent 60%);}
+.mfn-content {color:#111;}
+.glass-light::after,.glass-light-nested::after {z-index:0;pointer-events:none;}
+
+.glass-light:hover {border:0;box-shadow:inset 0 1px 1px rgba(255,255,255,.75),0 18px 55px -28px rgba(7,29,73,.22);}
+.glass-light-nested:hover {border:0;box-shadow:inset 0 1px 1px rgba(255,255,255,.5);}
+.mfn-brand {font-size:24px;font-weight:650;letter-spacing:-.04em;color:#071D49;}
+.mfn-nav {display:block;padding:12px 16px;border-radius:12px;font-size:14px;color:#111;transition:background .15s;}
+.mfn-nav:hover {background:rgba(255,255,255,.5);}
+.mfn-nav.active {background:#071D49;color:#fff;}
+.mfn-caption {font-size:13px;line-height:1.5;color:#111;}
+.mfn-mobile-bar {display:flex;align-items:center;justify-content:space-between;}
+:focus-visible {outline:2px solid #1248AA;outline-offset:3px;}
+input,select,textarea {color-scheme:light;}
+.glass-light input,.glass-light select,.glass-light textarea {background-color:rgba(255,255,255,.82);}
+@supports not (backdrop-filter:blur(1px)) {.glass-light,.glass-light-nested {background:#fff;}}
+@media(prefers-reduced-transparency:reduce) {.glass-light,.glass-light-nested {background:#fff;backdrop-filter:none;-webkit-backdrop-filter:none;}.glass-light::after,.glass-light-nested::after {display:none;}}
+@media(prefers-reduced-motion:reduce) {.glass-light::after,.glass-light-nested::after {display:none;}}
+
+@media(min-width:1024px) {.mfn-mobile-bar {display:none;}}

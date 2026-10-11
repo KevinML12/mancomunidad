@@ -18,8 +18,8 @@
 </script>
 
 {#if auth.isAuthenticated}
-  <div class="bg-[#FFFFFF] min-h-screen text-[#071D49] font-sans antialiased selection:bg-[#1248AA]/15 selection:text-[#071D49]">
-    <div class="max-w-[1500px] mx-auto flex gap-10 items-start relative z-10 p-6 lg:p-8">
+  <div class="min-h-screen text-[#071D49] font-sans antialiased selection:bg-[#1248AA]/15 selection:text-[#071D49]">
+    <div class="max-w-[1500px] mx-auto flex flex-col lg:flex-row gap-6 items-start relative z-10 p-6 lg:p-8">
       <AppLayout>
         {#key $page.url.pathname}
           <div class="animate-fade-in w-full">

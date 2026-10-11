@@ -5,12 +5,12 @@
   let { children } = $props();
 </script>
 
-<div class="min-h-screen bg-[#FFFFFF] text-[#071D49] font-sans antialiased flex flex-col selection:bg-[#1248AA]/15">
+<div class="min-h-screen text-[#071D49] font-sans antialiased flex flex-col selection:bg-[#1248AA]/15">
   <!-- Header Público Ciudadano -->
   <header class="bg-white border-b border-gray-100 shadow-xs sticky top-0 z-30">
     <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-[#071D49] flex items-center justify-center text-amber-400 shadow-md shrink-0">
+        <div class="w-10 h-10 rounded-xl bg-[#071D49] flex items-center justify-center text-white shadow-md shrink-0">
           <Icon name="account_balance" className="w-5 h-5" />
         </div>
         <div>

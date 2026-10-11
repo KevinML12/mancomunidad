@@ -97,10 +97,10 @@
   <title>Acceso al Sistema | MFN Digital</title>
 </svelte:head>
 
-<div class="min-h-screen bg-[#FFFFFF] flex items-center justify-center p-6 text-[#071D49]">
+<div class="min-h-screen flex items-center justify-center p-6 text-[#071D49]">
   <div class="w-full max-w-md glass-light  rounded-[32px] p-8 md:p-10   animate-fade-in">
     <div class="flex flex-col items-center mb-8">
-      <div class="w-14 h-14 rounded-2xl bg-[#071D49] flex items-center justify-center text-amber-400 shadow-md mb-4">
+      <div class="w-14 h-14 rounded-2xl bg-[#071D49] flex items-center justify-center text-white shadow-md mb-4">
         <Icon name="account_balance" className="w-7 h-7" />
       </div>
       <div class="flex items-center gap-1.5 mb-1">
@@ -111,7 +111,7 @@
         Mancomunidad Frontera del Norte
       </h1>
       <p class="text-[12px] text-[#071D49]/50 mt-1 text-center font-medium">
-        Plataforma de Gestión Operativa e Intermunicipal (Capítulo IV)
+        Gestión operativa y coordinación intermunicipal
       </p>
     </div>
 

@@ -65,10 +65,9 @@ Configurar `RESET_DELIVERY_URL` y `RESET_DELIVERY_SECRET` en el backend. El serv
 ```sh
 cd backend
 npm test
-npm run test:integration
 ```
 
-Las 120 pruebas históricas comprueban funciones aisladas. Las pruebas en `tests/integration/` ejercitan las rutas Express con una base temporal migrada y cubren permisos, recuperación, archivos, privacidad, persistencia y auditoría. No constituyen por sí mismas la evaluación institucional de la investigación.
+La validación predeterminada ejecuta las pruebas en `tests/integration/`: ejercitan las rutas Express y una base temporal migrada, incluidos permisos, recuperación, archivos, privacidad, persistencia y auditoría. Las 120 pruebas de `tests/legacy/` definen funciones dentro de los propios archivos de prueba; se conservan como antecedentes con `npm run test:legacy`, pero no verifican la implementación de la aplicación. Estas pruebas tampoco sustituyen la evaluación institucional de la investigación.
 
 ## Documentación académica
 

@@ -229,7 +229,7 @@
     </div>
     <p class="text-[28px] font-semibold tracking-[-0.04em] {vencidosCount > 0 ? 'text-rose-600' : 'text-[#071D49]'}">{vencidosCount}</p>
     <p class="text-[11px] font-bold mt-2 {vencidosCount > 0 ? 'text-rose-600' : 'text-emerald-600'}">
-      {vencidosCount > 0 ? 'Requieren finiquito o adenda' : 'Portafolio 100% al día'}
+      {vencidosCount > 0 ? 'Requieren finiquito o adenda' : 'Sin convenios vencidos registrados'}
     </p>
   </div>
 </div>

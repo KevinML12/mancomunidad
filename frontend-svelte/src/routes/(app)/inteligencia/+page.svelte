@@ -32,7 +32,7 @@
     try {
       const { data } = await apiClient.get('/inteligencia/sello-forense');
       selloForense = data;
-      toast.success(data.veredictoAuditoria || 'Integridad criptográfica verificada en Neon DB');
+      toast.success(data.veredictoAuditoria || 'Control interno consultado');
     } catch (err) {
       toast.error('Error al auditar integridad');
     } finally {
@@ -88,10 +88,10 @@
   <div class="py-24 text-center glass-light   rounded-[32px] shadow-xs animate-pulse">
     <div class="w-10 h-10 border-3 border-[#1248AA] border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
     <p class="text-[13px] font-bold text-[#071D49]">Ejecutando motor matemático de priorización geoespacial...</p>
-    <p class="text-[11px] text-[#071D49]/40 mt-1">Auditando registros reales en la base de datos Neon PostgreSQL</p>
+    <p class="text-[11px] text-[#071D49]/40 mt-1">Consultando registros disponibles</p>
   </div>
 {:else}
-  <!-- CERTIFICADO CRIPTOGRÁFICO CGC -->
+  <!-- Control interno de integridad -->
   {#if selloForense}
     <div class="bg-gradient-to-br from-[#071D49] to-[#1E293B] text-white rounded-[32px] p-8 md:p-10 mb-8 shadow-xl relative overflow-hidden animate-fade-in border border-slate-700">
       <div class="absolute -right-10 -bottom-10 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
@@ -110,7 +110,7 @@
             {selloForense.certificado}
           </h3>
           <p class="text-[12px] text-white/60 mt-1">
-            Garantía matemática de no alteración retroactiva de fondos públicos, contratos ni censos.
+            Huella del estado actual y comparación con puntos de control internos. No constituye certificación externa.
           </p>
         </div>
 
@@ -144,7 +144,7 @@
       <div class="mt-6 pt-5 border-t border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-4 text-[11px] text-white/70">
         <div class="flex items-center gap-2">
           <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono text-[12px] font-bold">
-            {selloForense.totalCheckpointsHistoricos || 1} checkpoints registrados
+            {selloForense.totalCheckpointsHistoricos ?? 0} puntos de control registrados
           </span>
           <span class="text-white/40">•</span>
           <span class="text-white/80">{selloForense.veredictoAuditoria}</span>
@@ -159,12 +159,12 @@
     </div>
   {/if}
 
-  <!-- DICTAMEN OFICIAL VINCULANTE PARA LA ASAMBLEA -->
+  <!-- Orientación preliminar para revisión institucional -->
   {#if dictamen}
     <div class="glass-light   rounded-[32px] p-8 md:p-10 mb-8 shadow-xs animate-fade-in">
       <div class="flex items-center gap-2 mb-3">
         <span class="text-[12px] font-semibold uppercase tracking-normal text-[#1248AA] bg-blue-50 px-3 py-1 rounded-full">
-          Algoritmo IPIM · Resolución Técnica
+          Índice IPIM · Orientación preliminar
         </span>
         <span class="text-[12px] font-mono text-[#071D49]/40">{dictamen.marcoLegal}</span>
       </div>
@@ -172,7 +172,7 @@
       <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 mb-6 border-b border-gray-100">
         <div class="max-w-3xl">
           <h3 class="text-2xl md:text-3xl font-semibold tracking-tight text-[#071D49] mb-2">
-            Prioridad Máxima Asignada: <span class="text-[#1248AA]">{dictamen.municipioRecomendado}</span>
+            Mayor puntaje calculado: <span class="text-[#1248AA]">{dictamen.municipioRecomendado}</span>
           </h3>
           <p class="text-[13px] text-[#071D49]/70 leading-relaxed font-medium">
             {dictamen.dictamenEjecutivo}
@@ -182,10 +182,10 @@
         <div class="bg-amber-50 border border-amber-200 rounded-2xl p-4 shrink-0 max-w-xs">
           <div class="flex items-center gap-2 text-amber-800 font-bold text-[11px] mb-1">
             <Icon name="gavel" className="w-4 h-4 text-amber-600" />
-            <span>Resolución Anti-Favoritismo</span>
+            <span>Uso orientativo</span>
           </div>
           <p class="text-[11px] text-amber-900/70 leading-snug">
-            Este dictamen se genera por fórmula matemática sobre censos reales y cuotas en base de datos, blindando la asignación ante disputas de alcaldes.
+            Los pesos del índice requieren validación institucional. El resultado no decide la asignación de fondos.
           </p>
         </div>
       </div>
@@ -193,7 +193,7 @@
       <!-- MATRIZ TERRITORIAL RANKING DE LOS 3 MUNICIPIOS ACTIVOS -->
       <div>
         <h4 class="text-xs font-semibold uppercase tracking-wider text-[#071D49]/40 mb-4">
-          Matriz Multicriterio Regional (Ranking Oficial de Vulnerabilidad y Desatención)
+          Matriz multicriterio con datos registrados
         </h4>
 
         <div class="overflow-x-auto">
@@ -205,9 +205,9 @@
                 <th class="py-3 px-4">Índice IPIM</th>
                 <th class="py-3 px-4">Nivel de Prioridad</th>
                 <th class="py-3 px-4">Déficit Agua / San</th>
-                <th class="py-3 px-4">Solvencia Fiscal</th>
+                <th class="py-3 px-4">Cuotas registradas</th>
                 <th class="py-3 px-4">Obras Activas</th>
-                <th class="py-3 px-4">Dictamen de Acción</th>
+                <th class="py-3 px-4">Orientación</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-50 text-[12px]">

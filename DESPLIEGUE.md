@@ -71,7 +71,7 @@ CI=1 npx vercel --prod --yes
 cd /Users/kevv/Documents/proyectos/mancomunidad/backend
 npm run test:integration
 ```
-> Ejecuta la batería de pruebas de integración con SQLite aislado que valida login, RBAC estricto, integridad de hashes y flujos de recuperación.
+> Ejecuta las pruebas de integración con SQLite aislado que validan login, permisos, integridad de hashes y recuperación. Las pruebas autocontenidas históricas se ejecutan aparte con `npm run test:legacy`; no prueban las rutas actuales.
 
 ---
 

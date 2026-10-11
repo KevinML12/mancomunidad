@@ -18,20 +18,17 @@
     }
   });
   let loading = $state(true);
+  let loadError = $state(false);
 
-  // Derivar las cuotas y solvencia de los municipios a partir de las transacciones reales en la BD
+  // Mostrar solo aportes registrados; la obligación anual requiere una regla institucional aprobada.
   let municipiosMFN = $derived(
     LISTA_MUNICIPIOS.map(nombre => {
       const txs = transacciones.filter(t => t.municipio === nombre && t.categoria === 'Cuota Ordinaria' && t.tipo === 'Ingreso');
       const cuotasPagadas = txs.reduce((acc, t) => acc + (t.monto || 0), 0);
-      const cuotasEsperadas = 180000;
       const ultimo = txs[0]?.fecha ? new Date(txs[0].fecha).toLocaleDateString('es-GT', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Sin aportes';
-      const estado = cuotasPagadas >= cuotasEsperadas ? 'Solvente' : cuotasPagadas > 0 ? `Atraso ${Math.max(1, 12 - Math.floor(cuotasPagadas / 15000))} Meses` : 'Sin aportes';
       return {
         nombre,
         cuotasPagadas,
-        cuotasEsperadas,
-        estado,
         ultimoAporte: ultimo
       };
     })
@@ -50,61 +47,27 @@
     cuentaBancaria: 'Fondos Públicos',
     categoria: 'Cuota Ordinaria',
     municipio: 'Santa Eulalia',
-    monto: 15000,
+    monto: '',
     comprobanteTipo: 'Recibo CGC 63-A2',
     comprobanteNumero: '',
     urlComprobante: '',
     descripcion: ''
   });
 
-  // RF10: Emisión e Impresión de Comprobante Oficial Forma 63-A2 (CGC)
-  let reciboSeleccionado = $state(null);
-  let showReciboModal = $state(false);
-
-  // RF12: Dictamen de Rendición de Cuentas para la Asamblea General de Alcaldes
-  let showDictamenModal = $state(false);
-
-  function abrirRecibo(t) {
-    reciboSeleccionado = t;
-    showReciboModal = true;
-  }
-
-  function imprimirDocumento() {
-    window.print();
-  }
-
-  function montoALetras(monto) {
-    const val = Math.floor(monto || 0);
-    if (val === 15000) return 'QUINCE MIL QUETZALES EXACTOS';
-    if (val === 180000) return 'CIENTO OCHENTA MIL QUETZALES EXACTOS';
-    if (val === 30000) return 'TREINTA MIL QUETZALES EXACTOS';
-    if (val === 45000) return 'CUARENTA Y CINCO MIL QUETZALES EXACTOS';
-    if (val === 60000) return 'SESENTA MIL QUETZALES EXACTOS';
-    if (val === 90000) return 'NOVENTA MIL QUETZALES EXACTOS';
-    if (val === 5000) return 'CINCO MIL QUETZALES EXACTOS';
-    if (val >= 1000 && val < 1000000) {
-      const miles = Math.floor(val / 1000);
-      const resto = val % 1000;
-      return `${miles} MIL QUETZALES ${resto > 0 ? `CON ${resto}/100` : 'EXACTOS'}`;
-    }
-    return `Q ${val.toLocaleString('es-GT')} EXACTOS`;
-  }
-
   async function fetchFinanciero() {
     loading = true;
+    loadError = false;
     try {
-      const [resTx, resBal] = await Promise.allSettled([
+      const [resTx, resBal] = await Promise.all([
         apiClient.get('/financiero/transacciones'),
         apiClient.get('/financiero/balance')
       ]);
-      if (resTx.status === 'fulfilled' && Array.isArray(resTx.value.data)) {
-        transacciones = resTx.value.data;
-      }
-      if (resBal.status === 'fulfilled' && resBal.value.data) {
-        balance = resBal.value.data;
-      }
+      if (!Array.isArray(resTx.data) || !resBal.data?.cuentas) throw new Error('Respuesta financiera incompleta');
+      transacciones = resTx.data;
+      balance = resBal.data;
     } catch (err) {
       console.error('Error al cargar datos financieros de la BD:', err);
+      loadError = true;
       toast.error('No se pudo conectar con el módulo financiero de la base de datos');
     } finally {
       loading = false;
@@ -123,9 +86,9 @@
         cuentaBancaria: 'Fondos Públicos',
         categoria: 'Cuota Ordinaria',
         municipio: 'Santa Eulalia',
-        monto: 15000,
+        monto: '',
         comprobanteTipo: 'Recibo CGC 63-A2',
-        comprobanteNumero: 'Serie AG-',
+        comprobanteNumero: '',
         urlComprobante: '',
         descripcion: 'Aporte mensual ordinario de municipalidad miembro.'
       };
@@ -135,9 +98,9 @@
         cuentaBancaria: 'Fondos Públicos',
         categoria: 'Caja Chica',
         municipio: 'Regional',
-        monto: 450,
+        monto: '',
         comprobanteTipo: 'Factura SAT FEL',
-        comprobanteNumero: 'FEL-',
+        comprobanteNumero: '',
         urlComprobante: '',
         descripcion: 'Gasto operativo de oficina central.'
       };
@@ -148,7 +111,7 @@
   async function guardarTransaccion(e) {
     e.preventDefault();
     if (nuevaTx.categoria === 'Caja Chica' && !nuevaTx.urlComprobante) {
-      toast.error('RF11: Es obligatorio adjuntar la fotografía de la factura para egresos de Caja Chica');
+      toast.error('Adjunte el comprobante del gasto de caja chica');
       return;
     }
 
@@ -158,7 +121,7 @@
         ...nuevaTx,
         monto: Number(nuevaTx.monto)
       });
-      toast.success(nuevaTx.tipo === 'Ingreso' ? 'Comprobante de ingreso registrado en la base de datos' : 'Egreso de caja chica liquidado en la base de datos');
+      toast.success('Movimiento registrado en el sistema');
       showModal = false;
       await fetchFinanciero();
     } catch (err) {
@@ -184,8 +147,6 @@
     return { ingresos: ing, egresos: egr, saldo: ing - egr };
   });
 
-  let liquidezTotal = $derived(cuentaPublica.saldo + cuentaCooperacion.saldo);
-
   // Filtrado de la tabla
   let transaccionesFiltradas = $derived(
     transacciones.filter(t => {
@@ -196,7 +157,7 @@
         const match = t.codigo.toLowerCase().includes(q) ||
                       t.descripcion.toLowerCase().includes(q) ||
                       (t.municipio && t.municipio.toLowerCase().includes(q)) ||
-                      t.comprobanteNumero.toLowerCase().includes(q);
+                      (t.comprobanteNumero || '').toLowerCase().includes(q);
         if (!match) return false;
       }
       return true;
@@ -218,7 +179,7 @@
     </div>
     <h2 class="text-[40px] font-semibold tracking-[-0.04em] leading-none text-[#071D49] mb-3">Control Financiero y Cuotas</h2>
     <p class="text-[13px] text-[#071D49]/50 leading-relaxed max-w-2xl">
-      Separación bancaria estricta de fondos públicos y cooperación, rendición de cuentas CGC y digitalización de caja chica.
+      Movimientos registrados por tipo de cuenta. Los saldos mostrados son cálculos del sistema, no estados bancarios certificados.
     </p>
   </div>
 
@@ -242,6 +203,15 @@
     </button>
   </div>
 </header>
+{#if loadError}
+  <div role="alert" class="glass-light rounded-[24px] p-6 mb-8 text-[#071D49]">
+    <p>No se pudieron cargar los movimientos financieros.</p>
+    <button class="mt-3 px-4 py-2 bg-[#071D49] text-white rounded-xl" onclick={fetchFinanciero}>Reintentar</button>
+  </div>
+{:else if loading}
+  <p class="mb-8 text-[#071D49]">Cargando movimientos financieros...</p>
+{:else}
+
 
 <!-- SEPARACIÓN BANCARIA INSTITUCIONAL (2 GRANDES CUENTAS INDEPENDIENTES) -->
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
@@ -254,16 +224,16 @@
           <span class="text-[12px] font-bold uppercase tracking-normal text-[#071D49]/40">Cuenta Monetaria No. 1</span>
         </div>
         <h3 class="text-xl font-semibold text-[#071D49] tracking-tight">Fondos Públicos e Ingresos Propios</h3>
-        <p class="text-[12px] text-[#071D49]/50 mt-0.5">Recibos Forma 63-A2 (CGC) · Cuotas ordinarias de los 3 municipios activos</p>
+        <p class="text-[12px] text-[#071D49]/50 mt-0.5">Ingresos y egresos registrados para fondos públicos</p>
       </div>
       <span class="px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-[12px] font-semibold uppercase tracking-wider border border-blue-100">
-        Banrural Oficial
+        Registro interno
       </span>
     </div>
 
     <div class="mt-6 pt-5 border-t border-gray-50 flex items-baseline justify-between">
       <div>
-        <span class="text-[12px] font-semibold uppercase tracking-normal text-[#071D49]/40 block mb-1">Saldo Disponible Líquido</span>
+        <span class="text-[12px] font-semibold uppercase tracking-normal text-[#071D49]/40 block mb-1">Saldo de movimientos registrados</span>
         <p class="text-[32px] font-semibold tracking-[-0.04em] text-[#071D49]">Q {cuentaPublica.saldo.toLocaleString('es-GT')}</p>
       </div>
       <div class="text-right space-y-1 text-[11px]">
@@ -288,16 +258,16 @@
           <span class="text-[12px] font-bold uppercase tracking-normal text-[#071D49]/40">Cuenta Monetaria No. 2</span>
         </div>
         <h3 class="text-xl font-semibold text-[#071D49] tracking-tight">Cooperación Internacional y Donaciones</h3>
-        <p class="text-[12px] text-[#071D49]/50 mt-0.5">Recibos SAT Donaciones · Fondos USAID, AECID, BID no mezclables</p>
+        <p class="text-[12px] text-[#071D49]/50 mt-0.5">Ingresos y egresos registrados para cooperación</p>
       </div>
       <span class="px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-[12px] font-semibold uppercase tracking-wider border border-emerald-100">
-        Fideicomiso Aislado
+        Registro interno
       </span>
     </div>
 
     <div class="mt-6 pt-5 border-t border-gray-50 flex items-baseline justify-between">
       <div>
-        <span class="text-[12px] font-semibold uppercase tracking-normal text-[#071D49]/40 block mb-1">Saldo Disponible Líquido</span>
+        <span class="text-[12px] font-semibold uppercase tracking-normal text-[#071D49]/40 block mb-1">Saldo de movimientos registrados</span>
         <p class="text-[32px] font-semibold tracking-[-0.04em] text-[#071D49]">Q {cuentaCooperacion.saldo.toLocaleString('es-GT')}</p>
       </div>
       <div class="text-right space-y-1 text-[11px]">
@@ -314,37 +284,18 @@
   </div>
 </div>
 
-<!-- SEMÁFORO DE SOLVENCIA MUNICIPAL (3 MUNICIPIOS ACTIVOS) -->
-<section class="glass-light   rounded-[32px] p-8 mb-8 ">
-  <div class="flex items-center justify-between pb-6 mb-2 border-b border-gray-50">
-    <div>
-      <h3 class="text-[12px] font-semibold uppercase tracking-normal text-[#071D49]/40 mb-1">Semáforo de Solvencia de Cuotas Municipales</h3>
-      <p class="text-[12px] font-medium text-[#071D49]/50">Cuota ordinaria obligatoria de Q15,000 mensuales según Estatuto Orgánico MFN</p>
-    </div>
-    <span class="px-3.5 py-1.5 rounded-full bg-white border border-gray-200 text-[12px] font-bold text-[#071D49]/70 shadow-xs">
-      Año Fiscal 2024
-    </span>
+<!-- APORTES REGISTRADOS POR MUNICIPIO -->
+<section class="glass-light rounded-[32px] p-8 mb-8">
+  <div class="pb-6 mb-2 border-b border-gray-50">
+    <h3 class="text-[12px] font-semibold uppercase tracking-normal text-[#071D49]/40 mb-1">Aportes municipales registrados</h3>
+    <p class="text-[12px] font-medium text-[#071D49]/50">Los importes proceden de los movimientos cargados; no determinan solvencia ni obligaciones pendientes.</p>
   </div>
-
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 pt-2">
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-2">
     {#each municipiosMFN as m}
-      {@const porcentaje = Math.round((m.cuotasPagadas / m.cuotasEsperadas) * 100)}
-      {@const esSolvente = m.estado === 'Solvente'}
-      <div class="bg-[#FFFFFF] border border-gray-100 rounded-[22px] p-4.5 transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
-        <div class="flex items-center justify-between mb-3">
-          <span class="w-2.5 h-2.5 rounded-full {esSolvente ? 'bg-emerald-500' : 'bg-amber-500'}"></span>
-          <span class="text-[12px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md {esSolvente ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}">
-            {m.estado}
-          </span>
-        </div>
-        <h4 class="text-[13px] font-semibold text-[#071D49] tracking-tight leading-tight mb-2">{m.nombre}</h4>
-        <div class="space-y-1 text-[11px] mb-3">
-          <p class="font-bold text-[#071D49]">Q {m.cuotasPagadas.toLocaleString('es-GT')}</p>
-          <p class="text-[12px] text-[#071D49]/40">de Q {m.cuotasEsperadas.toLocaleString('es-GT')}</p>
-        </div>
-        <div class="w-full bg-gray-200 rounded-full h-1 overflow-hidden">
-          <div class="{esSolvente ? 'bg-emerald-500' : 'bg-amber-500'} h-1 rounded-full transition-all duration-500" style="width: {porcentaje}%"></div>
-        </div>
+      <div class="bg-white border border-gray-100 rounded-[22px] p-4">
+        <h4 class="text-[13px] font-semibold text-[#071D49] mb-2">{m.nombre}</h4>
+        <p class="text-[15px] font-semibold text-[#071D49]">Q {m.cuotasPagadas.toLocaleString('es-GT')}</p>
+        <p class="text-[12px] text-[#071D49]/50">Último aporte: {m.ultimoAporte}</p>
       </div>
     {/each}
   </div>
@@ -354,21 +305,11 @@
 <section class="glass-light   rounded-[32px] p-8 ">
   <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 mb-2 border-b border-gray-50">
     <div>
-      <h3 class="text-[12px] font-semibold uppercase tracking-normal text-[#071D49]/40 mb-1">Libro Auxiliar Contable en Tiempo Real</h3>
-      <p class="text-[12px] font-medium text-[#071D49]/50">Registro vinculante auditado ante la Contraloría General de Cuentas (CGC)</p>
+      <h3 class="text-[12px] font-semibold uppercase tracking-normal text-[#071D49]/40 mb-1">Movimientos registrados</h3>
+      <p class="text-[12px] font-medium text-[#071D49]/50">Movimientos capturados en el sistema; conciliar con los comprobantes y estados bancarios.</p>
     </div>
 
-    <!-- Filtros de la tabla & Dictamen Oficial -->
     <div class="flex items-center gap-3 flex-wrap">
-      <button 
-        onclick={() => showDictamenModal = true}
-        class="flex items-center gap-2 px-4 py-2 bg-[#071D49] hover:bg-black text-white text-[11px] font-bold rounded-full shadow-sm transition-colors cursor-pointer"
-        title="Generar informe para la asamblea de alcaldes (RF12)"
-      >
-        <Icon name="description" className="w-3.5 h-3.5 text-amber-400" />
-        <span>Dictamen Rendición de Cuentas (CGC)</span>
-      </button>
-
       <select bind:value={filtroCuenta} class="px-3.5 py-2 bg-white border border-gray-200 rounded-full text-[11px] font-bold text-[#071D49] focus:outline-none">
         <option value="todas">Todas las Cuentas</option>
         <option value="Fondos Públicos">Fondos Públicos</option>
@@ -390,9 +331,8 @@
           <th class="py-4 px-4 text-[12px] font-bold uppercase tracking-normal text-[#071D49]/40">Transacción / Fecha</th>
           <th class="py-4 px-4 text-[12px] font-bold uppercase tracking-normal text-[#071D49]/40">Cuenta & Categoría</th>
           <th class="py-4 px-4 text-[12px] font-bold uppercase tracking-normal text-[#071D49]/40">Descripción y Origen</th>
-          <th class="py-4 px-4 text-[12px] font-bold uppercase tracking-normal text-[#071D49]/40">Comprobante Legal</th>
+          <th class="py-4 px-4 text-[12px] font-bold uppercase tracking-normal text-[#071D49]/40">Comprobante registrado</th>
           <th class="py-4 px-4 text-[12px] font-bold uppercase tracking-normal text-[#071D49]/40 text-right">Monto</th>
-          <th class="py-4 px-4 text-[12px] font-bold uppercase tracking-normal text-[#071D49]/40 text-center">Acciones (RF10/11)</th>
         </tr>
       </thead>
       <tbody class="divide-y divide-gray-50/60">
@@ -422,7 +362,7 @@
                   <span class="text-[12px] font-mono text-[#071D49]/50">{t.comprobanteNumero}</span>
                 </div>
                 {#if t.urlComprobante}
-                  <a href={t.urlComprobante} target="_blank" class="w-7 h-7 rounded-lg bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-[#071D49] transition-colors" title="Ver Factura / Evidencia RF11">
+                  <a href={t.urlComprobante} target="_blank" class="w-7 h-7 rounded-lg bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-[#071D49] transition-colors" title="Ver comprobante adjunto">
                     <Icon name="image" className="w-3.5 h-3.5" />
                   </a>
                 {/if}
@@ -433,36 +373,14 @@
                 {esIngreso ? '+' : '-'} Q {t.monto.toLocaleString('es-GT')}
               </span>
             </td>
-            <td class="py-4 px-4 text-center">
-              {#if esIngreso}
-                <button 
-                  onclick={() => abrirRecibo(t)}
-                  class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-50 hover:bg-blue-100 text-[#1248AA] text-[12px] font-bold transition-colors cursor-pointer"
-                  title="Emitir / Imprimir Comprobante Oficial Forma 63-A2 (CGC)"
-                >
-                  <Icon name="print" className="w-3.5 h-3.5" />
-                  <span>Recibo 63-A2</span>
-                </button>
-              {:else if t.urlComprobante}
-                <a 
-                  href={t.urlComprobante} 
-                  target="_blank" 
-                  class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gray-100 hover:bg-gray-200 text-[#071D49] text-[12px] font-bold transition-colors"
-                  title="Ver factura de caja chica"
-                >
-                  <Icon name="receipt_long" className="w-3.5 h-3.5" />
-                  <span>Factura FEL</span>
-                </a>
-              {:else}
-                <span class="text-[12px] text-[#071D49]/30 font-medium">—</span>
-              {/if}
-            </td>
           </tr>
         {/each}
       </tbody>
     </table>
   </div>
 </section>
+
+{/if}
 
 <!-- MODAL REGISTRO DE CUOTA / CAJA CHICA -->
 {#if showModal}
@@ -487,7 +405,7 @@
           <div>
             <label for="field-1" class="block text-[12px] font-bold uppercase tracking-normal text-[#071D49]/40 mb-1.5">Cuenta Bancaria</label>
             <select id="field-1" bind:value={nuevaTx.cuentaBancaria} class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[12px] text-[#071D49]">
-              <option value="Fondos Públicos">Fondos Públicos (Banrural)</option>
+              <option value="Fondos Públicos">Fondos Públicos</option>
               <option value="Cooperación Internacional">Cooperación Internacional</option>
             </select>
           </div>
@@ -509,8 +427,8 @@
               </select>
             </div>
             <div>
-              <label for="field-4" class="block text-[12px] font-bold uppercase tracking-normal text-[#071D49]/40 mb-1.5">No. Recibo CGC (Forma 63-A2)</label>
-              <input id="field-4" required type="text" bind:value={nuevaTx.comprobanteNumero} placeholder="Ej: Serie AG-88925" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#071D49]" />
+              <label for="field-4" class="block text-[12px] font-bold uppercase tracking-normal text-[#071D49]/40 mb-1.5">Número del comprobante existente</label>
+              <input id="field-4" required type="text" bind:value={nuevaTx.comprobanteNumero} class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#071D49]" />
             </div>
           </div>
         {:else}
@@ -531,7 +449,7 @@
           <!-- RF11: Evidencia obligatoria de factura en Caja Chica -->
           <div>
             <label for="field-7" class="block text-[12px] font-bold uppercase tracking-normal text-[#071D49]/40 mb-1.5">
-              URL / Fotografía de Factura (Obligatorio RF11)
+              URL del comprobante del gasto
             </label>
             <input id="field-7" required type="text" bind:value={nuevaTx.urlComprobante} placeholder="https://..." class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#071D49]" />
           </div>
@@ -545,259 +463,10 @@
         <div class="pt-4 flex justify-end gap-3 mt-6 border-t border-gray-50 pt-5">
           <button type="button" onclick={() => showModal = false} class="px-6 py-3 rounded-full font-bold text-[#071D49]/60 hover:bg-gray-50 transition-colors text-[13px]">Cancelar</button>
           <button type="submit" disabled={formLoading} class="px-8 py-3 bg-[#071D49] text-white rounded-full font-bold hover:bg-black shadow-md transition-all text-[13px] disabled:opacity-50">
-            {formLoading ? 'Guardando...' : 'Registrar en Libro Auxiliar'}
+            {formLoading ? 'Guardando...' : 'Registrar movimiento'}
           </button>
         </div>
       </form>
-    </div>
-  </div>
-{/if}
-
-<!-- MODAL COMPROBANTE OFICIAL FORMA 63-A2 (CGC - RF10) -->
-{#if showReciboModal && reciboSeleccionado}
-  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#071D49]/70 backdrop-blur-sm overflow-y-auto">
-    <div class="glass-light rounded-[28px] max-w-2xl w-full p-8 md:p-10    relative print:m-0 print:p-6 print: print:shadow-none print:w-full print:max-w-none">
-      <!-- Botones de Acción (ocultos al imprimir) -->
-      <div class="flex items-center justify-between pb-6 mb-6 border-b border-gray-100 print:hidden">
-        <div class="flex items-center gap-2">
-          <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-          <span class="text-[11px] font-bold text-[#071D49] uppercase tracking-wider">Documento Oficial Auditado</span>
-        </div>
-        <div class="flex items-center gap-3">
-          <button 
-            type="button" 
-            onclick={imprimirDocumento}
-            class="flex items-center gap-2 px-5 py-2.5 bg-[#071D49] hover:bg-black text-white text-[12px] font-bold rounded-full shadow-md transition-all cursor-pointer"
-          >
-            <Icon name="print" className="w-4 h-4 text-[#1248AA]" />
-            <span>Imprimir / Guardar PDF</span>
-          </button>
-          <button 
-            type="button" 
-            onclick={() => showReciboModal = false} 
-            class="w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-[#071D49] transition-colors"
-          >
-            <Icon name="close" className="w-5 h-5" />
-          </button>
-        </div>
-      </div>
-
-      <!-- FORMATO OFICIAL IMPRIMIBLE FORMA 63-A2 -->
-      <div class="border-2 border-[#071D49] p-6 md:p-8 rounded-2xl relative bg-[#FCFDFE]">
-        <!-- Encabezado Gubernamental -->
-        <div class="text-center pb-5 mb-5 border-b-2 border-[#071D49]">
-          <div class="flex items-center justify-center gap-2 mb-1">
-            <span class="text-[12px] font-semibold tracking-[0.2em] text-[#071D49] uppercase">República de Guatemala · Contraloría General de Cuentas</span>
-          </div>
-          <h2 class="text-[18px] md:text-[20px] font-semibold text-[#071D49] tracking-tight uppercase leading-tight">
-            Mancomunidad de Municipios de la Frontera del Norte
-          </h2>
-          <p class="text-[11px] font-bold text-[#071D49]/70 mt-1">
-            Cantón Vista Hermosa, Santa Eulalia, Huehuetenango · NIT: 47337753
-          </p>
-          <div class="mt-3 inline-block bg-[#071D49] text-white px-4 py-1 rounded-full text-[12px] font-semibold uppercase tracking-widest">
-            Comprobante de Ingreso Oficial · Forma 63-A2 (CGC)
-          </div>
-        </div>
-
-        <!-- Metadatos de Control -->
-        <div class="grid grid-cols-2 gap-4 pb-4 mb-4 border-b border-gray-200 text-[11px]">
-          <div>
-            <span class="text-[12px] font-bold uppercase text-[#071D49]/50 block">No. Comprobante Legal</span>
-            <span class="font-mono text-[14px] font-semibold text-[#071D49]">{reciboSeleccionado.comprobanteNumero || 'Serie AG-2026'}</span>
-          </div>
-          <div class="text-right">
-            <span class="text-[12px] font-bold uppercase text-[#071D49]/50 block">Fecha de Certificación</span>
-            <span class="font-bold text-[13px] text-[#071D49]">{reciboSeleccionado.fecha || new Date().toISOString().split('T')[0]}</span>
-          </div>
-        </div>
-
-        <!-- Cuerpo del Recibo -->
-        <div class="space-y-4 text-[12px] text-[#071D49]">
-          <div class="bg-gray-50/80 p-3.5 rounded-xl border border-gray-100">
-            <span class="text-[12px] font-bold uppercase text-[#071D49]/50 block mb-0.5">Recibido de la Entidad:</span>
-            <p class="font-semibold text-[14px] text-[#071D49]">
-              {reciboSeleccionado.municipio ? `MUNICIPALIDAD DE ${reciboSeleccionado.municipio.toUpperCase()}` : 'COOPERACIÓN INTERNACIONAL / SOCIO ALIADO'}
-            </p>
-            <p class="text-[12px] text-[#071D49]/60 font-semibold mt-0.5">Entidad miembro integrante de la Mancomunidad Frontera del Norte</p>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="bg-blue-50/60 p-3.5 rounded-xl border border-blue-100">
-              <span class="text-[12px] font-bold uppercase text-blue-900/60 block mb-0.5">Cantidad en Cifras:</span>
-              <p class="font-mono text-[18px] font-semibold text-[#1248AA]">
-                Q {reciboSeleccionado.monto.toLocaleString('es-GT', { minimumFractionDigits: 2 })}
-              </p>
-            </div>
-            <div class="bg-gray-50/80 p-3.5 rounded-xl border border-gray-100">
-              <span class="text-[12px] font-bold uppercase text-[#071D49]/50 block mb-0.5">Cuenta Bancaria Receptora:</span>
-              <p class="font-bold text-[11px] text-[#071D49]">{reciboSeleccionado.cuentaBancaria}</p>
-              <p class="text-[12px] font-mono text-[#071D49]/50">No. 3440-001-928 (Banrural)</p>
-            </div>
-          </div>
-
-          <div class="p-3.5 rounded-xl border border-gray-100">
-            <span class="text-[12px] font-bold uppercase text-[#071D49]/50 block mb-0.5">Cantidad en Letras:</span>
-            <p class="font-bold text-[12px] text-[#071D49] tracking-wide">
-              {montoALetras(reciboSeleccionado.monto)}
-            </p>
-          </div>
-
-          <div class="p-3.5 rounded-xl border border-gray-100">
-            <span class="text-[12px] font-bold uppercase text-[#071D49]/50 block mb-0.5">Por Concepto De:</span>
-            <p class="font-medium text-[12px] text-[#071D49]/80 leading-relaxed">
-              {reciboSeleccionado.descripcion}
-            </p>
-          </div>
-
-          <!-- Sello y Hash de Auditoría -->
-          <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl text-[12px] font-mono text-[#071D49]/60 border border-gray-200/60">
-            <span>Sello Criptográfico CGC:</span>
-            <span class="font-bold">{reciboSeleccionado.codigo}-SHA256-OK</span>
-          </div>
-
-          <!-- Firmas Oficiales -->
-          <div class="grid grid-cols-2 gap-8 pt-10 mt-6 border-t border-gray-200 text-center">
-            <div>
-              <div class="w-44 mx-auto border-b-2 border-gray-400 mb-2"></div>
-              <p class="text-[11px] font-semibold text-[#071D49]">Lic. Óscar Fernando Ixcoy</p>
-              <p class="text-[12px] font-bold text-[#071D49]/50 uppercase tracking-wider">Dirección Administrativa y Financiera (DAF-MFN)</p>
-              <p class="text-[12px] text-[#071D49]/40 mt-0.5">Firma y Sello Oficial</p>
-            </div>
-            <div>
-              <div class="w-44 mx-auto border-b-2 border-gray-400 mb-2"></div>
-              <p class="text-[11px] font-semibold text-[#071D49]">Marvin Josué Ramírez</p>
-              <p class="text-[12px] font-bold text-[#071D49]/50 uppercase tracking-wider">Gerencia Ejecutiva</p>
-              <p class="text-[12px] text-[#071D49]/40 mt-0.5">Vo.Bo. Representación Legal</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-{/if}
-
-<!-- MODAL DICTAMEN DE RENDICIÓN DE CUENTAS PARA LA ASAMBLEA (CGC - RF12) -->
-{#if showDictamenModal}
-  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#071D49]/70 backdrop-blur-sm overflow-y-auto">
-    <div class="glass-light rounded-[28px] max-w-3xl w-full p-8 md:p-10    relative print:m-0 print:p-6 print: print:shadow-none print:w-full print:max-w-none">
-      <!-- Acciones (Ocultas al Imprimir) -->
-      <div class="flex items-center justify-between pb-6 mb-6 border-b border-gray-100 print:hidden">
-        <div class="flex items-center gap-2">
-          <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
-          <span class="text-[11px] font-bold text-[#071D49] uppercase tracking-wider">Informe Oficial de Rendición de Cuentas (RF12)</span>
-        </div>
-        <div class="flex items-center gap-3">
-          <button 
-            type="button" 
-            onclick={imprimirDocumento}
-            class="flex items-center gap-2 px-5 py-2.5 bg-[#071D49] hover:bg-black text-white text-[12px] font-bold rounded-full shadow-md transition-all cursor-pointer"
-          >
-            <Icon name="print" className="w-4 h-4 text-amber-400" />
-            <span>Imprimir Dictamen para Asamblea</span>
-          </button>
-          <button 
-            type="button" 
-            onclick={() => showDictamenModal = false} 
-            class="w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-[#071D49] transition-colors"
-          >
-            <Icon name="close" className="w-5 h-5" />
-          </button>
-        </div>
-      </div>
-
-      <!-- CUERPO DEL INFORME OFICIAL -->
-      <div class="space-y-6 text-[#071D49]">
-        <!-- Encabezado -->
-        <div class="text-center pb-6 border-b-2 border-[#071D49]">
-          <h2 class="text-[18px] md:text-[22px] font-semibold text-[#071D49] uppercase tracking-tight">
-            Mancomunidad de Municipios de la Frontera del Norte
-          </h2>
-          <p class="text-[11px] font-bold text-[#071D49]/60 uppercase tracking-widest mt-1">
-            Departamento de Huehuetenango · República de Guatemala
-          </p>
-          <div class="mt-3 bg-[#071D49] text-white inline-block px-5 py-1.5 rounded-full text-[11px] font-semibold uppercase tracking-wider">
-            Dictamen Consolidado de Ejecución Presupuestaria · Asamblea General
-          </div>
-          <p class="text-[12px] text-[#071D49]/50 mt-2 font-medium">
-            En cumplimiento del Código Municipal (Decreto 12-2002) y Ley de Acceso a la Información Pública (Decreto 57-2008)
-          </p>
-        </div>
-
-        <!-- Resumen de Liquidez y Separación de Fondos -->
-        <div class="grid grid-cols-3 gap-4">
-          <div class="p-4 bg-gray-50 rounded-2xl border border-gray-100 text-center">
-            <span class="text-[12px] font-semibold uppercase text-[#071D49]/50 block">Fondos Públicos (CGC)</span>
-            <p class="text-[18px] font-semibold text-[#071D49] mt-1">Q {balance.cuentas.fondosPublicos.saldo.toLocaleString('es-GT')}</p>
-            <span class="text-[12px] text-[#071D49]/50 font-medium">Cuotas Municipales</span>
-          </div>
-          <div class="p-4 bg-blue-50/50 rounded-2xl border border-blue-100 text-center">
-            <span class="text-[12px] font-semibold uppercase text-blue-900/60 block">Cooperación Externa (SAT)</span>
-            <p class="text-[18px] font-semibold text-[#1248AA] mt-1">Q {balance.cuentas.cooperacion.saldo.toLocaleString('es-GT')}</p>
-            <span class="text-[12px] text-[#1248AA]/70 font-medium">USAID / BID / AECID</span>
-          </div>
-          <div class="p-4 bg-emerald-50/50 rounded-2xl border border-emerald-100 text-center">
-            <span class="text-[12px] font-semibold uppercase text-emerald-900/60 block">Liquidez Disponible Total</span>
-            <p class="text-[18px] font-semibold text-emerald-600 mt-1">Q {balance.saldoDisponibleTotal.toLocaleString('es-GT')}</p>
-            <span class="text-[12px] text-emerald-700/70 font-medium">Saldo Neto Operativo</span>
-          </div>
-        </div>
-
-        <!-- Estado de Solvencia de los 6 Municipios -->
-        <div class="border border-gray-200 rounded-2xl overflow-hidden">
-          <div class="bg-gray-100/70 px-4 py-3 border-b border-gray-200 flex items-center justify-between">
-            <span class="text-[11px] font-semibold text-[#071D49] uppercase tracking-wider">Estado de Aportes Ordinarios por Municipio (Ejercicio 2026)</span>
-            <span class="text-[12px] font-bold text-[#071D49]/60">Cuota Base: Q15,000 / Mes</span>
-          </div>
-          <table class="w-full text-left text-[11px]">
-            <thead class="bg-gray-50 border-b border-gray-200">
-              <tr>
-                <th class="py-2.5 px-4 font-bold uppercase text-[12px] text-[#071D49]/50">Municipio</th>
-                <th class="py-2.5 px-4 font-bold uppercase text-[12px] text-[#071D49]/50 text-right">Aportado</th>
-                <th class="py-2.5 px-4 font-bold uppercase text-[12px] text-[#071D49]/50 text-right">Cuota Anual</th>
-                <th class="py-2.5 px-4 font-bold uppercase text-[12px] text-[#071D49]/50 text-center">Estado Fiscal</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-100">
-              {#each municipiosMFN as m}
-                <tr>
-                  <td class="py-2.5 px-4 font-bold text-[#071D49]">{m.nombre}</td>
-                  <td class="py-2.5 px-4 text-right font-mono font-bold text-emerald-600">Q {m.cuotasPagadas.toLocaleString('es-GT')}</td>
-                  <td class="py-2.5 px-4 text-right font-mono text-[#071D49]/50">Q {m.cuotasEsperadas.toLocaleString('es-GT')}</td>
-                  <td class="py-2.5 px-4 text-center">
-                    <span class="px-2 py-0.5 rounded-full text-[12px] font-semibold uppercase {m.estado === 'Solvente' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
-                      {m.estado}
-                    </span>
-                  </td>
-                </tr>
-              {/each}
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Conclusión Dictamen y Firmas de la Asamblea -->
-        <p class="text-[11px] text-[#071D49]/70 leading-relaxed text-justify">
-          El presente dictamen certifica la legalidad y transparencia de los movimientos operados en las cuentas oficiales de la Mancomunidad de Municipios Frontera del Norte durante el período, confirmando la no mezcla de recursos de cooperación internacional con fondos públicos según lo mandata la ley.
-        </p>
-
-        <div class="grid grid-cols-3 gap-6 pt-10 mt-6 border-t border-gray-200 text-center">
-          <div>
-            <div class="w-32 mx-auto border-b border-gray-400 mb-2"></div>
-            <p class="text-[12px] font-semibold text-[#071D49]">Alcalde Presidente</p>
-            <p class="text-[12px] font-bold text-[#071D49]/50 uppercase">Junta Directiva MFN</p>
-          </div>
-          <div>
-            <div class="w-32 mx-auto border-b border-gray-400 mb-2"></div>
-            <p class="text-[12px] font-semibold text-[#071D49]">Marvin Josué Ramírez</p>
-            <p class="text-[12px] font-bold text-[#071D49]/50 uppercase">Gerente Ejecutivo</p>
-          </div>
-          <div>
-            <div class="w-32 mx-auto border-b border-gray-400 mb-2"></div>
-            <p class="text-[12px] font-semibold text-[#071D49]">Julio César Matías</p>
-            <p class="text-[12px] font-bold text-[#071D49]/50 uppercase">Auditor Interno (AUD)</p>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 {/if}

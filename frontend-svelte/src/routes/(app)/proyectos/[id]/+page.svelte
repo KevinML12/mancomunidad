@@ -57,7 +57,7 @@
       (pos) => {
         formData.latitud = pos.coords.latitude.toFixed(6);
         formData.longitud = pos.coords.longitude.toFixed(6);
-        toast.success('Coordenadas capturadas con precisión satelital');
+        toast.success('Coordenadas obtenidas del dispositivo');
       },
       () => {
         toast.error('No se pudo obtener ubicación. Verifique permisos GPS.');
@@ -137,10 +137,10 @@
             <Icon name="engineering" className="w-4 h-4" />
           </span>
         </div>
-        <p class="text-[24px] font-semibold tracking-[-0.03em] text-[#071D49]">{proyecto.estado || 'En Ejecución'}</p>
+        <p class="text-[24px] font-semibold tracking-[-0.03em] text-[#071D49]">{proyecto.estado || 'Sin estado registrado'}</p>
         <p class="text-[11px] text-emerald-600 font-bold mt-2 flex items-center gap-1">
           <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block"></span>
-          Supervisión de campo al día
+          Estado registrado en el expediente
         </p>
       </div>
 
@@ -152,10 +152,10 @@
             <Icon name="trending_up" className="w-4 h-4" />
           </span>
         </div>
-        <p class="text-[24px] font-semibold tracking-[-0.03em] text-[#071D49]">{proyecto.porcentajeAvanceFisico || 78.5}%</p>
+        <p class="text-[24px] font-semibold tracking-[-0.03em] text-[#071D49]">{proyecto.porcentajeAvanceFisico ?? 0}%</p>
         <div class="mt-2.5">
           <div class="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
-            <div class="bg-[#1248AA] h-1.5 rounded-full transition-all duration-700 ease-out" style="width: {proyecto.porcentajeAvanceFisico || 78.5}%"></div>
+            <div class="bg-[#1248AA] h-1.5 rounded-full transition-all duration-700 ease-out" style="width: {proyecto.porcentajeAvanceFisico ?? 0}%"></div>
           </div>
         </div>
       </div>
@@ -169,7 +169,7 @@
           </span>
         </div>
         <p class="text-[22px] font-semibold tracking-[-0.03em] text-[#071D49]">Q {(proyecto.presupuestoMunicipal || 0).toLocaleString('es-GT')}</p>
-        <p class="text-[11px] text-[#071D49]/50 font-medium mt-2">Contrapartida 3 municipios activos MFN</p>
+        <p class="text-[11px] text-[#071D49]/50 font-medium mt-2">Presupuesto municipal registrado</p>
       </div>
 
       <!-- Card 4: Cooperación Externa -->
@@ -181,7 +181,7 @@
           </span>
         </div>
         <p class="text-[22px] font-semibold tracking-[-0.03em] text-[#071D49]">Q {(proyecto.presupuestoCooperacion || 0).toLocaleString('es-GT')}</p>
-        <p class="text-[11px] text-[#071D49]/50 font-medium mt-2">{proyecto.agenciaFinanciadora || 'USAID / DAI'}</p>
+        <p class="text-[11px] text-[#071D49]/50 font-medium mt-2">{proyecto.agenciaFinanciadora || 'Sin agencia registrada'}</p>
       </div>
     </div>
 
@@ -191,12 +191,11 @@
         <div>
           <div class="flex items-center gap-2 mb-1">
             <span class="text-[12px] font-semibold uppercase tracking-normal text-[#071D49]/40">Galería de Fiscalización</span>
-            <span class="text-[12px] font-bold uppercase tracking-widest px-2 py-0.5 bg-emerald-50 text-emerald-600 rounded-full">EXIF AUTORIZADO</span>
           </div>
           <h2 class="text-xl font-semibold text-[#071D49] tracking-tight">Evidencias Fotográficas de Campo</h2>
         </div>
         <span class="text-[11px] font-bold text-[#071D49]/50">
-          {(proyecto.evidencias || []).length} Registros Inmutables
+          {(proyecto.evidencias || []).length} registros
         </span>
       </div>
 
@@ -205,7 +204,7 @@
           <Icon name="image_not_supported" className="w-12 h-12 text-gray-300 mx-auto mb-3" />
           <p class="text-[14px] font-bold text-[#071D49]">No hay evidencias fotográficas registradas</p>
           <p class="text-[12px] text-[#071D49]/40 mt-1 max-w-sm mx-auto">
-            Utiliza el botón superior para subir fotos tomadas en el sitio de la obra con metadatos de geolocalización.
+            Utiliza el botón superior para subir fotos tomadas en el sitio de la obra y, si corresponde, registrar sus coordenadas.
           </p>
         </div>
       {:else}
@@ -213,11 +212,11 @@
           {#each proyecto.evidencias as evidencia}
             <div class="glass-light   rounded-[24px] overflow-hidden card-lift group">
               <div class="h-48 bg-gray-900 relative overflow-hidden">
-                <img 
-                  src={evidencia.urlArchivo || 'https://images.unsplash.com/photo-1541888086225-b829ccba6f6b?q=80&w=800&auto=format&fit=crop'} 
-                  alt="Evidencia" 
-                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out" 
-                />
+                {#if evidencia.urlArchivo}
+                  <img src={evidencia.urlArchivo} alt="Fotografía registrada del proyecto" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out" />
+                {:else}
+                  <div class="w-full h-full flex items-center justify-center text-white/70 text-sm">Sin fotografía disponible</div>
+                {/if}
                 <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
                 <div class="absolute top-3 left-3 bg-[#071D49]/80 backdrop-blur-md rounded-lg px-2.5 py-1 text-white text-[12px] font-bold flex items-center gap-1.5">
                   <Icon name="calendar_today" className="w-3 h-3 text-[#1248AA]" />
@@ -226,18 +225,18 @@
                 {#if evidencia.latitud && evidencia.longitud}
                   <div class="absolute top-3 right-3 bg-emerald-500 rounded-lg px-2 py-1 text-white text-[12px] font-semibold flex items-center gap-1">
                     <Icon name="satellite_alt" className="w-3 h-3" />
-                    GPS OK
+                    Coordenadas registradas
                   </div>
                 {/if}
               </div>
 
               <div class="p-5 space-y-3">
                 <p class="text-[12px] font-medium text-[#071D49]/80 leading-relaxed line-clamp-2">
-                  {evidencia.descripcion || 'Registro fotográfico oficial del proyecto.'}
+                  {evidencia.descripcion || 'Sin descripción registrada.'}
                 </p>
                 <div class="pt-3 border-t border-gray-50 flex items-center justify-between text-[11px]">
                   <span class="text-[12px] font-mono font-bold text-[#071D49]/50">
-                    {evidencia.latitud ? `${evidencia.latitud}° N, ${evidencia.longitud}° W` : 'Ubicación de Obra'}
+                    {evidencia.latitud != null && evidencia.longitud != null ? `${evidencia.latitud}°, ${evidencia.longitud}°` : 'Sin coordenadas'}
                   </span>
                   {#if evidencia.latitud && evidencia.longitud}
                     <a 

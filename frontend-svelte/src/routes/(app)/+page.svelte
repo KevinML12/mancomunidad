@@ -5,7 +5,7 @@
   import { auth } from '$lib/stores/auth.svelte.js';
   import { fade, fly } from 'svelte/transition';
 
-  // Estados de datos reactivos - 100% de la Base de Datos
+  // Estados de datos reactivos - registros consultados
   let stats = $state({
     proyectosCount: 0,
     inversionTotal: 0,
@@ -27,6 +27,7 @@
 
   let conveniosAlerta = $state([]);
   let loading = $state(true);
+  let failedSources = $state([]);
 
   const fetchDashboardData = async () => {
     loading = true;
@@ -39,6 +40,10 @@
         apiClient.get('/convenios'),
         apiClient.get('/estadisticas/consolidado')
       ]);
+      failedSources = [
+        ['proyectos', resProyectos], ['ARC', resArc], ['finanzas', resBalance],
+        ['actas', resActas], ['convenios', resConvenios], ['estadísticas', resEstadisticas]
+      ].filter(([, result]) => result.status === 'rejected').map(([name]) => name);
 
       if (resProyectos.status === 'fulfilled' && Array.isArray(resProyectos.value.data)) {
         const proys = resProyectos.value.data;
@@ -118,8 +123,8 @@
       to: '/financiero',
       icon: 'account_balance',
       titulo: 'Finanzas y Cuotas',
-      descripcion: 'Separación bancaria estricta (RF12) de fondos públicos ordinarios y cooperación internacional auditada.',
-      badge: 'RF12 Activo',
+      descripcion: 'Movimientos registrados por tipo de fondo y aportes municipales.',
+      badge: 'Movimientos',
       color: 'emerald'
     },
     {
@@ -127,8 +132,8 @@
       to: '/gobernanza',
       icon: 'gavel',
       titulo: 'Gobernanza y Actas',
-      descripcion: 'Repositorio oficial con folios autorizados por la Contraloría General de Cuentas y semáforo de acuerdos.',
-      badge: stats.acuerdosTotal > 0 ? `${stats.acuerdosTotal} Acuerdos CGC` : 'CGC Certificado',
+      descripcion: 'Registro de actas y seguimiento de acuerdos.',
+      badge: stats.acuerdosTotal > 0 ? `${stats.acuerdosTotal} acuerdos` : 'Actas y acuerdos',
       color: 'purple'
     },
     {
@@ -162,8 +167,8 @@
       num: '08',
       to: '/inteligencia',
       icon: 'psychology',
-      titulo: 'Inteligencia & Auditoría CGC',
-      descripcion: 'Algoritmo multicriterio de priorización de inversión (IPIM) y sellado criptográfico SHA-256 anti-fraude.',
+      titulo: 'Inteligencia y control interno',
+      descripcion: 'Índice preliminar de inversión y huellas SHA-256 para control interno.',
       badge: 'Matriz IPIM · SHA-256',
       color: 'emerald'
     }
@@ -175,6 +180,12 @@
 </svelte:head>
 
 <div class="space-y-8 animate-fade-in" in:fade={{ duration: 250 }}>
+  {#if failedSources.length > 0}
+    <div role="alert" class="rounded-2xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900">
+      No se pudieron cargar: {failedSources.join(', ')}. Sus indicadores no están disponibles.
+      <button onclick={fetchDashboardData} class="ml-3 underline font-semibold">Reintentar</button>
+    </div>
+  {/if}
   <!-- HERO BANNER INSTITUCIONAL -->
   <div class="bg-gradient-to-r from-[#071D49] via-[#102038] to-[#071D49] rounded-[32px] p-8 lg:p-10 text-white shadow-2xl relative overflow-hidden border border-white/10">
     <div class="absolute -right-16 -bottom-16 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
@@ -185,7 +196,7 @@
         <div class="flex flex-wrap items-center gap-2.5">
           <span class="px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 font-semibold text-[12px] uppercase tracking-wider flex items-center gap-1.5">
             <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            Sistema en Línea · Vercel + Neon DB
+            Sistema de gestión MFN
           </span>
           <span class="px-3 py-1 rounded-full bg-white/10 text-white/80 font-bold text-[12px] uppercase tracking-wider">
             3 municipios activos
@@ -264,10 +275,10 @@
           <Icon name="account_balance" className="w-6 h-6" />
         </div>
         <span class="text-[12px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-          Solvente
+          Saldo registrado
         </span>
       </div>
-      <p class="text-[11px] font-bold uppercase tracking-wider text-[#071D49]/50 mb-1">Liquidez Disponible (RF12)</p>
+      <p class="text-[11px] font-bold uppercase tracking-wider text-[#071D49]/50 mb-1">Saldo de movimientos registrados</p>
       <h3 class="text-2xl font-semibold text-[#071D49] tracking-tight">Q {stats.saldoNeto.toLocaleString()}</h3>
       <div class="flex items-center gap-2 mt-2 text-[12px] font-bold text-[#071D49]/60">
         <span class="text-emerald-700">Públicos: Q {stats.fondosPublicos.toLocaleString()}</span>
@@ -283,14 +294,14 @@
           <Icon name="gavel" className="w-6 h-6" />
         </div>
         <span class="text-[12px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full bg-purple-50 text-purple-700 border border-purple-200">
-          Libro CGC No. 04
+          Actas registradas
         </span>
       </div>
       <p class="text-[11px] font-bold uppercase tracking-wider text-[#071D49]/50 mb-1">Gobernanza y Acuerdos</p>
-      <h3 class="text-2xl font-semibold text-[#071D49] tracking-tight">{stats.actasCount} Actas Oficiales</h3>
+      <h3 class="text-2xl font-semibold text-[#071D49] tracking-tight">{stats.actasCount} Actas registradas</h3>
       <p class="text-xs text-[#071D49]/60 mt-2 flex items-center gap-1.5">
         <span class="w-1.5 h-1.5 rounded-full bg-purple-500"></span>
-        {stats.acuerdosCount} Resoluciones vinculantes
+        {stats.acuerdosCount} Acuerdos registrados
       </p>
     </a>
   </div>
@@ -346,7 +357,7 @@
             <div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto">
               <Icon name="check_circle" className="w-5 h-5" />
             </div>
-            <p class="text-xs font-semibold text-emerald-950">Vigencia Diplomática Óptima</p>
+            <p class="text-xs font-semibold text-emerald-950">Sin alertas registradas</p>
             <p class="text-[11px] text-emerald-800/80">No existen convenios con vencimiento menor a 90 días en la base de datos.</p>
           </div>
         {/if}
@@ -409,11 +420,11 @@
                 <Icon name="science" className="w-4 h-4" />
               </div>
               <div>
-                <p class="text-xs font-semibold text-emerald-950">Desinfección de Agua Segura</p>
-                <p class="text-[12px] font-semibold text-emerald-800">Rango Óptimo 0.5 - 1.5 ppm de Cloro</p>
+                <p class="text-xs font-semibold text-emerald-950">Cloro residual registrado</p>
+                <p class="text-[12px] font-semibold text-emerald-800">Muestras según censos registrados</p>
               </div>
             </div>
-            <span class="text-sm font-semibold text-emerald-700">100% Protegido</span>
+            <span class="text-sm font-semibold text-emerald-700">{stats.cloroConforme}% en rango</span>
           </div>
         </div>
       </div>

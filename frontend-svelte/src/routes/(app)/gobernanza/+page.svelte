@@ -106,7 +106,7 @@
         numeroSesion: Number(nuevaActa.numeroSesion),
         fecha: nuevaActa.fecha || new Date().toISOString().split('T')[0]
       });
-      toast.success('Acta oficial registrada e indexada en la base de datos');
+      toast.success('Acta registrada en la base de datos');
       showModal = false;
       nuevaActa = {
         numeroActa: '',
@@ -142,7 +142,7 @@
     </div>
     <h2 class="text-[40px] font-semibold tracking-[-0.04em] leading-none text-[#071D49] mb-3">Gobernanza y Actas</h2>
     <p class="text-[13px] text-[#071D49]/50 leading-relaxed max-w-2xl">
-      Digitalización de actas autorizadas por Contraloría (CGC), foliado oficial y semáforo de cumplimiento de acuerdos políticos.
+      Registro de actas, folios consignados y seguimiento de acuerdos. La autorización de folios debe comprobarse con la documentación original.
     </p>
   </div>
 
@@ -175,7 +175,7 @@
       class="px-6 py-3 bg-[#071D49] hover:bg-black text-white rounded-full text-[13px] font-bold shadow-md transition-all duration-300 hover:-translate-y-0.5 flex items-center gap-2 cursor-pointer"
     >
       <Icon name="add" className="w-[18px] h-[18px] text-[#1248AA]" stroke={2.5} />
-      <span>+ Digitalizar Acta Oficial</span>
+      <span>+ Registrar acta</span>
     </button>
   </div>
 </header>
@@ -244,7 +244,7 @@
   <div class="lg:col-span-5 space-y-4">
     <div class="flex items-center justify-between px-2">
       <span class="text-[12px] font-semibold uppercase tracking-normal text-[#071D49]/40">Actas Indexadas ({actasFiltradas.length})</span>
-      <span class="text-[12px] font-mono text-[#071D49]/40">Autorizado CGC</span>
+      <span class="text-[12px] font-mono text-[#071D49]/40">Folio consignado</span>
     </div>
 
     <div class="space-y-3">
@@ -399,7 +399,7 @@
       <div class="flex justify-between items-center mb-6 border-b border-gray-50 pb-4">
         <div>
           <span class="text-[12px] font-bold uppercase tracking-normal text-[#1248AA]">Asamblea General MFN</span>
-          <h2 class="text-xl font-semibold text-[#071D49] tracking-tight">Digitalización de Acta Oficial</h2>
+          <h2 class="text-xl font-semibold text-[#071D49] tracking-tight">Registro de acta</h2>
         </div>
         <button onclick={() => showModal = false} class="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors">
           <Icon name="close" className="w-5 h-5 text-[#071D49]/50" stroke={2} />
@@ -456,14 +456,14 @@
         </div>
 
         <div>
-          <label for="field-8" class="block text-[12px] font-bold uppercase tracking-normal text-[#071D49]/40 mb-1.5">URL Archivo PDF Escaneado (Firmas Oficiales)</label>
+          <label for="field-8" class="block text-[12px] font-bold uppercase tracking-normal text-[#071D49]/40 mb-1.5">URL del PDF escaneado</label>
           <input id="field-8" type="text" bind:value={nuevaActa.urlPdfEscaneado} placeholder="https://storage.mfn.gob.gt/actas/acta.pdf" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#071D49]" />
         </div>
 
         <div class="pt-4 flex justify-end gap-3 mt-6 border-t border-gray-50 pt-5">
           <button type="button" onclick={() => showModal = false} class="px-6 py-3 rounded-full font-bold text-[#071D49]/60 hover:bg-gray-50 transition-colors text-[13px]">Cancelar</button>
           <button type="submit" disabled={formLoading} class="px-8 py-3 bg-[#071D49] text-white rounded-full font-bold hover:bg-black shadow-md transition-all text-[13px] disabled:opacity-50">
-            {formLoading ? 'Indexando...' : 'Indexar Acta Oficial'}
+            {formLoading ? 'Indexando...' : 'Registrar acta'}
           </button>
         </div>
       </form>

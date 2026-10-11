@@ -85,8 +85,8 @@
             avance: p.porcentajeAvanceFisico || 0,
             estado: p.estado || 'En Ejecución',
             visibilidad: true,
-            fechaInicio: p.fechaInicioPlanificada ? new Date(p.fechaInicioPlanificada).toLocaleDateString('es-GT') : '2024-01-15',
-            fechaFin: p.fechaFinPlanificada ? new Date(p.fechaFinPlanificada).toLocaleDateString('es-GT') : '2024-12-30',
+            fechaInicio: p.fechaInicioPlanificada ? new Date(p.fechaInicioPlanificada).toLocaleDateString('es-GT') : 'Sin fecha registrada',
+            fechaFin: p.fechaFinPlanificada ? new Date(p.fechaFinPlanificada).toLocaleDateString('es-GT') : 'Sin fecha registrada',
             evidencias: p.evidencias || []
           };
         });
@@ -103,11 +103,6 @@
     fetchTransparencia();
   });
 
-  async function toggleVisibilidadProyecto(p) {
-    p.visibilidad = !p.visibilidad;
-    proyectos = [...proyectos];
-    toast.info(p.visibilidad ? 'Proyecto publicado en portal ciudadano' : 'Proyecto retirado de la vista pública');
-  }
 
   async function toggleVisibilidadActa(a) {
     const nuevoEstado = !a.visibilidad;
@@ -261,7 +256,7 @@
       </span>
       <span class="text-[12px] font-semibold uppercase tracking-normal text-emerald-800 bg-emerald-50 px-3.5 py-1.5 rounded-full border border-emerald-200 flex items-center gap-1.5">
         <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-        <span>Datos en Vivo · Neon PostgreSQL</span>
+        <span>Registros publicados</span>
       </span>
       {#if auth.isAuthenticated}
         <span class="text-[12px] font-semibold uppercase tracking-normal text-purple-700 bg-purple-50 px-3.5 py-1.5 rounded-full border border-purple-200">
@@ -275,7 +270,7 @@
     </h1>
 
     <p class="text-[14px] md:text-[15px] text-[#071D49]/60 leading-relaxed font-medium max-w-3xl">
-      Supervise en tiempo real el destino de cada quetzal en infraestructura intermunicipal, consulte resoluciones de asamblea autorizadas por la CGC y descargue datos abiertos sin restricciones de acceso.
+      Consulte los proyectos y publicaciones registrados por la Mancomunidad y descargue los datos disponibles.
     </p>
 
     <!-- Buscador Universal Integrado -->
@@ -301,7 +296,7 @@
   <!-- METRICAS CLAVE EN TIEMPO REAL -->
   <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8 pt-8 border-t border-gray-200/60">
     <div class="glass-light/80 backdrop-blur-xs   p-4 rounded-2xl shadow-xs">
-      <span class="text-[12px] font-semibold uppercase tracking-wider text-[#071D49]/40 block mb-1">Inversión Fiscal Auditada</span>
+      <span class="text-[12px] font-semibold uppercase tracking-wider text-[#071D49]/40 block mb-1">Presupuesto registrado</span>
       <p class="text-xl md:text-2xl font-semibold text-[#071D49]">Q {totalInversionObras.toLocaleString()}</p>
       <span class="text-[12px] text-emerald-600 font-bold flex items-center gap-1 mt-1">
         <Icon name="verified" className="w-3 h-3" />
@@ -313,15 +308,15 @@
       <span class="text-[12px] font-semibold uppercase tracking-wider text-[#071D49]/40 block mb-1">Avance Físico Promedio</span>
       <p class="text-xl md:text-2xl font-semibold text-[#1248AA]">{promedioAvanceObras}%</p>
       <span class="text-[12px] text-[#071D49]/50 font-medium block mt-1">
-        En {proyectos.length} obras fiscalizadas
+        En {proyectos.length} proyectos publicados
       </span>
     </div>
 
     <div class="glass-light/80 backdrop-blur-xs   p-4 rounded-2xl shadow-xs">
-      <span class="text-[12px] font-semibold uppercase tracking-wider text-[#071D49]/40 block mb-1">Actas y Resoluciones CGC</span>
+      <span class="text-[12px] font-semibold uppercase tracking-wider text-[#071D49]/40 block mb-1">Publicaciones y resoluciones</span>
       <p class="text-xl md:text-2xl font-semibold text-purple-700">{actas.length}</p>
       <span class="text-[12px] text-[#071D49]/50 font-medium block mt-1">
-        Hojas movibles autorizadas
+        Publicaciones registradas
       </span>
     </div>
 
@@ -348,7 +343,7 @@
       onclick={() => activeTab = 'actas'}
       class="px-5 py-2.5 rounded-full text-[12px] font-bold transition-all shrink-0 cursor-pointer {activeTab === 'actas' ? 'bg-[#071D49] text-white shadow-xs' : 'text-[#071D49]/60 hover:text-[#071D49]'}"
     >
-      Actas y Resoluciones CGC ({actasFiltradas.length})
+      Publicaciones y resoluciones ({actasFiltradas.length})
     </button>
     <button 
       onclick={() => activeTab = 'estadisticas'}
@@ -445,15 +440,6 @@
                   <span class="px-3 py-1 rounded-full text-[12px] font-semibold uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-100">
                     {p.estado}
                   </span>
-                  {#if auth.isAuthenticated}
-                    <button 
-                      onclick={() => toggleVisibilidadProyecto(p)}
-                      class="text-[12px] font-bold px-2 py-0.5 rounded border {p.visibilidad ? 'border-emerald-200 text-emerald-700' : 'border-rose-200 text-rose-700 bg-rose-50'}"
-                      title="Control Gerencial de Visibilidad RF5"
-                    >
-                      {p.visibilidad ? 'Visible' : 'Oculto'}
-                    </button>
-                  {/if}
                 </div>
               </div>
 
@@ -479,7 +465,7 @@
               <!-- Barra de Avance Físico -->
               <div class="space-y-1.5 mb-5">
                 <div class="flex justify-between text-[11px] font-bold">
-                  <span class="text-[#071D49]/50">Avance Físico Certificado:</span>
+                  <span class="text-[#071D49]/50">Avance físico reportado:</span>
                   <span class="text-[#1248AA] font-semibold">{p.avance}%</span>
                 </div>
                 <div class="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
@@ -492,7 +478,7 @@
             <div class="pt-4 border-t border-gray-50 flex items-center justify-between gap-3">
               <span class="text-emerald-700 font-bold flex items-center gap-1 text-[11px]">
                 <Icon name="verified" className="w-3.5 h-3.5" />
-                <span>EXIF & GPS Validado</span>
+                <span>Datos del proyecto</span>
               </span>
 
               <button 
@@ -513,8 +499,8 @@
     <div class="glass-light   rounded-[32px] p-8  animate-fade-in">
       <div class="flex items-center justify-between mb-6 pb-4 border-b border-gray-100">
         <div>
-          <h3 class="text-lg font-semibold text-[#071D49]">Actas Oficiales de Asamblea y Junta Directiva</h3>
-          <p class="text-[12px] text-[#071D49]/50">Hojas movibles autorizadas con sello de la Contraloría General de Cuentas (CGC).</p>
+          <h3 class="text-lg font-semibold text-[#071D49]">Publicaciones de Asamblea y Junta Directiva</h3>
+          <p class="text-[12px] text-[#071D49]/50">Publicaciones registradas con sello de la Contraloría General de Cuentas (CGC).</p>
         </div>
         <span class="text-xs font-mono font-bold text-purple-700 bg-purple-50 px-3 py-1 rounded-full border border-purple-200">
           Decreto 57-2008 Art. 10
@@ -809,7 +795,7 @@
           <div class="space-y-2 mb-4">
             <span class="text-[12px] font-semibold uppercase tracking-wider text-purple-700 bg-purple-50 px-2 py-0.5 rounded">Dataset Completo</span>
             <h4 class="text-base font-semibold text-[#071D49]">Consolidado Institucional (JSON)</h4>
-            <p class="text-xs text-[#071D49]/60">Estructura jerárquica con actas CGC, indicadores hídricos OMAS y estadísticas de saneamiento.</p>
+            <p class="text-xs text-[#071D49]/60">Estructura jerárquica con publicaciones, indicadores hídricos OMAS y estadísticas de saneamiento.</p>
           </div>
           <button 
             onclick={() => exportarDatos('json')}
@@ -884,10 +870,10 @@
                 <div class="h-32 bg-gray-200 rounded-lg overflow-hidden relative">
                   <img src={e.urlArchivo} alt="Evidencia de obra" class="w-full h-full object-cover" />
                   <span class="absolute bottom-2 left-2 text-[12px] bg-black/70 text-white px-2 py-0.5 rounded font-mono">
-                    {e.latitud ? `${e.latitud}°, ${e.longitud}°` : 'GPS Registrado'}
+                    {e.latitud ? `${e.latitud}°, ${e.longitud}°` : 'Sin coordenadas'}
                   </span>
                 </div>
-                <p class="text-[11px] text-[#071D49]/80 font-medium">{e.descripcion || 'Registro fotográfico oficial de la obra.'}</p>
+                <p class="text-[11px] text-[#071D49]/80 font-medium">{e.descripcion || 'Sin descripción registrada.'}</p>
                 {#if e.latitud && e.longitud}
                   <a 
                     href={`https://www.google.com/maps/search/?api=1&query=${e.latitud},${e.longitud}`}

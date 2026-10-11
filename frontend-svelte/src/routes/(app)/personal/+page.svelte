@@ -187,7 +187,7 @@
 </header>
 
 <!-- BARRA DE KPIS INSTITUCIONALES -->
-<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
   <div class="glass-light   rounded-[24px] p-6 ">
     <div class="flex items-center justify-between mb-3">
       <span class="text-[12px] font-semibold uppercase tracking-normal text-[#071D49]/40">Personal Activo</span>
@@ -217,19 +217,8 @@
         <Icon name="flight_takeoff" className="w-4 h-4" />
       </span>
     </div>
-    <p class="text-[28px] font-semibold tracking-[-0.04em] text-[#071D49]">20 Días</p>
-    <p class="text-[11px] text-[#071D49]/50 font-medium mt-1">Garantía Art. 38 RIT</p>
-  </div>
-
-  <div class="glass-light   rounded-[24px] p-6 ">
-    <div class="flex items-center justify-between mb-3">
-      <span class="text-[12px] font-semibold uppercase tracking-normal text-[#071D49]/40">Auditoría CGC</span>
-      <span class="w-8 h-8 rounded-full bg-purple-50 flex items-center justify-center text-purple-600">
-        <Icon name="verified" className="w-4 h-4" />
-      </span>
-    </div>
-    <p class="text-[28px] font-semibold tracking-[-0.04em] text-emerald-600">100%</p>
-    <p class="text-[11px] text-emerald-700 font-bold mt-1">Expedientes al día</p>
+    <p class="text-[18px] font-semibold tracking-[-0.04em] text-[#071D49]">Por expediente</p>
+    <p class="text-[11px] text-[#071D49]/50 font-medium mt-1">Consultar saldo individual registrado</p>
   </div>
 </div>
 

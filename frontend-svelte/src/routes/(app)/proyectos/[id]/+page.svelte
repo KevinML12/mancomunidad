@@ -4,6 +4,7 @@
   import apiClient from '$lib/apiClient';
   import Icon from '$lib/components/ui/Icon.svelte';
   import { toast } from 'svelte-sonner';
+  import { auth } from '$lib/stores/auth.svelte.js';
   import { fade, fly } from 'svelte/transition';
 
   let projectId = $derived($page.params.id);
@@ -115,6 +116,7 @@
       </div>
     </div>
     
+    {#if auth.puedeEditar('proyectos')}
     <div class="flex items-center gap-3 shrink-0">
       <button 
         onclick={() => showModal = true}
@@ -124,6 +126,7 @@
         Registrar Evidencia GPS
       </button>
     </div>
+    {/if}
   </div>
 
   {#if !loading && proyecto}
@@ -260,7 +263,7 @@
 </div>
 
 <!-- MODAL REGISTRO DE EVIDENCIA -->
-{#if showModal}
+{#if showModal && auth.puedeEditar('proyectos')}
   <!-- svelte-ignore a11y_click_events_have_key_events -->
   <!-- svelte-ignore a11y_no_static_element_interactions -->
   <div 

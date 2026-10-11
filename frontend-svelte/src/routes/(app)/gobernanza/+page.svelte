@@ -3,6 +3,7 @@
   import apiClient from '$lib/apiClient';
   import Icon from '$lib/components/ui/Icon.svelte';
   import { toast } from 'svelte-sonner';
+  import { auth } from '$lib/stores/auth.svelte.js';
   import { fade, fly } from 'svelte/transition';
 
   let actas = $state([]);
@@ -170,6 +171,7 @@
     </select>
 
     <!-- Botón Nueva Acta -->
+    {#if auth.puedeEditar('gobernanza')}
     <button 
       onclick={() => showModal = true}
       class="px-6 py-3 bg-[#071D49] hover:bg-black text-white rounded-full text-[13px] font-bold shadow-md transition-all duration-300 hover:-translate-y-0.5 flex items-center gap-2 cursor-pointer"
@@ -177,6 +179,7 @@
       <Icon name="add" className="w-[18px] h-[18px] text-[#1248AA]" stroke={2.5} />
       <span>+ Registrar acta</span>
     </button>
+    {/if}
   </div>
 </header>
 
@@ -334,6 +337,7 @@
                 </span>
 
                 <!-- Semáforo selector -->
+                {#if auth.puedeEditar('gobernanza')}
                 <div class="flex items-center gap-1 bg-white border border-gray-200 rounded-full p-1 shadow-xs">
                   <button 
                     onclick={() => actualizarEstadoAcuerdo(acuerdo, 'Pendiente')}
@@ -354,6 +358,9 @@
                     Cumplido
                   </button>
                 </div>
+                {:else}
+                  <span class="text-[12px] font-semibold text-[#071D49]/60">{acuerdo.estado}</span>
+                {/if}
               </div>
 
               <h4 class="text-[14px] font-semibold text-[#071D49] leading-snug tracking-tight mb-1.5">
@@ -391,7 +398,7 @@
 </div>
 
 <!-- MODAL DIGITALIZACIÓN DE ACTA (RF13) -->
-{#if showModal}
+{#if showModal && auth.puedeEditar('gobernanza')}
   <!-- svelte-ignore a11y_click_events_have_key_events -->
   <!-- svelte-ignore a11y_no_static_element_interactions -->
   <div transition:fade={{ duration: 180 }} class="fixed inset-0 bg-[#071D49]/20 backdrop-blur-sm z-50 flex items-center justify-center p-4" onclick={() => showModal = false}>

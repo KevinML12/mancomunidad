@@ -3,6 +3,7 @@
   import apiClient from '$lib/apiClient';
   import Icon from '$lib/components/ui/Icon.svelte';
   import { toast } from 'svelte-sonner';
+  import { auth } from '$lib/stores/auth.svelte.js';
   import { fade, fly } from 'svelte/transition';
 
   import { MUNICIPIOS_MFN as LISTA_MUNICIPIOS } from '$lib/municipios.js';
@@ -183,6 +184,7 @@
     </p>
   </div>
 
+  {#if auth.puedeEditar('financiero')}
   <div class="flex items-center gap-3 shrink-0 flex-wrap">
     <!-- Botón Cuota Municipal -->
     <button 
@@ -202,6 +204,7 @@
       <span>+ Registrar Caja Chica</span>
     </button>
   </div>
+  {/if}
 </header>
 {#if loadError}
   <div role="alert" class="glass-light rounded-[24px] p-6 mb-8 text-[#071D49]">
@@ -383,7 +386,7 @@
 {/if}
 
 <!-- MODAL REGISTRO DE CUOTA / CAJA CHICA -->
-{#if showModal}
+{#if showModal && auth.puedeEditar('financiero')}
   <!-- svelte-ignore a11y_click_events_have_key_events -->
   <!-- svelte-ignore a11y_no_static_element_interactions -->
   <div transition:fade={{ duration: 180 }} class="fixed inset-0 bg-[#071D49]/20 backdrop-blur-sm z-50 flex items-center justify-center p-4" onclick={() => showModal = false}>

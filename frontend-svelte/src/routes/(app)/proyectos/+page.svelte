@@ -3,6 +3,7 @@
   import apiClient from '$lib/apiClient';
   import Icon from '$lib/components/ui/Icon.svelte';
   import { toast } from 'svelte-sonner';
+  import { auth } from '$lib/stores/auth.svelte.js';
   import { fade, fly } from 'svelte/transition';
 
   let proyectos = $state([]);
@@ -108,10 +109,12 @@
       <Icon name="search" className="absolute left-4 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-[#071D49]/30" />
     </div>
     <!-- Nuevo Proyecto -->
+    {#if auth.puedeEditar('proyectos')}
     <button onclick={() => showModal = true} class="px-6 py-3 bg-[#071D49] hover:bg-black text-white rounded-full text-[13px] font-bold shadow-md transition-colors flex items-center gap-2">
       <Icon name="add" className="w-[18px] h-[18px] text-[#1248AA]" stroke={2.5} />
       Nuevo Proyecto
     </button>
+    {/if}
   </div>
 </header>
 
@@ -202,7 +205,7 @@
 </section>
 {/if}
 
-{#if showModal}
+{#if showModal && auth.puedeEditar('proyectos')}
   <!-- svelte-ignore a11y_click_events_have_key_events -->
   <!-- svelte-ignore a11y_no_static_element_interactions -->
   <div transition:fade={{ duration: 180 }} class="fixed inset-0 bg-[#071D49]/20 backdrop-blur-sm z-50 flex items-center justify-center p-4" onclick={() => showModal = false}>

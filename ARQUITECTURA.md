@@ -25,6 +25,12 @@ Las rutas conservan los paths `/api/v1/*`. El backend de desarrollo usa SQLite. 
 
 ## Trabajo pendiente antes de considerar la separación completa
 
+### Alcance de los requisitos CGC y EXIF
+
+El proyecto de graduación contempla recibos Forma 63-A2, libros de actas autorizados por la CGC y evidencias fotográficas con metadatos. Son requisitos válidos del trabajo, no elementos que deban desaparecer. La versión actual permite registrar el tipo y número de un comprobante 63-A2 y el folio CGC de un acta; la autenticidad de ambos depende del documento físico o escaneado. Aún no emite una Forma 63-A2 oficial ni verifica la autorización del libro ante la CGC.
+
+La versión actual guarda fotografías PNG/JPEG, calcula su SHA-256 y admite coordenadas proporcionadas por el cliente. Aún no extrae ni valida EXIF, ni acredita que la foto se tomó en esas coordenadas. Para completar el requisito se necesita extracción y validación de metadatos, además de pruebas con archivos reales y una regla institucional para resolver discrepancias. Las pantallas deben distinguir lo registrado de lo verificado, sin eliminar el requisito de la planificación.
+
 - Los módulos ARC, gobernanza, convenios, estadísticas, transparencia, inteligencia y personal aún contienen reglas de negocio y acceso Prisma directo. Extraer servicios por módulo de forma incremental, comenzando por transparencia y gobernanza, junto con pruebas de sus invariantes. Evitar mover código solo para cambiar nombres de carpetas.
 - El código financiero sigue generando correlativos con `count() + 1` y el año fijo 2024. Dos solicitudes simultáneas pueden generar el mismo código; se requiere un mecanismo transaccional de secuencia y una regla institucional para el año antes de cambiar códigos existentes. Las 120 pruebas históricas de `tests/legacy/` definen funciones en los propios archivos de prueba; quedaron fuera de `npm test` porque no ejercitan los servicios reales.
 - `frontend/` es la interfaz React anterior y `frontend-svelte/src/lib/api.js` contiene hooks de SIRH sin consumidores en las rutas Svelte actuales. Confirmar dependencias externas antes de archivarlos o retirarlos.

@@ -500,7 +500,7 @@
       <div class="flex items-center justify-between mb-6 pb-4 border-b border-gray-100">
         <div>
           <h3 class="text-lg font-semibold text-[#071D49]">Publicaciones de Asamblea y Junta Directiva</h3>
-          <p class="text-[12px] text-[#071D49]/50">Publicaciones registradas con sello de la Contraloría General de Cuentas (CGC).</p>
+          <p class="text-[12px] text-[#071D49]/50">Publicaciones registradas por la Mancomunidad; consulte el documento original para verificar sus folios y firmas.</p>
         </div>
         <span class="text-xs font-mono font-bold text-purple-700 bg-purple-50 px-3 py-1 rounded-full border border-purple-200">
           Decreto 57-2008 Art. 10

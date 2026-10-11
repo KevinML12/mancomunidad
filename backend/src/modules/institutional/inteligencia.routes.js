@@ -1,9 +1,9 @@
-import { MUNICIPIOS_MFN } from '../lib/municipios.js';
+import { MUNICIPIOS_MFN } from '../../lib/municipios.js';
 import { Router } from 'express';
 import crypto from 'crypto';
-import { verifyIntegrity } from '../lib/integrity.js';
-import prisma from '../lib/prisma.js';
-import { requireAuth, requirePermission } from '../middleware/auth.js';
+import { verifyIntegrity } from '../../lib/integrity.js';
+import prisma from '../../lib/prisma.js';
+import { requireAuth, requirePermission } from '../../middleware/auth.js';
 
 const router = Router();
 router.use(requireAuth, requirePermission('inteligencia'));

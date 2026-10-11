@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { requireAuth, requirePermission } from '../middleware/auth.js';
-import { ValidationError } from '../services/errors.js';
-import { listTransactions, getBalance, createTransaction } from '../services/finance.js';
+import { requireAuth, requirePermission } from '../../middleware/auth.js';
+import { ValidationError } from '../../services/errors.js';
+import { listTransactions, getBalance, createTransaction } from '../../services/finance.js';
 
 const router = Router();
 router.use(requireAuth, requirePermission('financiero'));

@@ -3,9 +3,9 @@ import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 
-import identityRoutes from './modules/identity.js';
-import institutionalRoutes from './modules/institutional.js';
-import personnelRoutes from './modules/personnel.js';
+import identityRoutes from './modules/identity/index.js';
+import institutionalRoutes from './modules/institutional/index.js';
+import personnelRoutes from './modules/personnel/index.js';
 
 const app = express();
 

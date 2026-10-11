@@ -1,12 +1,12 @@
 import { Router } from 'express';
-import proyectosRoutes from '../routes/proyectos.routes.js';
-import arcRoutes from '../routes/arc.routes.js';
-import financieroRoutes from '../routes/financiero.routes.js';
-import gobernanzaRoutes from '../routes/gobernanza.routes.js';
-import conveniosRoutes from '../routes/convenios.routes.js';
-import estadisticasRoutes from '../routes/estadisticas.routes.js';
-import transparenciaRoutes from '../routes/transparencia.routes.js';
-import inteligenciaRoutes from '../routes/inteligencia.routes.js';
+import proyectosRoutes from './proyectos.routes.js';
+import arcRoutes from './arc.routes.js';
+import financieroRoutes from './financiero.routes.js';
+import gobernanzaRoutes from './gobernanza.routes.js';
+import conveniosRoutes from './convenios.routes.js';
+import estadisticasRoutes from './estadisticas.routes.js';
+import transparenciaRoutes from './transparencia.routes.js';
+import inteligenciaRoutes from './inteligencia.routes.js';
 
 const router = Router();
 

@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import prisma from '../lib/prisma.js';
-import { requireAuth, requirePermission } from '../middleware/auth.js';
-import { logAction } from '../lib/audit.js';
-import { FACTORES_EVALUACION } from '../lib/constants.js';
-import { colaboradoresVisiblesPara } from '../lib/scope.js';
+import prisma from '../../lib/prisma.js';
+import { requireAuth, requirePermission } from '../../middleware/auth.js';
+import { logAction } from '../../lib/audit.js';
+import { FACTORES_EVALUACION } from '../../lib/constants.js';
+import { colaboradoresVisiblesPara } from '../../lib/scope.js';
 
 const router = Router();
 router.use(requireAuth, requirePermission('evaluaciones'));

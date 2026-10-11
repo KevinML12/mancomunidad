@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import prisma from '../lib/prisma.js';
-import { requireAuth, requirePermission } from '../middleware/auth.js';
-import { colaboradoresVisiblesPara } from '../lib/scope.js';
+import prisma from '../../lib/prisma.js';
+import { requireAuth, requirePermission } from '../../middleware/auth.js';
+import { colaboradoresVisiblesPara } from '../../lib/scope.js';
 
 const router = Router();
 router.use(requireAuth, requirePermission('dashboard'));

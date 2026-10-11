@@ -1,9 +1,9 @@
-import { MUNICIPIOS_MFN } from '../lib/municipios.js';
+import { MUNICIPIOS_MFN } from '../../lib/municipios.js';
 import crypto from 'node:crypto';
-import { auditContext } from '../lib/integrity.js';
+import { auditContext } from '../../lib/integrity.js';
 import { Router } from 'express';
-import prisma from '../lib/prisma.js';
-import { requireAuth, requirePermission } from '../middleware/auth.js';
+import prisma from '../../lib/prisma.js';
+import { requireAuth, requirePermission } from '../../middleware/auth.js';
 
 const router = Router();
 

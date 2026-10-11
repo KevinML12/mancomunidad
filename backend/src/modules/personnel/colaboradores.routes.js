@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import prisma from '../lib/prisma.js';
-import { requireAuth, requirePermission } from '../middleware/auth.js';
-import { logAction } from '../lib/audit.js';
+import prisma from '../../lib/prisma.js';
+import { requireAuth, requirePermission } from '../../middleware/auth.js';
+import { logAction } from '../../lib/audit.js';
 
 const router = Router();
 router.use(requireAuth, requirePermission('estructura'));

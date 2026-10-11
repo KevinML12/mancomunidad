@@ -1,12 +1,12 @@
 import { Router } from 'express';
-import { rateLimit } from '../middleware/rate-limit.js';
+import { rateLimit } from '../../middleware/rate-limit.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import prisma from '../lib/prisma.js';
-import { requireAuth } from '../middleware/auth.js';
-import { logAction } from '../lib/audit.js';
-import { resetDeliveryConfigured } from '../services/reset-delivery.js';
-import { requestPasswordReset, completePasswordReset } from '../services/password-recovery.js';
+import prisma from '../../lib/prisma.js';
+import { requireAuth } from '../../middleware/auth.js';
+import { logAction } from '../../lib/audit.js';
+import { resetDeliveryConfigured } from '../../services/reset-delivery.js';
+import { requestPasswordReset, completePasswordReset } from '../../services/password-recovery.js';
 
 const router = Router();
 

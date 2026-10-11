@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { requireAuth, requirePermission } from '../middleware/auth.js';
-import { ValidationError } from '../services/errors.js';
-import { listProjects, getProject, createProject, updateProject, addProjectEvidence } from '../services/projects.js';
+import { requireAuth, requirePermission } from '../../middleware/auth.js';
+import { ValidationError } from '../../services/errors.js';
+import { listProjects, getProject, createProject, updateProject, addProjectEvidence } from '../../services/projects.js';
 
 const router = Router();
 router.use(requireAuth, requirePermission('proyectos'));

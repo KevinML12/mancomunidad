@@ -1,7 +1,7 @@
 # Estado y Guía de Despliegue de MFN Digital
 
-**Fecha de actualización:** 3 de octubre de 2026.  
-**Estado:** ✅ Despliegue funcional de extremo a extremo completado y verificado en producción.
+**Referencia del despliegue:** 3 de octubre de 2026.
+**Estado:** El despliegue descrito abajo fue verificado en esa fecha. Los cambios de seguridad y arquitectura documentados en `ARQUITECTURA.md` aún requieren publicación y verificación en producción.
 
 ---
 
@@ -75,13 +75,8 @@ npm run test:integration
 
 ---
 
-## 🔐 Credenciales Institucionales de Acceso
+## 🔐 Acceso institucional
 
-| Rol Institucional | Correo | Contraseña |
-|---|---|---|
-| **Gerencia Ejecutiva** | `gerencia@mfn.gob.gt` | `mfn2026` |
-| **Dirección Financiera (DAF)** | `daf@mfn.gob.gt` | `mfn2026` |
-| **Coordinación Técnica** | `proyectos@mfn.gob.gt` | `mfn2026` |
-| **Oficial de Monitoreo ARC** | `monitoreo@mfn.gob.gt` | `mfn2026` |
-| **Especialista ASH** | `ash@mfn.gob.gt` | `mfn2026` |
-| **Auditoría Interna** | `auditoria@mfn.gob.gt` | `mfn2026` |
+Las contraseñas que figuraban en versiones anteriores de este archivo quedaron expuestas en el historial de Git. Si corresponden a cuentas activas, deben rotarse individualmente y revocarse las sesiones vigentes. No registrar nuevas contraseñas ni tokens en el repositorio o en esta guía. La administración debe entregar cada acceso por un canal privado y configurar la recuperación mediante el servicio HTTPS descrito en el README.
+
+Las migraciones y la actualización de permisos se ejecutan desde los comandos de `backend/package.json`, con respaldo previo y la conexión correcta al esquema `mancomunidad`. No existe una ruta HTTP para ejecutar DDL ni una clave administrativa predeterminada.

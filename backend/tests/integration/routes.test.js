@@ -40,6 +40,9 @@ let id;
 
 test('Rutas reales con base migrada y aislada', async t => {
  t.after(async()=>{ await prisma.$disconnect(); await Promise.all([new Promise(resolve=>server.close(resolve)),new Promise(resolve=>mail.close(resolve))]); await rm(dir,{recursive:true,force:true}); });
+ await t.test('la migración administrativa no se expone por HTTP',async()=>{
+  assert.equal((await request('/sistema/migrar','POST',null,{})).status,404);
+ });
  await t.test('token fijo y token de recuperación no sirven como sesión',async()=>{
   assert.equal((await request('/proyectos','GET','demo-token-mfn')).status,401);
   const reset=jwt.sign({sub:users.GE.id,type:'password_reset'},process.env.JWT_SECRET,{expiresIn:'15m'});
@@ -52,6 +55,15 @@ test('Rutas reales con base migrada y aislada', async t => {
   const result=await request('/proyectos','POST',tokens.DIRPROY,project);assert.equal(result.status,201);id=result.data.id;
   assert.equal((await request(`/proyectos/${id}`,'GET',tokens.DIRPROY)).data.municipio,'Santa Eulalia');
   assert.equal((await request(`/proyectos/${id}`,'PUT',tokens.DIRPROY,{porcentajeAvanceFisico:101})).status,400);
+ });
+ await t.test('finanzas separa cuentas y exige comprobante para caja chica',async()=>{
+  const body={tipo:'Ingreso',cuentaBancaria:'Fondos Públicos',categoria:'Cuota Ordinaria',municipio:'Santa Eulalia',monto:100,comprobanteTipo:'Recibo CGC 63-A2',comprobanteNumero:'PRUEBA-1',descripcion:'Movimiento de prueba'};
+  assert.equal((await request('/financiero/transacciones','POST',tokens.GE,body)).status,201);
+  assert.equal((await request('/financiero/transacciones','POST',tokens.GE,{...body,tipo:'Egreso',categoria:'Caja Chica'})).status,400);
+  const balance=await request('/financiero/balance','GET',tokens.GE);
+  assert.equal(balance.status,200);
+  assert.equal(balance.data.cuentas.fondosPublicos.saldo,100);
+  assert.equal(balance.data.cuentas.cooperacion.saldo,0);
  });
  await t.test('catálogo activo excluye municipios históricos y no prioriza datos ausentes',async()=>{
   assert.equal((await request('/proyectos','POST',tokens.GE,{...project,municipio:'Santa Cruz Barillas'})).status,400);

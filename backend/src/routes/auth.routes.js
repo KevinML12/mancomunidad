@@ -1,12 +1,12 @@
 import { Router } from 'express';
 import { rateLimit } from '../middleware/rate-limit.js';
-import crypto from 'node:crypto';
-import { tokenHash } from '../lib/integrity.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import prisma from '../lib/prisma.js';
 import { requireAuth } from '../middleware/auth.js';
 import { logAction } from '../lib/audit.js';
+import { resetDeliveryConfigured } from '../services/reset-delivery.js';
+import { requestPasswordReset, completePasswordReset } from '../services/password-recovery.js';
 
 const router = Router();
 
@@ -74,25 +74,9 @@ router.get('/roles', requireAuth, async (req, res, next) => {
 router.post('/recuperar', rateLimit(10), async (req, res, next) => {
   const { correo } = req.body;
   if (typeof correo !== 'string' || !correo.trim()) return res.status(400).json({ error: 'Correo requerido' });
-  if (!process.env.RESET_DELIVERY_URL || !process.env.RESET_DELIVERY_SECRET) return res.status(503).json({ error: 'La recuperación por correo aún no está configurada. Contacte a la administración.' });
+  if (!resetDeliveryConfigured()) return res.status(503).json({ error: 'La recuperación por correo aún no está configurada. Contacte a la administración.' });
   try {
-    const usuario = await prisma.usuario.findUnique({ where: { correo: correo.trim().toLowerCase() } });
-    if (usuario) {
-      const token = crypto.randomBytes(32).toString('hex');
-      const record = await prisma.$transaction(async tx => {
-        await tx.recuperacionClave.updateMany({ where: { usuarioId: usuario.id, usado: false }, data: { usado: true } });
-        return tx.recuperacionClave.create({ data: { usuarioId: usuario.id, tokenHash: tokenHash(token), expira: new Date(Date.now() + 15 * 60_000) } });
-      });
-      try {
-        const endpoint = new URL(process.env.RESET_DELIVERY_URL);
-        if (endpoint.protocol !== 'https:' && process.env.NODE_ENV !== 'test') throw new Error('Entrega requiere HTTPS');
-        const delivery = await fetch(endpoint, { method: 'POST', signal: AbortSignal.timeout(10000), headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${process.env.RESET_DELIVERY_SECRET}` }, body: JSON.stringify({ correo: usuario.correo, token, expira: record.expira }) });
-        if (!delivery.ok) throw new Error('Entrega fallida');
-      } catch {
-        await prisma.recuperacionClave.update({ where: { id: record.id }, data: { usado: true } });
-        // Never reveal account existence or a reset secret to the requester.
-      }
-    }
+    await requestPasswordReset(correo);
     res.json({ mensaje: 'Si la cuenta existe y la entrega está disponible, recibirá un código por correo. Válido por 15 minutos.' });
   } catch (err) { next(err); }
 });
@@ -100,17 +84,7 @@ router.post('/restablecer', rateLimit(10), async (req, res, next) => {
   const { token, nuevaContrasena } = req.body;
   if (typeof token !== 'string' || !/^[a-f0-9]{64}$/.test(token) || typeof nuevaContrasena !== 'string' || nuevaContrasena.length < 12 || Buffer.byteLength(nuevaContrasena, 'utf8') > 72) return res.status(400).json({ error: 'Código válido y contraseña de al menos 12 caracteres y hasta 72 bytes requerida' });
   try {
-    const passwordHash = await bcrypt.hash(nuevaContrasena, 10);
-    const changed = await prisma.$transaction(async tx => {
-      const record = await tx.recuperacionClave.findUnique({ where: { tokenHash: tokenHash(token) } });
-      if (!record) return false;
-      const consumed = await tx.recuperacionClave.updateMany({ where: { id: record.id, usado: false, expira: { gt: new Date() } }, data: { usado: true } });
-      if (consumed.count !== 1) return false;
-      await tx.usuario.update({ where: { id: record.usuarioId }, data: { hashContrasena: passwordHash, sessionVersion: { increment: 1 } } });
-      await tx.recuperacionClave.updateMany({ where: { usuarioId: record.usuarioId, usado: false }, data: { usado: true } });
-      await tx.bitacoraAuditoria.create({ data: { usuarioId: record.usuarioId, accion: 'restablecer_clave', entidad: 'usuario', entidadId: record.usuarioId } });
-      return true;
-    });
+    const changed = await completePasswordReset(token, nuevaContrasena);
     if (!changed) return res.status(401).json({ error: 'Código inválido, usado o expirado' });
     res.json({ ok: true, mensaje: 'Contraseña actualizada. Inicie una nueva sesión.' });
   } catch (err) { next(err); }

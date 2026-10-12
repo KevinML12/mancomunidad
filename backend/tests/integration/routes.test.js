@@ -84,6 +84,53 @@ test('Rutas reales con base migrada y aislada', async t => {
   const stored=await prisma.evidenciaProyecto.findUnique({where:{id:r.data.id}});assert.equal(stored.contenido,archivoBase64);
   assert.equal((await request(`/proyectos/${id}/evidencias`,'POST',tokens.DIRPROY,{archivoBase64:'AAAA',tipoMime:'image/png'})).status,400);
  });
+ await t.test('RF7-RF9 ARC asigna, filtra, detecta vencimiento y deja de alertar al finalizar',async()=>{
+  const due=new Date(Date.now()-2*86400000).toISOString();
+  const created=await request('/arc','POST',tokens.GE,{titulo:'Evidencia de aceptación ARC',descripcion:'Acción sintética de prueba',municipio:'Santa Eulalia',responsable:'Responsable de prueba',prioridad:'Alta',fechaLimite:due});
+  assert.equal(created.status,201);
+  assert.equal(created.data.estado,'Pendiente');
+  const filtered=await request('/arc?municipio=Santa%20Eulalia&prioridad=Alta&search=Responsable','GET',tokens.GE);
+  assert.equal(filtered.status,200);assert.equal(filtered.data.length,1);assert.equal(filtered.data[0].estaVencida,true);
+  assert.equal((await request(`/arc/${created.data.id}`,'PUT',tokens.AUD,{estado:'Finalizado'})).status,403);
+  for(const estado of ['En Proceso','En Revisión','Finalizado'])assert.equal((await request(`/arc/${created.data.id}`,'PUT',tokens.GE,{estado})).status,200);
+  const final=(await request('/arc','GET',tokens.GE)).data.find(x=>x.id===created.data.id);
+  assert.equal(final.estaVencida,false);assert.ok(final.fechaFinalizada);
+  const metrics=await request('/arc/metricas','GET',tokens.GE);assert.equal(metrics.data.porcentajeCumplimiento,100);assert.equal(metrics.data.vencidas,0);
+ });
+ await t.test('RF13-RF14 acta se indexa y acuerdo conserva vínculo y estado',async()=>{
+  const act=await request('/gobernanza/actas','POST',tokens.GE,{numeroActa:'ACTA-PRUEBA-2026-001',numeroSesion:1,fecha:'2026-10-12',municipioSede:'Santa Eulalia',libroCGCFolio:'FOLIO-DE-PRUEBA',urlPdfEscaneado:'https://example.test/acta.pdf'});
+  assert.equal(act.status,201);
+  const list=await request('/gobernanza/actas?municipioSede=Santa%20Eulalia&search=FOLIO-DE-PRUEBA','GET',tokens.GE);assert.equal(list.data.length,1);assert.equal(list.data[0].urlPdfEscaneado,'https://example.test/acta.pdf');
+  const agreement=await request(`/gobernanza/actas/${act.data.id}/acuerdos`,'POST',tokens.GE,{titulo:'Acuerdo de prueba',descripcion:'Acuerdo sintético para prueba técnica',responsable:'Responsable de prueba'});
+  assert.equal(agreement.status,201);assert.equal(agreement.data.actaId,act.data.id);
+  assert.equal((await request(`/gobernanza/acuerdos/${agreement.data.id}`,'PUT',tokens.AUD,{estado:'Cumplido'})).status,403);
+  const changed=await request(`/gobernanza/acuerdos/${agreement.data.id}`,'PUT',tokens.GE,{estado:'Cumplido',evidenciaUrl:'https://example.test/informe.pdf'});assert.equal(changed.status,200);
+  const lookup=await request('/gobernanza/acuerdos?estado=Cumplido','GET',tokens.GE);assert.equal(lookup.data[0].acta.numeroActa,'ACTA-PRUEBA-2026-001');
+ });
+ await t.test('RF15 convenios distingue vencido, frontera de 90 días y renovación',async()=>{
+  const now=Date.now();const created=[];
+  for(const days of [-3,90,91]){
+   const r=await request('/convenios','POST',tokens.GE,{nombre:`Convenio prueba ${days}`,entidadCooperante:'Entidad de prueba',coordinadorMFN:'Coordinador de prueba',fechaSuscripcion:new Date(now-10*86400000).toISOString(),fechaVencimiento:new Date(now+days*86400000).toISOString()});assert.equal(r.status,201);created.push(r.data.id);
+  }
+  const result=await request('/convenios','GET',tokens.GE);assert.equal(result.status,200);
+  for(const [i,alert] of ['vencido','proximo','normal'].entries())assert.equal(result.data.find(x=>x.id===created[i]).alerta,alert);
+  assert.equal((await request(`/convenios/${created[1]}`,'PUT',tokens.GE,{estado:'En Renovación'})).status,200);
+  assert.equal((await request('/convenios','GET',tokens.GE)).data.find(x=>x.id===created[1]).estado,'En Renovación');
+ });
+ await t.test('RF16 ASH consolida viviendas y coberturas de municipios activos',async()=>{
+  for(const [municipio,total,water,sanitation] of [['Santa Eulalia',100,80,60],['San Pedro Soloma',50,20,15]]){
+   const r=await request('/estadisticas/censos','POST',tokens.GE,{municipio,comunidad:'Comunidad de prueba',viviendasTotales:total,viviendasConAgua:water,viviendasConSaneamiento:sanitation,sistemaCloracion:true,ppmCloroResidual:0.7});assert.equal(r.status,201);
+  }
+  const r=await request('/estadisticas/consolidado','GET',tokens.GE);assert.equal(r.status,200);assert.equal(r.data.totalViviendas,150);assert.equal(r.data.coberturaAguaPorcentaje,66.7);assert.equal(r.data.coberturaSaneamientoPorcentaje,50);assert.equal(r.data.porMunicipio['Santa Eulalia'].viviendas,100);
+ });
+ await t.test('RF5 publicación visible controla proyecto público sin fotos ni GPS',async()=>{
+  assert.equal((await request('/transparencia/publico')).data.proyectosPublicos.length,0);
+  const pub=await request('/transparencia','POST',tokens.GE,{tipo:'Proyecto',titulo:'Proyecto de prueba público',resumen:'Publicación sintética para prueba técnica',referenciaId:id});assert.equal(pub.status,201);
+  const visible=await request('/transparencia/publico');assert.equal(visible.status,200);assert.equal(visible.data.proyectosPublicos.length,1);
+  for(const key of ['evidencias','latitud','longitud'])assert.equal(visible.data.proyectosPublicos[0][key],undefined);
+  assert.equal((await request(`/transparencia/${pub.data.id}/visibilidad`,'PUT',tokens.GE,{visibilidad:false})).status,200);
+  assert.equal((await request('/transparencia/publico')).data.proyectosPublicos.length,0);
+ });
  await t.test('consulta de integridad no escribe; auditoría distingue cambios autorizados',async()=>{
   const before=await prisma.puntoControlIntegridad.count();await request('/inteligencia/sello-forense?sellar=true','GET',tokens.GE);assert.equal(await prisma.puntoControlIntegridad.count(),before);
   assert.equal((await request('/inteligencia/sello-forense','POST',tokens.AUD)).status,200);

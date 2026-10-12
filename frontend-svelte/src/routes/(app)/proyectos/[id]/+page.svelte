@@ -5,11 +5,19 @@
   import Icon from '$lib/components/ui/Icon.svelte';
   import { toast } from 'svelte-sonner';
   import { auth } from '$lib/stores/auth.svelte.js';
+  import { getSnapshot, saveSnapshot, queueEvidence, getEvidenceDrafts, removeEvidenceDraft, sha256Base64 } from '$lib/offline-field.js';
   import { fade, fly } from 'svelte/transition';
 
   let projectId = $derived($page.params.id);
   let proyecto = $state(null);
   let loading = $state(true);
+  let offlineSnapshot = $state(null);
+  let drafts = $state([]);
+  let syncing = $state(false);
+
+  async function refreshDrafts() {
+    drafts = await getEvidenceDrafts(auth.user?.id, projectId).catch(() => []);
+  }
 
   let archivoBase64 = $state('');
   let tipoMime = $state('');
@@ -33,20 +41,56 @@
 
   const fetchProyecto = async () => {
     loading = true;
+    offlineSnapshot = null;
     try {
       const { data } = await apiClient.get(`/proyectos/${projectId}`);
       proyecto = data;
+      await saveSnapshot(auth.user?.id, `project:${projectId}`, data).catch((error) => console.warn('No se pudo guardar la copia local del proyecto:', error));
     } catch (err) {
       console.error('Error al obtener proyecto:', err);
-      proyecto = null;
-      toast.error('No se pudo encontrar el proyecto en la base de datos');
+      if (err.response?.status === 401 || err.response?.status === 403 || err.response?.status === 404) {
+        proyecto = null;
+        toast.error('No se pudo autorizar o encontrar el proyecto');
+      } else {
+        const saved = await getSnapshot(auth.user?.id, `project:${projectId}`).catch(() => null);
+        proyecto = saved?.data || null;
+        offlineSnapshot = saved?.savedAt || null;
+        if (!saved) toast.error('No hay copia local de este proyecto. Ábralo con conexión primero.');
+      }
     } finally {
       loading = false;
     }
   };
 
+  async function syncDrafts() {
+    if (syncing || !navigator.onLine || !auth.puedeEditar('proyectos')) return;
+    syncing = true;
+    try {
+      const pending = await getEvidenceDrafts(auth.user?.id, projectId);
+      for (const draft of pending) {
+        const { data } = await apiClient.get(`/proyectos/${projectId}`);
+        if (!data.evidencias?.some((item) => item.sha256 === draft.sha256)) {
+          await apiClient.post(`/proyectos/${projectId}/evidencias`, draft.payload);
+        }
+        await removeEvidenceDraft(draft.key);
+      }
+      if (pending.length) {
+        toast.success(`${pending.length} evidencia(s) sincronizada(s)`);
+        await fetchProyecto();
+      }
+    } catch (err) {
+      toast.error('No se pudo completar la sincronización. Los borradores siguen en el dispositivo.');
+    } finally {
+      await refreshDrafts();
+      syncing = false;
+    }
+  }
+
   onMount(() => {
     fetchProyecto();
+    refreshDrafts();
+    window.addEventListener('online', syncDrafts);
+    return () => window.removeEventListener('online', syncDrafts);
   });
 
   const handleGeoCapture = () => {
@@ -70,19 +114,38 @@
     e.preventDefault();
     if (!archivoBase64) { toast.error('Adjunte la fotografía'); return; }
     formLoading = true;
+    const payload = {
+      archivoBase64, tipoMime,
+      latitud: formData.latitud ? parseFloat(formData.latitud) : null,
+      longitud: formData.longitud ? parseFloat(formData.longitud) : null,
+      descripcion: formData.descripcion
+    };
     try {
-      await apiClient.post(`/proyectos/${projectId}/evidencias`, {
-        archivoBase64, tipoMime,
-        latitud: formData.latitud ? parseFloat(formData.latitud) : null,
-        longitud: formData.longitud ? parseFloat(formData.longitud) : null,
-        descripcion: formData.descripcion
-      });
-      toast.success('Evidencia guardada exitosamente en la base de datos');
+      if (navigator.onLine) {
+        await apiClient.post(`/proyectos/${projectId}/evidencias`, payload);
+        toast.success('Evidencia guardada en el servidor');
+      } else {
+        await queueEvidence(auth.user?.id, projectId, payload, await sha256Base64(archivoBase64));
+        toast.info('Evidencia guardada solo en este dispositivo. Se enviará al recuperar conexión.');
+      }
       showModal = false; archivoBase64 = ''; tipoMime = '';
       formData = { urlArchivo: '', latitud: '', longitud: '', descripcion: '' };
-      await fetchProyecto();
+      await refreshDrafts();
+      if (navigator.onLine) await fetchProyecto();
     } catch (err) {
-      toast.error('Error al registrar evidencia en la base de datos: ' + (err.message || 'Error'));
+      if (!err.response && navigator.onLine) {
+        try {
+          await queueEvidence(auth.user?.id, projectId, payload, await sha256Base64(archivoBase64));
+          await refreshDrafts();
+          showModal = false; archivoBase64 = ''; tipoMime = '';
+          formData = { urlArchivo: '', latitud: '', longitud: '', descripcion: '' };
+          toast.info('Sin respuesta del servidor. Se guardó un borrador local para reintentar.');
+        } catch (storageError) {
+          toast.error('No se pudo guardar la evidencia en este dispositivo. Mantenga esta pantalla abierta.');
+        }
+      } else {
+        toast.error('Error al registrar evidencia: ' + (err.response?.data?.error || err.message || 'Error'));
+      }
     } finally {
       formLoading = false;
     }
@@ -94,6 +157,18 @@
 </svelte:head>
 
 <div class="space-y-8 animate-fade-in">
+  {#if offlineSnapshot}
+    <div role="status" class="rounded-2xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900">
+      Expediente guardado en este dispositivo el {new Date(offlineSnapshot).toLocaleString('es-GT')}. Puede estar desactualizado.
+      <button onclick={fetchProyecto} class="ml-2 underline font-semibold">Reintentar conexión</button>
+    </div>
+  {/if}
+  {#if drafts.length > 0}
+    <div role="status" class="rounded-2xl border border-blue-300 bg-blue-50 p-4 text-sm text-blue-950">
+      {drafts.length} evidencia(s) guardada(s) solo en este dispositivo. No forman parte del expediente del servidor todavía.
+      <button onclick={syncDrafts} disabled={syncing} class="ml-2 underline font-semibold disabled:opacity-50">{syncing ? 'Sincronizando...' : 'Sincronizar ahora'}</button>
+    </div>
+  {/if}
   <!-- ENCABEZADO SUPERIOR CON VOLVER -->
   <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
     <div class="flex items-center gap-4">

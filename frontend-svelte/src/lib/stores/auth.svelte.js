@@ -1,4 +1,5 @@
 import apiClient from '../apiClient';
+import { stopOfflineService } from '../offline-field.js';
 
 export const ROLES = {
   JD:       { key: 'JD',       label: 'Junta Directiva' },
@@ -25,6 +26,7 @@ let loading = $state(false);
 
 if (typeof window !== 'undefined') {
   window.addEventListener('auth:unauthorized', () => {
+    stopOfflineService().catch(() => {});
     token = null;
     user = null;
   });

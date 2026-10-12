@@ -1,9 +1,9 @@
 <script>
   import { auth } from '$lib/stores/auth.svelte.js';
-  import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import Icon from '$lib/components/ui/Icon.svelte';
   import { MUNICIPIOS_MFN } from '$lib/municipios.js';
+  import { clearUserOfflineData, getEvidenceDrafts, stopOfflineService } from '$lib/offline-field.js';
   let { children } = $props();
   let mobileMenuOpen = $state(false);
   const items = [
@@ -13,7 +13,18 @@
     ['/convenios', 'Convenios', 'convenios'], ['/estadisticas', 'Indicadores ASH', 'estadisticas'],
     ['/inteligencia', 'Control de integridad', 'inteligencia']
   ];
-  const logout = () => { auth.logout(); goto('/login'); };
+  const logout = async () => {
+    try {
+      const drafts = await getEvidenceDrafts(auth.user?.id);
+      if (drafts.length && !window.confirm(`Hay ${drafts.length} evidencia(s) sin sincronizar. Cerrar sesión eliminará sus copias locales. ¿Continuar?`)) return;
+      await clearUserOfflineData(auth.user?.id);
+      await stopOfflineService();
+    } catch (error) {
+      if (!window.confirm('No se pudo borrar la copia local de este dispositivo. ¿Cerrar sesión de todos modos?')) return;
+    }
+    auth.logout();
+    window.location.assign('/login');
+  };
 </script>
 
 {#snippet navigation()}

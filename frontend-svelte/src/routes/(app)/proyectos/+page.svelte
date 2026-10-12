@@ -4,11 +4,13 @@
   import Icon from '$lib/components/ui/Icon.svelte';
   import { toast } from 'svelte-sonner';
   import { auth } from '$lib/stores/auth.svelte.js';
+  import { getSnapshot, saveSnapshot } from '$lib/offline-field.js';
   import { fade, fly } from 'svelte/transition';
 
   let proyectos = $state([]);
   let selectedProyecto = $state(null);
   let loading = $state(true);
+  let offlineSnapshot = $state(null);
   let searchQuery = $state('');
   let proyectosFiltrados = $derived(proyectos.filter(p => `${p.nombre} ${p.municipio} ${p.agencia} ${p.id}`.toLowerCase().includes(searchQuery.toLowerCase().trim())));
   
@@ -25,38 +27,42 @@
     presupuestoCooperacion: 0
   });
 
+  function applyProjects(data) {
+    proyectos = data.map((d) => {
+      const totalQ = (d.presupuestoMunicipal || 0) + (d.presupuestoCooperacion || 0);
+      return {
+        id: d.id.toString(), codigo: 'Proyecto #', sufijo: d.id.toString(),
+        nombre: d.nombre, agencia: d.agenciaFinanciadora || 'Sin agencia registrada',
+        municipio: d.municipio || 'Regional', subregion: 'TERRITORIO MFN',
+        presupuestoQ: `Q ${totalQ.toLocaleString()}`, estado: d.estado || 'Planificación',
+        estadoTipo: d.estado === 'Finalizado' ? 'emerald' : d.estado === 'Ejecución' ? 'blue' : 'amber',
+        avance: d.porcentajeAvanceFisico || 0, evidenciasCount: d._count?.evidencias || 0
+      };
+    });
+    selectedProyecto = proyectos.find((p) => p.id === selectedProyecto?.id) || proyectos[0] || null;
+  }
+
   const fetchProyectos = async () => {
     loading = true;
+    offlineSnapshot = null;
     try {
       const { data } = await apiClient.get('/proyectos');
-      if (Array.isArray(data)) {
-        proyectos = data.map((d) => {
-          const totalQ = (d.presupuestoMunicipal || 0) + (d.presupuestoCooperacion || 0);
-          return {
-            id: d.id.toString(),
-            codigo: 'Proyecto #',
-            sufijo: d.id.toString(),
-            nombre: d.nombre,
-            nombreDetalle: d.nombre,
-            agencia: d.agenciaFinanciadora || 'Sin agencia registrada',
-            municipio: d.municipio || 'Regional',
-            subregion: 'TERRITORIO MFN',
-            presupuestoQ: `Q ${totalQ.toLocaleString()}`,
-            estado: d.estado || 'Planificación',
-            estadoTipo: d.estado === 'Finalizado' ? 'emerald' : d.estado === 'Ejecución' ? 'blue' : 'amber',
-            avance: d.porcentajeAvanceFisico || 0,
-            evidenciasCount: d._count?.evidencias || 0
-          };
-        });
-        if (proyectos.length > 0 && !selectedProyecto) {
-          selectedProyecto = proyectos[0];
-        } else if (selectedProyecto) {
-          selectedProyecto = proyectos.find(p => p.id === selectedProyecto.id) || proyectos[0] || null;
-        }
-      }
+      if (!Array.isArray(data)) throw new Error('Respuesta de proyectos inválida');
+      await saveSnapshot(auth.user?.id, 'projects', data).catch((error) => console.warn('No se pudo guardar la copia local de proyectos:', error));
+      applyProjects(data);
     } catch (err) {
       console.error('Error al consultar proyectos de la base de datos:', err);
-      toast.error('No se pudo cargar la cartera de proyectos de la BD');
+      if (err.response?.status === 401 || err.response?.status === 403) {
+        toast.error('No se pudo autorizar la consulta de proyectos');
+      } else {
+        const saved = await getSnapshot(auth.user?.id, 'projects').catch(() => null);
+        if (saved && Array.isArray(saved.data)) {
+          offlineSnapshot = saved.savedAt;
+          applyProjects(saved.data);
+        } else {
+          toast.error('No hay una copia local de los proyectos. Conéctese al menos una vez.');
+        }
+      }
     } finally {
       loading = false;
     }
@@ -117,6 +123,12 @@
     {/if}
   </div>
 </header>
+{#if offlineSnapshot}
+  <div role="status" class="mb-5 rounded-2xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900">
+    Mostrando proyectos guardados en este dispositivo el {new Date(offlineSnapshot).toLocaleString('es-GT')}. Pueden estar desactualizados.
+    <button onclick={fetchProyectos} class="ml-2 underline font-semibold">Reintentar conexión</button>
+  </div>
+{/if}
 
 <!-- TARJETA DE DATOS (CARTERA DE INVERSIÓN) -->
 <section class="glass-light  rounded-[32px] p-8 mb-8  ">

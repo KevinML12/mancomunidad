@@ -25,6 +25,10 @@ Las rutas conservan los paths `/api/v1/*`. El backend de desarrollo usa SQLite. 
 
 ## Trabajo pendiente antes de considerar la separación completa
 
+### Modo de campo tras una conexión previa
+
+El frontend SvelteKit se publica como archivos estáticos. Un service worker guarda el shell después de iniciar sesión; IndexedDB mantiene copias de la cartera y de los expedientes abiertos y borradores de evidencias. La API Express y PostgreSQL siguen siendo la fuente de verdad. Al recuperar conexión se compara la huella SHA-256 de cada foto pendiente con el expediente remoto antes de enviarla. No se despliega un segundo servidor en el dispositivo: añadirlo duplicaría autenticación, datos y resolución de conflictos sin mejorar la captura básica sin señal. Este diseño cubre las pantallas visitadas y evidencias nuevas, no una réplica completa del sistema. Para garantía de entrega bajo concurrencia se requiere idempotencia del lado del servidor y pruebas de campo.
+
 ### Alcance de los requisitos CGC y EXIF
 
 El proyecto de graduación contempla recibos Forma 63-A2, libros de actas autorizados por la CGC y evidencias fotográficas con metadatos. Son requisitos válidos del trabajo, no elementos que deban desaparecer. La versión actual permite registrar el tipo y número de un comprobante 63-A2 y el folio CGC de un acta; la autenticidad de ambos depende del documento físico o escaneado. Aún no emite una Forma 63-A2 oficial ni verifica la autorización del libro ante la CGC.

@@ -1,0 +1,9 @@
+{
+  "name": "MFN Digital",
+  "short_name": "MFN",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#071d49"
+}

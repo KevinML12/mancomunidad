@@ -32,13 +32,16 @@
   const fetchDashboardData = async () => {
     loading = true;
     try {
+      const getIfAllowed = (module, path) => auth.puedeVer(module)
+        ? apiClient.get(path)
+        : Promise.resolve({ data: null });
       const [resProyectos, resArc, resBalance, resActas, resConvenios, resEstadisticas] = await Promise.allSettled([
-        apiClient.get('/proyectos'),
-        apiClient.get('/arc'),
-        apiClient.get('/financiero/balance'),
-        apiClient.get('/gobernanza/actas'),
-        apiClient.get('/convenios'),
-        apiClient.get('/estadisticas/consolidado')
+        getIfAllowed('proyectos', '/proyectos'),
+        getIfAllowed('arc', '/arc'),
+        getIfAllowed('financiero', '/financiero/balance'),
+        getIfAllowed('gobernanza', '/gobernanza/actas'),
+        getIfAllowed('convenios', '/convenios'),
+        getIfAllowed('estadisticas', '/estadisticas/consolidado')
       ]);
       failedSources = [
         ['proyectos', resProyectos], ['ARC', resArc], ['finanzas', resBalance],
@@ -106,7 +109,7 @@
       icon: 'construction',
       titulo: 'Proyectos de Obra',
       descripcion: 'Seguimiento físico y fotográfico georreferenciado con coordenadas GPS de intervenciones intermunicipales.',
-      badge: stats.proyectosActivos > 0 ? `${stats.proyectosActivos} Obras en BD` : 'Gestión de Obras',
+      badge: stats.proyectosCount > 0 ? `${stats.proyectosCount} Obras en BD` : 'Gestión de Obras',
       color: 'blue'
     },
     {
@@ -115,7 +118,7 @@
       icon: 'view_kanban',
       titulo: 'Plan de Mejoras (ARC)',
       descripcion: 'Tablero interactivo Kanban para mitigación de hallazgos institucionales y auditoría del informe 2023.',
-      badge: stats.tareasPendientes > 0 ? `${stats.tareasPendientes} Pendientes` : 'Tablero ARC',
+      badge: stats.arcTotal > stats.arcCumplidas ? `${stats.arcTotal - stats.arcCumplidas} Pendientes` : 'Tablero ARC',
       color: 'indigo'
     },
     {
@@ -133,7 +136,7 @@
       icon: 'gavel',
       titulo: 'Gobernanza y Actas',
       descripcion: 'Registro de actas y seguimiento de acuerdos.',
-      badge: stats.acuerdosTotal > 0 ? `${stats.acuerdosTotal} acuerdos` : 'Actas y acuerdos',
+      badge: stats.acuerdosCount > 0 ? `${stats.acuerdosCount} acuerdos` : 'Actas y acuerdos',
       color: 'purple'
     },
     {
@@ -172,7 +175,7 @@
       badge: 'Matriz IPIM · SHA-256',
       color: 'emerald'
     }
-  ]);
+  ].filter((module) => auth.puedeVer(module.to.slice(1))));
 </script>
 
 <svelte:head>
@@ -219,6 +222,7 @@
           <Icon name="public" className="w-4 h-4 text-cyan-300" />
           <span>Portal Ciudadano</span>
         </a>
+        {#if auth.puedeVer('proyectos')}
         <a 
           href="/proyectos" 
           class="px-5 py-3 rounded-2xl bg-[#1248AA] hover:bg-blue-600 text-white font-bold text-xs tracking-tight transition-all duration-200 flex items-center gap-2 shadow-lg shadow-blue-500/25 active:scale-95"
@@ -226,12 +230,14 @@
           <Icon name="construction" className="w-4 h-4" />
           <span>Ver Proyectos</span>
         </a>
+        {/if}
       </div>
     </div>
   </div>
 
   <!-- 4 TARJETAS KPI DE ALTO IMPACTO -->
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+    {#if auth.puedeVer('proyectos')}
     <!-- KPI 1: Inversión en Obra -->
     <a href="/proyectos" class="bg-white rounded-[28px] p-6 border border-gray-100 shadow-[0_15px_35px_-10px_rgba(10,21,38,0.04)] hover:shadow-xl hover:-translate-y-1 transition-all duration-200 group">
       <div class="flex items-center justify-between mb-4">
@@ -239,17 +245,19 @@
           <Icon name="construction" className="w-6 h-6" />
         </div>
         <span class="text-[12px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-          78.5% Avance
+          {stats.avancePromedio}% avance reportado
         </span>
       </div>
       <p class="text-[11px] font-bold uppercase tracking-wider text-[#071D49]/50 mb-1">Inversión Intermunicipal</p>
-      <h3 class="text-2xl font-semibold text-[#071D49] tracking-tight">Q 58,812,000</h3>
+      <h3 class="text-2xl font-semibold text-[#071D49] tracking-tight">Q {stats.inversionTotal.toLocaleString()}</h3>
       <p class="text-xs text-[#071D49]/60 mt-2 flex items-center gap-1.5">
         <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
         {stats.proyectosCount} Obras de infraestructura registradas
       </p>
     </a>
 
+    {/if}
+    {#if auth.puedeVer('arc')}
     <!-- KPI 2: Plan ARC -->
     <a href="/arc" class="bg-white rounded-[28px] p-6 border border-gray-100 shadow-[0_15px_35px_-10px_rgba(10,21,38,0.04)] hover:shadow-xl hover:-translate-y-1 transition-all duration-200 group">
       <div class="flex items-center justify-between mb-4">
@@ -268,6 +276,8 @@
       </p>
     </a>
 
+    {/if}
+    {#if auth.puedeVer('financiero')}
     <!-- KPI 3: Finanzas RF12 -->
     <a href="/financiero" class="bg-white rounded-[28px] p-6 border border-gray-100 shadow-[0_15px_35px_-10px_rgba(10,21,38,0.04)] hover:shadow-xl hover:-translate-y-1 transition-all duration-200 group">
       <div class="flex items-center justify-between mb-4">
@@ -287,6 +297,8 @@
       </div>
     </a>
 
+    {/if}
+    {#if auth.puedeVer('gobernanza')}
     <!-- KPI 4: Gobernanza CGC -->
     <a href="/gobernanza" class="bg-white rounded-[28px] p-6 border border-gray-100 shadow-[0_15px_35px_-10px_rgba(10,21,38,0.04)] hover:shadow-xl hover:-translate-y-1 transition-all duration-200 group">
       <div class="flex items-center justify-between mb-4">
@@ -304,10 +316,12 @@
         {stats.acuerdosCount} Acuerdos registrados
       </p>
     </a>
+    {/if}
   </div>
 
   <!-- SECCIÓN CENTRAL DE OPERACIONES: CONVENIOS 90D Y ESTADÍSTICAS ASH -->
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    {#if auth.puedeVer('convenios')}
     <!-- PANEL IZQUIERDO: MOTOR CRONOLÓGICO CONVENIOS 90D -->
     <div class="glass-light rounded-[32px] p-7 lg:p-8    flex flex-col justify-between">
       <div>
@@ -372,6 +386,8 @@
       </div>
     </div>
 
+    {/if}
+    {#if auth.puedeVer('estadisticas')}
     <!-- PANEL DERECHO: VIGILANCIA SANITARIA ASH -->
     <div class="glass-light rounded-[32px] p-7 lg:p-8    flex flex-col justify-between">
       <div>
@@ -424,7 +440,7 @@
                 <p class="text-[12px] font-semibold text-emerald-800">Muestras según censos registrados</p>
               </div>
             </div>
-            <span class="text-sm font-semibold text-emerald-700">{stats.cloroConforme}% en rango</span>
+            <span class="text-sm font-semibold text-emerald-700">Ver muestras</span>
           </div>
         </div>
       </div>
@@ -437,6 +453,7 @@
         </a>
       </div>
     </div>
+    {/if}
   </div>
 
   <!-- BENTO GRID DE LOS 7 MÓDULOS DE GOBIERNO -->
@@ -444,10 +461,10 @@
     <div class="flex items-center justify-between px-2">
       <div>
         <h2 class="text-xl font-semibold text-[#071D49] tracking-tight">Módulos del Sistema Institucional (Capítulo IV)</h2>
-        <p class="text-xs text-[#071D49]/50">Acceso integral a las 7 dimensiones operativas de la Mancomunidad</p>
+        <p class="text-xs text-[#071D49]/50">Acceso a los módulos habilitados para su cuenta</p>
       </div>
       <span class="text-[12px] font-semibold uppercase tracking-wider text-[#1248AA] bg-blue-50 px-3 py-1 rounded-full border border-blue-100">
-        7 Módulos Operativos
+        {MODULOS.length} módulos disponibles
       </span>
     </div>
 

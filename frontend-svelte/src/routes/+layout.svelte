@@ -1,7 +1,6 @@
 <script>
   import '../app.css';
   import { onMount } from 'svelte';
-  import { QueryClient, QueryClientProvider } from '@tanstack/svelte-query';
   import { Toaster } from 'svelte-sonner';
 
   onMount(() => {
@@ -28,14 +27,11 @@
     };
   });
 
-  const queryClient = new QueryClient();
   let { children } = $props();
 </script>
 
 <div class="mfn-canvas">
-<QueryClientProvider client={queryClient}>
-  {@render children()}
-</QueryClientProvider>
+{@render children()}
 
 <Toaster position="top-right" richColors />
 </div>

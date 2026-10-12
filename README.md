@@ -28,7 +28,15 @@ Las altas, cambios y bajas de los nueve modelos operativos incluidos en el contr
 
 Este control es interno. No es una certificación de la CGC, un árbol de Merkle formal ni un almacenamiento inmutable frente a quien administra la base. La protección y respaldo de la base de datos continúan siendo necesarios.
 
-Las evidencias nuevas conservan el archivo PNG/JPEG y su SHA-256 en la base, con un límite de 5 MB. Las coordenadas proceden del cliente y no prueban la ubicación real. Los enlaces externos históricos se señalan como no verificados. No hay extracción EXIF ni funcionamiento sin conexión implementados.
+Las evidencias nuevas conservan el archivo PNG/JPEG y su SHA-256 en la base, con un límite de 5 MB. Las coordenadas proceden del cliente y no prueban la ubicación real. Los enlaces externos históricos se señalan como no verificados. No hay extracción EXIF implementada.
+
+### Modo de campo con conexión previa
+
+La aplicación activa el service worker después de iniciar sesión y conserva los archivos de la interfaz. Tras abrir la cartera y el expediente de un proyecto con conexión, guarda una copia local de esos datos en IndexedDB. Al perder la señal puede mostrar esa copia con su fecha de actualización. Una evidencia nueva puede guardarse como borrador local y se intenta enviar al restablecerse la conexión; antes de reintentar, el cliente compara su SHA-256 con las evidencias del proyecto para evitar duplicados por una respuesta de red perdida. Los borradores no forman parte del servidor hasta que la pantalla confirme su sincronización. Cerrar sesión borra las copias locales y solicita confirmación si hay borradores sin enviar.
+
+El modo de campo requiere una primera visita en línea y el mismo navegador y dispositivo. No replica toda la base, no permite iniciar una sesión nueva sin señal y no sustituye la validación EXIF ni una prueba de conectividad en cada comunidad. Use un dispositivo de confianza: las copias y fotos pendientes permanecen en el almacenamiento local del navegador mientras la sesión sigue abierta.
+
+Para probarlo manualmente: inicie sesión, abra `/proyectos` y un expediente, active *Offline* en DevTools y recargue ambas páginas. El aviso debe mostrar la fecha de la copia. Desde el expediente, registre una fotografía y compruebe que figure como pendiente local; vuelva a activar la red y confirme que aparece en el expediente y desaparece de los pendientes. Repita con el mismo archivo para comprobar que no se duplica. Cierre sesión y verifique que el service worker se desregistra y se borran las copias del usuario.
 
 Las consultas públicas de solicitudes emplean un código aleatorio y solo devuelven estado y fechas, sin contactos ni descripción. Los códigos secuenciales históricos no se consultan por la ruta pública.
 

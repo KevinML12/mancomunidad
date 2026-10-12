@@ -39,10 +39,12 @@ En la base de datos PostgreSQL en la nube conviven dos esquemas independientes:
 
 Si en el futuro deseas desplegar tú mismo los cambios realizados en el frontend o backend, sigue estos pasos:
 
+Primero actualiza la copia local y ejecuta las verificaciones de [FLUJO_LOCAL.md](FLUJO_LOCAL.md). Los comandos siguientes parten de la raíz del repositorio.
+
 ### 1. Despliegue del Frontend (SvelteKit)
 Desde la terminal en tu máquina:
 ```bash
-cd /Users/kevv/Documents/proyectos/mancomunidad/frontend-svelte
+cd frontend-svelte
 # Verificar compilación local
 npm run build
 
@@ -53,7 +55,7 @@ CI=1 npx vercel --prod --yes
 ### 2. Despliegue del Backend (API REST)
 Desde la terminal en tu máquina:
 ```bash
-cd /Users/kevv/Documents/proyectos/mancomunidad/backend
+cd backend
 # Generar cliente de Prisma para producción
 npm run build
 
@@ -68,7 +70,7 @@ CI=1 npx vercel --prod --yes
 
 ### 3. Ejecución de Pruebas de Integración Locales
 ```bash
-cd /Users/kevv/Documents/proyectos/mancomunidad/backend
+cd backend
 npm run test:integration
 ```
 > Ejecuta las pruebas de integración con SQLite aislado que validan login, permisos, integridad de hashes y recuperación. Las pruebas autocontenidas históricas se ejecutan aparte con `npm run test:legacy`; no prueban las rutas actuales.

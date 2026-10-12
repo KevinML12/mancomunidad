@@ -42,6 +42,8 @@ Las consultas públicas de solicitudes emplean un código aleatorio y solo devue
 
 ## Desarrollo y migraciones
 
+Para actualizar una laptop desde `main`, preparar los dos servicios y probar el modo de campo, siga [FLUJO_LOCAL.md](FLUJO_LOCAL.md). Los comandos siguientes son la referencia breve para un entorno ya configurado.
+
 ```sh
 cd backend
 npm ci

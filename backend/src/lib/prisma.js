@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
-import { auditContext, BUSINESS_MODELS, hash } from './integrity.js';
-const base = new PrismaClient();
+import { auditContext, BUSINESS_MODELS, recordHash } from './integrity.js';
+export const base = new PrismaClient();
 const prisma = base.$extends({ query: { $allModels: { async $allOperations({ model, operation, args, query }) {
   const name = model[0].toLowerCase() + model.slice(1);
   const context = auditContext.getStore();
@@ -9,7 +9,7 @@ const prisma = base.$extends({ query: { $allModels: { async $allOperations({ mod
     const before = operation === 'create' ? null : await tx[name].findUnique({ where: args.where });
     const result = await tx[name][operation](args);
     const after = operation === 'delete' ? null : await tx[name].findUnique({ where: { id: result.id } });
-    await tx.bitacoraAuditoria.create({ data: { usuarioId: context.usuarioId ?? null, accion: operation, entidad: name, entidadId: result.id, antesHash: before ? hash(before) : null, despuesHash: after ? hash(after) : null } });
+    await tx.bitacoraAuditoria.create({ data: { usuarioId: context.usuarioId ?? null, accion: operation, entidad: name, entidadId: result.id, antesHash: before ? recordHash(name, before) : null, despuesHash: after ? recordHash(name, after) : null } });
     return result;
   }, { isolationLevel: 'Serializable' });
 } } } });

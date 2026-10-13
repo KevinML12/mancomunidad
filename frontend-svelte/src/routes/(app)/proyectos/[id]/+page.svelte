@@ -2,10 +2,12 @@
   import { onMount } from 'svelte';
   import { page } from '$app/stores';
   import apiClient from '$lib/apiClient';
+  import ProjectMilestones from '$lib/components/ui/ProjectMilestones.svelte';
+  import EvidenceReview from '$lib/components/ui/EvidenceReview.svelte';
   import Icon from '$lib/components/ui/Icon.svelte';
   import { toast } from 'svelte-sonner';
   import { auth } from '$lib/stores/auth.svelte.js';
-  import { getSnapshot, saveSnapshot, queueEvidence, getEvidenceDrafts, removeEvidenceDraft, sha256Base64 } from '$lib/offline-field.js';
+  import { getSnapshot, saveSnapshot, queueEvidence, getEvidenceDrafts, removeEvidenceDraft, updateEvidenceDraft, sha256Base64 } from '$lib/offline-field.js';
   import { fade, fly } from 'svelte/transition';
 
   let projectId = $derived($page.params.id);
@@ -33,6 +35,7 @@
   let showModal = $state(false);
   let formLoading = $state(false);
   let formData = $state({
+    hitoId: '',
     urlArchivo: '',
     latitud: '',
     longitud: '',
@@ -67,15 +70,23 @@
     syncing = true;
     try {
       const pending = await getEvidenceDrafts(auth.user?.id, projectId);
+      let received = 0;
       for (const draft of pending) {
-        const { data } = await apiClient.get(`/proyectos/${projectId}`);
-        if (!data.evidencias?.some((item) => item.sha256 === draft.sha256)) {
-          await apiClient.post(`/proyectos/${projectId}/evidencias`, draft.payload);
+        try {
+          const payload = { ...draft.payload, claveEnvio: draft.payload.claveEnvio || draft.key.split(':').at(-1) };
+          await updateEvidenceDraft(draft,{status:'Enviando',lastError:''});
+          const { data } = await apiClient.post(`/proyectos/${projectId}/evidencias`, payload);
+          if (!data.id || data.sha256 !== draft.sha256) throw new Error('No se recibió confirmación del archivo');
+          await removeEvidenceDraft(draft.key);
+          received++;
+        } catch (error) {
+          await updateEvidenceDraft(draft,{status:'Pendiente',lastError:error.response?.data?.error || 'Sin confirmación del servidor. Reintente con conexión.'});
+          if (!error.response || [401,403].includes(error.response.status)) break;
         }
-        await removeEvidenceDraft(draft.key);
       }
       if (pending.length) {
-        toast.success(`${pending.length} evidencia(s) sincronizada(s)`);
+        if (received) toast.success(`${received} evidencia(s) recibida(s) por el servidor`);
+        if (received < pending.length) toast.error('Quedan borradores pendientes. Revise el motivo antes de reintentar');
         await fetchProyecto();
       }
     } catch (err) {
@@ -87,7 +98,7 @@
   }
 
   onMount(() => {
-    fetchProyecto();
+    fetchProyecto().then(syncDrafts);
     refreshDrafts();
     window.addEventListener('online', syncDrafts);
     return () => window.removeEventListener('online', syncDrafts);
@@ -115,37 +126,22 @@
     if (!archivoBase64) { toast.error('Adjunte la fotografía'); return; }
     formLoading = true;
     const payload = {
-      archivoBase64, tipoMime,
-      latitud: formData.latitud ? parseFloat(formData.latitud) : null,
-      longitud: formData.longitud ? parseFloat(formData.longitud) : null,
+      archivoBase64, tipoMime, claveEnvio: crypto.randomUUID(), fechaCaptura: new Date().toISOString(),
+      hitoId: formData.hitoId || null,
+      latitud: formData.latitud === '' ? null : Number(formData.latitud),
+      longitud: formData.longitud === '' ? null : Number(formData.longitud),
       descripcion: formData.descripcion
     };
     try {
-      if (navigator.onLine) {
-        await apiClient.post(`/proyectos/${projectId}/evidencias`, payload);
-        toast.success('Evidencia guardada en el servidor');
-      } else {
-        await queueEvidence(auth.user?.id, projectId, payload, await sha256Base64(archivoBase64));
-        toast.info('Evidencia guardada solo en este dispositivo. Se enviará al recuperar conexión.');
-      }
+      await queueEvidence(auth.user?.id, projectId, payload, await sha256Base64(archivoBase64));
       showModal = false; archivoBase64 = ''; tipoMime = '';
-      formData = { urlArchivo: '', latitud: '', longitud: '', descripcion: '' };
+      formData = { hitoId: '', urlArchivo: '', latitud: '', longitud: '', descripcion: '' };
       await refreshDrafts();
-      if (navigator.onLine) await fetchProyecto();
+      toast.info('Guardada en este dispositivo; pendiente de confirmación del servidor');
+      if (navigator.onLine) await syncDrafts();
     } catch (err) {
-      if (!err.response && navigator.onLine) {
-        try {
-          await queueEvidence(auth.user?.id, projectId, payload, await sha256Base64(archivoBase64));
-          await refreshDrafts();
-          showModal = false; archivoBase64 = ''; tipoMime = '';
-          formData = { urlArchivo: '', latitud: '', longitud: '', descripcion: '' };
-          toast.info('Sin respuesta del servidor. Se guardó un borrador local para reintentar.');
-        } catch (storageError) {
-          toast.error('No se pudo guardar la evidencia en este dispositivo. Mantenga esta pantalla abierta.');
-        }
-      } else {
-        toast.error('Error al registrar evidencia: ' + (err.response?.data?.error || err.message || 'Error'));
-      }
+      toast.error('No se pudo conservar el borrador local. Mantenga esta pantalla abierta y conserve la fotografía original.');
+
     } finally {
       formLoading = false;
     }
@@ -167,6 +163,10 @@
     <div role="status" class="rounded-2xl border border-blue-300 bg-blue-50 p-4 text-sm text-blue-950">
       {drafts.length} evidencia(s) guardada(s) solo en este dispositivo. No forman parte del expediente del servidor todavía.
       <button onclick={syncDrafts} disabled={syncing} class="ml-2 underline font-semibold disabled:opacity-50">{syncing ? 'Sincronizando...' : 'Sincronizar ahora'}</button>
+      {#each drafts as draft}
+        <a class="block mt-2 underline" download={`MFN-borrador-${draft.key.split(':').at(-1)}.${draft.payload.tipoMime === 'image/png' ? 'png' : 'jpg'}`} href={`data:${draft.payload.tipoMime};base64,${draft.payload.archivoBase64}`}>Descargar fotografía original del borrador</a>
+        <p class="mt-2">{draft.payload.descripcion || 'Fotografía de campo'} · {draft.status || 'Pendiente de envío'}{draft.lastError ? `: ${draft.lastError}` : ''}</p>
+      {/each}
     </div>
   {/if}
   <!-- ENCABEZADO SUPERIOR CON VOLVER -->
@@ -198,7 +198,7 @@
         class="px-6 py-3 bg-[#071D49] hover:bg-black text-white rounded-full text-[13px] font-bold shadow-md transition-all flex items-center gap-2 cursor-pointer pill-interactive"
       >
         <Icon name="add_a_photo" className="w-4 h-4 text-[#1248AA]" stroke={2} />
-        Registrar Evidencia GPS
+        Registrar Evidencia de Campo
       </button>
     </div>
     {/if}
@@ -263,6 +263,7 @@
       </div>
     </div>
 
+    <ProjectMilestones {proyecto} refresh={fetchProyecto} offline={!!offlineSnapshot} />
     <!-- SECCIÓN DE EVIDENCIAS FOTOGRÁFICAS -->
     <section class="glass-light  rounded-[32px] p-8  ">
       <div class="flex items-center justify-between pb-6 mb-6 border-b border-gray-50">
@@ -300,7 +301,7 @@
                   <Icon name="calendar_today" className="w-3 h-3 text-[#1248AA]" />
                   {evidencia.fechaCaptura ? new Date(evidencia.fechaCaptura).toLocaleDateString('es-GT', { day: '2-digit', month: 'short', year: 'numeric' }) : (evidencia.createdAt ? new Date(evidencia.createdAt).toLocaleDateString('es-GT', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Reciente')}
                 </div>
-                {#if evidencia.latitud && evidencia.longitud}
+                {#if evidencia.latitud != null && evidencia.longitud != null}
                   <div class="absolute top-3 right-3 bg-emerald-500 rounded-lg px-2 py-1 text-white text-[12px] font-semibold flex items-center gap-1">
                     <Icon name="satellite_alt" className="w-3 h-3" />
                     Coordenadas registradas
@@ -309,6 +310,8 @@
               </div>
 
               <div class="p-5 space-y-3">
+                <p class="text-sm font-semibold">{proyecto.hitos?.find(h => h.id === evidencia.hitoId)?.nombre || 'Documentación general; no suma avance'}</p>
+                <EvidenceReview {evidencia} {projectId} refresh={fetchProyecto} offline={!!offlineSnapshot} />
                 <p class="text-[12px] font-medium text-[#071D49]/80 leading-relaxed line-clamp-2">
                   {evidencia.descripcion || 'Sin descripción registrada.'}
                 </p>
@@ -316,7 +319,7 @@
                   <span class="text-[12px] font-mono font-bold text-[#071D49]/50">
                     {evidencia.latitud != null && evidencia.longitud != null ? `${evidencia.latitud}°, ${evidencia.longitud}°` : 'Sin coordenadas'}
                   </span>
-                  {#if evidencia.latitud && evidencia.longitud}
+                  {#if evidencia.latitud != null && evidencia.longitud != null}
                     <a 
                       href={`https://www.google.com/maps/search/?api=1&query=${evidencia.latitud},${evidencia.longitud}`} 
                       target="_blank" 
@@ -348,7 +351,7 @@
   >
     <div 
       transition:fly={{ y: 20, duration: 250 }} 
-      class="glass-light rounded-[32px] w-full max-w-lg  p-8  " 
+      class="glass-light mfn-form-dialog rounded-[32px] w-full max-w-lg p-8"
       onclick={e => e.stopPropagation()}
     >
       <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-50">
@@ -365,6 +368,10 @@
       </div>
 
       <form onsubmit={handleAddEvidencia} class="space-y-4">
+        <p class="text-sm">El archivo original se conserva. La fecha y ubicación declaradas no acreditan por sí solas dónde o cuándo se tomó la fotografía.</p>
+        {#if proyecto?.avancePorHitos}
+          <label class="block">Hito al que corresponde<select bind:value={formData.hitoId} class="block w-full bg-white border rounded-xl p-3"><option value="">Documentación general (no suma avance)</option>{#each proyecto.hitos || [] as hito}<option value={hito.id}>{hito.nombre}</option>{/each}</select></label>
+        {/if}
         <div>
           <label for="field-1" class="block text-[12px] font-bold uppercase tracking-normal text-[#071D49]/50 mb-1.5">Fotografía PNG o JPEG (hasta 5 MB)</label>
           <input id="field-1" type="file" accept="image/png,image/jpeg" onchange={seleccionarArchivo} required class="w-full p-3 border rounded-xl" />

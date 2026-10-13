@@ -256,11 +256,48 @@ model Proyecto {
   presupuestoCooperacion Float                @default(0)
   estado                 String               @default("Planificación") // Planificación, Ejecución, Finalizado
   porcentajeAvanceFisico Float                @default(0)
+  avancePorHitos         Boolean @default(false)
+  hitos                  HitoProyecto[]
   evidencias             EvidenciaProyecto[]
   createdAt              DateTime             @default(now())
 }
 
+model HitoProyecto {
+  id Int @id @default(autoincrement())
+  proyectoId Int
+  proyecto Proyecto @relation(fields: [proyectoId], references: [id])
+  nombre String
+  criterio String
+  peso Int
+  evidencias EvidenciaProyecto[]
+}
+
+model RevisionEvidencia {
+  id Int @id @default(autoincrement())
+  evidenciaId Int
+  evidencia EvidenciaProyecto @relation(fields: [evidenciaId], references: [id])
+  estado String
+  motivo String
+  usuarioId Int
+  fecha DateTime @default(now())
+  version Int
+  @@unique([evidenciaId, version])
+}
+
 model EvidenciaProyecto {
+  revisiones RevisionEvidencia[]
+  claveEnvio String?
+  claveArchivo String?
+  hitoId Int?
+  hito HitoProyecto? @relation(fields: [hitoId], references: [id])
+  recibidoEn DateTime?
+  estadoRevision String @default("Pendiente")
+  revisionVersion Int @default(0)
+  revisadoPorId Int?
+  revisadoEn DateTime?
+  motivoRevision String?
+  @@unique([proyectoId, claveEnvio])
+  @@unique([proyectoId, claveArchivo])
   contenido String?
   tipoMime String?
   sha256 String?

@@ -39,7 +39,7 @@ export async function queueEvidence(userId, projectId, payload, sha256) {
   if (!userId) throw new Error('Inicie sesión antes de guardar evidencia');
   const draft = {
     key: `${ownerKey(userId)}draft:${crypto.randomUUID()}`,
-    projectId: Number(projectId), payload, sha256,
+    projectId: Number(projectId), payload: { ...payload, claveEnvio: payload.claveEnvio || crypto.randomUUID() }, sha256,
     savedAt: new Date().toISOString()
   };
   await operation('put', draft);
@@ -50,6 +50,10 @@ export async function getEvidenceDrafts(userId, projectId = null) {
   if (!userId) return [];
   const records = await operation('getAll');
   return records.filter((record) => record.key.startsWith(`${ownerKey(userId)}draft:`) && (projectId === null || record.projectId === Number(projectId)));
+}
+
+export async function updateEvidenceDraft(draft, changes) {
+  await operation('put', { ...draft, ...changes });
 }
 
 export async function removeEvidenceDraft(key) {

@@ -122,7 +122,7 @@ async function procesarSello(req, res, next) {
     if (result.conflict) return res.status(409).json({ error: 'No se puede sellar: existen discrepancias pendientes de revisión', discrepancias: result.verified.discrepancias });
     const { verified } = result;
     const checkpoint = result.checkpoint ?? verified.checkpoint;
-    const aliases = { proyecto: 'proyectos', tareaARC: 'planARC', transaccionFinanciera: 'finanzasCGC', actaAsamblea: 'gobernanzaActas', convenioInstitucional: 'convenios', censoComunitarioASH: 'estadisticasASH', publicacionTransparencia: 'transparencia', evidenciaProyecto: 'evidencias', acuerdoGobernanza: 'acuerdos' };
+    const aliases = { proyecto: 'proyectos', tareaARC: 'planARC', transaccionFinanciera: 'finanzasCGC', actaAsamblea: 'gobernanzaActas', convenioInstitucional: 'convenios', censoComunitarioASH: 'estadisticasASH', publicacionTransparencia: 'transparencia', revisionEvidencia: 'revisionesEvidencia', hitoProyecto: 'hitos', evidenciaProyecto: 'evidencias', acuerdoGobernanza: 'acuerdos' };
     res.json({
       certificado: 'Control interno de integridad de MFN Digital',
       organismoAuditor: 'Verificación interna; no es una certificación de la CGC',

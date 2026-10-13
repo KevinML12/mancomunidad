@@ -53,3 +53,11 @@ Los estados y respuestas verificadas se encuentran en [produccion.json](evidenci
 - Pretest/postest, respuestas SUS/TAM, asistencia a talleres y análisis reproducible de datos originales.
 
 **Decisión de cierre:** quedó preparado un expediente técnico trazable y la matriz de diagnóstico. No se declaró terminado el capítulo VI ni aceptación institucional del proyecto. Las cifras del borrador (93.9%, SUS 88.5, t=18.74, disponibilidad 100%, etc.) no forman parte de los resultados acreditados aquí.
+
+## Iteración del 13 de octubre de 2026: evidencias de campo y hitos
+
+Cambios de esta iteración: persistencia local antes del envío, confirmación explícita del servidor, reintentos sin duplicados, revisión versionada con historial y motivo, y cálculo de avance por hitos ponderados. Se preservan el archivo original, los proyectos con avance manual y las huellas históricas de campos neutros. La evidencia de esta iteración y sus límites se describen en `evidencias/2026-10-13/FLUJO_CAMPO.md`.
+
+Se aprobaron 24 casos HTTP de integración más su suite padre. Se probó en navegador local una interrupción de API, conservación tras recarga, envío al recuperarse y revisión que calculó 100% del hito sintético. No son mediciones de comunidades reales ni prueba PostgreSQL. El código y la migración están preparados; la publicación requiere acceso a la base correcta de Supabase y aplicar la migración antes del backend. No se modificaron capítulos, credenciales, archivos de entorno ni el output preexistente.
+
+Para identificar el commit que incorpora esta entrada: `git log --all --oneline -- "El recuerdo de Misael.md"`. El hash definitivo se genera al crear el commit y se entrega en la conversación; no se intenta escribir el hash del propio commit dentro de él.

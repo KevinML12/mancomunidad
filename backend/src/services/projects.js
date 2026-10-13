@@ -2,6 +2,7 @@ import crypto from 'node:crypto';
 import { MUNICIPIOS_MFN } from '../lib/municipios.js';
 import prisma from '../lib/prisma.js';
 import { ValidationError } from './errors.js';
+import { atomic, writeAudited, ConflictError } from './project-workflow.js';
 import { date, chronological, numeric } from './validation.js';
 
 const fields = ['nombre','municipio','agenciaFinanciadora','fechaInicioPlanificada','fechaFinPlanificada','presupuestoMunicipal','presupuestoCooperacion','estado','porcentajeAvanceFisico'];
@@ -25,18 +26,19 @@ const serializeEvidence = row => {
 export const listProjects = () => prisma.proyecto.findMany({ orderBy: { createdAt: 'desc' }, include: { _count: { select: { evidencias: true } } } });
 
 export async function getProject(id) {
-  const row = await prisma.proyecto.findUnique({ where: { id }, include: { evidencias: { orderBy: { fechaCaptura: 'desc' } } } });
+  const row = await prisma.proyecto.findUnique({ where: { id }, include: { hitos: { orderBy: { id: 'asc' } }, evidencias: { orderBy: { fechaCaptura: 'desc' }, include: { revisiones: { orderBy: { version: 'desc' } } } } } });
   return row && { ...row, evidencias: row.evidencias.map(serializeEvidence) };
 }
 
 export const createProject = body => prisma.proyecto.create({ data: projectData(body, true) });
-export async function updateProject(id, body) {
+export async function updateProject(id, body, userId) {
   const data = projectData(body);
-  if ('fechaInicioPlanificada' in data || 'fechaFinPlanificada' in data) {
-    const current = await prisma.proyecto.findUnique({ where: { id } });
-    if (current) chronological(data.fechaInicioPlanificada ?? current.fechaInicioPlanificada, data.fechaFinPlanificada === undefined ? current.fechaFinPlanificada : data.fechaFinPlanificada);
-  }
-  return prisma.proyecto.update({ where: { id }, data });
+  return atomic(async tx => {
+    const current = await tx.proyecto.findUniqueOrThrow({where:{id}});
+    if (current.avancePorHitos && 'porcentajeAvanceFisico' in data) throw new ConflictError('El avance se calcula por hitos aprobados');
+    chronological(data.fechaInicioPlanificada ?? current.fechaInicioPlanificada, data.fechaFinPlanificada === undefined ? current.fechaFinPlanificada : data.fechaFinPlanificada);
+    return writeAudited(tx,'proyecto','update',{where:{id},data},userId);
+  });
 }
 
 export async function addProjectEvidence(projectId, userId, body) {
@@ -51,6 +53,26 @@ export async function addProjectEvidence(projectId, userId, body) {
   if ((lat !== null && (!Number.isFinite(lat) || Math.abs(lat) > 90)) || (lon !== null && (!Number.isFinite(lon) || Math.abs(lon) > 180))) throw new ValidationError('Coordenadas fuera de rango');
   const captured = fechaCaptura ? new Date(fechaCaptura) : new Date();
   if (isNaN(captured.getTime())) throw new ValidationError('Fecha de captura inválida');
-  const row = await prisma.evidenciaProyecto.create({ data: { proyectoId: projectId, urlArchivo: '', contenido: archivoBase64, tipoMime, sha256: crypto.createHash('sha256').update(buffer).digest('hex'), latitud: lat, longitud: lon, descripcion, fechaCaptura: captured, cargadoPorId: userId } });
+  const sha256 = crypto.createHash('sha256').update(buffer).digest('hex');
+  const claveEnvio = body.claveEnvio ?? null;
+  if (claveEnvio !== null && (typeof claveEnvio !== 'string' || !/^[a-zA-Z0-9-]{16,100}$/.test(claveEnvio))) throw new ValidationError('Identificador de envío inválido');
+  const hitoId = body.hitoId == null || body.hitoId === '' ? null : numeric(body.hitoId,'Hito',{integer:true,min:1});
+  const row = await atomic(async tx => {
+    await tx.proyecto.findUniqueOrThrow({where:{id:projectId}});
+    if (hitoId !== null && !await tx.hitoProyecto.findFirst({where:{id:hitoId,proyectoId:projectId}})) throw new ValidationError('El hito no pertenece al proyecto');
+    if (claveEnvio) {
+      const sent = await tx.evidenciaProyecto.findUnique({where:{proyectoId_claveEnvio:{proyectoId:projectId,claveEnvio}}});
+      if (sent) {
+        if (sent.sha256 !== sha256 || sent.hitoId !== hitoId) throw new ConflictError('Este envío ya fue recibido con otro archivo o hito');
+        return sent;
+      }
+    }
+    const duplicate = await tx.evidenciaProyecto.findFirst({where:{proyectoId:projectId,sha256}});
+    if (duplicate) {
+      if (duplicate.hitoId !== hitoId) throw new ConflictError('Esta fotografía ya pertenece a otro hito. Capture evidencia distinta');
+      return duplicate;
+    }
+    return writeAudited(tx,'evidenciaProyecto','create',{data:{proyectoId:projectId,claveEnvio,claveArchivo:sha256,hitoId,recibidoEn:new Date(),urlArchivo:'',contenido:archivoBase64,tipoMime,sha256,latitud:lat,longitud:lon,descripcion,fechaCaptura:captured,cargadoPorId:userId}},userId);
+  });
   return serializeEvidence(row);
 }

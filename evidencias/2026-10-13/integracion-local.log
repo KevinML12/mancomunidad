@@ -1,0 +1,228 @@
+
+> sirh-mfn-backend@0.1.0 test
+> npm run test:integration
+
+
+> sirh-mfn-backend@0.1.0 test:integration
+> prisma generate --schema prisma/schema.prisma && node --test tests/integration/*.test.js
+
+warn The configuration property `package.json#prisma` is deprecated and will be removed in Prisma 7. Please migrate to a Prisma config file (e.g., `prisma.config.ts`).
+For more information, see: https://pris.ly/prisma-config
+
+Environment variables loaded from .env
+Prisma schema loaded from prisma/schema.prisma
+
+✔ Generated Prisma Client (v6.19.3) to ./node_modules/@prisma/client in 107ms
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+Tip: Need your database queries to be 1000x faster? Accelerate offers you that and more: https://pris.ly/tip-2-accelerate
+
+POST /api/v1/auth/login 200 9.590 ms - 1813
+POST /api/v1/auth/login 200 3.635 ms - 948
+POST /api/v1/auth/login 200 3.329 ms - 943
+POST /api/v1/auth/login 200 3.010 ms - 989
+POST /api/v1/auth/login 200 3.268 ms - 620
+POST /api/v1/sistema/migrar 404 0.229 ms - 30
+▶ Rutas reales con base migrada y aislada
+  ✔ la migración administrativa no se expone por HTTP (2.521375ms)
+GET /api/v1/proyectos 401 0.296 ms - 38
+GET /api/v1/proyectos 401 0.630 ms - 44
+  ✔ token fijo y token de recuperación no sirven como sesión (3.324041ms)
+GET /api/v1/proyectos 403 1.192 ms - 46
+POST /api/v1/estadisticas/censos 403 0.998 ms - 46
+POST /api/v1/transparencia 403 0.707 ms - 46
+PUT /api/v1/transparencia/1/visibilidad 403 0.631 ms - 46
+PUT /api/v1/gobernanza/acuerdos/1 403 0.607 ms - 46
+POST /api/v1/inteligencia/sello-forense 403 0.846 ms - 46
+  ✔ empleado no consulta ni modifica módulos restringidos (11.577667ms)
+POST /api/v1/proyectos 201 4.562 ms - 370
+GET /api/v1/proyectos/1 200 2.071 ms - 397
+PUT /api/v1/proyectos/1 400 0.855 ms - 56
+  ✔ proyecto conserva municipio y rechaza montos o porcentajes inválidos (11.041375ms)
+POST /api/v1/financiero/transacciones 201 3.392 ms - 360
+POST /api/v1/financiero/transacciones 400 0.986 ms - 58
+GET /api/v1/financiero/balance 200 1.663 ms - 190
+  ✔ finanzas separa cuentas y exige comprobante para caja chica (8.868208ms)
+POST /api/v1/proyectos 400 0.612 ms - 61
+POST /api/v1/estadisticas/censos 400 0.852 ms - 53
+GET /api/v1/inteligencia/dictamen 200 3.499 ms - 1415
+  ✔ catálogo activo excluye municipios históricos y no prioriza datos ausentes (8.246833ms)
+GET /api/v1/proyectos 403 0.675 ms - 46
+  ✔ permisos revocados se aplican a una sesión ya iniciada (3.684958ms)
+POST /api/v1/proyectos/1/evidencias 201 3.854 ms - 672
+POST /api/v1/proyectos/1/evidencias 400 0.718 ms - 46
+  ✔ evidencia conserva archivo, huella y coordenadas cero (7.668334ms)
+POST /api/v1/arc 201 3.455 ms - 405
+GET /api/v1/arc?municipio=Santa%20Eulalia&prioridad=Alta&search=Responsable 200 1.349 ms - 445
+PUT /api/v1/arc/1 403 0.661 ms - 46
+PUT /api/v1/arc/1 200 2.754 ms - 406
+PUT /api/v1/arc/1 200 2.676 ms - 408
+PUT /api/v1/arc/1 200 2.840 ms - 428
+GET /api/v1/arc 200 0.859 ms - 469
+GET /api/v1/arc/metricas 200 0.820 ms - 113
+  ✔ RF7-RF9 ARC asigna, filtra, detecta vencimiento y deja de alertar al finalizar (22.778ms)
+POST /api/v1/gobernanza/actas 201 2.991 ms - 296
+GET /api/v1/gobernanza/actas?municipioSede=Santa%20Eulalia&search=FOLIO-DE-PRUEBA 200 1.892 ms - 312
+POST /api/v1/gobernanza/actas/1/acuerdos 201 5.013 ms - 287
+PUT /api/v1/gobernanza/acuerdos/1 403 0.747 ms - 46
+PUT /api/v1/gobernanza/acuerdos/1 200 2.781 ms - 315
+GET /api/v1/gobernanza/acuerdos?estado=Cumplido 200 1.240 ms - 621
+  ✔ RF13-RF14 acta se indexa y acuerdo conserva vínculo y estado (20.04775ms)
+POST /api/v1/convenios 201 2.514 ms - 409
+POST /api/v1/convenios 201 2.386 ms - 409
+POST /api/v1/convenios 201 2.391 ms - 409
+GET /api/v1/convenios 200 0.982 ms - 1354
+PUT /api/v1/convenios/2 200 2.519 ms - 416
+GET /api/v1/convenios 200 1.025 ms - 1351
+  ✔ RF15 convenios distingue vencido, frontera de 90 días y renovación (16.599916ms)
+POST /api/v1/estadisticas/censos 201 2.609 ms - 343
+POST /api/v1/estadisticas/censos 201 2.410 ms - 345
+GET /api/v1/estadisticas/censos 200 1.298 ms - 691
+GET /api/v1/estadisticas/censos?municipio=San%20Juan%20Ixcoy 200 0.755 ms - 367
+GET /api/v1/estadisticas/consolidado 200 0.901 ms - 411
+  ✔ RF16 ASH consolida viviendas y coberturas de municipios activos (13.101083ms)
+GET /api/v1/transparencia/publico 200 1.335 ms - 325
+POST /api/v1/transparencia 201 2.979 ms - 288
+GET /api/v1/transparencia/publico 200 1.132 ms - 960
+PUT /api/v1/transparencia/1/visibilidad 200 4.063 ms - 289
+GET /api/v1/transparencia/publico 200 0.910 ms - 325
+  ✔ RF5 publicación visible controla proyecto público sin fotos ni GPS (14.277458ms)
+POST /api/v1/financiero/transacciones 400 0.597 ms - 39
+POST /api/v1/financiero/transacciones 400 0.639 ms - 45
+POST /api/v1/financiero/transacciones 400 0.648 ms - 45
+POST /api/v1/financiero/transacciones 400 0.681 ms - 37
+POST /api/v1/financiero/transacciones 400 0.808 ms - 37
+POST /api/v1/financiero/transacciones 400 0.636 ms - 37
+POST /api/v1/financiero/transacciones 400 0.474 ms - 49
+POST /api/v1/financiero/transacciones 400 0.699 ms - 62
+POST /api/v1/financiero/transacciones 400 0.780 ms - 50
+POST /api/v1/financiero/transacciones 400 0.727 ms - 64
+POST /api/v1/financiero/transacciones 400 0.843 ms - 73
+POST /api/v1/financiero/transacciones 400 0.640 ms - 49
+POST /api/v1/financiero/transacciones 400 0.701 ms - 68
+POST /api/v1/financiero/transacciones 201 3.108 ms - 352
+  ✔ captura financiera rechaza montos y cuentas incoherentes sin escribir (22.79525ms)
+POST /api/v1/estadisticas/censos 400 0.769 ms - 64
+POST /api/v1/estadisticas/censos 400 0.568 ms - 65
+POST /api/v1/estadisticas/censos 400 0.543 ms - 65
+POST /api/v1/estadisticas/censos 400 0.567 ms - 64
+POST /api/v1/estadisticas/censos 400 0.645 ms - 64
+POST /api/v1/estadisticas/censos 400 0.708 ms - 64
+POST /api/v1/estadisticas/censos 400 0.630 ms - 50
+POST /api/v1/estadisticas/censos 400 0.604 ms - 50
+POST /api/v1/estadisticas/censos 400 0.594 ms - 48
+POST /api/v1/estadisticas/censos 400 0.586 ms - 51
+POST /api/v1/estadisticas/censos 400 0.802 ms - 51
+POST /api/v1/estadisticas/censos 400 0.812 ms - 60
+POST /api/v1/estadisticas/censos 201 2.834 ms - 345
+  ✔ censos rechaza valores inventados por conversión o servicios superiores al total (22.283208ms)
+POST /api/v1/arc 400 0.805 ms - 58
+POST /api/v1/arc 400 0.643 ms - 62
+POST /api/v1/arc 400 0.548 ms - 64
+POST /api/v1/arc 400 0.496 ms - 42
+POST /api/v1/arc 400 0.615 ms - 53
+POST /api/v1/arc 400 0.558 ms - 53
+POST /api/v1/arc 201 3.066 ms - 379
+PUT /api/v1/arc/2 400 0.655 ms - 50
+PUT /api/v1/arc/2 400 0.582 ms - 42
+  ✔ ARC valida datos obligatorios, fechas y estados sin dejar escrituras inválidas (15.469542ms)
+POST /api/v1/proyectos 400 0.693 ms - 67
+POST /api/v1/proyectos 400 0.713 ms - 51
+POST /api/v1/proyectos 400 0.655 ms - 52
+PUT /api/v1/proyectos/1 400 1.198 ms - 67
+PUT /api/v1/proyectos/1 200 3.012 ms - 392
+PUT /api/v1/proyectos/1 400 1.396 ms - 67
+PUT /api/v1/proyectos/1 200 3.229 ms - 370
+  ✔ proyectos conserva cronología en creación y edición parcial (17.699291ms)
+  ✔ ampliación de esquema conserva huellas de registros históricos (0.47175ms)
+POST /api/v1/proyectos 201 3.019 ms - 343
+POST /api/v1/proyectos/2/hitos 400 1.020 ms - 50
+POST /api/v1/proyectos/2/hitos 201 4.460 ms - 342
+POST /api/v1/proyectos/2/hitos 409 1.262 ms - 77
+PUT /api/v1/proyectos/2 409 1.196 ms - 52
+GET /api/v1/proyectos/2 200 1.306 ms - 569
+POST /api/v1/proyectos/2/evidencias 201 4.463 ms - 697
+POST /api/v1/proyectos/2/evidencias 201 5.490 ms - 697
+POST /api/v1/proyectos/2/evidencias 201 1.985 ms - 697
+POST /api/v1/proyectos/2/evidencias 201 3.299 ms - 697
+POST /api/v1/proyectos/2/evidencias 201 1.897 ms - 697
+POST /api/v1/proyectos/2/evidencias 201 2.108 ms - 697
+POST /api/v1/proyectos/2/evidencias 409 1.700 ms - 63
+PUT /api/v1/proyectos/2/evidencias/2/revision 403 0.619 ms - 46
+PUT /api/v1/proyectos/2/evidencias/2/revision 400 0.840 ms - 74
+PUT /api/v1/proyectos/2/evidencias/2/revision 200 6.080 ms - 684
+PUT /api/v1/proyectos/2/evidencias/2/revision 409 11.558 ms - 72
+GET /api/v1/proyectos/2 200 1.602 ms - 1478
+PUT /api/v1/proyectos/2/evidencias/2/revision 409 1.334 ms - 72
+PrismaClientKnownRequestError:
+Invalid `prisma.revisionEvidencia.create()` invocation:
+
+
+Foreign key constraint violated on the foreign key
+    at ei.handleRequestError (/Users/kevv/Documents/proyectos/mancomunidad/backend/node_modules/@prisma/client/runtime/library.js:121:7268)
+    at ei.handleAndLogRequestError (/Users/kevv/Documents/proyectos/mancomunidad/backend/node_modules/@prisma/client/runtime/library.js:121:6593)
+    at ei.request (/Users/kevv/Documents/proyectos/mancomunidad/backend/node_modules/@prisma/client/runtime/library.js:121:6300)
+    at async a (/Users/kevv/Documents/proyectos/mancomunidad/backend/node_modules/@prisma/client/runtime/library.js:130:9551)
+    at async writeAudited (file:///Users/kevv/Documents/proyectos/mancomunidad/backend/src/services/project-workflow.js:15:15)
+    at async file:///Users/kevv/Documents/proyectos/mancomunidad/backend/src/services/project-workflow.js:40:5
+    at async Proxy._transactionWithCallback (/Users/kevv/Documents/proyectos/mancomunidad/backend/node_modules/@prisma/client/runtime/library.js:130:8120)
+    at async atomic (file:///Users/kevv/Documents/proyectos/mancomunidad/backend/src/services/project-workflow.js:9:18)
+    at async file:///Users/kevv/Documents/proyectos/mancomunidad/backend/src/modules/institutional/proyectos.routes.js:39:18 {
+  code: 'P2003',
+  meta: { modelName: 'RevisionEvidencia', constraint: null },
+  clientVersion: '6.19.3'
+}
+PUT /api/v1/proyectos/2/evidencias/2/revision 500 6.220 ms - 38
+GET /api/v1/proyectos/2 200 1.732 ms - 1478
+PUT /api/v1/proyectos/2/evidencias/2/revision 200 5.526 ms - 690
+GET /api/v1/proyectos/2 200 1.546 ms - 1638
+  ✔ hitos, reintentos y revisión conservan un expediente único y avance sustentado (82.121459ms)
+GET /api/v1/inteligencia/sello-forense?sellar=true 200 5.233 ms - 1865
+POST /api/v1/inteligencia/sello-forense 200 6.431 ms - 1991
+PUT /api/v1/proyectos/1 200 3.222 ms - 370
+GET /api/v1/inteligencia/sello-forense 200 5.655 ms - 1999
+  ✔ consulta de integridad no escribe; auditoría distingue cambios autorizados (24.711417ms)
+POST /api/v1/auth/login 200 3.318 ms - 1813
+GET /api/v1/inteligencia/sello-forense 200 5.472 ms - 1916
+POST /api/v1/inteligencia/sello-forense 409 6.438 ms - 108
+  ✔ alteraciones no auditadas no se ocultan con un login ni pueden sellarse (20.466625ms)
+PrismaClientKnownRequestError:
+Invalid `prisma.bitacoraAuditoria.create()` invocation:
+
+
+Foreign key constraint violated on the foreign key
+    at ei.handleRequestError (/Users/kevv/Documents/proyectos/mancomunidad/backend/node_modules/@prisma/client/runtime/library.js:121:7268)
+    at ei.handleAndLogRequestError (/Users/kevv/Documents/proyectos/mancomunidad/backend/node_modules/@prisma/client/runtime/library.js:121:6593)
+    at ei.request (/Users/kevv/Documents/proyectos/mancomunidad/backend/node_modules/@prisma/client/runtime/library.js:121:6300)
+    at async a (/Users/kevv/Documents/proyectos/mancomunidad/backend/node_modules/@prisma/client/runtime/library.js:130:9551)
+    at async base.$transaction.isolationLevel (file:///Users/kevv/Documents/proyectos/mancomunidad/backend/src/lib/prisma.js:12:5)
+    at async Proxy._transactionWithCallback (/Users/kevv/Documents/proyectos/mancomunidad/backend/node_modules/@prisma/client/runtime/library.js:130:8120)
+    at async a (/Users/kevv/Documents/proyectos/mancomunidad/backend/node_modules/@prisma/client/runtime/library.js:130:9551)
+    at async file:///Users/kevv/Documents/proyectos/mancomunidad/backend/src/modules/institutional/proyectos.routes.js:26:30 {
+  code: 'P2003',
+  meta: { modelName: 'BitacoraAuditoria', constraint: null },
+  clientVersion: '6.19.3'
+}
+POST /api/v1/proyectos 500 2.870 ms - 38
+  ✔ fallo de auditoría revierte la escritura de negocio (5.977334ms)
+POST /api/v1/transparencia/solicitudes 201 2.856 ms - 379
+GET /api/v1/transparencia/solicitudes/UIP-b5d387213568c95fa9b3eb7d55da007cdb4de544658dafc7 200 0.628 ms - 198
+GET /api/v1/transparencia/solicitudes/EXP-UIP-2024-0001 404 0.392 ms - 69
+  ✔ expediente público no expone datos personales ni códigos secuenciales (6.361083ms)
+POST /api/v1/auth/recuperar 200 3.869 ms - 121
+POST /api/v1/auth/recuperar 200 0.467 ms - 121
+POST /api/v1/auth/restablecer 200 75.057 ms - 74
+POST /api/v1/auth/restablecer 401 72.978 ms - 47
+GET /api/v1/proyectos 401 0.676 ms - 28
+POST /api/v1/auth/login 200 73.944 ms - 1813
+  ✔ recuperación entrega por canal privado, consume una vez y revoca sesiones (231.788958ms)
+✔ Rutas reales con base migrada y aislada (602.338333ms)
+ℹ tests 25
+ℹ suites 0
+ℹ pass 25
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1770.611583

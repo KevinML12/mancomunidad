@@ -24,7 +24,7 @@
     dimension: 'Planificación y Monitoreo',
     prioridad: 'Media',
     municipio: 'Regional',
-    responsable: 'Ing. Carlos Méndez',
+    responsable: '',
     fechaLimite: ''
   });
 
@@ -61,7 +61,7 @@
       await fetchTareas();
     } catch (err) {
       console.error('Error al actualizar estado:', err);
-      toast.error('No se pudo actualizar el estado en la base de datos');
+      toast.error(err.response?.data?.error || 'No se pudo actualizar la tarea. Revise la conexión.');
     }
   }
 
@@ -78,13 +78,13 @@
         dimension: 'Planificación y Monitoreo',
         prioridad: 'Media',
         municipio: 'Regional',
-        responsable: 'Ing. Carlos Méndez',
+        responsable: '',
         fechaLimite: ''
       };
       await fetchTareas();
     } catch (err) {
       console.error('Error al crear tarea en la BD:', err);
-      toast.error('Error al guardar la meta en la base de datos');
+      toast.error(err.response?.data?.error || 'No se pudo guardar la tarea. Revise la conexión.');
     } finally {
       formLoading = false;
     }

@@ -131,6 +131,46 @@ test('Rutas reales con base migrada y aislada', async t => {
   assert.equal((await request(`/transparencia/${pub.data.id}/visibilidad`,'PUT',tokens.GE,{visibilidad:false})).status,200);
   assert.equal((await request('/transparencia/publico')).data.proyectosPublicos.length,0);
  });
+ await t.test('captura financiera rechaza montos y cuentas incoherentes sin escribir',async()=>{
+  const base={tipo:'Ingreso',cuentaBancaria:'Fondos Públicos',categoria:'Cuota Ordinaria',municipio:'Santa Eulalia',monto:100,comprobanteTipo:'Recibo',comprobanteNumero:'VALIDACION',descripcion:'Prueba de validación'};
+  const before=await prisma.transaccionFinanciera.count();
+  for(const patch of [{monto:-1},{monto:'Infinity'},{monto:'0x10'},{monto:null},{monto:true},{monto:''},{monto:1.001},{tipo:'Transferencia'},{cuentaBancaria:'Cuenta inexistente'},{municipio:'Regional'},{comprobanteNumero:'  '},{fecha:'2026-02-30'},{urlComprobante:'javascript:alert(1)'}]){
+   const r=await request('/financiero/transacciones','POST',tokens.GE,{...base,...patch});assert.equal(r.status,400,JSON.stringify(patch));assert.ok(r.data.error);
+  }
+  assert.equal(await prisma.transaccionFinanciera.count(),before);
+  const result=await request('/financiero/transacciones','POST',tokens.GE,{...base,monto:'0.29',comprobanteNumero:' CENTAVOS '});assert.equal(result.status,201);assert.equal(result.data.monto,0.29);assert.equal(result.data.comprobanteNumero,'CENTAVOS');
+ });
+ await t.test('censos rechaza valores inventados por conversión o servicios superiores al total',async()=>{
+  const base={municipio:'Santa Eulalia',comunidad:'Comunidad validación',viviendasTotales:10,viviendasConAgua:5,viviendasConSaneamiento:3,sistemaCloracion:false,ppmCloroResidual:0,tecnicoResponsable:'Persona de prueba'};
+  const before=await prisma.censoComunitarioASH.count();
+  for(const patch of [{viviendasTotales:0},{viviendasConAgua:11},{viviendasConSaneamiento:11},{viviendasConAgua:1.5},{viviendasConAgua:-1},{viviendasTotales:2147483648},{viviendasTotales:''},{viviendasConAgua:null},{ppmCloroResidual:-0.1},{sistemaCloracion:'false'},{sistemaCloracion:null},{comunidad:'  '}]){
+   assert.equal((await request('/estadisticas/censos','POST',tokens.GE,{...base,...patch})).status,400,JSON.stringify(patch));
+  }
+  assert.equal(await prisma.censoComunitarioASH.count(),before);
+  assert.equal((await request('/estadisticas/censos','POST',tokens.GE,{...base,viviendasConAgua:0,viviendasConSaneamiento:0})).status,201);
+ });
+ await t.test('ARC valida datos obligatorios, fechas y estados sin dejar escrituras inválidas',async()=>{
+  const base={titulo:'Tarea validación',descripcion:'Descripción',responsable:'Responsable de prueba',municipio:'Santa Eulalia',prioridad:'Media',fechaLimite:'2026-10-30'};
+  const before=await prisma.tareaARC.count();
+  for(const patch of [{titulo:''},{responsable:' '},{descripcion:null},{fechaLimite:'2026-02-30'},{municipio:'Municipio inexistente'},{prioridad:'Inventada'}])assert.equal((await request('/arc','POST',tokens.GE,{...base,...patch})).status,400,JSON.stringify(patch));
+  assert.equal(await prisma.tareaARC.count(),before);
+  const created=await request('/arc','POST',tokens.GE,base);assert.equal(created.status,201);
+  assert.equal((await request(`/arc/${created.data.id}`,'PUT',tokens.GE,{estado:'Estado inventado'})).status,400);
+  assert.equal((await request(`/arc/${created.data.id}`,'PUT',tokens.GE,{fechaLimite:'2026-02-30'})).status,400);
+  assert.equal((await prisma.tareaARC.findUnique({where:{id:created.data.id}})).estado,'Pendiente');
+ });
+ await t.test('proyectos conserva cronología en creación y edición parcial',async()=>{
+  const before=await prisma.proyecto.count();
+  assert.equal((await request('/proyectos','POST',tokens.GE,{...project,fechaFinPlanificada:'2026-10-02'})).status,400);
+  assert.equal((await request('/proyectos','POST',tokens.GE,{...project,fechaInicioPlanificada:'2026-02-30'})).status,400);
+  assert.equal((await request('/proyectos','POST',tokens.GE,{...project,presupuestoMunicipal:true})).status,400);
+  assert.equal(await prisma.proyecto.count(),before);
+  assert.equal((await request(`/proyectos/${id}`,'PUT',tokens.GE,{fechaFinPlanificada:'2026-10-02'})).status,400);
+  assert.equal((await request(`/proyectos/${id}`,'PUT',tokens.GE,{fechaFinPlanificada:'2026-11-01'})).status,200);
+  assert.equal((await request(`/proyectos/${id}`,'PUT',tokens.GE,{fechaInicioPlanificada:'2026-12-01'})).status,400);
+  assert.equal((await request(`/proyectos/${id}`,'PUT',tokens.GE,{fechaFinPlanificada:''})).status,200);
+  assert.equal((await prisma.proyecto.findUnique({where:{id}})).fechaFinPlanificada,null);
+ });
  await t.test('consulta de integridad no escribe; auditoría distingue cambios autorizados',async()=>{
   const before=await prisma.puntoControlIntegridad.count();await request('/inteligencia/sello-forense?sellar=true','GET',tokens.GE);assert.equal(await prisma.puntoControlIntegridad.count(),before);
   assert.equal((await request('/inteligencia/sello-forense','POST',tokens.AUD)).status,200);

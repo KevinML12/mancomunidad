@@ -86,7 +86,7 @@
       showModal = false;
       await fetchProyectos();
     } catch (err) {
-      toast.error('Error al guardar el proyecto en la base de datos');
+      toast.error(err.response?.data?.error || 'No se pudo guardar el proyecto. Revise la conexión.');
     } finally {
       formLoading = false;
     }

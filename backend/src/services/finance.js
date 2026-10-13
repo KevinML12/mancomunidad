@@ -1,4 +1,6 @@
 import prisma from '../lib/prisma.js';
+import { MUNICIPIOS_MFN } from '../lib/municipios.js';
+import { choice, numeric, text, date, url } from './validation.js';
 import { ValidationError } from './errors.js';
 
 export function listTransactions({ tipo, cuentaBancaria, categoria, municipio }) {
@@ -32,9 +34,18 @@ export async function getBalance() {
 }
 
 export async function createTransaction(body) {
-  const { tipo, cuentaBancaria, categoria, municipio, monto, comprobanteTipo, comprobanteNumero, urlComprobante, descripcion, fecha } = body;
-  if (categoria === 'Caja Chica' && !urlComprobante) throw new ValidationError('La administración de Caja Chica exige obligatoriamente adjuntar fotografía de la factura');
-  if (!monto || Number(monto) <= 0) throw new ValidationError('El monto debe ser mayor a cero');
+  const tipo = choice(body.tipo, ['Ingreso', 'Egreso'], 'Tipo de movimiento');
+  const cuentaBancaria = choice(body.cuentaBancaria ?? 'Fondos Públicos', ['Fondos Públicos', 'Cooperación Internacional'], 'Cuenta');
+  const categoria = text(body.categoria, 'Categoría');
+  const municipio = choice(body.municipio ?? 'Regional', [...MUNICIPIOS_MFN, 'Regional'], 'Municipio');
+  if (categoria.startsWith('Cuota') && !MUNICIPIOS_MFN.includes(municipio)) throw new ValidationError('Seleccione el municipio activo que realiza el aporte');
+  const monto = numeric(body.monto, 'Monto', { min: 0.01, money: true });
+  const comprobanteTipo = text(body.comprobanteTipo, 'Tipo de comprobante');
+  const comprobanteNumero = text(body.comprobanteNumero, 'Número de comprobante');
+  const descripcion = text(body.descripcion, 'Descripción', { max: 4000 });
+  const urlComprobante = url(body.urlComprobante, 'Comprobante');
+  const fecha = body.fecha === undefined ? new Date() : date(body.fecha, 'Fecha del movimiento');
+  if (categoria === 'Caja Chica' && !urlComprobante) throw new ValidationError('Adjunte el enlace al comprobante de caja chica');
 
   const count = await prisma.transaccionFinanciera.count();
   const prefijo = tipo === 'Ingreso' ? 'ING' : 'EGR';
@@ -44,7 +55,7 @@ export async function createTransaction(body) {
       codigo, tipo, cuentaBancaria: cuentaBancaria || 'Fondos Públicos', categoria,
       municipio: municipio || 'Regional', monto: Number(monto), comprobanteTipo,
       comprobanteNumero, urlComprobante, descripcion,
-      fecha: fecha ? new Date(fecha) : new Date(),
+      fecha,
     },
   });
 }

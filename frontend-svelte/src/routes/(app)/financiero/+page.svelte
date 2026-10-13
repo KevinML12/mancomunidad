@@ -127,7 +127,7 @@
       await fetchFinanciero();
     } catch (err) {
       console.error('Error al guardar movimiento:', err);
-      toast.error('Error al registrar la transacción en la base de datos');
+      toast.error(err.response?.data?.error || 'No se pudo guardar el movimiento. Revise la conexión.');
     } finally {
       formLoading = false;
     }

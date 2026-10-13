@@ -16,12 +16,12 @@
   let nuevoCenso = $state({
     municipio: 'Santa Eulalia',
     comunidad: '',
-    viviendasTotales: 100,
-    viviendasConAgua: 80,
-    sistemaCloracion: true,
-    ppmCloroResidual: 0.8,
-    viviendasConSaneamiento: 60,
-    tecnicoResponsable: 'Técnico OMAS'
+    viviendasTotales: '',
+    viviendasConAgua: '',
+    sistemaCloracion: '',
+    ppmCloroResidual: '',
+    viviendasConSaneamiento: '',
+    tecnicoResponsable: ''
   });
 
   async function fetchCensos() {
@@ -99,11 +99,11 @@
 
   async function guardarCenso(e) {
     e.preventDefault();
-    if (nuevoCenso.viviendasConAgua > nuevoCenso.viviendasTotales) {
+    if (Number(nuevoCenso.viviendasConAgua) > Number(nuevoCenso.viviendasTotales)) {
       toast.error('Viviendas con agua no pueden superar el total');
       return;
     }
-    if (nuevoCenso.viviendasConSaneamiento > nuevoCenso.viviendasTotales) {
+    if (Number(nuevoCenso.viviendasConSaneamiento) > Number(nuevoCenso.viviendasTotales)) {
       toast.error('Viviendas con saneamiento no pueden superar el total');
       return;
     }
@@ -123,15 +123,15 @@
       nuevoCenso = {
         municipio: 'Santa Eulalia',
         comunidad: '',
-        viviendasTotales: 100,
-        viviendasConAgua: 80,
-        sistemaCloracion: true,
-        ppmCloroResidual: 0.8,
-        viviendasConSaneamiento: 60,
-        tecnicoResponsable: 'Técnico OMAS'
+        viviendasTotales: '',
+        viviendasConAgua: '',
+        sistemaCloracion: '',
+        ppmCloroResidual: '',
+        viviendasConSaneamiento: '',
+        tecnicoResponsable: ''
       };
     } catch (err) {
-      toast.error('Error al guardar censo en base de datos: ' + (err.message || 'Error'));
+      toast.error(err.response?.data?.error || 'No se pudo guardar el censo. Revise la conexión.');
     } finally {
       formLoading = false;
     }
@@ -415,19 +415,20 @@
 
           <div>
             <label for="field-4" class="block text-[12px] font-bold uppercase tracking-normal text-[#071D49]/40 mb-1.5">Con Agua de Red</label>
-            <input id="field-4" required type="number" min="0" bind:value={nuevoCenso.viviendasConAgua} class="w-full bg-white border border-gray-200 rounded-xl px-3 py-3 text-[13px] font-bold text-[#071D49]" />
+            <input id="field-4" required type="number" min="0" step="1" max={nuevoCenso.viviendasTotales || undefined} bind:value={nuevoCenso.viviendasConAgua} class="w-full bg-white border border-gray-200 rounded-xl px-3 py-3 text-[13px] font-bold text-[#071D49]" />
           </div>
 
           <div>
             <label for="field-5" class="block text-[12px] font-bold uppercase tracking-normal text-[#071D49]/40 mb-1.5">Con Saneamiento</label>
-            <input id="field-5" required type="number" min="0" bind:value={nuevoCenso.viviendasConSaneamiento} class="w-full bg-white border border-gray-200 rounded-xl px-3 py-3 text-[13px] font-bold text-[#071D49]" />
+            <input id="field-5" required type="number" min="0" step="1" max={nuevoCenso.viviendasTotales || undefined} bind:value={nuevoCenso.viviendasConSaneamiento} class="w-full bg-white border border-gray-200 rounded-xl px-3 py-3 text-[13px] font-bold text-[#071D49]" />
           </div>
         </div>
 
         <div class="grid grid-cols-2 gap-4">
           <div>
             <label for="field-6" class="block text-[12px] font-bold uppercase tracking-normal text-[#071D49]/40 mb-1.5">¿Sistema con Clorador?</label>
-            <select id="field-6" bind:value={nuevoCenso.sistemaCloracion} class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[12px] text-[#071D49]">
+            <select id="field-6" required bind:value={nuevoCenso.sistemaCloracion} class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[12px] text-[#071D49]">
+              <option value="" disabled>Seleccione una opción</option>
               <option value={true}>Sí, dosificador instalado</option>
               <option value={false}>No, agua cruda sin tratar</option>
             </select>

@@ -1,4 +1,6 @@
 import { Router } from 'express';
+import { text, choice, date } from '../../services/validation.js';
+import { MUNICIPIOS_MFN } from '../../lib/municipios.js';
 import prisma from '../../lib/prisma.js';
 import { requireAuth, requirePermission } from '../../middleware/auth.js';
 
@@ -82,7 +84,13 @@ router.get('/metricas', async (req, res, next) => {
 // POST /api/v1/arc - Crear nueva tarea operativa ARC (RF8 - RBAC)
 router.post('/', requirePermission('arc', 'editar'), async (req, res, next) => {
   try {
-    const { titulo, descripcion, dimension, prioridad, municipio, responsable, fechaLimite } = req.body;
+    const titulo = text(req.body.titulo, 'Título');
+    const descripcion = text(req.body.descripcion, 'Descripción', { max: 4000 });
+    const responsable = text(req.body.responsable, 'Responsable');
+    const dimension = text(req.body.dimension ?? 'Planificación y Monitoreo', 'Dimensión');
+    const prioridad = choice(req.body.prioridad ?? 'Media', ['Alta', 'Media', 'Baja'], 'Prioridad');
+    const municipio = choice(req.body.municipio ?? 'Regional', [...MUNICIPIOS_MFN, 'Regional'], 'Municipio');
+    const fechaLimite = date(req.body.fechaLimite, 'Fecha límite');
 
     // Generar correlativo institucional
     const count = await prisma.tareaARC.count();
@@ -116,19 +124,19 @@ router.put('/:id', requirePermission('arc', 'editar'), async (req, res, next) =>
 
     const data = {};
     if (estado !== undefined) {
-      data.estado = estado;
+      data.estado = choice(estado, ['Pendiente', 'En Proceso', 'En Revisión', 'Finalizado'], 'Estado');
       if (estado === 'Finalizado') {
         data.fechaFinalizada = new Date();
       } else {
         data.fechaFinalizada = null;
       }
     }
-    if (titulo !== undefined) data.titulo = titulo;
-    if (descripcion !== undefined) data.descripcion = descripcion;
-    if (dimension !== undefined) data.dimension = dimension;
-    if (prioridad !== undefined) data.prioridad = prioridad;
-    if (responsable !== undefined) data.responsable = responsable;
-    if (fechaLimite !== undefined) data.fechaLimite = new Date(fechaLimite);
+    if (titulo !== undefined) data.titulo = text(titulo, 'Título', { max: 200 });
+    if (descripcion !== undefined) data.descripcion = text(descripcion, 'Descripción', { max: 4000 });
+    if (dimension !== undefined) data.dimension = text(dimension, 'Dimensión', { max: 200 });
+    if (prioridad !== undefined) data.prioridad = choice(prioridad, ['Alta', 'Media', 'Baja'], 'Prioridad');
+    if (responsable !== undefined) data.responsable = text(responsable, 'Responsable', { max: 200 });
+    if (fechaLimite !== undefined) data.fechaLimite = date(fechaLimite, 'Fecha límite');
 
     const updated = await prisma.tareaARC.update({
       where: { id },

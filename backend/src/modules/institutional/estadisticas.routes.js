@@ -1,5 +1,7 @@
 import { MUNICIPIOS_MFN } from '../../lib/municipios.js';
 import { Router } from 'express';
+import { choice, numeric, text } from '../../services/validation.js';
+import { ValidationError } from '../../services/errors.js';
 import prisma from '../../lib/prisma.js';
 import { requireAuth, requirePermission } from '../../middleware/auth.js';
 
@@ -90,18 +92,18 @@ router.get('/consolidado', async (req, res, next) => {
 // POST /api/v1/estadisticas/censos - Registrar levantamiento de campo
 router.post('/censos', requirePermission('estadisticas', 'editar'), async (req, res, next) => {
   try {
-    const {
-      municipio,
-      comunidad,
-      viviendasTotales,
-      viviendasConAgua,
-      sistemaCloracion,
-      ppmCloroResidual,
-      viviendasConSaneamiento,
-      tecnicoResponsable
-    } = req.body;
+    const municipio = choice(req.body.municipio, MUNICIPIOS_MFN, 'Municipio');
+    const comunidad = text(req.body.comunidad, 'Comunidad');
+    const options = { integer: true, max: 2147483647 };
+    const viviendasTotales = numeric(req.body.viviendasTotales, 'Total de viviendas', { ...options, min: 1 });
+    const viviendasConAgua = numeric(req.body.viviendasConAgua, 'Viviendas con agua', options);
+    const viviendasConSaneamiento = numeric(req.body.viviendasConSaneamiento, 'Viviendas con saneamiento', options);
+    if (viviendasConAgua > viviendasTotales || viviendasConSaneamiento > viviendasTotales) throw new ValidationError('Las viviendas con servicio no pueden superar el total');
+    const sistemaCloracion = req.body.sistemaCloracion;
+    if (typeof sistemaCloracion !== 'boolean') throw new ValidationError('Indique si existe sistema de cloración');
+    const ppmCloroResidual = numeric(req.body.ppmCloroResidual, 'Cloro residual');
+    const tecnicoResponsable = text(req.body.tecnicoResponsable ?? 'Técnico OMAS', 'Técnico responsable');
 
-    if (!MUNICIPIOS_MFN.includes(municipio)) return res.status(400).json({ error: 'Seleccione un municipio activo' });
     const count = await prisma.censoComunitarioASH.count();
     const cleanMun = municipio.toUpperCase().slice(0, 3);
     const codigo = `ASH-2024-${cleanMun}-${(count + 1).toString().padStart(3, '0')}`;

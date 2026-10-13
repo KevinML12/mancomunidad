@@ -2,6 +2,7 @@ import crypto from 'node:crypto';
 import { MUNICIPIOS_MFN } from '../lib/municipios.js';
 import prisma from '../lib/prisma.js';
 import { ValidationError } from './errors.js';
+import { date, chronological, numeric } from './validation.js';
 
 const fields = ['nombre','municipio','agenciaFinanciadora','fechaInicioPlanificada','fechaFinPlanificada','presupuestoMunicipal','presupuestoCooperacion','estado','porcentajeAvanceFisico'];
 
@@ -10,8 +11,9 @@ export function projectData(body, creating = false) {
   if (creating && (!data.nombre || !data.agenciaFinanciadora || !data.fechaInicioPlanificada || !data.municipio)) throw new ValidationError('Nombre, municipio, agencia y fecha de inicio requeridos');
   for (const key of ['nombre','municipio','agenciaFinanciadora','estado']) if (data[key] !== undefined && (typeof data[key] !== 'string' || !data[key].trim())) throw new ValidationError(`Valor inválido: ${key}`);
   if (data.municipio !== undefined && !MUNICIPIOS_MFN.includes(data.municipio)) throw new ValidationError('Seleccione un municipio activo de la mancomunidad');
-  for (const key of ['fechaInicioPlanificada','fechaFinPlanificada']) if (data[key]) { data[key] = new Date(data[key]); if (isNaN(data[key].getTime())) throw new ValidationError('Fecha inválida'); }
-  for (const key of ['presupuestoMunicipal','presupuestoCooperacion','porcentajeAvanceFisico']) if (data[key] !== undefined) { data[key] = Number(data[key]); if (!Number.isFinite(data[key]) || data[key] < 0 || (key === 'porcentajeAvanceFisico' && data[key] > 100)) throw new ValidationError('Monto o porcentaje fuera de rango'); }
+  for (const key of ['fechaInicioPlanificada','fechaFinPlanificada']) if (data[key] !== undefined) { data[key] = key === 'fechaFinPlanificada' && (data[key] === '' || data[key] === null) ? null : date(data[key], key); }
+  chronological(data.fechaInicioPlanificada, data.fechaFinPlanificada);
+  for (const key of ['presupuestoMunicipal','presupuestoCooperacion','porcentajeAvanceFisico']) if (data[key] !== undefined) { data[key] = numeric(data[key], key, { max: key === 'porcentajeAvanceFisico' ? 100 : Number.MAX_SAFE_INTEGER, money: key !== 'porcentajeAvanceFisico' }); }
   return data;
 }
 
@@ -28,7 +30,14 @@ export async function getProject(id) {
 }
 
 export const createProject = body => prisma.proyecto.create({ data: projectData(body, true) });
-export const updateProject = (id, body) => prisma.proyecto.update({ where: { id }, data: projectData(body) });
+export async function updateProject(id, body) {
+  const data = projectData(body);
+  if ('fechaInicioPlanificada' in data || 'fechaFinPlanificada' in data) {
+    const current = await prisma.proyecto.findUnique({ where: { id } });
+    if (current) chronological(data.fechaInicioPlanificada ?? current.fechaInicioPlanificada, data.fechaFinPlanificada === undefined ? current.fechaFinPlanificada : data.fechaFinPlanificada);
+  }
+  return prisma.proyecto.update({ where: { id }, data });
+}
 
 export async function addProjectEvidence(projectId, userId, body) {
   const { archivoBase64, tipoMime, latitud, longitud, descripcion, fechaCaptura } = body;

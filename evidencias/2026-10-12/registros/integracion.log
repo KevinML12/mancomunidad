@@ -1,0 +1,132 @@
+
+> sirh-mfn-backend@0.1.0 test:integration
+> prisma generate --schema prisma/schema.prisma && node --test tests/integration/*.test.js
+
+warn The configuration property `package.json#prisma` is deprecated and will be removed in Prisma 7. Please migrate to a Prisma config file (e.g., `prisma.config.ts`).
+For more information, see: https://pris.ly/prisma-config
+
+Environment variables loaded from .env
+Prisma schema loaded from prisma/schema.prisma
+
+✔ Generated Prisma Client (v6.19.3) to ./node_modules/@prisma/client in 102ms
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+Tip: Need your database queries to be 1000x faster? Accelerate offers you that and more: https://pris.ly/tip-2-accelerate
+
+POST /api/v1/auth/login 200 9.461 ms - 1813
+POST /api/v1/auth/login 200 3.371 ms - 948
+POST /api/v1/auth/login 200 2.990 ms - 943
+POST /api/v1/auth/login 200 2.814 ms - 989
+POST /api/v1/auth/login 200 2.817 ms - 620
+POST /api/v1/sistema/migrar 404 0.249 ms - 30
+▶ Rutas reales con base migrada y aislada
+  ✔ la migración administrativa no se expone por HTTP (2.501292ms)
+GET /api/v1/proyectos 401 0.314 ms - 38
+GET /api/v1/proyectos 401 0.601 ms - 44
+  ✔ token fijo y token de recuperación no sirven como sesión (3.497416ms)
+GET /api/v1/proyectos 403 1.120 ms - 46
+POST /api/v1/estadisticas/censos 403 0.811 ms - 46
+POST /api/v1/transparencia 403 0.772 ms - 46
+PUT /api/v1/transparencia/1/visibilidad 403 1.076 ms - 46
+PUT /api/v1/gobernanza/acuerdos/1 403 0.591 ms - 46
+POST /api/v1/inteligencia/sello-forense 403 0.577 ms - 46
+  ✔ empleado no consulta ni modifica módulos restringidos (11.416167ms)
+POST /api/v1/proyectos 201 3.341 ms - 347
+GET /api/v1/proyectos/1 200 1.244 ms - 363
+PUT /api/v1/proyectos/1 400 0.592 ms - 45
+  ✔ proyecto conserva municipio y rechaza montos o porcentajes inválidos (7.695958ms)
+POST /api/v1/financiero/transacciones 201 2.769 ms - 360
+POST /api/v1/financiero/transacciones 400 0.693 ms - 102
+GET /api/v1/financiero/balance 200 1.288 ms - 190
+  ✔ finanzas separa cuentas y exige comprobante para caja chica (7.077416ms)
+POST /api/v1/proyectos 400 0.530 ms - 61
+POST /api/v1/estadisticas/censos 400 0.654 ms - 42
+GET /api/v1/inteligencia/dictamen 200 2.876 ms - 1415
+  ✔ catálogo activo excluye municipios históricos y no prioriza datos ausentes (6.738875ms)
+GET /api/v1/proyectos 403 0.552 ms - 46
+  ✔ permisos revocados se aplican a una sesión ya iniciada (3.187625ms)
+POST /api/v1/proyectos/1/evidencias 201 2.770 ms - 408
+POST /api/v1/proyectos/1/evidencias 400 0.660 ms - 46
+  ✔ evidencia conserva archivo, huella y coordenadas cero (5.889042ms)
+POST /api/v1/arc 201 2.554 ms - 405
+GET /api/v1/arc?municipio=Santa%20Eulalia&prioridad=Alta&search=Responsable 200 1.259 ms - 445
+PUT /api/v1/arc/1 403 0.518 ms - 46
+PUT /api/v1/arc/1 200 2.387 ms - 406
+PUT /api/v1/arc/1 200 2.044 ms - 408
+PUT /api/v1/arc/1 200 2.325 ms - 428
+GET /api/v1/arc 200 0.771 ms - 469
+GET /api/v1/arc/metricas 200 0.746 ms - 113
+  ✔ RF7-RF9 ARC asigna, filtra, detecta vencimiento y deja de alertar al finalizar (18.920792ms)
+POST /api/v1/gobernanza/actas 201 2.741 ms - 296
+GET /api/v1/gobernanza/actas?municipioSede=Santa%20Eulalia&search=FOLIO-DE-PRUEBA 200 1.213 ms - 312
+POST /api/v1/gobernanza/actas/1/acuerdos 201 3.612 ms - 287
+PUT /api/v1/gobernanza/acuerdos/1 403 0.668 ms - 46
+PUT /api/v1/gobernanza/acuerdos/1 200 2.732 ms - 315
+GET /api/v1/gobernanza/acuerdos?estado=Cumplido 200 1.153 ms - 621
+  ✔ RF13-RF14 acta se indexa y acuerdo conserva vínculo y estado (16.993ms)
+POST /api/v1/convenios 201 2.483 ms - 409
+POST /api/v1/convenios 201 2.081 ms - 409
+POST /api/v1/convenios 201 2.060 ms - 409
+GET /api/v1/convenios 200 0.912 ms - 1354
+PUT /api/v1/convenios/2 200 2.384 ms - 416
+GET /api/v1/convenios 200 0.815 ms - 1351
+  ✔ RF15 convenios distingue vencido, frontera de 90 días y renovación (14.791209ms)
+POST /api/v1/estadisticas/censos 201 2.427 ms - 343
+POST /api/v1/estadisticas/censos 201 2.064 ms - 345
+GET /api/v1/estadisticas/consolidado 200 1.013 ms - 411
+  ✔ RF16 ASH consolida viviendas y coberturas de municipios activos (7.713292ms)
+GET /api/v1/transparencia/publico 200 1.111 ms - 325
+POST /api/v1/transparencia 201 2.517 ms - 288
+GET /api/v1/transparencia/publico 200 1.186 ms - 960
+PUT /api/v1/transparencia/1/visibilidad 200 2.603 ms - 289
+GET /api/v1/transparencia/publico 200 0.831 ms - 325
+  ✔ RF5 publicación visible controla proyecto público sin fotos ni GPS (11.7885ms)
+GET /api/v1/inteligencia/sello-forense?sellar=true 200 4.916 ms - 1651
+POST /api/v1/inteligencia/sello-forense 200 3.519 ms - 1777
+PUT /api/v1/proyectos/1 200 2.404 ms - 347
+GET /api/v1/inteligencia/sello-forense 200 3.579 ms - 1785
+  ✔ consulta de integridad no escribe; auditoría distingue cambios autorizados (17.606416ms)
+POST /api/v1/auth/login 200 2.662 ms - 1813
+GET /api/v1/inteligencia/sello-forense 200 3.281 ms - 1702
+POST /api/v1/inteligencia/sello-forense 409 3.143 ms - 108
+  ✔ alteraciones no auditadas no se ocultan con un login ni pueden sellarse (13.200625ms)
+PrismaClientKnownRequestError: 
+Invalid `prisma.bitacoraAuditoria.create()` invocation:
+
+
+Foreign key constraint violated on the foreign key
+    at ei.handleRequestError (/Users/kevv/Documents/proyectos/mancomunidad/backend/node_modules/@prisma/client/runtime/library.js:121:7268)
+    at ei.handleAndLogRequestError (/Users/kevv/Documents/proyectos/mancomunidad/backend/node_modules/@prisma/client/runtime/library.js:121:6593)
+    at ei.request (/Users/kevv/Documents/proyectos/mancomunidad/backend/node_modules/@prisma/client/runtime/library.js:121:6300)
+    at async a (/Users/kevv/Documents/proyectos/mancomunidad/backend/node_modules/@prisma/client/runtime/library.js:130:9551)
+    at async base.$transaction.isolationLevel (file:///Users/kevv/Documents/proyectos/mancomunidad/backend/src/lib/prisma.js:12:5)
+    at async Proxy._transactionWithCallback (/Users/kevv/Documents/proyectos/mancomunidad/backend/node_modules/@prisma/client/runtime/library.js:130:8120)
+    at async a (/Users/kevv/Documents/proyectos/mancomunidad/backend/node_modules/@prisma/client/runtime/library.js:130:9551)
+    at async file:///Users/kevv/Documents/proyectos/mancomunidad/backend/src/modules/institutional/proyectos.routes.js:25:30 {
+  code: 'P2003',
+  meta: { modelName: 'BitacoraAuditoria', constraint: null },
+  clientVersion: '6.19.3'
+}
+POST /api/v1/proyectos 500 4.079 ms - 38
+  ✔ fallo de auditoría revierte la escritura de negocio (7.181542ms)
+POST /api/v1/transparencia/solicitudes 201 1.896 ms - 379
+GET /api/v1/transparencia/solicitudes/UIP-57946282b0bfbbd03faac7f4d945b56cdd29e6288d0c13c7 200 0.547 ms - 198
+GET /api/v1/transparencia/solicitudes/EXP-UIP-2024-0001 404 0.496 ms - 69
+  ✔ expediente público no expone datos personales ni códigos secuenciales (6.239125ms)
+POST /api/v1/auth/recuperar 200 3.279 ms - 121
+POST /api/v1/auth/recuperar 200 0.444 ms - 121
+POST /api/v1/auth/restablecer 200 74.699 ms - 74
+POST /api/v1/auth/restablecer 401 71.705 ms - 47
+GET /api/v1/proyectos 401 0.756 ms - 28
+POST /api/v1/auth/login 200 72.852 ms - 1813
+  ✔ recuperación entrega por canal privado, consume una vez y revoca sesiones (228.587209ms)
+✔ Rutas reales con base migrada y aislada (397.573542ms)
+ℹ tests 19
+ℹ suites 0
+ℹ pass 19
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1414.17075

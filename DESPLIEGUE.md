@@ -1,7 +1,7 @@
 # Estado y Guía de Despliegue de MFN Digital
 
-**Referencia del despliegue:** 3 de octubre de 2026.
-**Estado:** El despliegue descrito abajo fue verificado en esa fecha. Los cambios de seguridad, arquitectura y presentación ya están en `main`, pero aún requieren publicación y verificación en Vercel.
+**Última verificación del despliegue:** 12 de octubre de 2026.
+**Estado:** Backend y frontend publicados con el código `d3eb396c7f3bde02cf929afa3e07926916cbb8af`, ambos READY en Vercel y con sus URLs originales. Evidencia de estados y consultas HTTP en [produccion.json](evidencias/2026-10-12/produccion.json). La tabla histórica del 3 de octubre se conserva como antecedente; no sustituye esta verificación ni acredita aceptación institucional.
 
 ---
 
@@ -28,7 +28,7 @@ En la base de datos PostgreSQL en la nube conviven dos esquemas independientes:
 
 | Componente | URL de Producción | Estado |
 |---|---|---|
-| **Frontend Web** (SvelteKit 5) | [https://frontend-svelte-vert.vercel.app](https://frontend-svelte-vert.vercel.app) | En línea (200 OK) |
+| **Frontend Web** (Svelte 5 / SvelteKit 2) | [https://frontend-svelte-vert.vercel.app](https://frontend-svelte-vert.vercel.app) | En línea (200 OK) |
 | **Backend API** (Node.js/Express) | [https://backend-eosin-omega-81.vercel.app](https://backend-eosin-omega-81.vercel.app) | En línea (200 OK) |
 | **Integridad Criptográfica** | `GET https://backend-eosin-omega-81.vercel.app/api/v1/inteligencia/sello-forense` | COINCIDE CON PUNTO DE CONTROL |
 | **Portal Ciudadano Público** | `GET https://backend-eosin-omega-81.vercel.app/api/v1/transparencia/publico` | En línea (200 OK) |
@@ -82,3 +82,7 @@ npm run test:integration
 Las contraseñas que figuraban en versiones anteriores de este archivo quedaron expuestas en el historial de Git. Si corresponden a cuentas activas, deben rotarse individualmente y revocarse las sesiones vigentes. No registrar nuevas contraseñas ni tokens en el repositorio o en esta guía. La administración debe entregar cada acceso por un canal privado y configurar la recuperación mediante el servicio HTTPS descrito en el README.
 
 Las migraciones y la actualización de permisos se ejecutan desde los comandos de `backend/package.json`, con respaldo previo y la conexión correcta al esquema `mancomunidad`. No existe una ruta HTTP para ejecutar DDL ni una clave administrativa predeterminada.
+
+## Evidencia del 12 de octubre de 2026
+
+Se publicaron los cambios de arquitectura, controles y modo de campo de `main`. Las rutas públicas, manifest y service worker responden 200; proyectos sin sesión responde 401 y la ruta administrativa de migración retirada responde 404. No se ejecutaron migraciones, seeds, restablecimientos ni escrituras de negocio en producción. La recuperación por correo, pruebas de campo, carga y restauración siguen pendientes. Ver [matriz RF/RNF](evidencias/2026-10-12/MATRIZ_RF_RNF.md) y [El recuerdo de Misael](El%20recuerdo%20de%20Misael.md).

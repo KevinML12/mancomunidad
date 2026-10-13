@@ -1,0 +1,113 @@
+{
+  "verificado_utc": "2026-10-13T02:49:56.216310+00:00",
+  "zona_local": "America/Guatemala",
+  "codigo_desplegado": "d3eb396c7f3bde02cf929afa3e07926916cbb8af",
+  "despliegues": {
+    "backend": {
+      "id": "dpl_H22JsUVGvF91FdoTmbvVkcinjfro",
+      "url": "backend-lyb5hse0l-kevinml12s-projects.vercel.app",
+      "readyState": "READY",
+      "alias": [
+        "backend-eosin-omega-81.vercel.app",
+        "backend-kevinml12s-projects.vercel.app"
+      ],
+      "commit": "d3eb396c7f3bde02cf929afa3e07926916cbb8af"
+    },
+    "frontend": {
+      "id": "dpl_2WecrCJEKVm65HuDFY6vh9P4iZgG",
+      "url": "frontend-svelte-frxuxxm5h-kevinml12s-projects.vercel.app",
+      "readyState": "READY",
+      "alias": [
+        "frontend-svelte-vert.vercel.app",
+        "frontend-svelte-kevinml12s-projects.vercel.app"
+      ],
+      "commit": "d3eb396c7f3bde02cf929afa3e07926916cbb8af"
+    }
+  },
+  "pruebas_http": [
+    {
+      "url": "https://frontend-svelte-vert.vercel.app/",
+      "http": 200,
+      "curl_exit": 0,
+      "bytes": 1715,
+      "sha256_respuesta": "fe7790c29ff5756710abd40275518de2c0998b64087f64f48e98795fc5c55581",
+      "access-control-allow-origin": "*",
+      "content-type": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://frontend-svelte-vert.vercel.app/login",
+      "http": 200,
+      "curl_exit": 0,
+      "bytes": 1715,
+      "sha256_respuesta": "fe7790c29ff5756710abd40275518de2c0998b64087f64f48e98795fc5c55581",
+      "access-control-allow-origin": "*",
+      "content-type": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://frontend-svelte-vert.vercel.app/transparencia",
+      "http": 200,
+      "curl_exit": 0,
+      "bytes": 1715,
+      "sha256_respuesta": "fe7790c29ff5756710abd40275518de2c0998b64087f64f48e98795fc5c55581",
+      "access-control-allow-origin": "*",
+      "content-type": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://frontend-svelte-vert.vercel.app/service-worker.js",
+      "http": 200,
+      "curl_exit": 0,
+      "bytes": 2083,
+      "sha256_respuesta": "9fe3a89f604ca5e9c4255227cb117891394df0eb91c18602c6411350d4a62038",
+      "access-control-allow-origin": "*",
+      "content-type": "application/javascript; charset=utf-8",
+      "contiene_shell_offline": true
+    },
+    {
+      "url": "https://frontend-svelte-vert.vercel.app/manifest.webmanifest",
+      "http": 200,
+      "curl_exit": 0,
+      "bytes": 175,
+      "sha256_respuesta": "3b71859ed4467bd228cf09c20447752b52a73174f3f992a2eb0960267f26562d",
+      "access-control-allow-origin": "*",
+      "content-type": "application/manifest+json; charset=utf-8"
+    },
+    {
+      "url": "https://backend-eosin-omega-81.vercel.app/api/v1/transparencia/publico",
+      "http": 200,
+      "curl_exit": 0,
+      "bytes": 2380,
+      "sha256_respuesta": "24f64473b3b7afe398331ea77051b3d163d074d080bd403deba55a0c50bceea0",
+      "access-control-allow-origin": "*",
+      "content-type": "application/json; charset=utf-8",
+      "claves_json": [
+        "estadisticas",
+        "marcoLegal",
+        "portal",
+        "proyectosPublicos",
+        "publicaciones"
+      ],
+      "proyectos_publicos": 1,
+      "publicaciones": 4
+    },
+    {
+      "url": "https://backend-eosin-omega-81.vercel.app/api/v1/proyectos",
+      "http": 401,
+      "curl_exit": 0,
+      "bytes": 26,
+      "sha256_respuesta": "e8430c66db9a05007259c121eecbb6daaec0a45b5e837aea2fa2813bfb91a6e2",
+      "access-control-allow-origin": "*",
+      "content-type": "application/json; charset=utf-8"
+    },
+    {
+      "url": "https://backend-eosin-omega-81.vercel.app/api/v1/sistema/migrar",
+      "http": 404,
+      "curl_exit": 0,
+      "bytes": 30,
+      "sha256_respuesta": "8f7733ae8f2dfc88c2335a46c3305ae95e6efad2524b91daf5154c8819bcab27",
+      "access-control-allow-origin": "*",
+      "content-type": "application/json; charset=utf-8"
+    }
+  ],
+  "alcance": "Consultas públicas y accesos sin autorización, sin escrituras de negocio, migraciones ni resets de cuentas; no es medición de carga.",
+  "incidencia_cli": "El CLI devolvió fetch failed después de subir el código. Consulta posterior de ambos IDs a la API confirmó READY y alias públicos; no se reintentó la creación."
+}

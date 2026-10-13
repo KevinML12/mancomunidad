@@ -1,0 +1,27 @@
+{
+  "fecha_local": "2026-10-12",
+  "zona_horaria": "America/Guatemala",
+  "codigo_evaluado": "d3eb396c7f3bde02cf929afa3e07926916cbb8af",
+  "entorno": "Laptop; SQLite temporal aislada para integración; datos sintéticos",
+  "integracion": {
+    "total_node_test": 19,
+    "casos_hijos": 18,
+    "suite_padre_contada": 1,
+    "aprobadas": 19,
+    "fallidas": 0,
+    "omitidas": 0
+  },
+  "frontend_check": {
+    "errores": 0,
+    "advertencias": 0
+  },
+  "frontend_build": "aprobado",
+  "backend_build": "cliente Prisma PostgreSQL generado; no migra la base",
+  "limitaciones": [
+    "No es aceptación institucional",
+    "No es prueba de campo",
+    "No es prueba de carga",
+    "Recuperación local usa receptor HTTP simulado, no correo real",
+    "SQLite local no demuestra idéntico comportamiento PostgreSQL concurrente"
+  ]
+}

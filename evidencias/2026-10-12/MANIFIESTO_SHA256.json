@@ -1,0 +1,21 @@
+{
+  "codigo": "d3eb396c7f3bde02cf929afa3e07926916cbb8af",
+  "sha256_archivos": {
+    "MATRIZ_RF_RNF.md": "d7880cdd85c4c84bb543152260a07d43ded3c6b8f217c7c3046a2dccf2b4ed7c",
+    "PROTOCOLO_PENDIENTES.md": "667024ab672abb125a28cfd147575c25e5c6d81a61ea63847726c236aa3aab8e",
+    "README.md": "d5a78e25ea6c3d2c398eb16b28ba1b3df97683fe29d28d828357edc31fd5dec6",
+    "instrumentos/campo.csv": "786125c1edd90abd6dc91c62dacad28c61129add5389daafdf4f8ecf2d9f798a",
+    "instrumentos/capacitacion.csv": "16622e448dd16687ce1eadea7d7b2862c2bb79d15866516d5f52302ad774682b",
+    "instrumentos/pretest-postest.csv": "e976c841086c2ad0ad4bb8ba5f4571b413ab6dccc13328f290d5a248ba3c1560",
+    "instrumentos/usabilidad.csv": "3c1f62c4857b70c8873f4de84646d748e21cc01eb0b6bdcebe68ba429597d3b8",
+    "portal-publicado.jpg": "e2dbbddabe90ca741fb0651d4ff9f99a28633e96e7aedcde82d7b82a674a8d66",
+    "produccion.json": "e0cb89a5bbc9a8bb9ba48110dd94313631553d759ffafcd055e50f618bfc0bae",
+    "registros/backend-build.log": "1f5814eb7ce9ea7081d4ad01daf065550a661a35a85f412a9bcdb8a30f224aba",
+    "registros/frontend-build.log": "cfa970dad9e5942498e8ffc08a79450f7eeda6415af425f94a73a82e910bb2bf",
+    "registros/frontend-check.log": "40cf5fa6c68c63aec1a0e0cd36293127161de1cf04e2a97fbf3b3b2fa0184b01",
+    "registros/integracion.log": "b3e7c1199578c12178747d45cd37135d9d5a10c1397d8f9e7274042b6a4fe11a",
+    "resultados-locales.json": "e5ba451638022b3fe177c2c3a487c2f668bdd7716f7fa71a38e9c1ac790591da"
+  },
+  "sha256_fuente_pruebas": "187ffeb9b41199fe06834d1005284238cb6d30d72178ad085393239578f2a5c0",
+  "nota": "Huellas para detectar cambios de archivos; no son firma digital ni constancia CGC."
+}

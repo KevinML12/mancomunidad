@@ -390,7 +390,7 @@
   <!-- svelte-ignore a11y_click_events_have_key_events -->
   <!-- svelte-ignore a11y_no_static_element_interactions -->
   <div transition:fade={{ duration: 180 }} class="fixed inset-0 bg-[#071D49]/20 backdrop-blur-sm z-50 flex items-center justify-center p-4" onclick={() => showModal = false}>
-    <div transition:fly={{ y: 20, duration: 250 }} class="glass-light rounded-[32px] w-full max-w-xl  p-8  " onclick={e => e.stopPropagation()}>
+    <div transition:fly={{ y: 20, duration: 250 }} class="glass-light mfn-form-dialog rounded-[32px] w-full max-w-xl  p-8  " onclick={e => e.stopPropagation()}>
       <div class="flex justify-between items-center mb-6 border-b border-gray-50 pb-4">
         <div>
           <span class="text-[12px] font-bold uppercase tracking-normal text-[#1248AA]">Control Financiero MFN</span>

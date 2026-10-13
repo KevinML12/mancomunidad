@@ -121,6 +121,9 @@ test('Rutas reales con base migrada y aislada', async t => {
   for(const [municipio,total,water,sanitation] of [['Santa Eulalia',100,80,60],['San Pedro Soloma',50,20,15]]){
    const r=await request('/estadisticas/censos','POST',tokens.GE,{municipio,comunidad:'Comunidad de prueba',viviendasTotales:total,viviendasConAgua:water,viviendasConSaneamiento:sanitation,sistemaCloracion:true,ppmCloroResidual:0.7});assert.equal(r.status,201);
   }
+  await prisma.censoComunitarioASH.create({data:{codigo:'ASH-HISTORICO-PRUEBA',municipio:'San Juan Ixcoy',comunidad:'Registro histórico de prueba',viviendasTotales:1000,viviendasConAgua:900,viviendasConSaneamiento:800,sistemaCloracion:true,ppmCloroResidual:0.9,tecnicoResponsable:'Persona de prueba'}});
+  const current=await request('/estadisticas/censos','GET',tokens.GE);assert.equal(current.status,200);assert.equal(current.data.length,2);assert.ok(current.data.every(x=>x.municipio!=='San Juan Ixcoy'));
+  const history=await request('/estadisticas/censos?municipio=San%20Juan%20Ixcoy','GET',tokens.GE);assert.equal(history.data.length,1);assert.equal(await prisma.censoComunitarioASH.count(),3);
   const r=await request('/estadisticas/consolidado','GET',tokens.GE);assert.equal(r.status,200);assert.equal(r.data.totalViviendas,150);assert.equal(r.data.coberturaAguaPorcentaje,66.7);assert.equal(r.data.coberturaSaneamientoPorcentaje,50);assert.equal(r.data.porMunicipio['Santa Eulalia'].viviendas,100);
  });
  await t.test('RF5 publicación visible controla proyecto público sin fotos ni GPS',async()=>{

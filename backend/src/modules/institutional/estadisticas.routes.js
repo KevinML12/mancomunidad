@@ -12,7 +12,8 @@ router.use(requireAuth, requirePermission('estadisticas'));
 router.get('/censos', async (req, res, next) => {
   try {
     const { municipio, search } = req.query;
-    const where = {};
+    // Operational view follows the active territory; an explicit municipality query preserves historical access.
+    const where = { municipio: { in: MUNICIPIOS_MFN } };
     if (municipio) where.municipio = municipio;
     if (search) {
       where.OR = [

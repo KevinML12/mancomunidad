@@ -1,0 +1,10 @@
+{
+  "storage": "Cloudflare R2 real",
+  "bucket": "mancomunidad",
+  "key": "mfn/pruebas/conexion-0e3708bb-88ab-403e-8bbe-cec032d24406.pdf",
+  "sha256": "39de5032480f59353b9a891c6cd4ec91aa86f62b22c7ef4f7c32fd7d3e0983dc",
+  "bytes": 615,
+  "signedGetStatus": 200,
+  "unsignedGetStatus": 400,
+  "roundtrip": true
+}

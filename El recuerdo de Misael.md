@@ -71,3 +71,9 @@ Se preparó la carga directa privada de PDF para actas, evidencias de acuerdos y
 Las 26 comprobaciones de integración pasaron; también el chequeo y build del frontend y la generación PostgreSQL. Se probaron archivos mayores de 5 MiB con almacenamiento simulado. Se guardó un acta sintética desde el navegador local. La prueba contra Cloudflare real y la apertura visual final del PDF siguen pendientes. Véanse `evidencias/2026-10-13-cloudflare/RESULTADOS.md` y `docs/cloudflare/README.md` para evidencia y límites.
 
 No se conectó una cuenta R2: el panel solicita iniciar sesión. No se crearon claves ni buckets, no se contrataron servicios, no se modificó la base de producción y no se desplegó esta entrega. Se conserva la versión publicada anterior mientras se configura y prueba R2. El código se guarda en `codex/private-r2-documents`; el hash exacto de esta constancia se obtiene con `git log -1 --format=%H -- "El recuerdo de Misael.md"`. Ningún secreto ni archivo de entorno privado forma parte del commit.
+
+## Conexión real de Cloudflare — 14 de octubre de 2026
+
+El propietario autorizó una credencial de lectura/escritura limitada al bucket `mancomunidad`, su configuración privada en Vercel y en un archivo local ignorado, y CORS para MFN y localhost. Se creó esa credencial sin permisos administrativos sobre otros buckets; se conservó el acceso público desactivado. Las claves no se muestran ni se incluyen en Git.
+
+Se comprobó subida/lectura real de un PDF sintético, igualdad de bytes y rechazo de lectura sin firma. La interfaz local cargó y vinculó otro PDF real a un acta en SQLite de prueba. No se crearon registros de negocio ni se migró la base Neon de producción. El estado final del despliegue se documentará en `evidencias/2026-10-14-cloudflare/`. No se activaron suscripciones ni borrado automático de objetos.

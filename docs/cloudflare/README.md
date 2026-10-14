@@ -1,6 +1,6 @@
 # PDF privados en Cloudflare R2
 
-Estado: integración preparada; cuenta, bucket, credenciales, CORS y prueba real pendientes. No representa una migración de los documentos existentes ni una publicación ya realizada.
+Estado al 14 de octubre: bucket privado `mancomunidad`, credencial de objetos restringida a ese bucket y CORS configurados. Ida y vuelta real del PDF comprobada; publicación y evidencia de producción se registran en `evidencias/2026-10-14-cloudflare/`. No se migraron documentos históricos.
 
 ## Alcance y flujo
 
@@ -32,7 +32,7 @@ Nunca definirlas con prefijo `VITE_`, enviarlas al frontend, pegarlas en el chat
 
 Las referencias persistentes están firmadas con `JWT_SECRET`: conservar esa clave y respaldarla de forma segura. Rotarla invalida también las referencias existentes; antes de hacerlo se necesita un procedimiento de transición de claves. Migrar el bucket requiere actualizar o regenerar las referencias bajo un procedimiento controlado.
 
-## Puesta en producción y aceptación pendiente
+## Puesta en producción y comprobaciones
 
 1. Configurar las cuatro variables en el backend y desplegarlo; verificar `/documentos/estado` con sesión autorizada.
 2. Desplegar el frontend cuando R2 esté configurado. Mientras tanto, mantener la versión pública anterior para conservar sus formularios.
@@ -47,3 +47,9 @@ Las referencias persistentes están firmadas con `JWT_SECRET`: conservar esa cla
 - Los límites de frecuencia en memoria se aplican por proceso, no son una cuota distribuida entre funciones de Vercel. Se necesitan límites/costos de cuenta e infraestructura según el volumen real.
 - La validación de bytes consume memoria del backend (hasta 10 MiB por solicitud más buffers) y tiempo de transferencia. Medir carga concurrente antes de ampliar usuarios.
 - La clave administrativa de R2 puede modificar objetos; no hay Object Lock ni garantía de inmutabilidad jurídica. Respaldos, retención legal, auditoría institucional y recuperación deben acordarse por separado.
+
+## Configuración aplicada el 14 de octubre de 2026
+
+La conexión local se conserva en `backend/.env.r2.local`, ignorado por Git y con permisos 0600. Para usarla en desarrollo debe cargarse explícitamente además de las variables normales; no se incorpora a los builds. Las cuatro variables R2 se configuraron como sensibles en producción del backend de Vercel. CORS permite el frontend público y `http://127.0.0.1:5178` para pruebas autorizadas. No se habilitó acceso público, dominio r2.dev ni administración de otros buckets.
+
+No se configuró borrado automático de objetos: permanece únicamente la regla predeterminada de abortar cargas multipart incompletas a los siete días. La propuesta de eliminar el prefijo temporal después de un día requiere definir la retención y autorizar esa política antes de activarla.

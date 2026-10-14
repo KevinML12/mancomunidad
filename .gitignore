@@ -32,3 +32,6 @@ backend/.vercel
 frontend/.vercel
 frontend-svelte/.vercel
 
+
+# Private Cloudflare R2 connection
+backend/.env.r2.local

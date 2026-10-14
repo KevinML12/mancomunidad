@@ -1,0 +1,39 @@
+{
+  "date": "2026-10-14",
+  "api": "https://backend-eosin-omega-81.vercel.app/api/v1",
+  "tests": {
+    "loginGE": 200,
+    "storageConfigured": 200,
+    "loginJD": 200,
+    "juntaCannotUpload": 403,
+    "prepare": 200,
+    "directPut": 200,
+    "confirm": 200,
+    "verifiedFinalObject": true,
+    "anonymousDenied": 401,
+    "neonRead": 200
+  },
+  "businessRecordsCreated": 0,
+  "cors": {
+    "https://frontend-svelte-vert.vercel.app": {
+      "status": 204,
+      "allowOrigin": "https://frontend-svelte-vert.vercel.app"
+    },
+    "http://127.0.0.1:5178": {
+      "status": 204,
+      "allowOrigin": "http://127.0.0.1:5178"
+    },
+    "https://origen-no-autorizado.example": {
+      "status": 403,
+      "allowOrigin": null
+    }
+  },
+  "bytes": 5243497,
+  "sha256": "56263e4d0fcdd2003cfb49c22944e094cec4185f6294cc8cf24303ed9e24fc64",
+  "testObject": "mfn/documentos/acta/7b9e6994-335e-442f-96ff-0861eca58d6b.pdf",
+  "integrity": {
+    "status": 200,
+    "state": "COINCIDE CON PUNTO DE CONTROL",
+    "discrepancies": []
+  }
+}

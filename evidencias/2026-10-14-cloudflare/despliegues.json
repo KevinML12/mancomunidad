@@ -1,0 +1,13 @@
+{
+  "sourceCommit": "9333eb66ea7305b9a70bcd15c1dab9bb79d9d172",
+  "frontend": {
+    "deploymentId": "dpl_EGbYYknqZAUp8njMm5v2PHuropDj",
+    "readyState": "READY",
+    "url": "https://frontend-svelte-vert.vercel.app"
+  },
+  "backend": {
+    "deploymentId": "dpl_5rvGzWNNbf3qwe7AKDWZciNkfcxD",
+    "readyState": "READY",
+    "url": "https://backend-eosin-omega-81.vercel.app"
+  }
+}

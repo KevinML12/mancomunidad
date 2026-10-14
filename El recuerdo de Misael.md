@@ -53,3 +53,11 @@ Los estados y respuestas verificadas se encuentran en [produccion.json](evidenci
 - Pretest/postest, respuestas SUS/TAM, asistencia a talleres y análisis reproducible de datos originales.
 
 **Decisión de cierre:** quedó preparado un expediente técnico trazable y la matriz de diagnóstico. No se declaró terminado el capítulo VI ni aceptación institucional del proyecto. Las cifras del borrador (93.9%, SUS 88.5, t=18.74, disponibilidad 100%, etc.) no forman parte de los resultados acreditados aquí.
+
+## Corrección de formularios y navegación por rol — 13 de octubre de 2026
+
+Se corrigieron los saltos de 1,000 en montos de convenios, el prompt de prórroga, formularios poco legibles y acciones de edición visibles para roles de consulta en Convenios y ASH. Se aclararon las referencias PDF, se habilitaron enlaces en tarjetas de actas y el registro de acuerdos desde la interfaz; la API valida fechas, cantidades, estados y referencias documentales de cumplimiento.
+
+Se priorizaron áreas por rol, con accesos complementarios en un panel superior Otras áreas, sin ampliar permisos. Se ejecutaron recorridos de navegador con Gerencia y Junta Directiva sobre datos sintéticos aislados, además de integración HTTP y verificación de navegación. Véase `evidencias/2026-10-13-formularios/RESULTADOS_E2E.md`.
+
+Esta corrección se preparó desde main para poder publicar sin incluir la migración de hitos pendiente de la rama codex/field-evidence-workflow. La base de producción fue identificada por el propietario como Neon, no Supabase. La carga privada de documentos en Cloudflare y el traslado de alojamiento del backend siguen pendientes; estos formularios todavía registran enlaces externos. No se modificaron capítulos, credenciales ni esquemas de producción.

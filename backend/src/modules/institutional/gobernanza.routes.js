@@ -1,3 +1,6 @@
+import { text, choice, numeric, date, url } from '../../services/validation.js';
+import { MUNICIPIOS_MFN } from '../../lib/municipios.js';
+import { ValidationError } from '../../services/errors.js';
 import { Router } from 'express';
 import prisma from '../../lib/prisma.js';
 import { requireAuth, requirePermission } from '../../middleware/auth.js';
@@ -71,14 +74,14 @@ router.post('/actas', requirePermission('gobernanza', 'editar'), async (req, res
 
     const acta = await prisma.actaAsamblea.create({
       data: {
-        numeroActa,
-        numeroSesion: Number(numeroSesion),
-        tipoSesion: tipoSesion || 'Ordinaria',
-        fecha: new Date(fecha),
-        municipioSede,
-        lugarReunion,
-        libroCGCFolio,
-        urlPdfEscaneado
+        numeroActa:text(numeroActa,'Número de acta'),
+        numeroSesion:numeric(numeroSesion,'Número de sesión',{min:1,integer:true}),
+        tipoSesion:choice(tipoSesion === undefined ? 'Ordinaria' : tipoSesion,['Ordinaria','Extraordinaria'],'Tipo de sesión'),
+        fecha:date(fecha,'Fecha de sesión'),
+        municipioSede:choice(municipioSede,MUNICIPIOS_MFN,'Municipio sede'),
+        lugarReunion:text(lugarReunion,'Lugar de reunión',{optional:true}),
+        libroCGCFolio:text(libroCGCFolio,'Folio consignado'),
+        urlPdfEscaneado:url(urlPdfEscaneado,'Enlace del acta')
       }
     });
 
@@ -97,18 +100,22 @@ router.post('/actas/:id/acuerdos', requirePermission('gobernanza', 'editar'), as
 
     const count = await prisma.acuerdoGobernanza.count({ where: { actaId } });
     const acta = await prisma.actaAsamblea.findUnique({ where: { id: actaId } });
+    if (!acta) return res.status(404).json({error:'Acta no encontrada'});
+    const validatedState = choice(estado === undefined ? 'En Proceso' : estado,['Pendiente','En Proceso','Cumplido'],'Estado');
+    const reference = url(evidenciaUrl,'Enlace de evidencia');
+    if (validatedState === 'Cumplido' && !reference) throw new ValidationError('Adjunte una referencia documental para registrar cumplimiento');
     const codigo = `ACU-${acta.numeroActa}-${(count + 1).toString().padStart(2, '0')}`;
 
     const acuerdo = await prisma.acuerdoGobernanza.create({
       data: {
         codigo,
         actaId,
-        titulo,
-        descripcion,
-        responsable,
-        fechaCumplimiento: fechaCumplimiento ? new Date(fechaCumplimiento) : null,
-        estado: estado || 'En Proceso',
-        evidenciaUrl
+        titulo:text(titulo,'Título'),
+        descripcion:text(descripcion,'Descripción',{max:4000}),
+        responsable:text(responsable,'Responsable'),
+        fechaCumplimiento:fechaCumplimiento ? date(fechaCumplimiento,'Fecha de cumplimiento') : null,
+        estado:validatedState,
+        evidenciaUrl:reference
       }
     });
 
@@ -124,11 +131,16 @@ router.put('/acuerdos/:id', requirePermission('gobernanza', 'editar'), async (re
     const id = Number(req.params.id);
     const { estado, evidenciaUrl } = req.body;
 
+    const current = await prisma.acuerdoGobernanza.findUnique({where:{id}});
+    if (!current) return res.status(404).json({error:'Acuerdo no encontrado'});
+    const nextState = choice(estado,['Pendiente','En Proceso','Cumplido'],'Estado');
+    const reference = evidenciaUrl === undefined ? url(current.evidenciaUrl,'Enlace de evidencia') : url(evidenciaUrl,'Enlace de evidencia');
+    if (nextState === 'Cumplido' && !reference) throw new ValidationError('Adjunte una referencia documental para registrar cumplimiento');
     const updated = await prisma.acuerdoGobernanza.update({
       where: { id },
       data: {
-        estado,
-        evidenciaUrl
+        estado:nextState,
+        evidenciaUrl:reference ?? null
       }
     });
 

@@ -1,10 +1,13 @@
 <script>
+  import { navigationFor } from '$lib/navigation.js';
   import { onMount } from 'svelte';
   import apiClient from '$lib/apiClient';
   import Icon from '$lib/components/ui/Icon.svelte';
   import { auth } from '$lib/stores/auth.svelte.js';
   import { fade, fly } from 'svelte/transition';
 
+  let areas = $derived(navigationFor(auth.role,auth.permisos));
+  const esPrincipal = key => areas.primary.some(area => area.key === key);
   // Estados de datos reactivos - registros consultados
   let stats = $state({
     proyectosCount: 0,
@@ -32,7 +35,7 @@
   const fetchDashboardData = async () => {
     loading = true;
     try {
-      const getIfAllowed = (module, path) => auth.puedeVer(module)
+      const getIfAllowed = (module, path) => esPrincipal(module)
         ? apiClient.get(path)
         : Promise.resolve({ data: null });
       const [resProyectos, resArc, resBalance, resActas, resConvenios, resEstadisticas] = await Promise.allSettled([
@@ -102,80 +105,7 @@
     fetchDashboardData();
   });
 
-  let MODULOS = $derived([
-    {
-      num: '01',
-      to: '/proyectos',
-      icon: 'construction',
-      titulo: 'Proyectos de Obra',
-      descripcion: 'Seguimiento físico y fotográfico georreferenciado con coordenadas GPS de intervenciones intermunicipales.',
-      badge: stats.proyectosCount > 0 ? `${stats.proyectosCount} Obras en BD` : 'Gestión de Obras',
-      color: 'blue'
-    },
-    {
-      num: '02',
-      to: '/arc',
-      icon: 'view_kanban',
-      titulo: 'Plan de Mejoras (ARC)',
-      descripcion: 'Tablero interactivo Kanban para mitigación de hallazgos institucionales y auditoría del informe 2023.',
-      badge: stats.arcTotal > stats.arcCumplidas ? `${stats.arcTotal - stats.arcCumplidas} Pendientes` : 'Tablero ARC',
-      color: 'indigo'
-    },
-    {
-      num: '03',
-      to: '/financiero',
-      icon: 'account_balance',
-      titulo: 'Finanzas y Cuotas',
-      descripcion: 'Movimientos registrados por tipo de fondo y aportes municipales.',
-      badge: 'Movimientos',
-      color: 'emerald'
-    },
-    {
-      num: '04',
-      to: '/gobernanza',
-      icon: 'gavel',
-      titulo: 'Gobernanza y Actas',
-      descripcion: 'Registro de actas y seguimiento de acuerdos.',
-      badge: stats.acuerdosCount > 0 ? `${stats.acuerdosCount} acuerdos` : 'Actas y acuerdos',
-      color: 'purple'
-    },
-    {
-      num: '05',
-      to: '/convenios',
-      icon: 'handshake',
-      titulo: 'Convenios y Alianzas',
-      descripcion: 'Motor cronológico con alerta automática preventiva a los 90 días de caducidad para renovación diplomática.',
-      badge: stats.conveniosAlertas > 0 ? `${stats.conveniosAlertas} en Alerta` : 'Alerta 90 Días',
-      color: 'amber'
-    },
-    {
-      num: '06',
-      to: '/estadisticas',
-      icon: 'bar_chart',
-      titulo: 'Indicadores ASH',
-      descripcion: 'Censo de agua, saneamiento y vigilancia bacteriológica de cloro residual (COGUANOR) en 3 municipios activos.',
-      badge: stats.totalViviendas > 0 ? `${stats.totalViviendas.toLocaleString()} Viviendas` : 'Censos ASH',
-      color: 'cyan'
-    },
-    {
-      num: '07',
-      to: '/transparencia',
-      icon: 'public',
-      titulo: 'Transparencia Abierta',
-      descripcion: 'Portal ciudadano de datos abiertos bajo Decreto 57-2008 de la República de Guatemala sin autenticación.',
-      badge: 'Datos Abiertos',
-      color: 'teal'
-    },
-    {
-      num: '08',
-      to: '/inteligencia',
-      icon: 'psychology',
-      titulo: 'Inteligencia y control interno',
-      descripcion: 'Índice preliminar de inversión y huellas SHA-256 para control interno.',
-      badge: 'Matriz IPIM · SHA-256',
-      color: 'emerald'
-    }
-  ].filter((module) => auth.puedeVer(module.to.slice(1))));
+
 </script>
 
 <svelte:head>
@@ -222,7 +152,7 @@
           <Icon name="public" className="w-4 h-4 text-cyan-300" />
           <span>Portal Ciudadano</span>
         </a>
-        {#if auth.puedeVer('proyectos')}
+        {#if esPrincipal('proyectos')}
         <a 
           href="/proyectos" 
           class="px-5 py-3 rounded-2xl bg-[#1248AA] hover:bg-blue-600 text-white font-bold text-xs tracking-tight transition-all duration-200 flex items-center gap-2 shadow-lg shadow-blue-500/25 active:scale-95"
@@ -237,7 +167,7 @@
 
   <!-- 4 TARJETAS KPI DE ALTO IMPACTO -->
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-    {#if auth.puedeVer('proyectos')}
+    {#if esPrincipal('proyectos')}
     <!-- KPI 1: Inversión en Obra -->
     <a href="/proyectos" class="bg-white rounded-[28px] p-6 border border-gray-100 shadow-[0_15px_35px_-10px_rgba(10,21,38,0.04)] hover:shadow-xl hover:-translate-y-1 transition-all duration-200 group">
       <div class="flex items-center justify-between mb-4">
@@ -257,7 +187,7 @@
     </a>
 
     {/if}
-    {#if auth.puedeVer('arc')}
+    {#if esPrincipal('arc')}
     <!-- KPI 2: Plan ARC -->
     <a href="/arc" class="bg-white rounded-[28px] p-6 border border-gray-100 shadow-[0_15px_35px_-10px_rgba(10,21,38,0.04)] hover:shadow-xl hover:-translate-y-1 transition-all duration-200 group">
       <div class="flex items-center justify-between mb-4">
@@ -277,7 +207,7 @@
     </a>
 
     {/if}
-    {#if auth.puedeVer('financiero')}
+    {#if esPrincipal('financiero')}
     <!-- KPI 3: Finanzas RF12 -->
     <a href="/financiero" class="bg-white rounded-[28px] p-6 border border-gray-100 shadow-[0_15px_35px_-10px_rgba(10,21,38,0.04)] hover:shadow-xl hover:-translate-y-1 transition-all duration-200 group">
       <div class="flex items-center justify-between mb-4">
@@ -298,7 +228,7 @@
     </a>
 
     {/if}
-    {#if auth.puedeVer('gobernanza')}
+    {#if esPrincipal('gobernanza')}
     <!-- KPI 4: Gobernanza CGC -->
     <a href="/gobernanza" class="bg-white rounded-[28px] p-6 border border-gray-100 shadow-[0_15px_35px_-10px_rgba(10,21,38,0.04)] hover:shadow-xl hover:-translate-y-1 transition-all duration-200 group">
       <div class="flex items-center justify-between mb-4">
@@ -321,7 +251,7 @@
 
   <!-- SECCIÓN CENTRAL DE OPERACIONES: CONVENIOS 90D Y ESTADÍSTICAS ASH -->
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-    {#if auth.puedeVer('convenios')}
+    {#if esPrincipal('convenios')}
     <!-- PANEL IZQUIERDO: MOTOR CRONOLÓGICO CONVENIOS 90D -->
     <div class="glass-light rounded-[32px] p-7 lg:p-8    flex flex-col justify-between">
       <div>
@@ -387,7 +317,7 @@
     </div>
 
     {/if}
-    {#if auth.puedeVer('estadisticas')}
+    {#if esPrincipal('estadisticas')}
     <!-- PANEL DERECHO: VIGILANCIA SANITARIA ASH -->
     <div class="glass-light rounded-[32px] p-7 lg:p-8    flex flex-col justify-between">
       <div>
@@ -456,50 +386,12 @@
     {/if}
   </div>
 
-  <!-- BENTO GRID DE LOS 7 MÓDULOS DE GOBIERNO -->
-  <div class="space-y-4">
-    <div class="flex items-center justify-between px-2">
-      <div>
-        <h2 class="text-xl font-semibold text-[#071D49] tracking-tight">Módulos del Sistema Institucional (Capítulo IV)</h2>
-        <p class="text-xs text-[#071D49]/50">Acceso a los módulos habilitados para su cuenta</p>
-      </div>
-      <span class="text-[12px] font-semibold uppercase tracking-wider text-[#1248AA] bg-blue-50 px-3 py-1 rounded-full border border-blue-100">
-        {MODULOS.length} módulos disponibles
-      </span>
+  <section class="space-y-4">
+    <h2 class="text-xl font-semibold text-[#071D49]">Áreas principales para su trabajo</h2>
+    <p class="text-sm">Accesos priorizados para {auth.roleLabel || 'su rol'}. Las demás áreas autorizadas están en «Otras áreas».</p>
+    <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
+      {#each areas.primary as area}<a href={area.path} class="bg-white rounded-[24px] p-6 border border-blue-100 hover:bg-blue-50"><h3 class="font-semibold text-lg text-[#071D49]">{area.title}</h3><p class="text-sm mt-2">{area.description}</p><p class="text-sm font-semibold mt-4 text-[#1248AA]">Abrir área</p></a>{/each}
     </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-      {#each MODULOS as m}
-        <a 
-          href={m.to} 
-          class="bg-white rounded-[26px] p-6 border border-gray-100 shadow-[0_10px_30px_-10px_rgba(10,21,38,0.03)] hover:shadow-xl hover:-translate-y-1.5 transition-all duration-200 group flex flex-col justify-between"
-        >
-          <div>
-            <div class="flex items-center justify-between mb-4">
-              <span class="text-xs font-semibold text-[#071D49]/30 group-hover:text-[#1248AA] transition-colors">{m.num}</span>
-              <span class="text-[12px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-gray-100 text-[#071D49]/70 group-hover:bg-[#071D49] group-hover:text-white transition-all">
-                {m.badge}
-              </span>
-            </div>
-
-            <div class="w-11 h-11 rounded-2xl bg-[#071D49] text-white flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-md">
-              <Icon name={m.icon} className="w-5 h-5 text-[#1248AA]" />
-            </div>
-
-            <h3 class="text-base font-semibold text-[#071D49] tracking-tight group-hover:text-[#1248AA] transition-colors">
-              {m.titulo}
-            </h3>
-            <p class="text-xs text-[#071D49]/60 mt-2 font-normal leading-relaxed line-clamp-3">
-              {m.descripcion}
-            </p>
-          </div>
-
-          <div class="pt-4 mt-4 border-t border-gray-50 flex items-center justify-between text-xs font-bold text-[#071D49]/40 group-hover:text-[#1248AA]">
-            <span>Ingresar al módulo</span>
-            <Icon name="arrow_forward" className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-          </div>
-        </a>
-      {/each}
-    </div>
-  </div>
+    {#if !areas.primary.length}<p>No hay áreas principales habilitadas para esta cuenta. Consulte a la administración.</p>{/if}
+  </section>
 </div>

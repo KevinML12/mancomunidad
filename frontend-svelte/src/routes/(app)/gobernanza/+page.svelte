@@ -74,15 +74,32 @@
     })
   );
 
+  let acuerdoPendiente = $state(null);
+  let enlaceCumplimiento = $state('');
+  let showAcuerdo = $state(false);
+  let acuerdoLoading = $state(false);
+  let nuevoAcuerdo = $state({titulo:'',descripcion:'',responsable:'',fechaCumplimiento:'',evidenciaUrl:''});
+  async function guardarAcuerdo(event) {
+    event.preventDefault(); acuerdoLoading = true;
+    try {
+      await apiClient.post(`/gobernanza/actas/${selectedActa.id}/acuerdos`,{...nuevoAcuerdo,estado:'En Proceso'});
+      showAcuerdo=false; nuevoAcuerdo={titulo:'',descripcion:'',responsable:'',fechaCumplimiento:'',evidenciaUrl:''};
+      toast.success('Acuerdo vinculado al acta'); await fetchActas();
+    } catch (err) { toast.error(err.response?.data?.error || 'No se pudo registrar el acuerdo'); }
+    finally { acuerdoLoading=false; }
+  }
+  async function guardarCumplimiento(event) {
+    event.preventDefault(); acuerdoLoading=true;
+    try {
+      await apiClient.put(`/gobernanza/acuerdos/${acuerdoPendiente.id}`,{estado:'Cumplido',evidenciaUrl:enlaceCumplimiento});
+      acuerdoPendiente=null; toast.success('Cumplimiento registrado con referencia documental'); await fetchActas();
+    } catch (err) { toast.error(err.response?.data?.error || 'No se pudo guardar el cumplimiento'); }
+    finally { acuerdoLoading=false; }
+  }
   async function actualizarEstadoAcuerdo(acuerdo, nuevoEstado) {
     let evidencia = acuerdo.evidenciaUrl;
     if (nuevoEstado === 'Cumplido' && !evidencia) {
-      const url = prompt('RF14: Ingrese URL de la evidencia o resolución de cumplimiento:');
-      if (!url) {
-        toast.error('Se requiere evidencia documental obligatoria para marcar como Cumplido');
-        return;
-      }
-      evidencia = url;
+      acuerdoPendiente = acuerdo; enlaceCumplimiento = ''; return;
     }
 
     try {
@@ -94,7 +111,7 @@
       await fetchActas();
     } catch (err) {
       console.error('Error al actualizar acuerdo en la BD:', err);
-      toast.error('No se pudo actualizar el acuerdo en la base de datos');
+      toast.error(err.response?.data?.error || 'No se pudo actualizar el acuerdo');
     }
   }
 
@@ -122,7 +139,7 @@
       await fetchActas();
     } catch (err) {
       console.error('Error al registrar acta en la BD:', err);
-      toast.error('Error al guardar el acta en la base de datos');
+      toast.error(err.response?.data?.error || 'No se pudo registrar el acta');
     } finally {
       formLoading = false;
     }
@@ -211,7 +228,7 @@
       </span>
     </div>
     <p class="text-[28px] font-semibold tracking-[-0.04em] text-[#071D49]">{cumplidosCount}</p>
-    <p class="text-[11px] text-emerald-700 font-bold mt-2">Respaldados con evidencias</p>
+    <p class="text-[11px] text-emerald-700 font-bold mt-2">Estado consignado en el expediente</p>
   </div>
 
   <!-- En Proceso -->
@@ -236,7 +253,7 @@
     </div>
     <p class="text-[28px] font-semibold tracking-[-0.04em] {pendientesCount > 0 ? 'text-amber-600' : 'text-[#071D49]'}">{pendientesCount}</p>
     <p class="text-[11px] font-bold mt-2 {pendientesCount > 0 ? 'text-amber-700' : 'text-[#071D49]/40'}">
-      {pendientesCount > 0 ? 'Plazos de directiva por vencer' : 'Sin pendientes atrasados'}
+      {pendientesCount > 0 ? 'Acuerdos en estado Pendiente' : 'Sin acuerdos en estado Pendiente'}
     </p>
   </div>
 </div>
@@ -277,10 +294,7 @@
 
           <div class="pt-3 border-t border-gray-50 flex items-center justify-between text-[11px]">
             <span class="text-[12px] font-mono text-[#071D49]/40">{a.libroCGCFolio}</span>
-            <div class="flex items-center gap-1.5 text-[#1248AA] font-bold">
-              <Icon name="description" className="w-3.5 h-3.5" />
-              <span>PDF</span>
-            </div>
+            {#if a.urlPdfEscaneado}<a href={a.urlPdfEscaneado} target="_blank" rel="noopener noreferrer" class="text-[#1248AA] font-bold">Abrir PDF del acta</a>{:else}<span>Sin PDF adjunto</span>{/if}
           </div>
         </div>
       {/each}
@@ -298,7 +312,7 @@
             <span class="text-[12px] font-semibold uppercase tracking-normal px-2.5 py-1 rounded-md bg-[#EDF4FF] text-[#1D4ED8]">
               {selectedActa.numeroActa}
             </span>
-            <span class="text-[11px] font-medium text-[#071D49]/40">{selectedActa.fecha}</span>
+            <span class="text-[11px] font-medium text-[#071D49]/40">{new Date(selectedActa.fecha).toLocaleDateString('es-GT',{timeZone:'UTC'})}</span>
           </div>
           <h3 class="text-2xl font-semibold text-[#071D49] tracking-tight">
             Acuerdos Resolutivos de la Sesión
@@ -311,15 +325,17 @@
         {#if selectedActa.urlPdfEscaneado}
           <a 
             href={selectedActa.urlPdfEscaneado} 
-            target="_blank"
+            target="_blank" rel="noopener noreferrer"
             class="px-4 py-2.5 bg-gray-50 hover:bg-gray-100 text-[#071D49] rounded-full text-[11px] font-bold border border-gray-200 shadow-xs flex items-center gap-2 transition-colors shrink-0"
           >
             <Icon name="visibility" className="w-4 h-4 text-[#1248AA]" />
-            <span>Ver Acta con Firmas</span>
+            <span>Abrir PDF del acta</span>
           </a>
         {/if}
       </div>
 
+      {#if auth.puedeEditar('gobernanza')}<button class="rounded-full px-5 py-2 bg-[#071D49] text-white" onclick={() => showAcuerdo=!showAcuerdo}>Registrar acuerdo de esta acta</button>{/if}
+      <p class="text-sm text-[#071D49]">Los documentos se abren desde el enlace registrado en otra pestaña. Un enlace o estado registrado no acredita firmas, autenticidad ni autorización CGC.</p>
       <!-- Listado de Acuerdos -->
       <div class="space-y-4">
         {#if !selectedActa.acuerdos || selectedActa.acuerdos.length === 0}
@@ -376,14 +392,14 @@
                 </span>
 
                 {#if acuerdo.evidenciaUrl}
-                  <a href={acuerdo.evidenciaUrl} target="_blank" class="text-[#1248AA] font-bold flex items-center gap-1 hover:underline">
+                  <a href={acuerdo.evidenciaUrl} target="_blank" rel="noopener noreferrer" class="text-[#1248AA] font-bold flex items-center gap-1 hover:underline">
                     <Icon name="link" className="w-3.5 h-3.5" />
                     <span>Ver Evidencia</span>
                   </a>
                 {:else if esCumplido}
                   <span class="text-emerald-700 font-bold flex items-center gap-1">
                     <Icon name="verified" className="w-3.5 h-3.5" />
-                    <span>Acreditado</span>
+                    <span>Sin referencia documental</span>
                   </span>
                 {/if}
               </div>
@@ -402,7 +418,7 @@
   <!-- svelte-ignore a11y_click_events_have_key_events -->
   <!-- svelte-ignore a11y_no_static_element_interactions -->
   <div transition:fade={{ duration: 180 }} class="fixed inset-0 bg-[#071D49]/20 backdrop-blur-sm z-50 flex items-center justify-center p-4" onclick={() => showModal = false}>
-    <div transition:fly={{ y: 20, duration: 250 }} class="glass-light rounded-[32px] w-full max-w-xl  p-8  " onclick={e => e.stopPropagation()}>
+    <div transition:fly={{ y: 20, duration: 250 }} class="glass-light mfn-form-dialog rounded-[32px] w-full max-w-xl  p-8  " onclick={e => e.stopPropagation()}>
       <div class="flex justify-between items-center mb-6 border-b border-gray-50 pb-4">
         <div>
           <span class="text-[12px] font-bold uppercase tracking-normal text-[#1248AA]">Asamblea General MFN</span>
@@ -463,10 +479,11 @@
         </div>
 
         <div>
-          <label for="field-8" class="block text-[12px] font-bold uppercase tracking-normal text-[#071D49]/40 mb-1.5">URL del PDF escaneado</label>
-          <input id="field-8" type="text" bind:value={nuevaActa.urlPdfEscaneado} placeholder="https://storage.mfn.gob.gt/actas/acta.pdf" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#071D49]" />
+          <label for="field-8" class="block text-[12px] font-bold uppercase tracking-normal text-[#071D49]/40 mb-1.5">Enlace de un PDF ya alojado (opcional)</label>
+          <input id="field-8" type="url" bind:value={nuevaActa.urlPdfEscaneado} placeholder="https://…" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#071D49]" />
         </div>
 
+        <p class="text-sm">Este registro guarda un enlace; todavía no sube archivos. Sin enlace, el acta quedará sin PDF adjunto.</p>
         <div class="pt-4 flex justify-end gap-3 mt-6 border-t border-gray-50 pt-5">
           <button type="button" onclick={() => showModal = false} class="px-6 py-3 rounded-full font-bold text-[#071D49]/60 hover:bg-gray-50 transition-colors text-[13px]">Cancelar</button>
           <button type="submit" disabled={formLoading} class="px-8 py-3 bg-[#071D49] text-white rounded-full font-bold hover:bg-black shadow-md transition-all text-[13px] disabled:opacity-50">
@@ -476,4 +493,29 @@
       </form>
     </div>
   </div>
+{/if}
+
+{#if showAcuerdo && selectedActa && auth.puedeEditar('gobernanza')}
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-[#071D49]/30 backdrop-blur-sm p-4">
+<dialog open aria-modal="true" aria-labelledby="titulo-acuerdo" class="relative m-0 glass-light mfn-form-dialog max-w-xl w-full rounded-[24px] p-6">
+<h2 id="titulo-acuerdo" class="text-xl font-semibold mb-4">Registrar acuerdo · {selectedActa.numeroActa}</h2>
+<form onsubmit={guardarAcuerdo} class="space-y-3">
+<label class="block">Título<input required bind:value={nuevoAcuerdo.titulo} maxlength="200" class="block w-full bg-white border rounded-xl p-3" /></label>
+<label class="block">Descripción<textarea required bind:value={nuevoAcuerdo.descripcion} maxlength="4000" class="block w-full bg-white border rounded-xl p-3"></textarea></label>
+<label class="block">Responsable<input required bind:value={nuevoAcuerdo.responsable} maxlength="200" class="block w-full bg-white border rounded-xl p-3" /></label>
+<label class="block">Fecha de cumplimiento prevista (opcional)<input type="date" bind:value={nuevoAcuerdo.fechaCumplimiento} class="block w-full bg-white border rounded-xl p-3" /></label>
+<label class="block">Enlace de respaldo ya alojado (opcional)<input type="url" bind:value={nuevoAcuerdo.evidenciaUrl} placeholder="https://…" class="block w-full bg-white border rounded-xl p-3" /></label>
+<p class="text-sm">Se registra En Proceso. El responsable es texto consignado; todavía no asigna una cuenta de usuario.</p>
+<div class="flex justify-end gap-3"><button type="button" disabled={acuerdoLoading} onclick={()=>showAcuerdo=false}>Cancelar</button><button disabled={acuerdoLoading} class="bg-[#071D49] text-white rounded-full px-5 py-3">Guardar acuerdo</button></div>
+</form></dialog></div>
+{/if}
+{#if acuerdoPendiente && auth.puedeEditar('gobernanza')}
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-[#071D49]/30 backdrop-blur-sm p-4">
+<dialog open aria-modal="true" aria-labelledby="titulo-cumplimiento" class="relative m-0 glass-light mfn-form-dialog max-w-lg w-full rounded-[24px] p-6 space-y-4">
+<h2 id="titulo-cumplimiento" class="text-xl font-semibold">Registrar cumplimiento</h2><p>{acuerdoPendiente.titulo}</p>
+<form onsubmit={guardarCumplimiento} class="space-y-4">
+<label class="block">Enlace del documento de cumplimiento<input type="url" required bind:value={enlaceCumplimiento} placeholder="https://…" class="block w-full bg-white border rounded-xl p-3" /></label>
+<p class="text-sm">El documento debe estar alojado previamente. Guardar el enlace no verifica su contenido ni sus firmas.</p>
+<div class="flex justify-end gap-3"><button type="button" disabled={acuerdoLoading} onclick={()=>acuerdoPendiente=null}>Cancelar</button><button disabled={acuerdoLoading} class="bg-[#071D49] text-white rounded-full px-5 py-3">Guardar cumplimiento</button></div>
+</form></dialog></div>
 {/if}

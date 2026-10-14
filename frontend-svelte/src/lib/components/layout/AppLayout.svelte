@@ -1,4 +1,5 @@
 <script>
+  import { navigationFor } from '$lib/navigation.js';
   import { auth } from '$lib/stores/auth.svelte.js';
   import { page } from '$app/stores';
   import Icon from '$lib/components/ui/Icon.svelte';
@@ -6,13 +7,10 @@
   import { clearUserOfflineData, getEvidenceDrafts, stopOfflineService } from '$lib/offline-field.js';
   let { children } = $props();
   let mobileMenuOpen = $state(false);
-  const items = [
-    ['/', 'Tablero', 'dashboard'], ['/proyectos', 'Proyectos', 'proyectos'],
-    ['/arc', 'Plan de mejoras ARC', 'arc'], ['/financiero', 'Finanzas y cuotas', 'financiero'],
-    ['/gobernanza', 'Gobernanza y actas', 'gobernanza'], ['/personal', 'Talento humano', 'estructura'],
-    ['/convenios', 'Convenios', 'convenios'], ['/estadisticas', 'Indicadores ASH', 'estadisticas'],
-    ['/inteligencia', 'Control de integridad', 'inteligencia']
-  ];
+  let otherAreasOpen = $state(false);
+  let areas = $derived(navigationFor(auth.role,auth.permisos));
+  let currentArea = $derived([...areas.primary,...areas.secondary].find(area => $page.url.pathname.startsWith(area.path)));
+  $effect(() => { $page.url.pathname; otherAreasOpen=false; });
   const logout = async () => {
     try {
       const drafts = await getEvidenceDrafts(auth.user?.id);
@@ -32,9 +30,11 @@
     <p class="mfn-brand">MFN Digital</p>
     <p class="mfn-caption mt-1">Coordinación Intermunicipal</p>
     <nav aria-label="Navegación institucional" class="mt-8 space-y-1">
-      {#each items.filter(item => auth.puedeVer(item[2])) as item}
-        {@const active = $page.url.pathname === item[0] || (item[0] !== '/' && $page.url.pathname.startsWith(item[0] + '/'))}
-        <a href={item[0]} class="mfn-nav" class:active aria-current={active ? 'page' : undefined} onclick={() => mobileMenuOpen = false}>{item[1]}</a>
+      <a href="/" class="mfn-nav" class:active={$page.url.pathname === '/'} onclick={() => mobileMenuOpen=false}>Inicio</a>
+      <p class="px-3 pt-3 pb-1 text-xs font-semibold text-[#071D49]/60">Áreas principales</p>
+      {#each areas.primary as item}
+        {@const active = $page.url.pathname.startsWith(item.path)}
+        <a href={item.path} class="mfn-nav" class:active aria-current={active ? 'page' : undefined} onclick={() => mobileMenuOpen=false}>{item.title}</a>
       {/each}
     </nav>
     <a href="/transparencia" class="mfn-nav mt-4" onclick={() => mobileMenuOpen = false}>Portal ciudadano</a>
@@ -65,4 +65,18 @@
 <aside class="hidden lg:flex w-[270px] shrink-0 glass-light rounded-[28px] p-6 flex-col justify-between min-h-[calc(100vh-4rem)] sticky top-8 z-20">
   {@render navigation()}
 </aside>
-<main class="mfn-content flex-1 min-w-0 pb-12 w-full">{@render children()}</main>
+<main class="mfn-content flex-1 min-w-0 pb-12 w-full">
+  <div class="mb-6 flex flex-wrap justify-between items-center gap-3">
+    <p class="text-sm text-[#071D49]"><strong>{auth.roleLabel || 'Espacio institucional'}</strong>{currentArea ? ` / ${currentArea.title}` : ' / Inicio'}</p>
+    {#if areas.secondary.length}
+      <button onclick={() => otherAreasOpen=!otherAreasOpen} aria-expanded={otherAreasOpen} aria-controls="otras-areas" class="rounded-full bg-white border border-blue-100 px-5 py-2 text-sm font-semibold text-[#071D49]">{otherAreasOpen ? 'Cerrar otras áreas' : `Otras áreas (${areas.secondary.length})`}</button>
+    {/if}
+  </div>
+  {#if otherAreasOpen}
+    <section id="otras-areas" aria-label="Otras áreas autorizadas" class="mb-7 bg-white rounded-[24px] p-5 border border-blue-100">
+      <h2 class="font-semibold text-[#071D49]">Otras áreas autorizadas</h2><p class="text-sm mt-1 mb-4">Accesos complementarios para su rol. Las operaciones dependen de sus permisos.</p>
+      <div class="grid sm:grid-cols-2 xl:grid-cols-3 gap-3">{#each areas.secondary as area}<a href={area.path} onclick={() => otherAreasOpen=false} class="border border-blue-100 rounded-xl p-4 hover:bg-blue-50"><strong>{area.title}</strong><p class="text-sm mt-1">{area.description}</p></a>{/each}</div>
+    </section>
+  {/if}
+  {@render children()}
+</main>

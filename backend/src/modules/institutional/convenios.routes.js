@@ -1,3 +1,6 @@
+import crypto from 'node:crypto';
+import { text, numeric, choice, date, chronological, url } from '../../services/validation.js';
+import { ValidationError } from '../../services/errors.js';
 import { Router } from 'express';
 import prisma from '../../lib/prisma.js';
 import { requireAuth, requirePermission } from '../../middleware/auth.js';
@@ -62,36 +65,21 @@ router.get('/', async (req, res, next) => {
 // POST /api/v1/convenios - Registrar nuevo convenio (RF15 - RBAC)
 router.post('/', requirePermission('convenios', 'editar'), async (req, res, next) => {
   try {
-    const {
-      nombre,
-      tipoOrganizacion,
-      entidadCooperante,
-      montoCooperacion,
-      contrapartidaMFN,
-      fechaSuscripcion,
-      fechaVencimiento,
-      urlDocumento,
-      coordinadorMFN
-    } = req.body;
-
-    const count = await prisma.convenioInstitucional.count();
-    const codigo = `CONV-2024-${entidadCooperante.toUpperCase().replace(/\s+/g, '').slice(0, 5)}-${(count + 1).toString().padStart(2, '0')}`;
-
-    const nuevo = await prisma.convenioInstitucional.create({
-      data: {
-        codigo,
-        nombre,
-        tipoOrganizacion: tipoOrganizacion || 'Cooperación Internacional',
-        entidadCooperante,
-        montoCooperacion: Number(montoCooperacion) || 0,
-        contrapartidaMFN: Number(contrapartidaMFN) || 0,
-        fechaSuscripcion: new Date(fechaSuscripcion),
-        fechaVencimiento: new Date(fechaVencimiento),
-        urlDocumento,
-        coordinadorMFN,
-        estado: 'Vigente'
-      }
-    });
+    const body = req.body;
+    const fechaSuscripcion = date(body.fechaSuscripcion,'Fecha de suscripción');
+    const fechaVencimiento = date(body.fechaVencimiento,'Fecha de vencimiento');
+    chronological(fechaSuscripcion,fechaVencimiento);
+    const nuevo = await prisma.convenioInstitucional.create({data:{
+      codigo: `CONV-${fechaSuscripcion.getUTCFullYear()}-${crypto.randomBytes(6).toString('hex').toUpperCase()}`,
+      nombre:text(body.nombre,'Nombre'),
+      tipoOrganizacion:choice(body.tipoOrganizacion === undefined ? 'Cooperación Internacional' : body.tipoOrganizacion,['Cooperación Internacional','Sector Público','ONG'],'Tipo de organización'),
+      entidadCooperante:text(body.entidadCooperante,'Entidad cooperante'),
+      montoCooperacion:numeric(body.montoCooperacion === undefined ? 0 : body.montoCooperacion,'Monto de cooperación',{money:true}),
+      contrapartidaMFN:numeric(body.contrapartidaMFN === undefined ? 0 : body.contrapartidaMFN,'Contrapartida MFN',{money:true}),
+      fechaSuscripcion,fechaVencimiento,
+      urlDocumento:url(body.urlDocumento,'Enlace del documento'),
+      coordinadorMFN:text(body.coordinadorMFN,'Coordinador MFN'),estado:'Vigente'
+    }});
 
     res.status(201).json(nuevo);
   } catch (err) {
@@ -103,17 +91,17 @@ router.post('/', requirePermission('convenios', 'editar'), async (req, res, next
 router.put('/:id', requirePermission('convenios', 'editar'), async (req, res, next) => {
   try {
     const id = Number(req.params.id);
-    const { estado, fechaVencimiento, urlDocumento } = req.body;
-
+    const current = await prisma.convenioInstitucional.findUnique({where:{id}});
+    if (!current) return res.status(404).json({error:'Convenio no encontrado'});
     const data = {};
-    if (estado) data.estado = estado;
-    if (fechaVencimiento) data.fechaVencimiento = new Date(fechaVencimiento);
-    if (urlDocumento) data.urlDocumento = urlDocumento;
-
-    const updated = await prisma.convenioInstitucional.update({
-      where: { id },
-      data
-    });
+    if (req.body.estado !== undefined) data.estado=choice(req.body.estado,['Vigente','En Renovación'],'Estado');
+    if (req.body.fechaVencimiento !== undefined) {
+      data.fechaVencimiento=date(req.body.fechaVencimiento,'Nueva fecha de vencimiento');
+      chronological(current.fechaSuscripcion,data.fechaVencimiento);
+      if (data.fechaVencimiento <= current.fechaVencimiento) throw new ValidationError('La prórroga debe ser posterior al vencimiento registrado');
+    }
+    if (req.body.urlDocumento !== undefined) data.urlDocumento=url(req.body.urlDocumento,'Enlace del documento') ?? null;
+    const updated = await prisma.convenioInstitucional.update({where:{id},data});
 
     res.json(updated);
   } catch (err) {

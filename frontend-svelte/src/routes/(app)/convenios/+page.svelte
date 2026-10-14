@@ -1,4 +1,5 @@
 <script>
+  import { auth } from '$lib/stores/auth.svelte.js';
   import { onMount } from 'svelte';
   import apiClient from '$lib/apiClient';
   import Icon from '$lib/components/ui/Icon.svelte';
@@ -23,7 +24,7 @@
     fechaSuscripcion: '',
     fechaVencimiento: '',
     urlDocumento: '',
-    coordinadorMFN: 'Ing. Carlos Méndez'
+    coordinadorMFN: ''
   });
 
   async function fetchConvenios() {
@@ -70,29 +71,32 @@
     })
   );
 
-  async function prorrogarConvenio(conv) {
-    const meses = prompt(`Prorrogar convenio ${conv.codigo}. Ingrese cantidad de meses de extensión:`, "12");
-    if (!meses || isNaN(Number(meses))) return;
-    
-    const actual = new Date(conv.fechaVencimiento);
-    actual.setMonth(actual.getMonth() + Number(meses));
-    const nuevaFecha = actual.toISOString().split('T')[0];
-
-    try {
-      await apiClient.put(`/convenios/${conv.id}`, {
-        estado: 'Vigente',
-        fechaVencimiento: nuevaFecha
-      });
-      toast.success(`Convenio prorrogado en la BD hasta ${nuevaFecha}`);
-      await fetchConvenios();
-    } catch (err) {
-      console.error('Error al prorrogar convenio:', err);
-      toast.error('No se pudo actualizar la prórroga en la base de datos');
+  let prorroga = $state(null);
+  let nuevaFecha = $state('');
+  let prorrogaError = $state('');
+  let prorrogaLoading = $state(false);
+  function prorrogarConvenio(conv) {
+    if (!auth.puedeEditar('convenios')) return;
+    prorroga = conv; nuevaFecha = ''; prorrogaError = '';
+  }
+  async function guardarProrroga(event) {
+    event.preventDefault(); prorrogaError = '';
+    if (!nuevaFecha || nuevaFecha <= prorroga.fechaVencimiento.slice(0,10)) {
+      prorrogaError = 'Seleccione una fecha posterior al vencimiento actual'; return;
     }
+    prorrogaLoading = true;
+    try {
+      await apiClient.put(`/convenios/${prorroga.id}`,{estado:'Vigente',fechaVencimiento:nuevaFecha});
+      toast.success('Nueva vigencia registrada. Conserve el documento de autorización de la prórroga');
+      prorroga = null; await fetchConvenios();
+    } catch (err) {
+      prorrogaError = err.response?.status === 403 ? 'Su rol no tiene permiso para modificar convenios' : (err.response?.data?.error || 'No se pudo guardar. Revise la conexión y reintente');
+    } finally { prorrogaLoading = false; }
   }
 
   async function guardarConvenio(e) {
     e.preventDefault();
+    if (!auth.puedeEditar('convenios')) return;
     formLoading = true;
     try {
       await apiClient.post('/convenios', {
@@ -112,12 +116,12 @@
         fechaSuscripcion: '',
         fechaVencimiento: '',
         urlDocumento: '',
-        coordinadorMFN: 'Ing. Carlos Méndez'
+        coordinadorMFN: ''
       };
       await fetchConvenios();
     } catch (err) {
       console.error('Error al guardar convenio:', err);
-      toast.error('Error al registrar el convenio en la base de datos');
+      toast.error(err.response?.data?.error || 'No se pudo guardar el convenio. Revise su conexión');
     } finally {
       formLoading = false;
     }
@@ -166,6 +170,7 @@
     </select>
 
     <!-- Botón Nuevo Convenio -->
+    {#if auth.puedeEditar('convenios')}
     <button 
       onclick={() => showModal = true}
       class="px-6 py-3 bg-[#071D49] hover:bg-black text-white rounded-full text-[13px] font-bold shadow-md transition-all duration-300 hover:-translate-y-0.5 flex items-center gap-2 cursor-pointer"
@@ -173,6 +178,7 @@
       <Icon name="add" className="w-[18px] h-[18px] text-[#1248AA]" stroke={2.5} />
       <span>+ Registrar Convenio</span>
     </button>
+    {:else}<p class="text-sm text-[#071D49]">Acceso de consulta · Gerencia registra y modifica convenios</p>{/if}
   </div>
 </header>
 
@@ -186,7 +192,7 @@
         <Icon name="monetization_on" className="w-4 h-4" />
       </span>
     </div>
-    <p class="text-[28px] font-semibold tracking-[-0.04em] text-[#071D49]">$ {(totalCooperacion / 1000000).toFixed(2)}M</p>
+    <p class="text-[28px] font-semibold tracking-[-0.04em] text-[#071D49]">$ {totalCooperacion.toLocaleString('es-GT',{minimumFractionDigits:2,maximumFractionDigits:2})}</p>
     <p class="text-[11px] text-[#071D49]/50 font-medium mt-2">Contrapartida MFN: Q {totalContrapartida.toLocaleString('es-GT')}</p>
   </div>
 
@@ -282,8 +288,8 @@
         <!-- Alerta Cronológica RF15 -->
         <div class="space-y-2 mb-6">
           <div class="flex items-center justify-between text-[11px]">
-            <span class="text-[#071D49]/50 font-semibold">Vencimiento oficial:</span>
-            <span class="font-mono font-bold text-[#071D49]">{conv.fechaVencimiento}</span>
+            <span class="text-[#071D49]/50 font-semibold">Vencimiento registrado:</span>
+            <span class="font-mono font-bold text-[#071D49]">{new Date(conv.fechaVencimiento).toLocaleDateString('es-GT',{timeZone:'UTC'})}</span>
           </div>
 
           {#if esVencido}
@@ -299,7 +305,7 @@
           {:else}
             <div class="bg-emerald-50 border border-emerald-100 rounded-xl px-3 py-2 flex items-center gap-2 text-emerald-800 text-[11px] font-semibold">
               <Icon name="check_circle" className="w-4 h-4 shrink-0 text-emerald-600" />
-              <span>Vigencia garantizada ({conv.diasRestantes} días restantes)</span>
+              <span>Según fecha registrada ({conv.diasRestantes} días restantes)</span>
             </div>
           {/if}
         </div>
@@ -315,7 +321,7 @@
           {#if conv.urlDocumento}
             <a 
               href={conv.urlDocumento} 
-              target="_blank"
+              target="_blank" rel="noopener noreferrer"
               class="px-3 py-1.5 rounded-full border border-gray-200 hover:bg-gray-100 text-[11px] font-bold text-[#071D49] transition-colors flex items-center gap-1.5"
             >
               <Icon name="description" className="w-3.5 h-3.5 text-[#1248AA]" />
@@ -323,6 +329,7 @@
             </a>
           {/if}
 
+          {#if auth.puedeEditar('convenios')}
           <button 
             onclick={() => prorrogarConvenio(conv)}
             class="px-4 py-1.5 rounded-full bg-[#071D49] hover:bg-black text-white text-[11px] font-bold transition-all shadow-xs cursor-pointer flex items-center gap-1"
@@ -330,6 +337,7 @@
             <span>Prorrogar</span>
             <span>+</span>
           </button>
+          {/if}
         </div>
       </div>
     </div>
@@ -337,11 +345,11 @@
 </div>
 
 <!-- MODAL REGISTRO DE CONVENIO -->
-{#if showModal}
+{#if showModal && auth.puedeEditar('convenios')}
   <!-- svelte-ignore a11y_click_events_have_key_events -->
   <!-- svelte-ignore a11y_no_static_element_interactions -->
   <div transition:fade={{ duration: 180 }} class="fixed inset-0 bg-[#071D49]/20 backdrop-blur-sm z-50 flex items-center justify-center p-4" onclick={() => showModal = false}>
-    <div transition:fly={{ y: 20, duration: 250 }} class="glass-light rounded-[32px] w-full max-w-xl  p-8  " onclick={e => e.stopPropagation()}>
+    <div transition:fly={{ y: 20, duration: 250 }} class="glass-light mfn-form-dialog rounded-[32px] w-full max-w-xl  p-8  " onclick={e => e.stopPropagation()}>
       <div class="flex justify-between items-center mb-6 border-b border-gray-50 pb-4">
         <div>
           <span class="text-[12px] font-bold uppercase tracking-normal text-[#1248AA]">Portafolio de Alianzas</span>
@@ -377,12 +385,12 @@
         <div class="grid grid-cols-2 gap-4">
           <div>
             <label for="field-4" class="block text-[12px] font-bold uppercase tracking-normal text-[#071D49]/40 mb-1.5">Monto Cooperación ($ USD)</label>
-            <input id="field-4" required type="number" min="0" step="1000" bind:value={nuevoConvenio.montoCooperacion} class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] font-bold text-[#071D49]" />
+            <input id="field-4" required type="number" min="0" step="0.01" bind:value={nuevoConvenio.montoCooperacion} class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] font-bold text-[#071D49]" />
           </div>
 
           <div>
             <label for="field-5" class="block text-[12px] font-bold uppercase tracking-normal text-[#071D49]/40 mb-1.5">Contrapartida MFN (Q GTQ)</label>
-            <input id="field-5" required type="number" min="0" step="1000" bind:value={nuevoConvenio.contrapartidaMFN} class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] font-bold text-[#071D49]" />
+            <input id="field-5" required type="number" min="0" step="0.01" bind:value={nuevoConvenio.contrapartidaMFN} class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] font-bold text-[#071D49]" />
           </div>
         </div>
 
@@ -404,10 +412,11 @@
         </div>
 
         <div>
-          <label for="field-9" class="block text-[12px] font-bold uppercase tracking-normal text-[#071D49]/40 mb-1.5">URL Instrumento Legal PDF</label>
-          <input id="field-9" type="text" bind:value={nuevoConvenio.urlDocumento} placeholder="https://storage.mfn.gob.gt/convenios/convenio.pdf" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#071D49]" />
+          <label for="field-9" class="block text-[12px] font-bold uppercase tracking-normal text-[#071D49]/40 mb-1.5">Enlace de un PDF ya alojado (opcional)</label>
+          <input id="field-9" type="url" bind:value={nuevoConvenio.urlDocumento} placeholder="https://…" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#071D49]" />
         </div>
 
+        <p class="text-sm text-[#071D49]">Este formulario registra un enlace; todavía no carga archivos. Sin enlace, el convenio se guarda sin documento adjunto.</p>
         <div class="pt-4 flex justify-end gap-3 mt-6 border-t border-gray-50 pt-5">
           <button type="button" onclick={() => showModal = false} class="px-6 py-3 rounded-full font-bold text-[#071D49]/60 hover:bg-gray-50 transition-colors text-[13px]">Cancelar</button>
           <button type="submit" disabled={formLoading} class="px-8 py-3 bg-[#071D49] text-white rounded-full font-bold hover:bg-black shadow-md transition-all text-[13px] disabled:opacity-50">
@@ -416,5 +425,24 @@
         </div>
       </form>
     </div>
+  </div>
+{/if}
+
+{#if prorroga && auth.puedeEditar('convenios')}
+  <div class="fixed inset-0 z-50 flex items-center justify-center bg-[#071D49]/30 backdrop-blur-sm p-4">
+    <dialog open aria-modal="true" aria-labelledby="titulo-prorroga" class="relative m-0 glass-light mfn-form-dialog w-full max-w-lg rounded-[24px] p-6 space-y-4">
+      <h2 id="titulo-prorroga" class="text-xl font-semibold text-[#071D49]">Registrar prórroga</h2>
+      <p>{prorroga.nombre}</p>
+      <p class="text-sm">Vencimiento actual: {prorroga.fechaVencimiento.slice(0,10)}. Registre únicamente una extensión autorizada; guardar aquí no firma ni aprueba la adenda.</p>
+      <form onsubmit={guardarProrroga} class="space-y-4">
+        <label class="block font-semibold" for="prorroga-fecha">Nueva fecha de vencimiento</label>
+        <input id="prorroga-fecha" type="date" required bind:value={nuevaFecha} class="w-full border border-blue-200 rounded-xl p-3 bg-white text-black" />
+        {#if prorrogaError}<p role="alert" class="text-red-800">{prorrogaError}</p>{/if}
+        <div class="flex justify-end gap-3">
+          <button type="button" disabled={prorrogaLoading} onclick={() => prorroga=null}>Cancelar</button>
+          <button disabled={prorrogaLoading} class="rounded-full px-5 py-3 bg-[#071D49] text-white">{prorrogaLoading ? 'Guardando...' : 'Guardar nueva vigencia'}</button>
+        </div>
+      </form>
+    </dialog>
   </div>
 {/if}

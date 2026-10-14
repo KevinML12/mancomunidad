@@ -1,0 +1,15 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { AREAS, navigationFor } from '../src/lib/navigation.js';
+import { ROLE_PERMISSIONS } from '../../backend/src/lib/roles.js';
+test('prioridad visual conserva todos los accesos autorizados sin ampliar permisos',()=>{
+  for (const [role, permissions] of Object.entries(ROLE_PERMISSIONS)) {
+    const {primary,secondary}=navigationFor(role,permissions);
+    const keys=[...primary,...secondary].map(x=>x.key);
+    assert.equal(new Set(keys).size,keys.length,role);
+    assert.deepEqual([...keys].sort(),AREAS.filter(x=>permissions.modulos.includes(x.key)).map(x=>x.key).sort(),role);
+    assert.ok(primary.length<=4,role);
+  }
+  assert.deepEqual(navigationFor('JD',ROLE_PERMISSIONS.JD).primary.map(x=>x.key),['gobernanza','financiero','proyectos']);
+  assert.deepEqual(navigationFor('GE',{modulos:[]}),{primary:[],secondary:[]});
+});

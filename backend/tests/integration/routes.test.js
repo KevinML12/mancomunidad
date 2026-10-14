@@ -26,7 +26,7 @@ process.env.RESET_DELIVERY_URL = `http://127.0.0.1:${mail.address().port}`;
 process.env.RESET_DELIVERY_SECRET = 'solo-pruebas';
 const password = 'Contrasena-prueba-2026';
 const users = {}; const tokens = {};
-for (const code of ['GE','DIRPROY','DIRADMIN','AUD','EMP']) {
+for (const code of ['GE','JD','DIRPROY','DIRADMIN','AUD','EMP']) {
  const role=await prisma.rol.create({data:{codigo:code,nombre:code,permisos:ROLE_PERMISSIONS[code]}});
  users[code]=await prisma.usuario.create({data:{correo:`${code.toLowerCase()}@example.test`,hashContrasena:await bcrypt.hash(password,4),rolId:role.id}});
 }
@@ -116,6 +116,28 @@ test('Rutas reales con base migrada y aislada', async t => {
   for(const [i,alert] of ['vencido','proximo','normal'].entries())assert.equal(result.data.find(x=>x.id===created[i]).alerta,alert);
   assert.equal((await request(`/convenios/${created[1]}`,'PUT',tokens.GE,{estado:'En Renovación'})).status,200);
   assert.equal((await request('/convenios','GET',tokens.GE)).data.find(x=>x.id===created[1]).estado,'En Renovación');
+ });
+ await t.test('convenios acepta centavos, valida fechas y restringe edición de consulta',async()=>{
+  const body={nombre:'Convenio e2e 1330',tipoOrganizacion:'Sector Público',entidadCooperante:'Entidad de prueba',coordinadorMFN:'Persona de prueba',montoCooperacion:1330.25,contrapartidaMFN:123.45,fechaSuscripcion:'2026-10-13',fechaVencimiento:'2027-05-14'};
+  const before=await prisma.convenioInstitucional.count();
+  for(const invalid of [{montoCooperacion:-1},{contrapartidaMFN:1.234},{fechaVencimiento:'2026-01-01'},{urlDocumento:'javascript:alert(1)'}]) assert.equal((await request('/convenios','POST',tokens.GE,{...body,...invalid})).status,400);
+  assert.equal(await prisma.convenioInstitucional.count(),before);
+  const r=await request('/convenios','POST',tokens.GE,body);assert.equal(r.status,201);assert.equal(r.data.montoCooperacion,1330.25);assert.match(r.data.codigo,/^CONV-2026-/);
+  assert.equal((await request('/convenios','POST',tokens.JD,body)).status,403);
+  assert.equal((await request(`/convenios/${r.data.id}`,'PUT',tokens.JD,{fechaVencimiento:'2028-05-14'})).status,403);
+  assert.equal((await request(`/convenios/${r.data.id}`,'PUT',tokens.GE,{fechaVencimiento:'2027-04-14'})).status,400);
+  assert.equal((await request(`/convenios/${r.data.id}`,'PUT',tokens.GE,{fechaVencimiento:'2028-05-14',estado:'Vigente'})).status,200);
+ });
+ await t.test('gobernanza exige referencia HTTP para cumplimiento y restringe roles de consulta',async()=>{
+  const body={numeroActa:'ACTA-VALIDACION-2026',numeroSesion:2,fecha:'2026-10-13',municipioSede:'San Pedro Soloma',libroCGCFolio:'Folio sintético'};
+  assert.equal((await request('/gobernanza/actas','POST',tokens.GE,{...body,urlPdfEscaneado:'javascript:alert(1)'})).status,400);
+  const act=await request('/gobernanza/actas','POST',tokens.GE,body);assert.equal(act.status,201);
+  const a=await request(`/gobernanza/actas/${act.data.id}/acuerdos`,'POST',tokens.GE,{titulo:'Acuerdo validado',descripcion:'Prueba',responsable:'Persona de prueba'});assert.equal(a.status,201);
+  const path=`/gobernanza/acuerdos/${a.data.id}`;
+  assert.equal((await request(path,'PUT',tokens.GE,{estado:'Cumplido'})).status,400);
+  assert.equal((await request(path,'PUT',tokens.GE,{estado:'Cumplido',evidenciaUrl:'javascript:alert(1)'})).status,400);
+  for(const role of ['JD','AUD']) {assert.equal((await request('/gobernanza/actas','GET',tokens[role])).status,200);assert.equal((await request(path,'PUT',tokens[role],{estado:'Pendiente'})).status,403);}
+  assert.equal((await request(path,'PUT',tokens.GE,{estado:'Cumplido',evidenciaUrl:'https://example.test/prueba.pdf'})).status,200);
  });
  await t.test('RF16 ASH consolida viviendas y coberturas de municipios activos',async()=>{
   for(const [municipio,total,water,sanitation] of [['Santa Eulalia',100,80,60],['San Pedro Soloma',50,20,15]]){

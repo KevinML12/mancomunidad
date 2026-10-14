@@ -1,4 +1,5 @@
 <script>
+  import { auth } from '$lib/stores/auth.svelte.js';
   import { onMount } from 'svelte';
   import apiClient from '$lib/apiClient';
   import Icon from '$lib/components/ui/Icon.svelte';
@@ -10,6 +11,7 @@
   let searchQuery = $state('');
   let filtroMunicipio = $state('todos');
 
+  let cantidadesInvalidas = $derived(Number(nuevoCenso.viviendasConAgua) > Number(nuevoCenso.viviendasTotales) || Number(nuevoCenso.viviendasConSaneamiento) > Number(nuevoCenso.viviendasTotales));
   // Modal
   let showModal = $state(false);
   let formLoading = $state(false);
@@ -180,6 +182,7 @@
     </select>
 
     <!-- Botón Nuevo Censo -->
+    {#if auth.puedeEditar('estadisticas')}
     <button 
       onclick={() => showModal = true}
       class="px-6 py-3 bg-[#071D49] hover:bg-black text-white rounded-full text-[13px] font-bold shadow-md transition-all duration-300 hover:-translate-y-0.5 flex items-center gap-2 cursor-pointer"
@@ -187,6 +190,7 @@
       <Icon name="add" className="w-[18px] h-[18px] text-[#1248AA]" stroke={2.5} />
       <span>+ Levantar Censo de Campo</span>
     </button>
+    {:else}<p class="text-sm text-[#071D49]">Acceso de consulta · La captura requiere permiso de edición ASH</p>{/if}
   </div>
 </header>
 
@@ -258,7 +262,7 @@
       <h3 class="text-[12px] font-semibold uppercase tracking-normal text-[#071D49]/40 mb-1">Déficit Comparativo por Municipio</h3>
       <p class="text-[12px] font-medium text-[#071D49]/50">Evidencia territorial para fundamentación técnica de perfiles de inversión Módulo 01</p>
     </div>
-    <span class="text-[12px] font-mono text-[#071D49]/40 uppercase tracking-wider">Censo OMAS 2024</span>
+    <span class="text-[12px] font-mono text-[#071D49]/40 uppercase tracking-wider">Censos registrados</span>
   </div>
 
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
@@ -365,7 +369,7 @@
             </td>
             <td class="py-4 px-4">
               <span class="text-[12px] font-bold text-[#071D49] block">{c.tecnicoResponsable}</span>
-              <span class="text-[12px] text-[#071D49]/40">Encuesta Validada</span>
+              <span class="text-[12px] text-[#071D49]/40">Registro ingresado</span>
             </td>
           </tr>
         {/each}
@@ -375,7 +379,7 @@
 </section>
 
 <!-- MODAL LEVANTAMIENTO DE CENSO (RF16) -->
-{#if showModal}
+{#if showModal && auth.puedeEditar('estadisticas')}
   <!-- svelte-ignore a11y_click_events_have_key_events -->
   <!-- svelte-ignore a11y_no_static_element_interactions -->
   <div transition:fade={{ duration: 180 }} class="fixed inset-0 bg-[#071D49]/20 backdrop-blur-sm z-50 flex items-center justify-center p-4" onclick={() => showModal = false}>
@@ -390,6 +394,7 @@
         </button>
       </div>
 
+      <p class="text-sm mb-4 text-black">Ingrese viviendas censadas, no personas ni porcentajes. Los grupos con agua y con saneamiento pueden coincidir; cada uno debe estar entre cero y el total.</p>
       <form onsubmit={guardarCenso} class="space-y-4">
         <div class="grid grid-cols-2 gap-4">
           <div>
@@ -445,9 +450,10 @@
           <input id="field-8" required type="text" bind:value={nuevoCenso.tecnicoResponsable} placeholder="Nombre del inspector de campo" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#071D49]" />
         </div>
 
+        {#if cantidadesInvalidas}<p role="alert" class="text-red-800 font-medium">Agua y saneamiento no pueden superar las {nuevoCenso.viviendasTotales || 0} viviendas censadas. Corrija las cantidades.</p>{/if}
         <div class="pt-4 flex justify-end gap-3 mt-6 border-t border-gray-50 pt-5">
           <button type="button" onclick={() => showModal = false} class="px-6 py-3 rounded-full font-bold text-[#071D49]/60 hover:bg-gray-50 transition-colors text-[13px]">Cancelar</button>
-          <button type="submit" disabled={formLoading} class="px-8 py-3 bg-[#071D49] text-white rounded-full font-bold hover:bg-black shadow-md transition-all text-[13px] disabled:opacity-50">
+          <button type="submit" disabled={formLoading || cantidadesInvalidas} class="px-8 py-3 bg-[#071D49] text-white rounded-full font-bold hover:bg-black shadow-md transition-all text-[13px] disabled:opacity-50">
             {formLoading ? 'Registrando...' : 'Guardar Censo OMAS'}
           </button>
         </div>

@@ -14,7 +14,7 @@ Primero se ejecutaron las unitarias, luego integración y por último recorridos
 - **31 resultados de integración aprobados**, incluidos los contenedores padre. No equivalen a 31 requisitos completos independientes. Usan rutas HTTP reales, SQLite migrada aislada y transporte S3 simulado. Se añadieron confirmaciones simultáneas, rechazo de otra cuenta editora, permisos retirados después de emitir un ticket y un archivo renombrado PDF cuya huella coincide pero cuyo encabezado no es PDF.
 - Chequeo Svelte: **0 errores, 0 advertencias**. Frontend compilado y cliente Prisma PostgreSQL generado correctamente.
 
-`pruebas.json` conserva los conteos finales. `backend/npm test` ejecuta ahora unitarias antes de integración; el frontend dispone de `npm run test:unit`.
+`pruebas.json` conserva los conteos finales. Desde `backend`, `npm test` ejecuta ahora unitarias antes de integración; el frontend dispone de `npm run test:unit`.
 
 ## Recorridos E2E observados
 
@@ -44,3 +44,9 @@ No se ejecutó pentesting externo, estrés sostenido, revisión antimalware, lec
 Permanecen documentos sintéticos en R2. Los registros de negocio del E2E se crearon solo en SQLite local; no se generaron actas ni convenios ficticios en Neon. Los enlaces históricos no se migran automáticamente y los objetos finales privados sin vínculo requieren limpieza supervisada. Se conservan las limitaciones previas de firmas, CGC, respaldo y retención.
 
 Los archivos nuevos de diseño `.pen` y `design/previews/` que aparecieron en el workspace durante la tarea no forman parte de este cambio.
+
+## Publicación verificada
+
+Backend y frontend READY desde `b472af8`; detalles en `despliegues.json`. La API publicada volvió a pasar carga directa, confirmación y recuperación de un PDF de 5,243,497 bytes, permisos GE/JD, CORS y control de integridad sin discrepancias (`produccion.json`).
+
+En el navegador público se comprobó el nuevo diálogo nativo, rechazo del PDF excesivo con bytes exactos, transferencia y verificación completas del PDF de más de 5 MiB, foco por teclado y limpieza de la referencia después de cancelar y reabrir. Se verificó escritorio de 1440 px sin desbordamiento horizontal y se restauró el tamaño de la ventana. No se guardó un acta ficticia en Neon. `publicado-acta.jpg` muestra la carga completada.

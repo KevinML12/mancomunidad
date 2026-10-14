@@ -1,4 +1,7 @@
 <script>
+  import PdfUpload from '$lib/components/ui/PdfUpload.svelte';
+  import DocumentLink from '$lib/components/ui/DocumentLink.svelte';
+  let documentBusy = $state(false);
   import { onMount } from 'svelte';
   import apiClient from '$lib/apiClient';
   import Icon from '$lib/components/ui/Icon.svelte';
@@ -89,7 +92,7 @@
     finally { acuerdoLoading=false; }
   }
   async function guardarCumplimiento(event) {
-    event.preventDefault(); acuerdoLoading=true;
+    event.preventDefault(); if (!enlaceCumplimiento) {toast.error('Adjunte el PDF de respaldo antes de guardar');return;} acuerdoLoading=true;
     try {
       await apiClient.put(`/gobernanza/acuerdos/${acuerdoPendiente.id}`,{estado:'Cumplido',evidenciaUrl:enlaceCumplimiento});
       acuerdoPendiente=null; toast.success('Cumplimiento registrado con referencia documental'); await fetchActas();
@@ -294,7 +297,7 @@
 
           <div class="pt-3 border-t border-gray-50 flex items-center justify-between text-[11px]">
             <span class="text-[12px] font-mono text-[#071D49]/40">{a.libroCGCFolio}</span>
-            {#if a.urlPdfEscaneado}<a href={a.urlPdfEscaneado} target="_blank" rel="noopener noreferrer" class="text-[#1248AA] font-bold">Abrir PDF del acta</a>{:else}<span>Sin PDF adjunto</span>{/if}
+            <DocumentLink reference={a.urlPdfEscaneado} tipo="acta" id={a.id} label="Abrir PDF del acta" />
           </div>
         </div>
       {/each}
@@ -322,20 +325,11 @@
           </p>
         </div>
 
-        {#if selectedActa.urlPdfEscaneado}
-          <a 
-            href={selectedActa.urlPdfEscaneado} 
-            target="_blank" rel="noopener noreferrer"
-            class="px-4 py-2.5 bg-gray-50 hover:bg-gray-100 text-[#071D49] rounded-full text-[11px] font-bold border border-gray-200 shadow-xs flex items-center gap-2 transition-colors shrink-0"
-          >
-            <Icon name="visibility" className="w-4 h-4 text-[#1248AA]" />
-            <span>Abrir PDF del acta</span>
-          </a>
-        {/if}
+        <DocumentLink reference={selectedActa.urlPdfEscaneado} tipo="acta" id={selectedActa.id} label="Abrir PDF del acta" />
       </div>
 
-      {#if auth.puedeEditar('gobernanza')}<button class="rounded-full px-5 py-2 bg-[#071D49] text-white" onclick={() => showAcuerdo=!showAcuerdo}>Registrar acuerdo de esta acta</button>{/if}
-      <p class="text-sm text-[#071D49]">Los documentos se abren desde el enlace registrado en otra pestaña. Un enlace o estado registrado no acredita firmas, autenticidad ni autorización CGC.</p>
+      {#if auth.puedeEditar('gobernanza')}<button class="rounded-full px-5 py-2 bg-[#071D49] text-white" disabled={documentBusy} onclick={() => showAcuerdo=!showAcuerdo}>Registrar acuerdo de esta acta</button>{/if}
+      <p class="text-sm text-[#071D49]">Los PDF privados se abren con autorización y acceso temporal en otra pestaña. Los enlaces anteriores siguen siendo externos. El archivo no acredita por sí solo firmas ni autorización CGC.</p>
       <!-- Listado de Acuerdos -->
       <div class="space-y-4">
         {#if !selectedActa.acuerdos || selectedActa.acuerdos.length === 0}
@@ -391,17 +385,7 @@
                   Responsable: <strong class="text-[#071D49]">{acuerdo.responsable}</strong>
                 </span>
 
-                {#if acuerdo.evidenciaUrl}
-                  <a href={acuerdo.evidenciaUrl} target="_blank" rel="noopener noreferrer" class="text-[#1248AA] font-bold flex items-center gap-1 hover:underline">
-                    <Icon name="link" className="w-3.5 h-3.5" />
-                    <span>Ver Evidencia</span>
-                  </a>
-                {:else if esCumplido}
-                  <span class="text-emerald-700 font-bold flex items-center gap-1">
-                    <Icon name="verified" className="w-3.5 h-3.5" />
-                    <span>Sin referencia documental</span>
-                  </span>
-                {/if}
+                <DocumentLink reference={acuerdo.evidenciaUrl} tipo="acuerdo" id={acuerdo.id} label="Ver evidencia" />
               </div>
             </div>
           {/each}
@@ -417,14 +401,14 @@
 {#if showModal && auth.puedeEditar('gobernanza')}
   <!-- svelte-ignore a11y_click_events_have_key_events -->
   <!-- svelte-ignore a11y_no_static_element_interactions -->
-  <div transition:fade={{ duration: 180 }} class="fixed inset-0 bg-[#071D49]/20 backdrop-blur-sm z-50 flex items-center justify-center p-4" onclick={() => showModal = false}>
+  <div transition:fade={{ duration: 180 }} class="fixed inset-0 bg-[#071D49]/20 backdrop-blur-sm z-50 flex items-center justify-center p-4" onclick={() => {if (!documentBusy && !formLoading) showModal = false;}}>
     <div transition:fly={{ y: 20, duration: 250 }} class="glass-light mfn-form-dialog rounded-[32px] w-full max-w-xl  p-8  " onclick={e => e.stopPropagation()}>
       <div class="flex justify-between items-center mb-6 border-b border-gray-50 pb-4">
         <div>
           <span class="text-[12px] font-bold uppercase tracking-normal text-[#1248AA]">Asamblea General MFN</span>
           <h2 class="text-xl font-semibold text-[#071D49] tracking-tight">Registro de acta</h2>
         </div>
-        <button onclick={() => showModal = false} class="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors">
+        <button onclick={() => {if (!documentBusy && !formLoading) showModal = false;}} class="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors">
           <Icon name="close" className="w-5 h-5 text-[#071D49]/50" stroke={2} />
         </button>
       </div>
@@ -478,15 +462,11 @@
           <input id="field-7" required type="text" bind:value={nuevaActa.lugarReunion} placeholder="Ej: Salón de Honor Municipal" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#071D49]" />
         </div>
 
-        <div>
-          <label for="field-8" class="block text-[12px] font-bold uppercase tracking-normal text-[#071D49]/40 mb-1.5">Enlace de un PDF ya alojado (opcional)</label>
-          <input id="field-8" type="url" bind:value={nuevaActa.urlPdfEscaneado} placeholder="https://…" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#071D49]" />
-        </div>
+        <PdfUpload tipo="acta" bind:value={nuevaActa.urlPdfEscaneado} onbusy={busy=>documentBusy=busy} />
 
-        <p class="text-sm">Este registro guarda un enlace; todavía no sube archivos. Sin enlace, el acta quedará sin PDF adjunto.</p>
         <div class="pt-4 flex justify-end gap-3 mt-6 border-t border-gray-50 pt-5">
-          <button type="button" onclick={() => showModal = false} class="px-6 py-3 rounded-full font-bold text-[#071D49]/60 hover:bg-gray-50 transition-colors text-[13px]">Cancelar</button>
-          <button type="submit" disabled={formLoading} class="px-8 py-3 bg-[#071D49] text-white rounded-full font-bold hover:bg-black shadow-md transition-all text-[13px] disabled:opacity-50">
+          <button type="button" onclick={() => {if (!documentBusy && !formLoading) showModal = false;}} class="px-6 py-3 rounded-full font-bold text-[#071D49]/60 hover:bg-gray-50 transition-colors text-[13px]">Cancelar</button>
+          <button type="submit" disabled={formLoading || documentBusy} class="px-8 py-3 bg-[#071D49] text-white rounded-full font-bold hover:bg-black shadow-md transition-all text-[13px] disabled:opacity-50">
             {formLoading ? 'Indexando...' : 'Registrar acta'}
           </button>
         </div>
@@ -504,9 +484,9 @@
 <label class="block">Descripción<textarea required bind:value={nuevoAcuerdo.descripcion} maxlength="4000" class="block w-full bg-white border rounded-xl p-3"></textarea></label>
 <label class="block">Responsable<input required bind:value={nuevoAcuerdo.responsable} maxlength="200" class="block w-full bg-white border rounded-xl p-3" /></label>
 <label class="block">Fecha de cumplimiento prevista (opcional)<input type="date" bind:value={nuevoAcuerdo.fechaCumplimiento} class="block w-full bg-white border rounded-xl p-3" /></label>
-<label class="block">Enlace de respaldo ya alojado (opcional)<input type="url" bind:value={nuevoAcuerdo.evidenciaUrl} placeholder="https://…" class="block w-full bg-white border rounded-xl p-3" /></label>
+<PdfUpload tipo="acuerdo" bind:value={nuevoAcuerdo.evidenciaUrl} onbusy={busy=>documentBusy=busy} />
 <p class="text-sm">Se registra En Proceso. El responsable es texto consignado; todavía no asigna una cuenta de usuario.</p>
-<div class="flex justify-end gap-3"><button type="button" disabled={acuerdoLoading} onclick={()=>showAcuerdo=false}>Cancelar</button><button disabled={acuerdoLoading} class="bg-[#071D49] text-white rounded-full px-5 py-3">Guardar acuerdo</button></div>
+<div class="flex justify-end gap-3"><button type="button" disabled={acuerdoLoading || documentBusy} onclick={()=>showAcuerdo=false}>Cancelar</button><button disabled={acuerdoLoading || documentBusy} class="bg-[#071D49] text-white rounded-full px-5 py-3">Guardar acuerdo</button></div>
 </form></dialog></div>
 {/if}
 {#if acuerdoPendiente && auth.puedeEditar('gobernanza')}
@@ -514,8 +494,8 @@
 <dialog open aria-modal="true" aria-labelledby="titulo-cumplimiento" class="relative m-0 glass-light mfn-form-dialog max-w-lg w-full rounded-[24px] p-6 space-y-4">
 <h2 id="titulo-cumplimiento" class="text-xl font-semibold">Registrar cumplimiento</h2><p>{acuerdoPendiente.titulo}</p>
 <form onsubmit={guardarCumplimiento} class="space-y-4">
-<label class="block">Enlace del documento de cumplimiento<input type="url" required bind:value={enlaceCumplimiento} placeholder="https://…" class="block w-full bg-white border rounded-xl p-3" /></label>
-<p class="text-sm">El documento debe estar alojado previamente. Guardar el enlace no verifica su contenido ni sus firmas.</p>
-<div class="flex justify-end gap-3"><button type="button" disabled={acuerdoLoading} onclick={()=>acuerdoPendiente=null}>Cancelar</button><button disabled={acuerdoLoading} class="bg-[#071D49] text-white rounded-full px-5 py-3">Guardar cumplimiento</button></div>
+<PdfUpload tipo="acuerdo" required bind:value={enlaceCumplimiento} onbusy={busy=>documentBusy=busy} />
+<p class="text-sm">Adjunte el PDF de respaldo para registrar cumplimiento. La carga no verifica firmas ni validez legal.</p>
+<div class="flex justify-end gap-3"><button type="button" disabled={acuerdoLoading || documentBusy} onclick={()=>acuerdoPendiente=null}>Cancelar</button><button disabled={acuerdoLoading || documentBusy} class="bg-[#071D49] text-white rounded-full px-5 py-3">Guardar cumplimiento</button></div>
 </form></dialog></div>
 {/if}

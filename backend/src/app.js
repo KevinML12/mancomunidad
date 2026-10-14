@@ -2,6 +2,7 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
+import { DocumentServiceError } from './services/documents.js';
 import { ValidationError } from './services/errors.js';
 
 import identityRoutes from './modules/identity/index.js';
@@ -34,6 +35,7 @@ app.use((req, res) => res.status(404).json({ error: 'Ruta no encontrada' }));
 
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
+  if (err instanceof DocumentServiceError) return res.status(err.status).json({error:err.message});
   if (err instanceof ValidationError) return res.status(400).json({ error: err.message });
   if (err?.code === 'P2025') return res.status(404).json({ error: 'Registro no encontrado' });
   if (err?.code === 'P2002') return res.status(409).json({ error: 'El registro ya existe. Actualice la lista antes de reintentar.' });

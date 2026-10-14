@@ -1,4 +1,6 @@
 import test from 'node:test';
+import crypto from 'node:crypto';
+import { startR2Mock, pdfFixture } from '../helpers/r2-mock.js';
 import assert from 'node:assert/strict';
 import { mkdtemp, writeFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
@@ -195,6 +197,60 @@ test('Rutas reales con base migrada y aislada', async t => {
   assert.equal((await request(`/proyectos/${id}`,'PUT',tokens.GE,{fechaInicioPlanificada:'2026-12-01'})).status,400);
   assert.equal((await request(`/proyectos/${id}`,'PUT',tokens.GE,{fechaFinPlanificada:''})).status,200);
   assert.equal((await prisma.proyecto.findUnique({where:{id}})).fechaFinPlanificada,null);
+ });
+ await t.test('R2 privado: carga directa, archivo verificado, referencia y descarga con permisos',async()=>{
+  const saved=Object.fromEntries(['R2_ENDPOINT','R2_BUCKET','R2_ACCESS_KEY_ID','R2_SECRET_ACCESS_KEY'].map(k=>[k,process.env[k]]));
+  const restore=()=>{for(const [key,value] of Object.entries(saved))if(value===undefined)delete process.env[key];else process.env[key]=value;};
+  for(const key of Object.keys(saved))delete process.env[key];
+  const pdf=pdfFixture();const sha256=crypto.createHash('sha256').update(pdf).digest('hex');
+  const body={tipo:'acta',nombre:'acta-prueba.pdf',tipoMime:'application/pdf',bytes:pdf.length,sha256};
+  assert.equal((await request('/documentos/preparar','POST',null,body)).status,401);
+  assert.equal((await request('/documentos/preparar','POST',tokens.JD,body)).status,403);
+  assert.equal((await request('/documentos/preparar','POST',tokens.GE,body)).status,503);
+  const mock=await startR2Mock();
+  try {
+   Object.assign(process.env,{R2_ENDPOINT:mock.endpoint,R2_BUCKET:'mfn-test-private',R2_ACCESS_KEY_ID:'test-only-key',R2_SECRET_ACCESS_KEY:'test-only-secret'});
+   assert.equal((await request('/documentos/preparar','POST',tokens.GE,{...body,bytes:11*1024*1024})).status,400);
+   assert.equal((await request('/documentos/preparar','POST',tokens.GE,{...body,tipoMime:'text/plain'})).status,400);
+   const prepared=await request('/documentos/preparar','POST',tokens.GE,body);assert.equal(prepared.status,200);
+   assert.equal((await request('/proyectos','GET',prepared.data.ticket)).status,401);
+   assert.equal((await request('/documentos/confirmar','POST',tokens.GE,{ticket:prepared.data.ticket})).status,400);
+   const altered=Buffer.from(pdf);altered[15]^=1;
+   await fetch(prepared.data.uploadUrl,{method:'PUT',headers:{'Content-Type':'application/pdf'},body:altered});
+   assert.equal((await request('/documentos/confirmar','POST',tokens.GE,{ticket:prepared.data.ticket})).status,400);
+   await fetch(prepared.data.uploadUrl,{method:'PUT',headers:{'Content-Type':'application/pdf'},body:pdf});
+   const finished=await request('/documentos/confirmar','POST',tokens.GE,{ticket:prepared.data.ticket});assert.equal(finished.status,200);assert.equal(finished.data.sha256,sha256);assert.ok(finished.data.reference.startsWith('r2://'));
+   assert.equal((await request('/documentos/confirmar','POST',tokens.GE,{ticket:prepared.data.ticket})).data.reference,finished.data.reference);
+   const actaBody={numeroActa:'ACTA-R2-PRUEBA',numeroSesion:1,fecha:'2026-10-13',municipioSede:'Santa Eulalia',libroCGCFolio:'Folio de prueba R2',urlPdfEscaneado:finished.data.reference};
+   assert.equal((await request('/gobernanza/actas','POST',tokens.GE,{...actaBody,urlPdfEscaneado:'r2://invalido'})).status,400);
+   const acta=await request('/gobernanza/actas','POST',tokens.GE,actaBody);assert.equal(acta.status,201);
+   const lookup={tipo:'acta',id:acta.data.id};
+   assert.equal((await request('/documentos/abrir','POST',null,lookup)).status,401);
+   assert.equal((await request('/documentos/abrir','POST',tokens.EMP,lookup)).status,403);
+   const opened=await request('/documentos/abrir','POST',tokens.JD,lookup);assert.equal(opened.status,200);assert.equal(opened.data.expiresIn,120);
+   assert.deepEqual(Buffer.from(await (await fetch(opened.data.url)).arrayBuffer()),pdf);
+   // Replaying the temporary upload cannot change the linked final object.
+   await fetch(prepared.data.uploadUrl,{method:'PUT',headers:{'Content-Type':'application/pdf'},body:altered});
+   assert.deepEqual(Buffer.from(await (await fetch(opened.data.url)).arrayBuffer()),pdf);
+   const finishedAgain=await request('/documentos/confirmar','POST',tokens.GE,{ticket:prepared.data.ticket});assert.equal(finishedAgain.data.reference,finished.data.reference);
+   assert.equal((await request('/documentos/abrir','POST',tokens.JD,{tipo:'acta',id:999999})).status,404);
+   // Browser-sized payload exceeds Vercel's body limit, but only metadata reaches Express.
+   const largePdf=Buffer.concat([pdf.subarray(0,pdf.lastIndexOf('%%EOF')),Buffer.from('%'),Buffer.alloc(5*1024*1024,32),Buffer.from('\n%%EOF\n')]);
+   const largeHash=crypto.createHash('sha256').update(largePdf).digest('hex');
+   for(const tipo of ['convenio','acuerdo']) {
+    const prep=await request('/documentos/preparar','POST',tokens.GE,{...body,tipo,bytes:largePdf.length,sha256:largeHash});assert.equal(prep.status,200);
+    assert.equal((await fetch(prep.data.uploadUrl,{method:'PUT',headers:{'Content-Type':'application/pdf'},body:largePdf})).status,200);
+    const confirmed=await request('/documentos/confirmar','POST',tokens.GE,{ticket:prep.data.ticket});assert.equal(confirmed.status,200);assert.equal(confirmed.data.sha256,largeHash);
+    if(tipo==='convenio') {
+     const saved=await request('/convenios','POST',tokens.GE,{nombre:'Convenio PDF privado',entidadCooperante:'Prueba',coordinadorMFN:'Persona prueba',fechaSuscripcion:'2026-10-13',fechaVencimiento:'2027-10-13',urlDocumento:confirmed.data.reference});assert.equal(saved.status,201);
+     assert.equal((await request('/documentos/abrir','POST',tokens.JD,{tipo,id:saved.data.id})).status,200);
+    } else {
+     const saved=await request(`/gobernanza/actas/${acta.data.id}/acuerdos`,'POST',tokens.GE,{titulo:'Acuerdo con PDF',descripcion:'Respaldo sintético de prueba',responsable:'Prueba',estado:'Cumplido',evidenciaUrl:confirmed.data.reference});assert.equal(saved.status,201);
+     assert.equal((await request('/documentos/abrir','POST',tokens.JD,{tipo,id:saved.data.id})).status,200);
+    }
+   }
+   const wrongScope=await request('/convenios','POST',tokens.GE,{nombre:'Convenio',entidadCooperante:'Prueba',coordinadorMFN:'Persona prueba',fechaSuscripcion:'2026-10-13',fechaVencimiento:'2027-10-13',urlDocumento:finished.data.reference});assert.equal(wrongScope.status,400);
+  }finally{restore();await new Promise(resolve=>mock.server.close(resolve));}
  });
  await t.test('consulta de integridad no escribe; auditoría distingue cambios autorizados',async()=>{
   const before=await prisma.puntoControlIntegridad.count();await request('/inteligencia/sello-forense?sellar=true','GET',tokens.GE);assert.equal(await prisma.puntoControlIntegridad.count(),before);

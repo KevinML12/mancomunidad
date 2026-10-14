@@ -1,4 +1,5 @@
-import { text, choice, numeric, date, url } from '../../services/validation.js';
+import { documentReference } from '../../services/documents.js';
+import { text, choice, numeric, date } from '../../services/validation.js';
 import { MUNICIPIOS_MFN } from '../../lib/municipios.js';
 import { ValidationError } from '../../services/errors.js';
 import { Router } from 'express';
@@ -81,7 +82,7 @@ router.post('/actas', requirePermission('gobernanza', 'editar'), async (req, res
         municipioSede:choice(municipioSede,MUNICIPIOS_MFN,'Municipio sede'),
         lugarReunion:text(lugarReunion,'Lugar de reunión',{optional:true}),
         libroCGCFolio:text(libroCGCFolio,'Folio consignado'),
-        urlPdfEscaneado:url(urlPdfEscaneado,'Enlace del acta')
+        urlPdfEscaneado:await documentReference(urlPdfEscaneado,'acta',req.user.sub)
       }
     });
 
@@ -102,7 +103,7 @@ router.post('/actas/:id/acuerdos', requirePermission('gobernanza', 'editar'), as
     const acta = await prisma.actaAsamblea.findUnique({ where: { id: actaId } });
     if (!acta) return res.status(404).json({error:'Acta no encontrada'});
     const validatedState = choice(estado === undefined ? 'En Proceso' : estado,['Pendiente','En Proceso','Cumplido'],'Estado');
-    const reference = url(evidenciaUrl,'Enlace de evidencia');
+    const reference = await documentReference(evidenciaUrl,'acuerdo',req.user.sub);
     if (validatedState === 'Cumplido' && !reference) throw new ValidationError('Adjunte una referencia documental para registrar cumplimiento');
     const codigo = `ACU-${acta.numeroActa}-${(count + 1).toString().padStart(2, '0')}`;
 
@@ -134,7 +135,7 @@ router.put('/acuerdos/:id', requirePermission('gobernanza', 'editar'), async (re
     const current = await prisma.acuerdoGobernanza.findUnique({where:{id}});
     if (!current) return res.status(404).json({error:'Acuerdo no encontrado'});
     const nextState = choice(estado,['Pendiente','En Proceso','Cumplido'],'Estado');
-    const reference = evidenciaUrl === undefined ? url(current.evidenciaUrl,'Enlace de evidencia') : url(evidenciaUrl,'Enlace de evidencia');
+    const reference = await documentReference(evidenciaUrl === undefined ? current.evidenciaUrl : evidenciaUrl,'acuerdo',req.user.sub,{existing:current.evidenciaUrl});
     if (nextState === 'Cumplido' && !reference) throw new ValidationError('Adjunte una referencia documental para registrar cumplimiento');
     const updated = await prisma.acuerdoGobernanza.update({
       where: { id },

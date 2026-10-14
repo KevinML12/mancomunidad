@@ -8,7 +8,9 @@ import estadisticasRoutes from './estadisticas.routes.js';
 import transparenciaRoutes from './transparencia.routes.js';
 import inteligenciaRoutes from './inteligencia.routes.js';
 
+import documentosRoutes from './documentos.routes.js';
 const router = Router();
+router.use('/documentos',documentosRoutes);
 
 // Seven institutional modules plus the territorial intelligence extension.
 router.use('/proyectos', proyectosRoutes);

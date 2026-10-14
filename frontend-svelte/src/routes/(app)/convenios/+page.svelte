@@ -1,4 +1,7 @@
 <script>
+  import PdfUpload from '$lib/components/ui/PdfUpload.svelte';
+  import DocumentLink from '$lib/components/ui/DocumentLink.svelte';
+  let documentBusy = $state(false);
   import { auth } from '$lib/stores/auth.svelte.js';
   import { onMount } from 'svelte';
   import apiClient from '$lib/apiClient';
@@ -318,16 +321,7 @@
         </div>
 
         <div class="flex items-center gap-2">
-          {#if conv.urlDocumento}
-            <a 
-              href={conv.urlDocumento} 
-              target="_blank" rel="noopener noreferrer"
-              class="px-3 py-1.5 rounded-full border border-gray-200 hover:bg-gray-100 text-[11px] font-bold text-[#071D49] transition-colors flex items-center gap-1.5"
-            >
-              <Icon name="description" className="w-3.5 h-3.5 text-[#1248AA]" />
-              <span>Instrumento</span>
-            </a>
-          {/if}
+          <DocumentLink reference={conv.urlDocumento} tipo="convenio" id={conv.id} label="Abrir instrumento PDF" />
 
           {#if auth.puedeEditar('convenios')}
           <button 
@@ -348,14 +342,14 @@
 {#if showModal && auth.puedeEditar('convenios')}
   <!-- svelte-ignore a11y_click_events_have_key_events -->
   <!-- svelte-ignore a11y_no_static_element_interactions -->
-  <div transition:fade={{ duration: 180 }} class="fixed inset-0 bg-[#071D49]/20 backdrop-blur-sm z-50 flex items-center justify-center p-4" onclick={() => showModal = false}>
+  <div transition:fade={{ duration: 180 }} class="fixed inset-0 bg-[#071D49]/20 backdrop-blur-sm z-50 flex items-center justify-center p-4" onclick={() => {if (!documentBusy && !formLoading) showModal = false;}}>
     <div transition:fly={{ y: 20, duration: 250 }} class="glass-light mfn-form-dialog rounded-[32px] w-full max-w-xl  p-8  " onclick={e => e.stopPropagation()}>
       <div class="flex justify-between items-center mb-6 border-b border-gray-50 pb-4">
         <div>
           <span class="text-[12px] font-bold uppercase tracking-normal text-[#1248AA]">Portafolio de Alianzas</span>
           <h2 class="text-xl font-semibold text-[#071D49] tracking-tight">Nuevo Convenio Interinstitucional</h2>
         </div>
-        <button onclick={() => showModal = false} class="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors">
+        <button onclick={() => {if (!documentBusy && !formLoading) showModal = false;}} class="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors">
           <Icon name="close" className="w-5 h-5 text-[#071D49]/50" stroke={2} />
         </button>
       </div>
@@ -411,15 +405,11 @@
           <input id="field-8" required type="text" bind:value={nuevoConvenio.coordinadorMFN} class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#071D49]" />
         </div>
 
-        <div>
-          <label for="field-9" class="block text-[12px] font-bold uppercase tracking-normal text-[#071D49]/40 mb-1.5">Enlace de un PDF ya alojado (opcional)</label>
-          <input id="field-9" type="url" bind:value={nuevoConvenio.urlDocumento} placeholder="https://…" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#071D49]" />
-        </div>
+        <PdfUpload tipo="convenio" bind:value={nuevoConvenio.urlDocumento} onbusy={busy=>documentBusy=busy} />
 
-        <p class="text-sm text-[#071D49]">Este formulario registra un enlace; todavía no carga archivos. Sin enlace, el convenio se guarda sin documento adjunto.</p>
         <div class="pt-4 flex justify-end gap-3 mt-6 border-t border-gray-50 pt-5">
-          <button type="button" onclick={() => showModal = false} class="px-6 py-3 rounded-full font-bold text-[#071D49]/60 hover:bg-gray-50 transition-colors text-[13px]">Cancelar</button>
-          <button type="submit" disabled={formLoading} class="px-8 py-3 bg-[#071D49] text-white rounded-full font-bold hover:bg-black shadow-md transition-all text-[13px] disabled:opacity-50">
+          <button type="button" onclick={() => {if (!documentBusy && !formLoading) showModal = false;}} class="px-6 py-3 rounded-full font-bold text-[#071D49]/60 hover:bg-gray-50 transition-colors text-[13px]">Cancelar</button>
+          <button type="submit" disabled={formLoading || documentBusy} class="px-8 py-3 bg-[#071D49] text-white rounded-full font-bold hover:bg-black shadow-md transition-all text-[13px] disabled:opacity-50">
             {formLoading ? 'Registrando...' : 'Incorporar Convenio'}
           </button>
         </div>

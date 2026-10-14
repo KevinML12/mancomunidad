@@ -1,5 +1,6 @@
+import { documentReference } from '../../services/documents.js';
 import crypto from 'node:crypto';
-import { text, numeric, choice, date, chronological, url } from '../../services/validation.js';
+import { text, numeric, choice, date, chronological } from '../../services/validation.js';
 import { ValidationError } from '../../services/errors.js';
 import { Router } from 'express';
 import prisma from '../../lib/prisma.js';
@@ -77,7 +78,7 @@ router.post('/', requirePermission('convenios', 'editar'), async (req, res, next
       montoCooperacion:numeric(body.montoCooperacion === undefined ? 0 : body.montoCooperacion,'Monto de cooperación',{money:true}),
       contrapartidaMFN:numeric(body.contrapartidaMFN === undefined ? 0 : body.contrapartidaMFN,'Contrapartida MFN',{money:true}),
       fechaSuscripcion,fechaVencimiento,
-      urlDocumento:url(body.urlDocumento,'Enlace del documento'),
+      urlDocumento:await documentReference(body.urlDocumento,'convenio',req.user.sub),
       coordinadorMFN:text(body.coordinadorMFN,'Coordinador MFN'),estado:'Vigente'
     }});
 
@@ -100,7 +101,7 @@ router.put('/:id', requirePermission('convenios', 'editar'), async (req, res, ne
       chronological(current.fechaSuscripcion,data.fechaVencimiento);
       if (data.fechaVencimiento <= current.fechaVencimiento) throw new ValidationError('La prórroga debe ser posterior al vencimiento registrado');
     }
-    if (req.body.urlDocumento !== undefined) data.urlDocumento=url(req.body.urlDocumento,'Enlace del documento') ?? null;
+    if (req.body.urlDocumento !== undefined) data.urlDocumento=await documentReference(req.body.urlDocumento,'convenio',req.user.sub,{existing:current.urlDocumento}) ?? null;
     const updated = await prisma.convenioInstitucional.update({where:{id},data});
 
     res.json(updated);

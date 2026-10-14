@@ -1,4 +1,5 @@
 <script>
+  import FormDialog from '$lib/components/ui/FormDialog.svelte';
   import PdfUpload from '$lib/components/ui/PdfUpload.svelte';
   import DocumentLink from '$lib/components/ui/DocumentLink.svelte';
   let documentBusy = $state(false);
@@ -18,6 +19,7 @@
   // Modal
   let showModal = $state(false);
   let formLoading = $state(false);
+  let formError = $state('');
   let nuevoConvenio = $state({
     nombre: '',
     tipoOrganizacion: 'Cooperación Internacional',
@@ -29,6 +31,21 @@
     urlDocumento: '',
     coordinadorMFN: ''
   });
+
+  function cerrarRegistro() {
+    if(documentBusy || formLoading)return;
+    showModal=false; formError=''; nuevoConvenio={
+    nombre: '',
+    tipoOrganizacion: 'Cooperación Internacional',
+    entidadCooperante: '',
+    montoCooperacion: 0,
+    contrapartidaMFN: 0,
+    fechaSuscripcion: '',
+    fechaVencimiento: '',
+    urlDocumento: '',
+    coordinadorMFN: ''
+  };
+  }
 
   async function fetchConvenios() {
     loading = true;
@@ -100,7 +117,7 @@
   async function guardarConvenio(e) {
     e.preventDefault();
     if (!auth.puedeEditar('convenios')) return;
-    formLoading = true;
+    formError=''; formLoading = true;
     try {
       await apiClient.post('/convenios', {
         ...nuevoConvenio,
@@ -124,7 +141,7 @@
       await fetchConvenios();
     } catch (err) {
       console.error('Error al guardar convenio:', err);
-      toast.error(err.response?.data?.error || 'No se pudo guardar el convenio. Revise su conexión');
+      formError=err.response?.data?.error || 'No se pudo guardar el convenio. Revise su conexión';
     } finally {
       formLoading = false;
     }
@@ -273,7 +290,7 @@
         </p>
 
         <!-- Bloque de Montos Comprometidos -->
-        <div class="grid grid-cols-2 gap-4 p-4 rounded-2xl bg-[#FFFFFF] border border-gray-100 mb-5">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 rounded-2xl bg-[#FFFFFF] border border-gray-100 mb-5">
           <div>
             <span class="text-[12px] font-bold uppercase tracking-wider text-[#071D49]/40 block mb-1">Monto Cooperación</span>
             <p class="text-base font-semibold text-[#071D49]">
@@ -340,27 +357,14 @@
 
 <!-- MODAL REGISTRO DE CONVENIO -->
 {#if showModal && auth.puedeEditar('convenios')}
-  <!-- svelte-ignore a11y_click_events_have_key_events -->
-  <!-- svelte-ignore a11y_no_static_element_interactions -->
-  <div transition:fade={{ duration: 180 }} class="fixed inset-0 bg-[#071D49]/20 backdrop-blur-sm z-50 flex items-center justify-center p-4" onclick={() => {if (!documentBusy && !formLoading) showModal = false;}}>
-    <div transition:fly={{ y: 20, duration: 250 }} class="glass-light mfn-form-dialog rounded-[32px] w-full max-w-xl  p-8  " onclick={e => e.stopPropagation()}>
-      <div class="flex justify-between items-center mb-6 border-b border-gray-50 pb-4">
-        <div>
-          <span class="text-[12px] font-bold uppercase tracking-normal text-[#1248AA]">Portafolio de Alianzas</span>
-          <h2 class="text-xl font-semibold text-[#071D49] tracking-tight">Nuevo Convenio Interinstitucional</h2>
-        </div>
-        <button onclick={() => {if (!documentBusy && !formLoading) showModal = false;}} class="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors">
-          <Icon name="close" className="w-5 h-5 text-[#071D49]/50" stroke={2} />
-        </button>
-      </div>
-
-      <form onsubmit={guardarConvenio} class="space-y-4">
+  <FormDialog title="Nuevo convenio" kicker="Cooperación interinstitucional" description="Defina la vigencia, los aportes y el instrumento del acuerdo." busy={documentBusy || formLoading} onclose={cerrarRegistro}>
+      <form oninput={()=>formError=''} onsubmit={guardarConvenio} class="space-y-4">
         <div>
           <label for="field-1" class="block text-[12px] font-bold uppercase tracking-normal text-[#071D49]/40 mb-1.5">Nombre del Convenio o Acuerdo</label>
           <input id="field-1" required type="text" bind:value={nuevoConvenio.nombre} placeholder="Ej: Convenio de Cooperación No Reembolsable..." class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#071D49]" />
         </div>
 
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label for="field-2" class="block text-[12px] font-bold uppercase tracking-normal text-[#071D49]/40 mb-1.5">Tipo de Organización</label>
             <select id="field-2" bind:value={nuevoConvenio.tipoOrganizacion} class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[12px] text-[#071D49]">
@@ -376,7 +380,7 @@
           </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label for="field-4" class="block text-[12px] font-bold uppercase tracking-normal text-[#071D49]/40 mb-1.5">Monto Cooperación ($ USD)</label>
             <input id="field-4" required type="number" min="0" step="0.01" bind:value={nuevoConvenio.montoCooperacion} class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] font-bold text-[#071D49]" />
@@ -388,7 +392,7 @@
           </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label for="field-6" class="block text-[12px] font-bold uppercase tracking-normal text-[#071D49]/40 mb-1.5">Fecha Suscripción</label>
             <input id="field-6" required type="date" bind:value={nuevoConvenio.fechaSuscripcion} class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#071D49]" />
@@ -407,23 +411,20 @@
 
         <PdfUpload tipo="convenio" bind:value={nuevoConvenio.urlDocumento} onbusy={busy=>documentBusy=busy} />
 
+        {#if formError}<p role="alert" class="mfn-upload-error">{formError}</p>{/if}
         <div class="pt-4 flex justify-end gap-3 mt-6 border-t border-gray-50 pt-5">
-          <button type="button" onclick={() => {if (!documentBusy && !formLoading) showModal = false;}} class="px-6 py-3 rounded-full font-bold text-[#071D49]/60 hover:bg-gray-50 transition-colors text-[13px]">Cancelar</button>
+          <button type="button" disabled={documentBusy || formLoading} onclick={cerrarRegistro} class="px-6 py-3 rounded-full font-bold text-[#071D49]/60 hover:bg-gray-50 transition-colors text-[13px]">Cancelar</button>
           <button type="submit" disabled={formLoading || documentBusy} class="px-8 py-3 bg-[#071D49] text-white rounded-full font-bold hover:bg-black shadow-md transition-all text-[13px] disabled:opacity-50">
             {formLoading ? 'Registrando...' : 'Incorporar Convenio'}
           </button>
         </div>
       </form>
-    </div>
-  </div>
+  </FormDialog>
 {/if}
 
 {#if prorroga && auth.puedeEditar('convenios')}
-  <div class="fixed inset-0 z-50 flex items-center justify-center bg-[#071D49]/30 backdrop-blur-sm p-4">
-    <dialog open aria-modal="true" aria-labelledby="titulo-prorroga" class="relative m-0 glass-light mfn-form-dialog w-full max-w-lg rounded-[24px] p-6 space-y-4">
-      <h2 id="titulo-prorroga" class="text-xl font-semibold text-[#071D49]">Registrar prórroga</h2>
-      <p>{prorroga.nombre}</p>
-      <p class="text-sm">Vencimiento actual: {prorroga.fechaVencimiento.slice(0,10)}. Registre únicamente una extensión autorizada; guardar aquí no firma ni aprueba la adenda.</p>
+  <FormDialog title="Registrar prórroga" kicker="Vigencia del convenio" description={prorroga.nombre} busy={prorrogaLoading} onclose={()=>prorroga=null}>
+    <p class="text-sm mb-4">Vencimiento actual: {prorroga.fechaVencimiento.slice(0,10)}. Registre una extensión autorizada; esta acción no firma ni aprueba una adenda.</p>
       <form onsubmit={guardarProrroga} class="space-y-4">
         <label class="block font-semibold" for="prorroga-fecha">Nueva fecha de vencimiento</label>
         <input id="prorroga-fecha" type="date" required bind:value={nuevaFecha} class="w-full border border-blue-200 rounded-xl p-3 bg-white text-black" />
@@ -433,6 +434,5 @@
           <button disabled={prorrogaLoading} class="rounded-full px-5 py-3 bg-[#071D49] text-white">{prorrogaLoading ? 'Guardando...' : 'Guardar nueva vigencia'}</button>
         </div>
       </form>
-    </dialog>
-  </div>
+  </FormDialog>
 {/if}

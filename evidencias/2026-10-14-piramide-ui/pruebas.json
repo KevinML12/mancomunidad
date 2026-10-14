@@ -1,0 +1,26 @@
+{
+  "backendUnit": {
+    "tests": 61,
+    "pass": 61,
+    "fail": 0,
+    "skipped": 0
+  },
+  "frontendUnit": {
+    "tests": 43,
+    "pass": 43,
+    "fail": 0,
+    "skipped": 0
+  },
+  "integration": {
+    "tests": 31,
+    "pass": 31,
+    "fail": 0,
+    "skipped": 0
+  },
+  "frontendCheck": {
+    "errors": 0,
+    "warnings": 0
+  },
+  "e2e": "Recorridos dirigidos mediante navegador; consultar RESULTADOS.md, no suite CI",
+  "environment": "SQLite local aislada + Cloudflare R2 real para E2E; S3 simulado para integración"
+}

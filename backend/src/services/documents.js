@@ -36,7 +36,7 @@ export function documentScope(tipo) {
 function verifyToken(token,type) {
   try {
     const payload=jwt.verify(token,process.env.JWT_SECRET,{algorithms:['HS256']});
-    if (payload.type!==type || !DOCUMENT_TYPES[payload.tipo] || !Number.isInteger(payload.sub) || !/^[a-f0-9]{64}$/.test(payload.sha256) || !Number.isInteger(payload.bytes) || payload.bytes < 8 || payload.bytes > MAX_DOCUMENT_BYTES || payload.bucket!==process.env.R2_BUCKET || !/^[a-f0-9-]{36}$/.test(payload.uploadId)) throw new Error();
+    if (payload.type!==type || !Object.hasOwn(DOCUMENT_TYPES,payload.tipo) || !Number.isInteger(payload.sub) || !/^[a-f0-9]{64}$/.test(payload.sha256) || !Number.isInteger(payload.bytes) || payload.bytes < 8 || payload.bytes > MAX_DOCUMENT_BYTES || payload.bucket!==process.env.R2_BUCKET || !/^[a-f0-9-]{36}$/.test(payload.uploadId)) throw new Error();
     return payload;
   } catch { throw new ValidationError('La autorización del archivo es inválida o venció. Seleccione el PDF nuevamente'); }
 }

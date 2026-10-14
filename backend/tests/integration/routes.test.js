@@ -198,7 +198,7 @@ test('Rutas reales con base migrada y aislada', async t => {
   assert.equal((await request(`/proyectos/${id}`,'PUT',tokens.GE,{fechaFinPlanificada:''})).status,200);
   assert.equal((await prisma.proyecto.findUnique({where:{id}})).fechaFinPlanificada,null);
  });
- await t.test('R2 privado: carga directa, archivo verificado, referencia y descarga con permisos',async()=>{
+ await t.test('R2 privado: carga directa, archivo verificado, referencia y descarga con permisos',async r2=>{
   const saved=Object.fromEntries(['R2_ENDPOINT','R2_BUCKET','R2_ACCESS_KEY_ID','R2_SECRET_ACCESS_KEY'].map(k=>[k,process.env[k]]));
   const restore=()=>{for(const [key,value] of Object.entries(saved))if(value===undefined)delete process.env[key];else process.env[key]=value;};
   for(const key of Object.keys(saved))delete process.env[key];
@@ -212,6 +212,12 @@ test('Rutas reales con base migrada y aislada', async t => {
    Object.assign(process.env,{R2_ENDPOINT:mock.endpoint,R2_BUCKET:'mfn-test-private',R2_ACCESS_KEY_ID:'test-only-key',R2_SECRET_ACCESS_KEY:'test-only-secret'});
    assert.equal((await request('/documentos/preparar','POST',tokens.GE,{...body,bytes:11*1024*1024})).status,400);
    assert.equal((await request('/documentos/preparar','POST',tokens.GE,{...body,tipoMime:'text/plain'})).status,400);
+   await r2.test('archivo renombrado PDF se rechaza aunque su huella coincida',async()=>{
+    const fake=Buffer.alloc(100,65);const sha=crypto.createHash('sha256').update(fake).digest('hex');
+    const prep=await request('/documentos/preparar','POST',tokens.GE,{...body,bytes:fake.length,sha256:sha});assert.equal(prep.status,200);
+    await fetch(prep.data.uploadUrl,{method:'PUT',headers:{'Content-Type':'application/pdf'},body:fake});
+    assert.equal((await request('/documentos/confirmar','POST',tokens.GE,{ticket:prep.data.ticket})).status,400);
+   });
    const prepared=await request('/documentos/preparar','POST',tokens.GE,body);assert.equal(prepared.status,200);
    assert.equal((await request('/proyectos','GET',prepared.data.ticket)).status,401);
    assert.equal((await request('/documentos/confirmar','POST',tokens.GE,{ticket:prepared.data.ticket})).status,400);
@@ -219,8 +225,29 @@ test('Rutas reales con base migrada y aislada', async t => {
    await fetch(prepared.data.uploadUrl,{method:'PUT',headers:{'Content-Type':'application/pdf'},body:altered});
    assert.equal((await request('/documentos/confirmar','POST',tokens.GE,{ticket:prepared.data.ticket})).status,400);
    await fetch(prepared.data.uploadUrl,{method:'PUT',headers:{'Content-Type':'application/pdf'},body:pdf});
+   await r2.test('dos confirmaciones simultáneas mantienen la misma referencia y bytes',async()=>{
+    const concurrent=await Promise.all([request('/documentos/confirmar','POST',tokens.GE,{ticket:prepared.data.ticket}),request('/documentos/confirmar','POST',tokens.GE,{ticket:prepared.data.ticket})]);
+    assert.ok(concurrent.every(x=>x.status===200));assert.equal(concurrent[0].data.reference,concurrent[1].data.reference);
+   });
    const finished=await request('/documentos/confirmar','POST',tokens.GE,{ticket:prepared.data.ticket});assert.equal(finished.status,200);assert.equal(finished.data.sha256,sha256);assert.ok(finished.data.reference.startsWith('r2://'));
    assert.equal((await request('/documentos/confirmar','POST',tokens.GE,{ticket:prepared.data.ticket})).data.reference,finished.data.reference);
+   await r2.test('otra cuenta editora no confirma un envío ajeno',async()=>{
+    const other=await prisma.usuario.create({data:{correo:'otro-editor@example.test',hashContrasena:users.GE.hashContrasena,rolId:users.GE.rolId}});
+    const token=jwt.sign({type:'session',sub:other.id,version:other.sessionVersion},process.env.JWT_SECRET);
+    assert.equal((await request('/documentos/confirmar','POST',token,{ticket:prepared.data.ticket})).status,403);
+   });
+   await r2.test('ticket vencido y ámbito heredado se rechazan',async()=>{
+    const claim=jwt.decode(prepared.data.ticket);delete claim.exp;
+    const expired=jwt.sign(claim,process.env.JWT_SECRET,{expiresIn:-1});
+    assert.equal((await request('/documentos/confirmar','POST',tokens.GE,{ticket:expired})).status,400);
+    assert.equal((await request('/documentos/preparar','POST',tokens.GE,{...body,tipo:'constructor'})).status,400);
+   });
+   await r2.test('retirar edición impide confirmar un ticket anterior',async()=>{
+    const rol=await prisma.rol.findUnique({where:{id:users.GE.rolId}});
+    try{await prisma.rol.update({where:{id:rol.id},data:{permisos:{...rol.permisos,editar:[]}}});
+     assert.equal((await request('/documentos/confirmar','POST',tokens.GE,{ticket:prepared.data.ticket})).status,403);
+    }finally{await prisma.rol.update({where:{id:rol.id},data:{permisos:rol.permisos}});}
+   });
    const actaBody={numeroActa:'ACTA-R2-PRUEBA',numeroSesion:1,fecha:'2026-10-13',municipioSede:'Santa Eulalia',libroCGCFolio:'Folio de prueba R2',urlPdfEscaneado:finished.data.reference};
    assert.equal((await request('/gobernanza/actas','POST',tokens.GE,{...actaBody,urlPdfEscaneado:'r2://invalido'})).status,400);
    const acta=await request('/gobernanza/actas','POST',tokens.GE,actaBody);assert.equal(acta.status,201);

@@ -1,26 +1,22 @@
 <script>
   import apiClient from '$lib/apiClient';
   import { toast } from 'svelte-sonner';
+  import { FileText, ArrowUpRight, LockKeyhole } from 'lucide-svelte';
+  import { documentKind, openPrivatePdf } from '$lib/documents/upload.js';
   let { reference, tipo, id, label='Abrir PDF' }=$props();
   let busy=$state(false);
-  async function open() {
-    busy=true;
-    const tab=window.open('about:blank','_blank');
-    if(tab)tab.opener=null;
-    try {
-      const {data}=await apiClient.post('/documentos/abrir',{tipo,id});
-      if (tab) tab.location.replace(data.url);
-      else toast.error('Permita abrir una pestaña para consultar el PDF y vuelva a intentar');
-    } catch(err) {tab?.close();toast.error(err.response?.data?.error || 'No se pudo abrir el documento');}
-    finally {busy=false;}
+  const kind=$derived(documentKind(reference));
+  async function open(){
+    if(busy)return;busy=true;
+    try{await openPrivatePdf({openWindow:()=>window.open('about:blank','_blank'),authorize:()=>apiClient.post('/documentos/abrir',{tipo,id})});}
+    catch(err){toast.error(err.response?.data?.error || err.message || 'No se pudo abrir el documento');}
+    finally{busy=false;}
   }
 </script>
-{#if reference}
-  {#if reference.startsWith('r2://')}
-    <button type="button" disabled={busy} onclick={open} class="text-sm font-semibold text-[#1248AA] underline disabled:opacity-50">{busy ? 'Autorizando…' : label}</button>
-    <span class="block text-xs text-[#071D49]">PDF privado · acceso temporal</span>
-  {:else if /^https?:\/\//i.test(reference)}
-    <a href={reference} target="_blank" rel="noopener noreferrer" class="text-sm font-semibold text-[#1248AA] underline">{label}</a>
-    <span class="block text-xs text-[#071D49]">Enlace externo histórico</span>
-  {:else}<span class="text-sm text-red-800">Referencia de documento no válida</span>{/if}
-{:else}<span class="text-sm text-[#071D49]">Sin PDF adjunto</span>{/if}
+{#if kind==='private' || kind==='external'}
+<div class="mfn-document-link"><FileText size={19}/><div>
+{#if kind==='private'}<button type="button" disabled={busy} onclick={open}>{busy ? 'Autorizando acceso…' : label}<ArrowUpRight size={15}/></button><small><LockKeyhole size={11}/> Acceso privado · enlace temporal</small>
+{:else}<a href={reference} target="_blank" rel="noopener noreferrer">{label}<ArrowUpRight size={15}/></a><small>Enlace externo · archivo anterior</small>{/if}
+</div></div>
+{:else if kind==='invalid'}<span class="mfn-document-missing">La referencia del PDF necesita revisión</span>
+{:else}<span class="mfn-document-missing"><FileText size={15}/> Sin documento adjunto</span>{/if}

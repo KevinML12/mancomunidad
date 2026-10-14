@@ -7,7 +7,7 @@
     "dev": "nodemon src/server.js",
     "start": "node src/server.js",
     "build": "npx prisma generate --schema prisma/schema.production.prisma",
-    "test": "npm run test:integration",
+    "test": "npm run test:unit && npm run test:integration",
     "test:legacy": "node --test tests/legacy/*.test.js",
     "prisma:migrate": "prisma migrate dev",
     "prisma:generate": "prisma generate",
@@ -16,7 +16,8 @@
     "test:integration": "prisma generate --schema prisma/schema.prisma && node --test tests/integration/*.test.js",
     "permissions:update": "node prisma/update-permissions.js",
     "migrate:production": "prisma db execute --file prisma/production-additions.sql --schema prisma/schema.production.prisma",
-    "migrate:production:bootstrap": "prisma db execute --file prisma/production-bootstrap.sql --schema prisma/schema.production.prisma"
+    "migrate:production:bootstrap": "prisma db execute --file prisma/production-bootstrap.sql --schema prisma/schema.production.prisma",
+    "test:unit": "node --test tests/unit/*.test.js"
   },
   "prisma": {
     "seed": "node prisma/seed.js"

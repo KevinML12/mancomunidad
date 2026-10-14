@@ -1,0 +1,63 @@
+{
+  "fechaGuatemala": "2026-10-13",
+  "deployments": {
+    "backend": {
+      "id": "dpl_GqcwLGsjBUY6pqKLsydAMfEzdoHY",
+      "readyState": "READY",
+      "aliases": [
+        "backend-eosin-omega-81.vercel.app",
+        "backend-kevinml12s-projects.vercel.app"
+      ],
+      "sourceCommit": "6ef09ee04cefb64bdcdb9a94b23611839e4ab077"
+    },
+    "frontend": {
+      "id": "dpl_Go3FP1cBszJjwoAJt8XxaUBPMnAQ",
+      "readyState": "READY",
+      "aliases": [
+        "frontend-svelte-vert.vercel.app",
+        "frontend-svelte-kevinml12s-projects.vercel.app"
+      ],
+      "sourceCommit": "6ef09ee04cefb64bdcdb9a94b23611839e4ab077"
+    }
+  },
+  "consultas": {
+    "GE": {
+      "login": 200,
+      "edicionConvenios": true,
+      "/gobernanza/actas": {
+        "status": 200,
+        "registros": 2
+      },
+      "/convenios": {
+        "status": 200,
+        "registros": 3
+      },
+      "/estadisticas/censos": {
+        "status": 200,
+        "registros": 2
+      }
+    },
+    "integridad": {
+      "status": 200,
+      "estado": "COINCIDE CON PUNTO DE CONTROL",
+      "discrepancias": []
+    },
+    "JD": {
+      "login": 200,
+      "edicionConvenios": false,
+      "/gobernanza/actas": {
+        "status": 200,
+        "registros": 2
+      },
+      "/convenios": {
+        "status": 200,
+        "registros": 3
+      },
+      "/estadisticas/censos": {
+        "status": 200,
+        "registros": 2
+      }
+    }
+  },
+  "browser": "Junta Directiva: inicio con tres áreas principales, panel Otras áreas con seis accesos; datos consultados desde la API de producción."
+}

@@ -59,3 +59,9 @@ El inicio consulta las fuentes principales del rol y el panel superior Otras ár
 ## Comprobaciones técnicas
 
 24 casos de integración HTTP más su suite principal (25 resultados), una prueba de navegación por permisos, chequeo Svelte y compilaciones. Los registros adjuntos contienen únicamente pruebas locales con datos sintéticos. No se aplicaron migraciones ni cambios de esquema.
+
+## Publicación verificada
+
+Código publicado: `6ef09ee04cefb64bdcdb9a94b23611839e4ab077`. Frontend y backend READY, con los alias de producción conservados; detalles en `produccion.json`. Se verificaron login y consultas de GE/JD en producción, sin altas de negocio. El control interno coincide con su punto de control y no reporta discrepancias. El navegador de producción confirmó el inicio de Junta Directiva con tres áreas principales y el panel con seis accesos complementarios.
+
+No se migró la base ni se trasladó el backend: esta publicación sigue en los proyectos existentes de Vercel. Railway/Render, carga privada R2 y el flujo de hitos de la rama separada continúan pendientes.

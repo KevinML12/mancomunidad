@@ -21,7 +21,7 @@
       selloForense = resSello.data;
     } catch (err) {
       console.error('Error al cargar datos de inteligencia:', err);
-      toast.error('No se pudo conectar con el motor de inteligencia territorial');
+      toast.error('No se pudieron cargar los datos');
     } finally {
       loading = false;
     }
@@ -54,18 +54,18 @@
 </svelte:head>
 
 {#if auth.puedeAprobar('inteligencia')}
-  <button onclick={registrarPuntoControl} class="mb-4 px-4 py-2 bg-blue-700 text-white rounded-xl">Registrar punto de control</button>
+  <button onclick={registrarPuntoControl} class="mb-4 px-4 py-2 bg-blue-700 text-white rounded-[4px]">Registrar punto de control</button>
 {/if}
 <!-- HEADER PRINCIPAL -->
-<header class="flex flex-col xl:flex-row xl:items-end justify-between gap-6 mb-8 mt-2 animate-fade-in">
+<header class="mfn-module-header flex flex-col xl:flex-row xl:items-end justify-between gap-6 mb-8 mt-2 animate-fade-in">
   <div>
     <div class="flex items-center gap-2 mb-2">
-      <span class="text-[12px] font-bold uppercase tracking-normal text-[#1248AA]">Módulo 08 Especializado</span>
+      <span class="text-[12px] font-medium uppercase tracking-normal text-[#1248AA]">Control interno</span>
       <span class="text-[12px] text-[#071D49]/30">•</span>
-      <span class="text-[12px] font-bold uppercase tracking-normal text-emerald-600">Innovación Pública Regional</span>
+      <span class="text-[12px] font-medium uppercase tracking-normal text-emerald-600">Integridad de registros</span>
     </div>
-    <h2 class="text-[36px] md:text-[40px] font-semibold tracking-[-0.04em] leading-none text-[#071D49] mb-3">
-      Inteligencia Territorial y Control de Integridad
+    <h2 class="text-[36px] md:text-[40px] font-medium tracking-[-0.04em] leading-none text-[#071D49] mb-3">
+      Análisis territorial e integridad
     </h2>
     <p class="text-[13px] text-[#071D49]/50 leading-relaxed max-w-3xl">
       Orientación de inversión con pesos pendientes de validación institucional y control interno de integridad mediante huellas SHA-256.
@@ -76,7 +76,7 @@
     <button 
       onclick={revalidarSello}
       disabled={verificando}
-      class="px-5 py-3 rounded-full text-[12px] font-bold text-white bg-[#071D49] hover:bg-black transition-all flex items-center gap-2 shadow-xs cursor-pointer disabled:opacity-60"
+      class="px-5 py-3 rounded-full text-[12px] font-medium text-white bg-[#071D49] hover:bg-black transition-all flex items-center gap-2 shadow-xs cursor-pointer disabled:opacity-60"
     >
       <Icon name="verified_user" className="w-4 h-4 text-emerald-400 {verificando ? 'animate-spin' : ''}" />
       <span>{verificando ? 'Auditando Base de Datos...' : 'Auditar Integridad Criptográfica'}</span>
@@ -85,28 +85,28 @@
 </header>
 
 {#if loading}
-  <div class="py-24 text-center glass-light   rounded-[32px] shadow-xs animate-pulse">
+  <div class="py-24 text-center glass-light   rounded-[4px] shadow-xs animate-pulse">
     <div class="w-10 h-10 border-3 border-[#1248AA] border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
-    <p class="text-[13px] font-bold text-[#071D49]">Ejecutando motor matemático de priorización geoespacial...</p>
+    <p class="text-[13px] font-medium text-[#071D49]">Calculando indicadores territoriales…</p>
     <p class="text-[11px] text-[#071D49]/40 mt-1">Consultando registros disponibles</p>
   </div>
 {:else}
   <!-- Control interno de integridad -->
   {#if selloForense}
-    <div class="bg-gradient-to-br from-[#071D49] to-[#1E293B] text-white rounded-[32px] p-8 md:p-10 mb-8 shadow-xl relative overflow-hidden animate-fade-in border border-slate-700">
+    <div class="bg-gradient-to-br from-[#071D49] to-[#1E293B] text-white rounded-[4px] p-8 md:p-10 mb-8 shadow-xl relative overflow-hidden animate-fade-in border border-slate-700">
       <div class="absolute -right-10 -bottom-10 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
       <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-white/10">
         <div>
           <div class="flex items-center gap-2.5 mb-2">
             <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
-            <span class="text-[12px] font-semibold uppercase tracking-[0.2em] text-emerald-400">
+            <span class="text-[12px] font-medium uppercase tracking-[0.2em] text-emerald-400">
               {selloForense.estadoIntegridad}
             </span>
             <span class="text-white/20">|</span>
             <span class="text-[12px] font-mono text-white/50">{selloForense.organismoAuditor}</span>
           </div>
-          <h3 class="text-xl md:text-2xl font-semibold tracking-tight text-white">
+          <h3 class="text-xl md:text-2xl font-medium tracking-tight text-white">
             {selloForense.certificado}
           </h3>
           <p class="text-[12px] text-white/60 mt-1">
@@ -116,7 +116,7 @@
 
         <div class="text-left lg:text-right shrink-0">
           <span class="text-[12px] font-mono uppercase tracking-widest text-white/40 block mb-1">Huella SHA-256 del estado</span>
-          <span class="text-[11px] font-mono bg-white/10 px-3 py-1.5 rounded-lg border border-white/10 text-emerald-300 font-bold block max-w-sm truncate">
+          <span class="text-[11px] font-mono bg-white/10 px-3 py-1.5 rounded-[4px] border border-white/10 text-emerald-300 font-medium block max-w-sm truncate">
             {selloForense.merkleRootSha256}
           </span>
           <span class="text-[12px] text-white/40 mt-1 block">
@@ -128,11 +128,11 @@
       <!-- DESGLOSE DE BLOQUES CRIPTOGRÁFICOS -->
       <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3 mt-6">
         {#each Object.entries(selloForense.bloquesAuditados) as [nombre, datos]}
-          <div class="glass-light/5   rounded-2xl p-3.5 backdrop-blur-xs">
-            <span class="text-[12px] font-semibold uppercase tracking-wider text-white/40 block truncate mb-1">
+          <div class="glass-light/5   rounded-[4px] p-3.5 backdrop-blur-xs">
+            <span class="text-[12px] font-medium uppercase tracking-wider text-white/40 block truncate mb-1">
               {nombre}
             </span>
-            <span class="text-base font-semibold text-white block">{datos.count} items</span>
+            <span class="text-base font-medium text-white block">{datos.count} items</span>
             <span class="text-[12px] font-mono text-emerald-400/80 block mt-1 truncate">
               {datos.hashSha256}
             </span>
@@ -143,7 +143,7 @@
       <!-- TRAZABILIDAD Y RESPALDO HISTÓRICO CGC -->
       <div class="mt-6 pt-5 border-t border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-4 text-[11px] text-white/70">
         <div class="flex items-center gap-2">
-          <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono text-[12px] font-bold">
+          <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono text-[12px] font-medium">
             {selloForense.totalCheckpointsHistoricos ?? 0} puntos de control registrados
           </span>
           <span class="text-white/40">•</span>
@@ -161,9 +161,9 @@
 
   <!-- Orientación preliminar para revisión institucional -->
   {#if dictamen}
-    <div class="glass-light   rounded-[32px] p-8 md:p-10 mb-8 shadow-xs animate-fade-in">
+    <div class="glass-light   rounded-[4px] p-8 md:p-10 mb-8 shadow-xs animate-fade-in">
       <div class="flex items-center gap-2 mb-3">
-        <span class="text-[12px] font-semibold uppercase tracking-normal text-[#1248AA] bg-blue-50 px-3 py-1 rounded-full">
+        <span class="text-[12px] font-medium uppercase tracking-normal text-[#1248AA] bg-blue-50 px-3 py-1 rounded-full">
           Índice IPIM · Orientación preliminar
         </span>
         <span class="text-[12px] font-mono text-[#071D49]/40">{dictamen.marcoLegal}</span>
@@ -171,7 +171,7 @@
 
       <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 mb-6 border-b border-gray-100">
         <div class="max-w-3xl">
-          <h3 class="text-2xl md:text-3xl font-semibold tracking-tight text-[#071D49] mb-2">
+          <h3 class="text-2xl md:text-3xl font-medium tracking-tight text-[#071D49] mb-2">
             Mayor puntaje calculado: <span class="text-[#1248AA]">{dictamen.municipioRecomendado}</span>
           </h3>
           <p class="text-[13px] text-[#071D49]/70 leading-relaxed font-medium">
@@ -179,8 +179,8 @@
           </p>
         </div>
 
-        <div class="bg-amber-50 border border-amber-200 rounded-2xl p-4 shrink-0 max-w-xs">
-          <div class="flex items-center gap-2 text-amber-800 font-bold text-[11px] mb-1">
+        <div class="bg-amber-50 border border-amber-200 rounded-[4px] p-4 shrink-0 max-w-xs">
+          <div class="flex items-center gap-2 text-amber-800 font-medium text-[11px] mb-1">
             <Icon name="gavel" className="w-4 h-4 text-amber-600" />
             <span>Uso orientativo</span>
           </div>
@@ -192,14 +192,14 @@
 
       <!-- MATRIZ TERRITORIAL RANKING DE LOS 3 MUNICIPIOS ACTIVOS -->
       <div>
-        <h4 class="text-xs font-semibold uppercase tracking-wider text-[#071D49]/40 mb-4">
+        <h4 class="text-xs font-medium uppercase tracking-wider text-[#071D49]/40 mb-4">
           Matriz multicriterio con datos registrados
         </h4>
 
         <div class="overflow-x-auto">
           <table class="w-full text-left border-collapse">
             <thead>
-              <tr class="border-b border-gray-100 text-[12px] font-semibold uppercase tracking-wider text-[#071D49]/40">
+              <tr class="border-b border-gray-100 text-[12px] font-medium uppercase tracking-wider text-[#071D49]/40">
                 <th class="py-3 px-4">Posición</th>
                 <th class="py-3 px-4">Municipio</th>
                 <th class="py-3 px-4">Índice IPIM</th>
@@ -213,15 +213,15 @@
             <tbody class="divide-y divide-gray-50 text-[12px]">
               {#each dictamen.ranking as m, i}
                 <tr class="hover:bg-[#FFFFFF] transition-colors">
-                  <td class="py-4 px-4 font-mono font-bold text-[#071D49]/50">
+                  <td class="py-4 px-4 font-mono font-medium text-[#071D49]/50">
                     #{i + 1}
                   </td>
-                  <td class="py-4 px-4 font-semibold text-[#071D49]">
+                  <td class="py-4 px-4 font-medium text-[#071D49]">
                     {m.municipio}
                   </td>
                   <td class="py-4 px-4">
                     <div class="flex items-center gap-2">
-                      <span class="font-semibold text-sm text-[#071D49]">{m.puntajeIPIM}</span>
+                      <span class="font-medium text-sm text-[#071D49]">{m.puntajeIPIM}</span>
                       <div class="w-16 bg-gray-100 h-2 rounded-full overflow-hidden">
                         <div 
                           class="h-full rounded-full transition-all {m.puntajeIPIM >= 70 ? 'bg-rose-500' : m.puntajeIPIM >= 50 ? 'bg-amber-500' : 'bg-emerald-500'}" 
@@ -231,17 +231,17 @@
                     </div>
                   </td>
                   <td class="py-4 px-4">
-                    <span class="px-2.5 py-1 rounded-full text-[12px] font-semibold uppercase tracking-wider border {m.nivelPrioridad === 'Crítica' ? 'bg-rose-50 text-rose-700 border-rose-200' : m.nivelPrioridad === 'Alta' ? 'bg-amber-50 text-amber-700 border-amber-200' : 'bg-emerald-50 text-emerald-700 border-emerald-200'}">
+                    <span class="px-2.5 py-1 rounded-full text-[12px] font-medium uppercase tracking-wider border {m.nivelPrioridad === 'Crítica' ? 'bg-rose-50 text-rose-700 border-rose-200' : m.nivelPrioridad === 'Alta' ? 'bg-amber-50 text-amber-700 border-amber-200' : 'bg-emerald-50 text-emerald-700 border-emerald-200'}">
                       {m.nivelPrioridad}
                     </span>
                   </td>
                   <td class="py-4 px-4 font-medium text-[#071D49]/70">
                     {m.indicadores.deficitAgua}% / {m.indicadores.deficitSaneamiento}%
                   </td>
-                  <td class="py-4 px-4 font-mono font-bold text-[#071D49]/80">
+                  <td class="py-4 px-4 font-mono font-medium text-[#071D49]/80">
                     {m.indicadores.solvenciaCuotas}%
                   </td>
-                  <td class="py-4 px-4 font-bold text-[#071D49]">
+                  <td class="py-4 px-4 font-medium text-[#071D49]">
                     {m.indicadores.obrasActivas} obras
                   </td>
                   <td class="py-4 px-4 text-[11px] text-[#071D49]/60 font-medium">

@@ -3,9 +3,22 @@ import crypto from 'node:crypto';
 import { auditContext } from '../../lib/integrity.js';
 import { Router } from 'express';
 import prisma from '../../lib/prisma.js';
-import { requireAuth, requirePermission } from '../../middleware/auth.js';
+import { requireAuth, requireAppAdmin } from '../../middleware/auth.js';
+import { mediaUrl } from '../../services/media.js';
 
 const router = Router();
+
+router.get('/publicaciones/:id/media', async (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+    if (!Number.isSafeInteger(id) || id < 1) return res.status(404).json({ error: 'Archivo no encontrado' });
+    const row = await prisma.publicacionTransparencia.findFirst({
+      where: { id, visibilidad: true, tipo: { not: 'SolicitudUIP' } }, select: { mediaRef: true },
+    });
+    if (!row?.mediaRef) return res.status(404).json({ error: 'Archivo no encontrado' });
+    res.set('Cache-Control', 'no-store').redirect(302, await mediaUrl(row.mediaRef));
+  } catch (error) { next(error); }
+});
 
 // GET /api/v1/transparencia/publico - Acceso público ciudadano libre (RF5, sin autenticación)
 router.get('/publico', async (req, res, next) => {
@@ -65,7 +78,7 @@ router.get('/publico', async (req, res, next) => {
 });
 
 // GET /api/v1/transparencia/gestion - Control interno para rol de Gerente (RF5)
-router.get('/gestion', requireAuth, requirePermission('transparencia'), async (req, res, next) => {
+router.get('/gestion', requireAuth, requireAppAdmin, async (req, res, next) => {
   try {
     const publicaciones = await prisma.publicacionTransparencia.findMany({
       orderBy: { createdAt: 'desc' }
@@ -117,7 +130,7 @@ router.get('/gestion', requireAuth, requirePermission('transparencia'), async (r
 });
 
 // PUT /api/v1/transparencia/:id/visibilidad - Habilitar o dar de baja publicación (RF5)
-router.put('/:id/visibilidad', requireAuth, requirePermission('transparencia', 'editar'), async (req, res, next) => {
+router.put('/:id/visibilidad', requireAuth, requireAppAdmin, async (req, res, next) => {
   try {
     const id = Number(req.params.id);
     const { visibilidad } = req.body;
@@ -136,7 +149,7 @@ router.put('/:id/visibilidad', requireAuth, requirePermission('transparencia', '
 });
 
 // POST /api/v1/transparencia - Publicar nuevo contenido al portal ciudadano
-router.post('/', requireAuth, requirePermission('transparencia', 'editar'), async (req, res, next) => {
+router.post('/', requireAuth, requireAppAdmin, async (req, res, next) => {
   try {
     const { tipo, titulo, resumen, referenciaId } = req.body;
 

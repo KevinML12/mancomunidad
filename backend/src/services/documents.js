@@ -18,7 +18,7 @@ export class DocumentServiceError extends Error {
 export function storageConfigured() {
   return ['R2_ENDPOINT','R2_BUCKET','R2_ACCESS_KEY_ID','R2_SECRET_ACCESS_KEY'].every(key=>Boolean(process.env[key]));
 }
-function storage() {
+export function storage() {
   if (!storageConfigured()) throw new DocumentServiceError('El almacenamiento privado aún no está configurado. Conserve su archivo y contacte a la administración');
   const endpoint=new URL(process.env.R2_ENDPOINT);
   const localTest=process.env.NODE_ENV==='test' && endpoint.hostname==='127.0.0.1';

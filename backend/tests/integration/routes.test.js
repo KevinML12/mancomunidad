@@ -10,15 +10,18 @@ import http from 'node:http';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { ROLE_PERMISSIONS } from '../../src/lib/roles.js';
+import express from 'express';
 
 const dir = await mkdtemp(join(tmpdir(), 'mfn-routes-'));
 const db = join(dir, 'test.db'); await writeFile(db, '');
 process.env.DATABASE_URL = `file:${db}`;
 process.env.JWT_SECRET = 'clave-exclusiva-pruebas-locales-no-produccion';
 process.env.NODE_ENV = 'test';
+process.env.APP_ADMIN_EMAILS = 'ge@example.test';
 execFileSync(process.execPath, ['node_modules/prisma/build/index.js', 'migrate', 'deploy', '--schema', 'prisma/schema.prisma'], { cwd: resolve('.'), env: process.env, stdio: 'pipe' });
 const { default: prisma } = await import('../../src/lib/prisma.js');
 const { default: app } = await import('../../src/app.js');
+const { rateLimit } = await import('../../src/middleware/rate-limit.js');
 const server = app.listen(0, '127.0.0.1'); await new Promise(resolve => server.once('listening', resolve));
 const base = `http://127.0.0.1:${server.address().port}/api/v1`;
 let delivered;
@@ -34,9 +37,15 @@ for (const code of ['GE','JD','DIRPROY','DIRADMIN','AUD','EMP']) {
 }
 async function request(path, method='GET', token, body) {
  const response=await fetch(base+path,{method,headers:{...(token?{Authorization:`Bearer ${token}`} : {}),...(body?{'Content-Type':'application/json'}:{})},body:body && method !== 'GET'?JSON.stringify(body):undefined});
- return {status:response.status,data:await response.json()};
+ return {status:response.status,data:await response.json(),headers:response.headers};
 }
-for (const code of Object.keys(users)) { const r=await request('/auth/login','POST',null,{correo:users[code].correo,contrasena:password}); assert.equal(r.status,200);tokens[code]=r.data.token; }
+for (const code of Object.keys(users)) {
+ const r=await request('/auth/login','POST',null,{correo:users[code].correo,contrasena:password});
+ assert.equal(r.status,200);
+ assert.equal(r.data.token,undefined);
+ assert.match(r.headers.get('set-cookie')||'',/mfn_session=.*HttpOnly.*SameSite=Lax/i);
+ tokens[code]=jwt.sign({type:'session',version:users[code].sessionVersion,sub:users[code].id},process.env.JWT_SECRET,{expiresIn:'12h'});
+}
 const project = { nombre:'Obra de prueba sin municipio en el nombre', municipio:'Santa Eulalia', agenciaFinanciadora:'Prueba', fechaInicioPlanificada:'2026-10-03',presupuestoMunicipal:100, presupuestoCooperacion:200 };
 let id;
 
@@ -44,6 +53,42 @@ test('Rutas reales con base migrada y aislada', async t => {
  t.after(async()=>{ await prisma.$disconnect(); await Promise.all([new Promise(resolve=>server.close(resolve)),new Promise(resolve=>mail.close(resolve))]); await rm(dir,{recursive:true,force:true}); });
  await t.test('la migración administrativa no se expone por HTTP',async()=>{
   assert.equal((await request('/sistema/migrar','POST',null,{})).status,404);
+ });
+ await t.test('CORS solo permite el origen configurado y la API privada no se almacena en caché',async()=>{
+  const allowed=await fetch(base+'/auth/me',{method:'OPTIONS',headers:{Origin:'http://127.0.0.1:3000','Access-Control-Request-Method':'GET'}});
+  assert.equal(allowed.headers.get('access-control-allow-origin'),'http://127.0.0.1:3000');
+  const denied=await fetch(base+'/auth/me',{method:'OPTIONS',headers:{Origin:'https://evil.example','Access-Control-Request-Method':'GET'}});
+  assert.equal(denied.headers.get('access-control-allow-origin'),null);
+  const privateResponse=await fetch(base+'/auth/me');
+  assert.equal(privateResponse.headers.get('cache-control'),'no-store');
+  assert.equal(privateResponse.headers.get('x-content-type-options'),'nosniff');
+ });
+ await t.test('sesión por cookie permite lectura, exige origen permitido en escritura y se cierra',async()=>{
+  const login=await request('/auth/login','POST',null,{correo:users.GE.correo,contrasena:password});
+  const cookie=login.headers.get('set-cookie').split(';')[0];
+  const me=await fetch(base+'/auth/me',{headers:{Cookie:cookie}});
+  assert.equal(me.status,200);
+  const blocked=await fetch(base+'/proyectos',{method:'POST',headers:{Cookie:cookie,Origin:'https://evil.example','Content-Type':'application/json'},body:JSON.stringify(project)});
+  assert.equal(blocked.status,403);
+  const logout=await fetch(base+'/auth/logout',{method:'POST',headers:{Cookie:cookie,Origin:'http://127.0.0.1:3000'}});
+  assert.equal(logout.status,200);
+  assert.match(logout.headers.get('set-cookie')||'',/mfn_session=/);
+ });
+ await t.test('límite compartido conserva el cupo con peticiones concurrentes en dos instancias',async()=>{
+  const scope=`test-${Date.now()}`;
+  const servers=[0,1].map(()=>{
+   const limited=express();
+   limited.get('/limited',rateLimit(3,60_000,{scope}),(_req,res)=>res.json({ok:true}));
+   return limited.listen(0,'127.0.0.1');
+  });
+  try {
+   await Promise.all(servers.map(server=>new Promise(resolve=>server.once('listening',resolve))));
+   const statuses=await Promise.all(Array.from({length:8},(_,i)=>fetch(`http://127.0.0.1:${servers[i%2].address().port}/limited`).then(response=>response.status)));
+   assert.equal(statuses.filter(status=>status===200).length,3);
+   assert.equal(statuses.filter(status=>status===429).length,5);
+  } finally {
+   await Promise.all(servers.map(server=>new Promise(resolve=>server.close(resolve))));
+  }
  });
  await t.test('token fijo y token de recuperación no sirven como sesión',async()=>{
   assert.equal((await request('/proyectos','GET','demo-token-mfn')).status,401);
@@ -81,10 +126,47 @@ test('Rutas reales con base migrada y aislada', async t => {
   await prisma.rol.update({where:{codigo:'DIRPROY'},data:{permisos:ROLE_PERMISSIONS.DIRPROY}});
  });
  await t.test('evidencia conserva archivo, huella y coordenadas cero',async()=>{
+  const keys=['R2_ENDPOINT','R2_BUCKET','R2_ACCESS_KEY_ID','R2_SECRET_ACCESS_KEY'];
+  const saved=Object.fromEntries(keys.map(key=>[key,process.env[key]]));
+  const mock=await startR2Mock();
+  Object.assign(process.env,{R2_ENDPOINT:mock.endpoint,R2_BUCKET:'test-bucket',R2_ACCESS_KEY_ID:'test-key',R2_SECRET_ACCESS_KEY:'test-secret'});
+  try {
   const archivoBase64='iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII=';
   const r=await request(`/proyectos/${id}/evidencias`,'POST',tokens.DIRPROY,{archivoBase64,tipoMime:'image/png',latitud:0,longitud:0});assert.equal(r.status,201);assert.equal(r.data.latitud,0);assert.match(r.data.sha256,/^[a-f0-9]{64}$/);
-  const stored=await prisma.evidenciaProyecto.findUnique({where:{id:r.data.id}});assert.equal(stored.contenido,archivoBase64);
+  const stored=await prisma.evidenciaProyecto.findUnique({where:{id:r.data.id}});assert.equal(stored.contenido,null);assert.match(stored.urlArchivo,/^r2media:\/\/evidencias\//);
+  assert.match(r.data.urlArchivo,/^http:\/\/127\.0\.0\.1:/);
   assert.equal((await request(`/proyectos/${id}/evidencias`,'POST',tokens.DIRPROY,{archivoBase64:'AAAA',tipoMime:'image/png'})).status,400);
+  } finally {
+   for(const [key,value] of Object.entries(saved)) if(value===undefined) delete process.env[key]; else process.env[key]=value;
+   await new Promise(resolve=>mock.server.close(resolve));
+  }
+ });
+ await t.test('administración separada publica contenido con archivo R2 y bloquea otros roles',async()=>{
+  assert.equal((await request('/admin/overview','GET',tokens.EMP)).status,403);
+  assert.equal((await request('/admin/overview','GET',tokens.GE)).status,200);
+  const keys=['R2_ENDPOINT','R2_BUCKET','R2_ACCESS_KEY_ID','R2_SECRET_ACCESS_KEY'];
+  const saved=Object.fromEntries(keys.map(key=>[key,process.env[key]]));
+  const mock=await startR2Mock();
+  Object.assign(process.env,{R2_ENDPOINT:mock.endpoint,R2_BUCKET:'test-bucket',R2_ACCESS_KEY_ID:'test-key',R2_SECRET_ACCESS_KEY:'test-secret'});
+  try {
+   const archivoBase64='iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII=';
+   assert.equal((await request('/admin/media','POST',tokens.EMP,{archivoBase64,tipoMime:'image/png'})).status,403);
+   const media=await request('/admin/media','POST',tokens.GE,{archivoBase64,tipoMime:'image/png'});
+   assert.equal(media.status,201);assert.match(media.data.reference,/^r2media:\/\/publicaciones\//);
+   const created=await request('/admin/publicaciones','POST',tokens.GE,{tipo:'Aviso',titulo:'Aviso de prueba',resumen:'Contenido comprobado en la prueba',mediaRef:media.data.reference,visibilidad:true});
+   assert.equal(created.status,201);assert.equal(created.data.visibilidad,false);
+   assert.equal((await request('/transparencia/publico')).data.publicaciones.some(row=>row.id===created.data.id),false);
+   assert.equal((await request(`/admin/publicaciones/${created.data.id}`,'PATCH',tokens.GE,{visibilidad:true})).status,200);
+   assert.equal((await request('/transparencia/publico')).data.publicaciones.some(row=>row.id===created.data.id),true);
+   const image=await fetch(base+`/transparencia/publicaciones/${created.data.id}/media`,{redirect:'manual'});
+   assert.equal(image.status,302);assert.match(image.headers.get('location'),/^http:\/\/127\.0\.0\.1:/);
+   const stored=await prisma.publicacionTransparencia.findUnique({where:{id:created.data.id}});
+   assert.equal(stored.mediaRef,media.data.reference);
+   assert.ok(mock.objects.size>0);
+  } finally {
+   for(const [key,value] of Object.entries(saved)) if(value===undefined) delete process.env[key]; else process.env[key]=value;
+   await new Promise(resolve=>mock.server.close(resolve));
+  }
  });
  await t.test('RF7-RF9 ARC asigna, filtra, detecta vencimiento y deja de alertar al finalizar',async()=>{
   const due=new Date(Date.now()-2*86400000).toISOString();
@@ -309,5 +391,17 @@ test('Rutas reales con base migrada y aislada', async t => {
   assert.equal((await request('/auth/restablecer','POST',null,body)).status,401);
   assert.equal((await request('/proyectos','GET',tokens.GE)).status,401);
   assert.equal((await request('/auth/login','POST',null,{correo:users.GE.correo,contrasena:body.nuevaContrasena})).status,200);
+ });
+ await t.test('dos aprobaciones simultáneas descuentan vacaciones una sola vez',async()=>{
+  const puesto=await prisma.puesto.create({data:{nombre:'Puesto concurrente',categoria:'A'}});
+  const colaborador=await prisma.colaborador.create({data:{nombre:'Colaborador concurrente',puestoId:puesto.id,fechaIngreso:new Date('2024-01-01')}});
+  const anio=new Date().getFullYear();
+  await prisma.saldoVacaciones.create({data:{colaboradorId:colaborador.id,anio,diasDisponibles:10,diasUsados:0}});
+  const solicitud=await prisma.solicitudAusencia.create({data:{colaboradorId:colaborador.id,tipo:'Vacaciones',desde:new Date('2026-11-02'),hasta:new Date('2026-11-03')}});
+  const results=await Promise.all([request(`/ausencias/${solicitud.id}`,'PUT',tokens.JD,{estado:'Aprobado'}),request(`/ausencias/${solicitud.id}`,'PUT',tokens.JD,{estado:'Aprobado'})]);
+  assert.deepEqual(results.map(result=>result.status).sort(),[200,409]);
+  const saldo=await prisma.saldoVacaciones.findUnique({where:{colaboradorId_anio:{colaboradorId:colaborador.id,anio}}});
+  assert.equal(saldo.diasUsados,2);
+  assert.equal((await prisma.solicitudAusencia.findUnique({where:{id:solicitud.id}})).estado,'Aprobado');
  });
 });

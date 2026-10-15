@@ -7,6 +7,7 @@ import { requireAuth } from '../../middleware/auth.js';
 import { logAction } from '../../lib/audit.js';
 import { resetDeliveryConfigured } from '../../services/reset-delivery.js';
 import { requestPasswordReset, completePasswordReset } from '../../services/password-recovery.js';
+import { setSessionCookie, clearSessionCookie } from '../../lib/session-cookie.js';
 
 const router = Router();
 
@@ -25,7 +26,7 @@ function serialize(usuario) {
   };
 }
 
-router.post('/login', rateLimit(30), async (req, res, next) => {
+router.post('/login', rateLimit(30, undefined, { scope: 'login-ip' }), rateLimit(10, undefined, { scope: 'login-account', keyFrom: req => req.body?.correo }), async (req, res, next) => {
   try {
   const { correo, contrasena } = req.body;
   if (!correo || !contrasena) return res.status(400).json({ error: 'Correo y contraseña son requeridos' });
@@ -47,8 +48,14 @@ router.post('/login', rateLimit(30), async (req, res, next) => {
 
   await logAction(usuario.id, 'login', 'usuario', usuario.id);
 
-  res.json({ token, user: serialize(usuario) });
+  setSessionCookie(res, token);
+  res.json({ user: serialize(usuario) });
   } catch (err) { next(err); }
+});
+
+router.post('/logout', requireAuth, (req, res) => {
+  clearSessionCookie(res);
+  res.json({ ok: true });
 });
 
 router.get('/me', requireAuth, async (req, res, next) => {

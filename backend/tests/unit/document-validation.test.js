@@ -11,7 +11,7 @@ for(const input of ['2026-02-29','2026-04-31','2026-13-01','hoy','2026-2-01'])te
 for(const input of ['2024-02-29','2026-10-14','2026-10-14T12:30:00Z'])test(`acepta calendario ${input}`,()=>assert.ok(date(input,'Fecha') instanceof Date));
 test('vigencia invertida se rechaza',()=>assert.throws(()=>chronological(new Date('2026-12-01'),new Date('2026-10-01'))));
 test('vigencia igual se conserva',()=>assert.doesNotThrow(()=>chronological(new Date('2026-10-01'),new Date('2026-10-01'))));
-for(const input of ['javascript:alert(1)','data:application/pdf;base64,AA','https://user:pass@example.test/a.pdf','file:///a.pdf'])test(`URL insegura ${input.split(':')[0]}`,()=>assert.throws(()=>url(input,'PDF')));
+for(const input of ['javascript:alert(1)','data:application/pdf;base64,AA','http://example.test/a.pdf','https://user:pass@example.test/a.pdf','file:///a.pdf'])test(`URL insegura ${input.split(':')[0]}`,()=>assert.throws(()=>url(input,'PDF')));
 test('URL externa se normaliza',()=>assert.equal(url('https://example.test','PDF'),'https://example.test/'));
 test('referencia opcional vacía',()=>assert.equal(url('','PDF'),undefined));
 test('texto obligatorio recorta espacios',()=>assert.equal(text('  Acta  ','Acta'),'Acta'));

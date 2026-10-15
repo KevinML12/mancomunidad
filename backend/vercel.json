@@ -1,5 +1,5 @@
 {
-  "buildCommand": "npx prisma generate --schema prisma/schema.production.prisma",
+  "buildCommand": "npm run build:vercel",
   "rewrites": [
     { "source": "/(.*)", "destination": "/api" }
   ]

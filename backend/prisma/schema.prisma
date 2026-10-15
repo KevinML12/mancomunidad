@@ -82,6 +82,12 @@ model Usuario {
   createdAt      DateTime            @default(now())
 }
 
+model RateLimitBucket {
+  key     String @id
+  count   Int
+  untilMs BigInt
+}
+
 // tipo: Interna | Externa | Mixta · estado: Abierta | Cerrada
 model Convocatoria {
   id               Int         @id @default(autoincrement())
@@ -389,6 +395,7 @@ model PublicacionTransparencia {
   tipo             String   // Proyecto | Acta | Estadística | Finanzas
   titulo           String
   resumen          String
+  mediaRef         String?
   referenciaId     Int?
   visibilidad      Boolean  @default(true)
   fechaPublicacion DateTime @default(now())

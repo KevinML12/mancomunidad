@@ -11,5 +11,7 @@ test('prioridad visual conserva todos los accesos autorizados sin ampliar permis
     assert.ok(primary.length<=4,role);
   }
   assert.deepEqual(navigationFor('JD',ROLE_PERMISSIONS.JD).primary.map(x=>x.key),['gobernanza','financiero','proyectos']);
+  assert.deepEqual(navigationFor('JI',ROLE_PERMISSIONS.JI).primary.map(x=>x.key),['ausencias','evaluaciones','disciplina']);
+  assert.deepEqual(navigationFor('EMP',ROLE_PERMISSIONS.EMP).primary.map(x=>x.key),['ausencias','evaluaciones','capacitacion']);
   assert.deepEqual(navigationFor('GE',{modulos:[]}),{primary:[],secondary:[]});
 });

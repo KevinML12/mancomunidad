@@ -18,7 +18,7 @@ export function documentKind(reference) {
   if (!reference) return 'missing';
   if (typeof reference!=='string') return 'invalid';
   if (reference.startsWith('r2://') && reference.length>5) return 'private';
-  try {const url=new URL(reference);if(['http:','https:'].includes(url.protocol)&&!url.username&&!url.password)return 'external';}catch{}
+  try {const url=new URL(reference);if(url.protocol==='https:'&&!url.username&&!url.password)return 'external';}catch{}
   return 'invalid';
 }
 export async function uploadPdf(file,{tipo,api,send,hash,onStage=()=>{}}) {

@@ -120,7 +120,7 @@
         ppmCloroResidual: Number(nuevoCenso.ppmCloroResidual)
       });
       await fetchCensos();
-      toast.success('Censo territorial guardado exitosamente en base de datos');
+      toast.success('Censo guardado');
       showModal = false;
       nuevoCenso = {
         municipio: 'Santa Eulalia',
@@ -145,16 +145,16 @@
 </svelte:head>
 
 <!-- HEADER PRINCIPAL -->
-<header class="flex flex-col xl:flex-row xl:items-end justify-between gap-6 mb-8 mt-2 animate-fade-in">
+<header class="mfn-module-header flex flex-col xl:flex-row xl:items-end justify-between gap-6 mb-8 mt-2 animate-fade-in">
   <div>
     <div class="flex items-center gap-2 mb-2">
-      <span class="text-[12px] font-bold uppercase tracking-normal text-[#1248AA]">Módulo 06</span>
+      <span class="text-[12px] font-medium uppercase tracking-normal text-[#1248AA]">Indicadores</span>
       <span class="text-[12px] text-[#071D49]/30">•</span>
-      <span class="text-[12px] font-bold uppercase tracking-normal text-[#071D49]/40">Agua, Saneamiento e Higiene (ASH)</span>
+      <span class="text-[12px] font-medium uppercase tracking-normal text-[#071D49]/40">Agua, Saneamiento e Higiene (ASH)</span>
     </div>
-    <h2 class="text-[40px] font-semibold tracking-[-0.04em] leading-none text-[#071D49] mb-3">Estadísticas Territoriales</h2>
+    <h2 class="text-[40px] font-medium tracking-[-0.04em] leading-none text-[#071D49] mb-3">Agua y saneamiento</h2>
     <p class="text-[13px] text-[#071D49]/50 leading-relaxed max-w-2xl">
-      Consolidación regional de censos OMAS, medición de cloro residual según COGUANOR y priorización de brechas para proyectos.
+      Consulte los censos registrados y los indicadores de agua, saneamiento y cloro residual.
     </p>
   </div>
 
@@ -165,7 +165,7 @@
         type="text" 
         bind:value={searchQuery}
         placeholder="Buscar comunidad o municipio..." 
-        class="w-[280px] pl-10 pr-4 py-3 bg-white border border-gray-100 rounded-full text-[13px] text-[#071D49] placeholder-[#071D49]/30 shadow-sm focus:outline-none focus:border-[#1248AA] transition-all" 
+        class="w-full sm:w-[280px] pl-10 pr-4 py-3 bg-white border border-gray-100 rounded-full text-[13px] text-[#071D49] placeholder-[#071D49]/30 shadow-sm focus:outline-none focus:border-[#1248AA] transition-all"
       />
       <Icon name="search" className="absolute left-4 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-[#071D49]/30" />
     </div>
@@ -173,7 +173,7 @@
     <!-- Filtro Municipio -->
     <select 
       bind:value={filtroMunicipio} 
-      class="px-4 py-3 bg-white border border-gray-100 rounded-full shadow-sm text-[12px] font-bold text-[#071D49] focus:outline-none transition-colors"
+      class="px-4 py-3 bg-white border border-gray-100 rounded-full shadow-sm text-[12px] font-medium text-[#071D49] focus:outline-none transition-colors"
     >
       <option value="todos">Todos los Municipios</option>
       <option value="Santa Eulalia">Santa Eulalia</option>
@@ -185,7 +185,7 @@
     {#if auth.puedeEditar('estadisticas')}
     <button 
       onclick={() => showModal = true}
-      class="px-6 py-3 bg-[#071D49] hover:bg-black text-white rounded-full text-[13px] font-bold shadow-md transition-all duration-300 hover:-translate-y-0.5 flex items-center gap-2 cursor-pointer"
+      class="px-6 py-3 bg-[#071D49] hover:bg-black text-white rounded-full text-[13px] font-medium shadow-md transition-all duration-300 hover:-translate-y-0.5 flex items-center gap-2 cursor-pointer"
     >
       <Icon name="add" className="w-[18px] h-[18px] text-[#1248AA]" stroke={2.5} />
       <span>+ Levantar Censo de Campo</span>
@@ -197,14 +197,14 @@
 <!-- BARRA DE INDICADORES ASH CONSOLIDADOS -->
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
   <!-- Cobertura Agua -->
-  <div class="glass-light   rounded-[24px] p-6  card-lift">
+  <div class="glass-light   rounded-[4px] p-6  card-lift">
     <div class="flex items-center justify-between mb-3">
-      <span class="text-[12px] font-semibold uppercase tracking-normal text-[#071D49]/40">Cobertura de Agua Potable</span>
+      <span class="text-[12px] font-medium uppercase tracking-normal text-[#071D49]/40">Cobertura de Agua Potable</span>
       <span class="w-8 h-8 rounded-full bg-[#EDF4FF] flex items-center justify-center text-[#1248AA]">
         <Icon name="water_drop" className="w-4 h-4" />
       </span>
     </div>
-    <p class="text-[28px] font-semibold tracking-[-0.04em] text-[#071D49]">{coberturaAguaPct}%</p>
+    <p class="text-[28px] font-medium tracking-[-0.04em] text-[#071D49]">{coberturaAguaPct}%</p>
     <div class="mt-3">
       <div class="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
         <div class="bg-[#1248AA] h-1.5 rounded-full transition-all duration-700 ease-out" style="width: {coberturaAguaPct}%"></div>
@@ -214,26 +214,26 @@
   </div>
 
   <!-- Déficit de Agua -->
-  <div class="glass-light   rounded-[24px] p-6  card-lift">
+  <div class="glass-light   rounded-[4px] p-6  card-lift">
     <div class="flex items-center justify-between mb-3">
-      <span class="text-[12px] font-semibold uppercase tracking-normal text-[#071D49]/40">Brecha / Déficit de Agua</span>
+      <span class="text-[12px] font-medium uppercase tracking-normal text-[#071D49]/40">Brecha / Déficit de Agua</span>
       <span class="w-8 h-8 rounded-full bg-rose-50 flex items-center justify-center text-rose-600">
         <Icon name="trending_down" className="w-4 h-4" />
       </span>
     </div>
-    <p class="text-[28px] font-semibold tracking-[-0.04em] text-rose-600">{deficitAguaPct}%</p>
-    <p class="text-[11px] text-rose-800 font-bold mt-2">Hogares sin acceso a red formal</p>
+    <p class="text-[28px] font-medium tracking-[-0.04em] text-rose-600">{deficitAguaPct}%</p>
+    <p class="text-[11px] text-rose-800 font-medium mt-2">Hogares sin acceso a red formal</p>
   </div>
 
   <!-- Saneamiento Básico -->
-  <div class="glass-light   rounded-[24px] p-6  card-lift">
+  <div class="glass-light   rounded-[4px] p-6  card-lift">
     <div class="flex items-center justify-between mb-3">
-      <span class="text-[12px] font-semibold uppercase tracking-normal text-[#071D49]/40">Saneamiento y Letrinas</span>
+      <span class="text-[12px] font-medium uppercase tracking-normal text-[#071D49]/40">Saneamiento y Letrinas</span>
       <span class="w-8 h-8 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-600">
         <Icon name="sanitizer" className="w-4 h-4" />
       </span>
     </div>
-    <p class="text-[28px] font-semibold tracking-[-0.04em] text-[#071D49]">{coberturaSaneamientoPct}%</p>
+    <p class="text-[28px] font-medium tracking-[-0.04em] text-[#071D49]">{coberturaSaneamientoPct}%</p>
     <div class="mt-3">
       <div class="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
         <div class="bg-emerald-500 h-1.5 rounded-full transition-all duration-700 ease-out" style="width: {coberturaSaneamientoPct}%"></div>
@@ -243,36 +243,36 @@
   </div>
 
   <!-- Cloración Conforme COGUANOR -->
-  <div class="glass-light   rounded-[24px] p-6  card-lift">
+  <div class="glass-light   rounded-[4px] p-6  card-lift">
     <div class="flex items-center justify-between mb-3">
-      <span class="text-[12px] font-semibold uppercase tracking-normal text-[#071D49]/40">Sistemas con Cloración</span>
+      <span class="text-[12px] font-medium uppercase tracking-normal text-[#071D49]/40">Sistemas con Cloración</span>
       <span class="w-8 h-8 rounded-full bg-cyan-50 flex items-center justify-center text-cyan-600">
         <Icon name="science" className="w-4 h-4" />
       </span>
     </div>
-    <p class="text-[28px] font-semibold tracking-[-0.04em] text-[#071D49]">{totalClorados} / {censos.length}</p>
-    <p class="text-[11px] font-bold text-cyan-800 mt-2">Norma 0.5 - 1.5 ppm residual</p>
+    <p class="text-[28px] font-medium tracking-[-0.04em] text-[#071D49]">{totalClorados} / {censos.length}</p>
+    <p class="text-[11px] font-medium text-cyan-800 mt-2">Norma 0.5 - 1.5 ppm residual</p>
   </div>
 </div>
 
 <!-- DÉFICIT TERRITORIAL COMPARATIVO POR MUNICIPIO (RF16) -->
-<section class="glass-light   rounded-[32px] p-8 mb-8 ">
+<section class="glass-light   rounded-[4px] p-8 mb-8 ">
   <div class="flex items-center justify-between pb-6 mb-4 border-b border-gray-50">
     <div>
-      <h3 class="text-[12px] font-semibold uppercase tracking-normal text-[#071D49]/40 mb-1">Déficit Comparativo por Municipio</h3>
-      <p class="text-[12px] font-medium text-[#071D49]/50">Evidencia territorial para fundamentación técnica de perfiles de inversión Módulo 01</p>
+      <h3 class="text-[12px] font-medium uppercase tracking-normal text-[#071D49]/40 mb-1">Déficit Comparativo por Municipio</h3>
+      <p class="text-[12px] font-medium text-[#071D49]/50">Datos registrados por municipio para apoyar la planificación de proyectos.</p>
     </div>
     <span class="text-[12px] font-mono text-[#071D49]/40 uppercase tracking-wider">Censos registrados</span>
   </div>
 
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
     {#each estadisticasMunicipios as mun}
-      <div class="bg-[#FFFFFF] border border-gray-100 rounded-[22px] p-5 card-lift">
-        <h4 class="text-[13px] font-semibold text-[#071D49] tracking-tight leading-tight mb-3">{mun.nombre}</h4>
+      <div class="bg-[#FFFFFF] border border-gray-100 rounded-[4px] p-5 card-lift">
+        <h4 class="text-[13px] font-medium text-[#071D49] tracking-tight leading-tight mb-3">{mun.nombre}</h4>
         
         <div class="space-y-3">
           <div>
-            <div class="flex justify-between text-[12px] font-bold text-[#071D49]/50 mb-1">
+            <div class="flex justify-between text-[12px] font-medium text-[#071D49]/50 mb-1">
               <span>Agua: {mun.coberturaAgua}%</span>
               <span class="text-rose-600">Déf: {mun.deficitAgua}%</span>
             </div>
@@ -282,7 +282,7 @@
           </div>
 
           <div>
-            <div class="flex justify-between text-[12px] font-bold text-[#071D49]/50 mb-1">
+            <div class="flex justify-between text-[12px] font-medium text-[#071D49]/50 mb-1">
               <span>Saneamiento:</span>
               <span class="text-emerald-700">{mun.coberturaSaneamiento}%</span>
             </div>
@@ -294,7 +294,7 @@
 
         <div class="mt-4 pt-3 border-t border-gray-200/60 flex items-center justify-between text-[12px]">
           <span class="text-[#071D49]/40">{mun.viv} viviendas</span>
-          <span class="font-bold text-[#1248AA]">{mun.clorados} con Cloro</span>
+          <span class="font-medium text-[#1248AA]">{mun.clorados} con Cloro</span>
         </div>
       </div>
     {/each}
@@ -302,13 +302,13 @@
 </section>
 
 <!-- TABLA DE COMUNIDADES CENSADAS -->
-<section class="glass-light   rounded-[32px] p-8 ">
+<section class="glass-light   rounded-[4px] p-8 ">
   <div class="pb-6 mb-2 border-b border-gray-50 flex items-center justify-between">
     <div>
-      <h3 class="text-[12px] font-semibold uppercase tracking-normal text-[#071D49]/40 mb-1">Levantamientos de Campo Registrados</h3>
+      <h3 class="text-[12px] font-medium uppercase tracking-normal text-[#071D49]/40 mb-1">Levantamientos de Campo Registrados</h3>
       <p class="text-[12px] font-medium text-[#071D49]/50">Padrón de comunidades georreferenciadas y monitoreo físico-químico</p>
     </div>
-    <span class="px-3 py-1 rounded-full bg-blue-50 text-[#1248AA] text-[12px] font-bold">
+    <span class="px-3 py-1 rounded-full bg-blue-50 text-[#1248AA] text-[12px] font-medium">
       {censosFiltrados.length} Comunidades
     </span>
   </div>
@@ -317,12 +317,12 @@
     <table class="w-full text-left border-collapse">
       <thead>
         <tr class="border-b border-gray-50">
-          <th class="py-4 px-4 text-[12px] font-bold uppercase tracking-normal text-[#071D49]/40">Código / Fecha</th>
-          <th class="py-4 px-4 text-[12px] font-bold uppercase tracking-normal text-[#071D49]/40">Comunidad & Municipio</th>
-          <th class="py-4 px-4 text-[12px] font-bold uppercase tracking-normal text-[#071D49]/40">Hogares con Agua</th>
-          <th class="py-4 px-4 text-[12px] font-bold uppercase tracking-normal text-[#071D49]/40">Saneamiento Básico</th>
-          <th class="py-4 px-4 text-[12px] font-bold uppercase tracking-normal text-[#071D49]/40">Calidad Cloro (COGUANOR)</th>
-          <th class="py-4 px-4 text-[12px] font-bold uppercase tracking-normal text-[#071D49]/40">Técnico OMAS</th>
+          <th class="py-4 px-4 text-[12px] font-medium uppercase tracking-normal text-[#071D49]/40">Código / Fecha</th>
+          <th class="py-4 px-4 text-[12px] font-medium uppercase tracking-normal text-[#071D49]/40">Comunidad & Municipio</th>
+          <th class="py-4 px-4 text-[12px] font-medium uppercase tracking-normal text-[#071D49]/40">Hogares con Agua</th>
+          <th class="py-4 px-4 text-[12px] font-medium uppercase tracking-normal text-[#071D49]/40">Saneamiento Básico</th>
+          <th class="py-4 px-4 text-[12px] font-medium uppercase tracking-normal text-[#071D49]/40">Calidad Cloro (COGUANOR)</th>
+          <th class="py-4 px-4 text-[12px] font-medium uppercase tracking-normal text-[#071D49]/40">Técnico OMAS</th>
         </tr>
       </thead>
       <tbody class="divide-y divide-gray-50/60">
@@ -332,17 +332,17 @@
           {@const cloroOptimo = c.ppmCloroResidual >= 0.5 && c.ppmCloroResidual <= 1.5}
           <tr class="transition-colors hover:bg-gray-50/50 group">
             <td class="py-4 px-4">
-              <span class="text-[12px] font-mono font-bold text-[#1248AA] block">{c.codigo}</span>
+              <span class="text-[12px] font-mono font-medium text-[#1248AA] block">{c.codigo}</span>
               <span class="text-[11px] text-[#071D49]/50">{c.fechaLevantamiento}</span>
             </td>
             <td class="py-4 px-4">
-              <h4 class="text-[13px] font-semibold text-[#071D49] leading-snug">{c.comunidad}</h4>
+              <h4 class="text-[13px] font-medium text-[#071D49] leading-snug">{c.comunidad}</h4>
               <span class="text-[12px] text-[#071D49]/40">{c.municipio}</span>
             </td>
             <td class="py-4 px-4">
               <div class="space-y-1">
                 <div class="flex items-center gap-2">
-                  <span class="text-[13px] font-semibold text-[#071D49]">{cobAgua}%</span>
+                  <span class="text-[13px] font-medium text-[#071D49]">{cobAgua}%</span>
                   <span class="text-[12px] text-[#071D49]/40">({c.viviendasConAgua}/{c.viviendasTotales})</span>
                 </div>
                 <div class="w-24 bg-gray-200 rounded-full h-1 overflow-hidden">
@@ -353,7 +353,7 @@
             <td class="py-4 px-4">
               <div class="space-y-1">
                 <div class="flex items-center gap-2">
-                  <span class="text-[13px] font-semibold text-[#071D49]">{cobSan}%</span>
+                  <span class="text-[13px] font-medium text-[#071D49]">{cobSan}%</span>
                   <span class="text-[12px] text-[#071D49]/40">({c.viviendasConSaneamiento}/{c.viviendasTotales})</span>
                 </div>
                 <div class="w-24 bg-gray-200 rounded-full h-1 overflow-hidden">
@@ -362,13 +362,13 @@
               </div>
             </td>
             <td class="py-4 px-4">
-              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[12px] font-bold border {cloroOptimo ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-rose-50 text-rose-800 border-rose-200'}">
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[12px] font-medium border {cloroOptimo ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-rose-50 text-rose-800 border-rose-200'}">
                 <span class="w-1.5 h-1.5 rounded-full {cloroOptimo ? 'bg-emerald-500' : 'bg-rose-500'}"></span>
                 <span>{c.ppmCloroResidual} ppm {cloroOptimo ? '(Conforme)' : '(Riesgo)'}</span>
               </span>
             </td>
             <td class="py-4 px-4">
-              <span class="text-[12px] font-bold text-[#071D49] block">{c.tecnicoResponsable}</span>
+              <span class="text-[12px] font-medium text-[#071D49] block">{c.tecnicoResponsable}</span>
               <span class="text-[12px] text-[#071D49]/40">Registro ingresado</span>
             </td>
           </tr>
@@ -383,11 +383,11 @@
   <!-- svelte-ignore a11y_click_events_have_key_events -->
   <!-- svelte-ignore a11y_no_static_element_interactions -->
   <div transition:fade={{ duration: 180 }} class="fixed inset-0 bg-[#071D49]/20 backdrop-blur-sm z-50 flex items-center justify-center p-4" onclick={() => showModal = false}>
-    <div transition:fly={{ y: 20, duration: 250 }} class="glass-light mfn-form-dialog rounded-[32px] w-full max-w-xl  p-8  " onclick={e => e.stopPropagation()}>
+    <div transition:fly={{ y: 20, duration: 250 }} class="glass-light mfn-form-dialog rounded-[4px] w-full max-w-xl  p-8  " onclick={e => e.stopPropagation()}>
       <div class="flex justify-between items-center mb-6 border-b border-gray-50 pb-4">
         <div>
-          <span class="text-[12px] font-bold uppercase tracking-normal text-[#1248AA]">Monitoreo OMAS</span>
-          <h2 class="text-xl font-semibold text-[#071D49] tracking-tight">Levantamiento de Censo ASH</h2>
+          <span class="text-[12px] font-medium uppercase tracking-normal text-[#1248AA]">Monitoreo OMAS</span>
+          <h2 class="text-xl font-medium text-[#071D49] tracking-tight">Levantamiento de Censo ASH</h2>
         </div>
         <button onclick={() => showModal = false} class="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors">
           <Icon name="close" className="w-5 h-5 text-[#071D49]/50" stroke={2} />
@@ -396,10 +396,10 @@
 
       <p class="text-sm mb-4 text-black">Ingrese viviendas censadas, no personas ni porcentajes. Los grupos con agua y con saneamiento pueden coincidir; cada uno debe estar entre cero y el total.</p>
       <form onsubmit={guardarCenso} class="space-y-4">
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label for="field-1" class="block text-[12px] font-bold uppercase tracking-normal text-[#071D49]/40 mb-1.5">Municipio</label>
-            <select id="field-1" bind:value={nuevoCenso.municipio} class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[12px] text-[#071D49]">
+            <label for="field-1" class="block text-[12px] font-medium uppercase tracking-normal text-[#071D49]/40 mb-1.5">Municipio</label>
+            <select id="field-1" bind:value={nuevoCenso.municipio} class="w-full bg-white border border-gray-200 rounded-[4px] px-4 py-3 text-[12px] text-[#071D49]">
               <option value="Santa Eulalia">Santa Eulalia</option>
               <option value="San Pedro Soloma">San Pedro Soloma</option>
               <option value="San Rafael la Independencia">San Rafael la Independencia</option>
@@ -407,32 +407,32 @@
           </div>
 
           <div>
-            <label for="field-2" class="block text-[12px] font-bold uppercase tracking-normal text-[#071D49]/40 mb-1.5">Nombre Comunidad / Aldea</label>
-            <input id="field-2" required type="text" bind:value={nuevoCenso.comunidad} placeholder="Ej: Aldea Ixcanac" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#071D49]" />
+            <label for="field-2" class="block text-[12px] font-medium uppercase tracking-normal text-[#071D49]/40 mb-1.5">Nombre Comunidad / Aldea</label>
+            <input id="field-2" required type="text" bind:value={nuevoCenso.comunidad} placeholder="Ej: Aldea Ixcanac" class="w-full bg-white border border-gray-200 rounded-[4px] px-4 py-3 text-[13px] text-[#071D49]" />
           </div>
         </div>
 
-        <div class="grid grid-cols-3 gap-3">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
-            <label for="field-3" class="block text-[12px] font-bold uppercase tracking-normal text-[#071D49]/40 mb-1.5">Total Hogares</label>
-            <input id="field-3" required type="number" min="1" bind:value={nuevoCenso.viviendasTotales} class="w-full bg-white border border-gray-200 rounded-xl px-3 py-3 text-[13px] font-bold text-[#071D49]" />
+            <label for="field-3" class="block text-[12px] font-medium uppercase tracking-normal text-[#071D49]/40 mb-1.5">Total Hogares</label>
+            <input id="field-3" required type="number" min="1" bind:value={nuevoCenso.viviendasTotales} class="w-full bg-white border border-gray-200 rounded-[4px] px-3 py-3 text-[13px] font-medium text-[#071D49]" />
           </div>
 
           <div>
-            <label for="field-4" class="block text-[12px] font-bold uppercase tracking-normal text-[#071D49]/40 mb-1.5">Con Agua de Red</label>
-            <input id="field-4" required type="number" min="0" step="1" max={nuevoCenso.viviendasTotales || undefined} bind:value={nuevoCenso.viviendasConAgua} class="w-full bg-white border border-gray-200 rounded-xl px-3 py-3 text-[13px] font-bold text-[#071D49]" />
+            <label for="field-4" class="block text-[12px] font-medium uppercase tracking-normal text-[#071D49]/40 mb-1.5">Con Agua de Red</label>
+            <input id="field-4" required type="number" min="0" step="1" max={nuevoCenso.viviendasTotales || undefined} bind:value={nuevoCenso.viviendasConAgua} class="w-full bg-white border border-gray-200 rounded-[4px] px-3 py-3 text-[13px] font-medium text-[#071D49]" />
           </div>
 
           <div>
-            <label for="field-5" class="block text-[12px] font-bold uppercase tracking-normal text-[#071D49]/40 mb-1.5">Con Saneamiento</label>
-            <input id="field-5" required type="number" min="0" step="1" max={nuevoCenso.viviendasTotales || undefined} bind:value={nuevoCenso.viviendasConSaneamiento} class="w-full bg-white border border-gray-200 rounded-xl px-3 py-3 text-[13px] font-bold text-[#071D49]" />
+            <label for="field-5" class="block text-[12px] font-medium uppercase tracking-normal text-[#071D49]/40 mb-1.5">Con Saneamiento</label>
+            <input id="field-5" required type="number" min="0" step="1" max={nuevoCenso.viviendasTotales || undefined} bind:value={nuevoCenso.viviendasConSaneamiento} class="w-full bg-white border border-gray-200 rounded-[4px] px-3 py-3 text-[13px] font-medium text-[#071D49]" />
           </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label for="field-6" class="block text-[12px] font-bold uppercase tracking-normal text-[#071D49]/40 mb-1.5">¿Sistema con Clorador?</label>
-            <select id="field-6" required bind:value={nuevoCenso.sistemaCloracion} class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[12px] text-[#071D49]">
+            <label for="field-6" class="block text-[12px] font-medium uppercase tracking-normal text-[#071D49]/40 mb-1.5">¿Sistema con Clorador?</label>
+            <select id="field-6" required bind:value={nuevoCenso.sistemaCloracion} class="w-full bg-white border border-gray-200 rounded-[4px] px-4 py-3 text-[12px] text-[#071D49]">
               <option value="" disabled>Seleccione una opción</option>
               <option value={true}>Sí, dosificador instalado</option>
               <option value={false}>No, agua cruda sin tratar</option>
@@ -440,20 +440,20 @@
           </div>
 
           <div>
-            <label for="field-7" class="block text-[12px] font-bold uppercase tracking-normal text-[#071D49]/40 mb-1.5">Cloro Residual (ppm)</label>
-            <input id="field-7" required type="number" step="0.1" min="0" bind:value={nuevoCenso.ppmCloroResidual} class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#071D49]" />
+            <label for="field-7" class="block text-[12px] font-medium uppercase tracking-normal text-[#071D49]/40 mb-1.5">Cloro Residual (ppm)</label>
+            <input id="field-7" required type="number" step="0.1" min="0" bind:value={nuevoCenso.ppmCloroResidual} class="w-full bg-white border border-gray-200 rounded-[4px] px-4 py-3 text-[13px] text-[#071D49]" />
           </div>
         </div>
 
         <div>
-          <label for="field-8" class="block text-[12px] font-bold uppercase tracking-normal text-[#071D49]/40 mb-1.5">Técnico OMAS Responsable</label>
-          <input id="field-8" required type="text" bind:value={nuevoCenso.tecnicoResponsable} placeholder="Nombre del inspector de campo" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[13px] text-[#071D49]" />
+          <label for="field-8" class="block text-[12px] font-medium uppercase tracking-normal text-[#071D49]/40 mb-1.5">Técnico OMAS Responsable</label>
+          <input id="field-8" required type="text" bind:value={nuevoCenso.tecnicoResponsable} placeholder="Nombre del inspector de campo" class="w-full bg-white border border-gray-200 rounded-[4px] px-4 py-3 text-[13px] text-[#071D49]" />
         </div>
 
         {#if cantidadesInvalidas}<p role="alert" class="text-red-800 font-medium">Agua y saneamiento no pueden superar las {nuevoCenso.viviendasTotales || 0} viviendas censadas. Corrija las cantidades.</p>{/if}
         <div class="pt-4 flex justify-end gap-3 mt-6 border-t border-gray-50 pt-5">
-          <button type="button" onclick={() => showModal = false} class="px-6 py-3 rounded-full font-bold text-[#071D49]/60 hover:bg-gray-50 transition-colors text-[13px]">Cancelar</button>
-          <button type="submit" disabled={formLoading || cantidadesInvalidas} class="px-8 py-3 bg-[#071D49] text-white rounded-full font-bold hover:bg-black shadow-md transition-all text-[13px] disabled:opacity-50">
+          <button type="button" onclick={() => showModal = false} class="px-6 py-3 rounded-full font-medium text-[#071D49]/60 hover:bg-gray-50 transition-colors text-[13px]">Cancelar</button>
+          <button type="submit" disabled={formLoading || cantidadesInvalidas} class="px-8 py-3 bg-[#071D49] text-white rounded-full font-medium hover:bg-black shadow-md transition-all text-[13px] disabled:opacity-50">
             {formLoading ? 'Registrando...' : 'Guardar Censo OMAS'}
           </button>
         </div>

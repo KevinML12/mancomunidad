@@ -1,0 +1,122 @@
+import { randomBytes } from 'node:crypto';
+import { Router } from 'express';
+import prisma from '../../lib/prisma.js';
+import { requireAuth, requireAppAdmin } from '../../middleware/auth.js';
+import { rateLimit } from '../../middleware/rate-limit.js';
+import { mediaExists, mediaUrl, saveMedia } from '../../services/media.js';
+import { ValidationError } from '../../services/errors.js';
+import { logAction } from '../../lib/audit.js';
+
+const router = Router();
+router.use(requireAuth, requireAppAdmin);
+
+const TYPES = new Set(['Aviso', 'Proyecto', 'Acta', 'Estadística', 'Finanzas', 'Convocatoria', 'Documento']);
+function publicationData(body, partial = false) {
+  const data = {};
+  for (const field of ['tipo', 'titulo', 'resumen']) {
+    if (body[field] === undefined && partial) continue;
+    if (typeof body[field] !== 'string' || !body[field].trim()) throw new ValidationError(`${field} es obligatorio`);
+    data[field] = body[field].trim();
+  }
+  if (data.tipo && !TYPES.has(data.tipo)) throw new ValidationError('Tipo de publicación inválido');
+  if (data.titulo?.length > 160 || data.resumen?.length > 3000) throw new ValidationError('El texto de la publicación es demasiado largo');
+  if (body.referenciaId !== undefined) {
+    const id = Number(body.referenciaId);
+    if (body.referenciaId !== null && (!Number.isSafeInteger(id) || id < 1)) throw new ValidationError('Referencia inválida');
+    data.referenciaId = body.referenciaId === null ? null : id;
+  }
+  if (body.visibilidad !== undefined) {
+    if (typeof body.visibilidad !== 'boolean') throw new ValidationError('Visibilidad inválida');
+    data.visibilidad = body.visibilidad;
+  }
+  if (body.mediaRef !== undefined) {
+    if (body.mediaRef !== null && (typeof body.mediaRef !== 'string' || !body.mediaRef.startsWith('r2media://publicaciones/'))) throw new ValidationError('Archivo inválido');
+    data.mediaRef = body.mediaRef;
+  }
+  return data;
+}
+
+router.get('/overview', async (_req, res, next) => {
+  try {
+    const [usuarios, roles, publicaciones, visibles] = await Promise.all([
+      prisma.usuario.count(), prisma.rol.count(), prisma.publicacionTransparencia.count(),
+      prisma.publicacionTransparencia.count({ where: { visibilidad: true, tipo: { not: 'SolicitudUIP' } } }),
+    ]);
+    res.json({ usuarios, roles, publicaciones, visibles });
+  } catch (error) { next(error); }
+});
+
+router.get('/users', async (_req, res, next) => {
+  try {
+    const rows = await prisma.usuario.findMany({
+      select: { id: true, correo: true, createdAt: true, rol: { select: { codigo: true, nombre: true } } },
+      orderBy: { id: 'asc' },
+    });
+    res.json(rows);
+  } catch (error) { next(error); }
+});
+
+router.post('/users/:id/revoke-sessions', async (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+    if (!Number.isSafeInteger(id) || id < 1 || id === req.user.sub) throw new ValidationError('Seleccione otra cuenta válida');
+    const user = await prisma.usuario.update({ where: { id }, data: { sessionVersion: { increment: 1 } }, select: { id: true, correo: true } });
+    await logAction(req.user.sub, 'revocar_sesiones', 'usuario', id);
+    res.json({ ok: true, usuario: user.correo });
+  } catch (error) { next(error); }
+});
+
+router.get('/publicaciones', async (_req, res, next) => {
+  try {
+    res.json(await prisma.publicacionTransparencia.findMany({
+      where: { tipo: { not: 'SolicitudUIP' } }, orderBy: { fechaPublicacion: 'desc' },
+    }));
+  } catch (error) { next(error); }
+});
+
+router.post('/media', rateLimit(20, undefined, { scope: 'admin-media', keyFrom: req => req.user.sub }), async (req, res, next) => {
+  try {
+    const { archivoBase64, tipoMime } = req.body;
+    if (typeof archivoBase64 !== 'string' || archivoBase64.length > 7_000_000 || !/^[A-Za-z0-9+/]+={0,2}$/.test(archivoBase64)) throw new ValidationError('Seleccione un archivo válido de hasta 5 MB');
+    const buffer = Buffer.from(archivoBase64, 'base64');
+    if (buffer.toString('base64') !== archivoBase64) throw new ValidationError('Archivo inválido');
+    res.status(201).json(await saveMedia(buffer, tipoMime, 'publicaciones'));
+  } catch (error) { next(error); }
+});
+
+router.post('/publicaciones', async (req, res, next) => {
+  try {
+    const data = publicationData(req.body);
+    if (data.mediaRef && !(await mediaExists(data.mediaRef))) throw new ValidationError('El archivo no está disponible en R2');
+    const created = await prisma.publicacionTransparencia.create({ data: {
+      ...data, codigo: `PUB-${new Date().getFullYear()}-${randomBytes(5).toString('hex').toUpperCase()}`,
+      visibilidad: false, autorizadoPor: req.user.nombre || req.user.correo,
+    } });
+    res.status(201).json(created);
+  } catch (error) { next(error); }
+});
+
+router.patch('/publicaciones/:id', async (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+    if (!Number.isSafeInteger(id) || id < 1) throw new ValidationError('Publicación inválida');
+    const existing = await prisma.publicacionTransparencia.findUnique({ where: { id } });
+    if (!existing || existing.tipo === 'SolicitudUIP') return res.status(404).json({ error: 'Publicación no encontrada' });
+    const data = publicationData(req.body, true);
+    if (!Object.keys(data).length) throw new ValidationError('No hay cambios');
+    if (data.mediaRef && !(await mediaExists(data.mediaRef))) throw new ValidationError('El archivo no está disponible en R2');
+    res.json(await prisma.publicacionTransparencia.update({ where: { id }, data }));
+  } catch (error) { next(error); }
+});
+
+router.get('/publicaciones/:id/media', async (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+    if (!Number.isSafeInteger(id) || id < 1) throw new ValidationError('Publicación inválida');
+    const row = await prisma.publicacionTransparencia.findUnique({ where: { id }, select: { mediaRef: true, tipo: true } });
+    if (!row?.mediaRef || row.tipo === 'SolicitudUIP') return res.status(404).json({ error: 'Archivo no encontrado' });
+    res.set('Cache-Control', 'no-store').redirect(302, await mediaUrl(row.mediaRef));
+  } catch (error) { next(error); }
+});
+
+export default router;

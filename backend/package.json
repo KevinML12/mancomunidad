@@ -7,6 +7,7 @@
     "dev": "nodemon src/server.js",
     "start": "node src/server.js",
     "build": "npx prisma generate --schema prisma/schema.production.prisma",
+    "build:vercel": "npx prisma generate --schema prisma/schema.production.prisma && npx prisma db execute --file prisma/production-rate-limit.sql --schema prisma/schema.production.prisma",
     "test": "npm run test:unit && npm run test:integration",
     "test:legacy": "node --test tests/legacy/*.test.js",
     "prisma:migrate": "prisma migrate dev",

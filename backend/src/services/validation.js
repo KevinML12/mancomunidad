@@ -38,7 +38,7 @@ export function url(value, label, optional = true) {
   try {
     if (typeof value !== 'string') throw new Error();
     const parsed = new URL(value);
-    if (!['http:', 'https:'].includes(parsed.protocol) || parsed.username || parsed.password) throw new Error();
+    if (parsed.protocol !== 'https:' || parsed.username || parsed.password) throw new Error();
     return parsed.href;
-  } catch { throw new ValidationError(`${label}: use un enlace HTTP o HTTPS sin credenciales`); }
+  } catch { throw new ValidationError(`${label}: use un enlace HTTPS sin credenciales`); }
 }

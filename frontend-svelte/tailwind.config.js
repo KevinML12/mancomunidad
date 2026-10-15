@@ -77,8 +77,8 @@ export default {
       },
 
       fontFamily: {
-        sans:    ['"Plus Jakarta Sans"', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
-        display: ['"Plus Jakarta Sans"', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+        sans:    ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+        display: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
         serif:   ['New York', 'Georgia', 'serif'],
         mono:    ['"JetBrains Mono"', 'SF Mono', 'Cascadia Code', 'Consolas', 'Menlo', 'monospace'],
       },
@@ -153,28 +153,26 @@ export default {
         // cada sección decidía sin memoria de lo que se decidió dos
         // archivos atrás, que es literalmente cómo trabaja un generador.
         //
-        // Peso 700 y no 800: Arimo topa en 700 (ver el @font-face de
-        // index.css), así que declarar 800/900 pintaba el mismo trazo y
-        // fingía una jerarquía que la pantalla nunca cumplía.
-        'd1': ['clamp(2.75rem, 7vw, 6.5rem)', { lineHeight: '0.94', letterSpacing: '-0.045em', fontWeight: '700' }],
-        'd2': ['clamp(2.25rem, 5vw, 4rem)',   { lineHeight: '0.98', letterSpacing: '-0.035em', fontWeight: '700' }],
-        'd3': ['clamp(1.6rem, 3vw, 2.6rem)',  { lineHeight: '1.08', letterSpacing: '-0.02em',  fontWeight: '700' }],
+        // La jerarquía se apoya en tamaño y contraste; los pesos no pasan de 600.
+        'd1': ['clamp(2.75rem, 7vw, 6.5rem)', { lineHeight: '0.94', letterSpacing: '-0.045em', fontWeight: '600' }],
+        'd2': ['clamp(2.25rem, 5vw, 4rem)',   { lineHeight: '0.98', letterSpacing: '-0.035em', fontWeight: '600' }],
+        'd3': ['clamp(1.6rem, 3vw, 2.6rem)',  { lineHeight: '1.08', letterSpacing: '-0.02em',  fontWeight: '600' }],
 
-        'display-l': ['clamp(4rem, 9vw, 8rem)',     { lineHeight: '0.92', letterSpacing: '-0.05em', fontWeight: '800' }],
-        'display-m': ['clamp(3rem, 6vw, 5.5rem)',   { lineHeight: '0.95', letterSpacing: '-0.04em', fontWeight: '800' }],
-        'display-s': ['clamp(2.25rem, 4vw, 3.5rem)', { lineHeight: '1.0',  letterSpacing: '-0.03em', fontWeight: '800' }],
-        'headline-l':['clamp(2.5rem, 5vw, 4rem)',   { lineHeight: '1.05', letterSpacing: '-0.03em', fontWeight: '800' }],
-        'headline-m':['2rem',                       { lineHeight: '1.1',  letterSpacing: '-0.025em', fontWeight: '700' }],
-        'headline-s':['1.5rem',                     { lineHeight: '1.2',  letterSpacing: '-0.02em', fontWeight: '700' }],
-        'title-l':   ['1.5rem',  { lineHeight: '1.3',  letterSpacing: '-0.015em', fontWeight: '700' }],
-        'title-m':   ['1.125rem',{ lineHeight: '1.4',  letterSpacing: '-0.01em',  fontWeight: '600' }],
-        'title-s':   ['1rem',    { lineHeight: '1.4',  fontWeight: '600' }],
+        'display-l': ['clamp(4rem, 9vw, 8rem)',     { lineHeight: '0.92', letterSpacing: '-0.05em', fontWeight: '600' }],
+        'display-m': ['clamp(3rem, 6vw, 5.5rem)',   { lineHeight: '0.95', letterSpacing: '-0.04em', fontWeight: '600' }],
+        'display-s': ['clamp(2.25rem, 4vw, 3.5rem)', { lineHeight: '1.0',  letterSpacing: '-0.03em', fontWeight: '600' }],
+        'headline-l':['clamp(2.5rem, 5vw, 4rem)',   { lineHeight: '1.05', letterSpacing: '-0.03em', fontWeight: '600' }],
+        'headline-m':['2rem',                       { lineHeight: '1.1',  letterSpacing: '-0.025em', fontWeight: '600' }],
+        'headline-s':['1.5rem',                     { lineHeight: '1.2',  letterSpacing: '-0.02em', fontWeight: '500' }],
+        'title-l':   ['1.5rem',  { lineHeight: '1.3',  letterSpacing: '-0.015em', fontWeight: '500' }],
+        'title-m':   ['1.125rem',{ lineHeight: '1.4',  letterSpacing: '-0.01em',  fontWeight: '500' }],
+        'title-s':   ['1rem',    { lineHeight: '1.4',  fontWeight: '500' }],
         'body-l':    ['1.125rem',{ lineHeight: '1.6',  fontWeight: '400' }],
         'body-m':    ['1rem',    { lineHeight: '1.6',  fontWeight: '400' }],
         'body-s':    ['0.875rem',{ lineHeight: '1.55', fontWeight: '400' }],
-        'label-l':   ['0.875rem',{ lineHeight: '1.4',  letterSpacing: '0.05em',  fontWeight: '600' }],
-        'label-m':   ['0.75rem', { lineHeight: '1.3',  letterSpacing: '0.1em',   fontWeight: '600' }],
-        'label-s':   ['0.6875rem',{ lineHeight: '1.3', letterSpacing: '0.15em',  fontWeight: '600' }],
+        'label-l':   ['0.875rem',{ lineHeight: '1.4',  letterSpacing: '0.05em',  fontWeight: '500' }],
+        'label-m':   ['0.75rem', { lineHeight: '1.3',  letterSpacing: '0.1em',   fontWeight: '500' }],
+        'label-s':   ['0.6875rem',{ lineHeight: '1.3', letterSpacing: '0.15em',  fontWeight: '500' }],
         'mono':      ['0.6875rem',{ lineHeight: '1.3', letterSpacing: '0.2em',   fontWeight: '500' }],
 
         // Escala del SITIO PÚBLICO (liquid glass) -- nombrada por su valor en

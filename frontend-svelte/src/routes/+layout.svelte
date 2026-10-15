@@ -2,8 +2,10 @@
   import '../app.css';
   import { onMount } from 'svelte';
   import { Toaster } from 'svelte-sonner';
+  import { auth } from '$lib/stores/auth.svelte.js';
 
   onMount(() => {
+    auth.refresh();
     const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
     const move = (event) => {
       if (motion.matches || !(event.target instanceof Element)) return;

@@ -6,7 +6,12 @@ export const AREAS = [
   { key:'convenios', path:'/convenios', title:'Convenios', description:'Alianzas, vigencias y prórrogas registradas.' },
   { key:'estadisticas', path:'/estadisticas', title:'Indicadores ASH', description:'Censos de viviendas, agua y saneamiento.' },
   { key:'inteligencia', path:'/inteligencia', title:'Control de integridad', description:'Verificación interna de registros y puntos de control.' },
-  { key:'estructura', path:'/personal', title:'Talento humano', description:'Gestión del personal institucional.' },
+  { key:'estructura', path:'/personal', title:'Talento humano', description:'Directorio y puestos institucionales.' },
+  { key:'reclutamiento', path:'/gestion-personal/reclutamiento', title:'Reclutamiento', description:'Convocatorias y candidatos.' },
+  { key:'evaluaciones', path:'/gestion-personal/evaluaciones', title:'Evaluaciones', description:'Resultados y seguimiento del desempeño.' },
+  { key:'ausencias', path:'/gestion-personal/ausencias', title:'Ausencias', description:'Solicitudes, vacaciones y aprobaciones.' },
+  { key:'disciplina', path:'/gestion-personal/disciplina', title:'Disciplina', description:'Expedientes y seguimiento del equipo.' },
+  { key:'capacitacion', path:'/gestion-personal/capacitacion', title:'Capacitación', description:'Formación y certificaciones.' },
   { key:'transparencia', path:'/transparencia', title:'Transparencia', description:'Consulta ciudadana de información publicada.' }
 ];
 const PRIORITIES = {
@@ -15,7 +20,9 @@ const PRIORITIES = {
   DIRADMIN:['financiero','convenios','gobernanza'],
   DIRPROY:['proyectos','arc','estadisticas'],
   AUD:['inteligencia','financiero','gobernanza','proyectos'],
-  RRHH:['estructura'], JI:['estructura'], EMP:['estructura']
+  RRHH:['estructura','ausencias','evaluaciones','reclutamiento'],
+  JI:['ausencias','evaluaciones','disciplina'],
+  EMP:['ausencias','evaluaciones','capacitacion']
 };
 export function navigationFor(role, permissions) {
   const allowed = AREAS.filter(area => permissions?.modulos?.includes(area.key));

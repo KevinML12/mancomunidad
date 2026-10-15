@@ -9,7 +9,8 @@
   let { children } = $props();
   const queryClient = new QueryClient();
 
-  onMount(() => {
+  onMount(async () => {
+    await auth.refresh();
     if (auth.isAuthenticated && 'serviceWorker' in navigator) {
       navigator.serviceWorker.register('/service-worker.js').catch((error) => {
         console.warn('No se pudo activar el modo de campo:', error);
@@ -18,9 +19,12 @@
   });
 
   $effect(() => {
+    if (!auth.ready) return;
     if (auth.isAuthenticated) {
-      const modulo = $page.url.pathname.split('/')[1] || 'dashboard';
-      if (!auth.puedeVer(modulo === 'personal' ? 'estructura' : modulo)) goto('/');
+      const segmentos = $page.url.pathname.split('/');
+      const modulo = segmentos[1] === 'gestion-personal' ? segmentos[2] : (segmentos[1] || 'dashboard');
+      const permission = modulo === 'personal' ? 'estructura' : modulo === 'inicio' ? 'dashboard' : modulo;
+      if (!auth.puedeVer(permission)) goto('/inicio');
     }
     if (!auth.isAuthenticated) {
       goto('/login');
@@ -30,8 +34,8 @@
 
 {#if auth.isAuthenticated}
   <QueryClientProvider client={queryClient}>
-  <div class="min-h-screen text-[#071D49] font-sans antialiased selection:bg-[#1248AA]/15 selection:text-[#071D49]">
-    <div class="max-w-[1500px] mx-auto flex flex-col lg:flex-row gap-6 items-start relative z-10 p-6 lg:p-8">
+  <div class="mfn-app min-h-screen text-[#071D49] font-sans antialiased selection:bg-[#1248AA]/15 selection:text-[#071D49]">
+    <div class="max-w-[1500px] mx-auto relative z-10 p-6 lg:p-8">
       <AppLayout>
         {#key $page.url.pathname}
           <div class="animate-fade-in w-full">

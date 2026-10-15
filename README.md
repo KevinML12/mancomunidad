@@ -20,7 +20,9 @@ No se ha demostrado en esta entrega un SLA de 99.9%, una mejora estadística de 
 
 ## Seguridad y alcance del control interno
 
-Las sesiones JWT incluyen tipo y versión. Cada petición autenticada consulta el rol y los permisos vigentes en la base. Restablecer la contraseña revoca las sesiones anteriores. No existen tokens fijos de demostración.
+Las sesiones JWT incluyen tipo y versión y se entregan en una cookie `HttpOnly`, `Secure` en producción y `SameSite=Lax`. El navegador no guarda el token en `localStorage`. Cada petición autenticada consulta el rol y los permisos vigentes en la base. Restablecer la contraseña revoca las sesiones anteriores. No existen tokens fijos de demostración.
+
+La administración de la aplicación vive en `admin-app/`, con despliegue y dominio propios. Las rutas `/api/v1/admin/*` exigen una cuenta cuyo correo exacto aparezca en `APP_ADMIN_EMAILS`; la lista vacía no autoriza a nadie. Las cuentas de demostración no reciben este permiso. Configurar `ADMIN_CLIENT_URL` con el origen HTTPS de la aplicación de administración. Cuando se entregue una cuenta real para esta función, agregar solo ese correo a la lista y volver a desplegar el backend.
 
 La recuperación utiliza un código aleatorio de un solo uso, almacenado como hash y válido por 15 minutos. El código no se entrega a quien solicita la recuperación: un servicio HTTPS configurado debe enviarlo al correo propietario. Sin configuración, el endpoint devuelve 503.
 
@@ -28,7 +30,7 @@ Las altas, cambios y bajas de los nueve modelos operativos incluidos en el contr
 
 Este control es interno. No es una certificación de la CGC, un árbol de Merkle formal ni un almacenamiento inmutable frente a quien administra la base. La protección y respaldo de la base de datos continúan siendo necesarios.
 
-Las evidencias nuevas conservan el archivo PNG/JPEG y su SHA-256 en la base, con un límite de 5 MB. Las coordenadas proceden del cliente y no prueban la ubicación real. Los enlaces externos históricos se señalan como no verificados. No hay extracción EXIF implementada.
+Las evidencias nuevas conservan la foto PNG/JPEG en Cloudflare R2. La base guarda solo la referencia, el SHA-256 y los metadatos; no guarda nuevos archivos en base64. Las publicaciones creadas desde la administración también guardan imágenes y PDF en R2. Los PDF de actas, acuerdos y convenios se suben directamente a R2 mediante una URL temporal. Las evidencias antiguas que ya tenían contenido base64 en la base siguen siendo legibles y requieren una migración aparte si se desea liberar ese espacio. Las coordenadas proceden del cliente y no prueban la ubicación real. Los enlaces externos históricos se señalan como no verificados. No hay extracción EXIF implementada.
 
 ### Modo de campo con conexión previa
 
@@ -41,6 +43,12 @@ Para probarlo manualmente: inicie sesión, abra `/proyectos` y un expediente, ac
 Las consultas públicas de solicitudes emplean un código aleatorio y solo devuelven estado y fechas, sin contactos ni descripción. Los códigos secuenciales históricos no se consultan por la ruta pública.
 
 ## Desarrollo y migraciones
+
+### HTTPS y peticiones simultáneas
+
+El portal público está en `https://frontend-svelte-vert.vercel.app`, la administración en `https://admin-app-kappa-red.vercel.app` y la API en `https://backend-eosin-omega-81.vercel.app`; usan los subdominios incluidos por Vercel, sin compra de dominio. `/` muestra el portal público y `/inicio` el panel del usuario autenticado. Ambos frontends llaman a `/api/v1` en su propio origen mediante una reescritura HTTPS hacia la API, de modo que la cookie de sesión no viaja entre dominios distintos. La interfaz publica cabeceras HSTS, protección frente a marcos y actualización de recursos inseguros. Los enlaces nuevos a documentos externos también exigen HTTPS. Si se adopta un dominio propio, actualizar las reescrituras, `CLIENT_URL` y `ADMIN_CLIENT_URL` y comprobar la redirección HTTP, el certificado y las cabeceras en los tres servicios.
+
+El inicio limita a tres sus consultas paralelas y descarta respuestas de intentos anteriores. La aprobación de vacaciones cambia el estado y descuenta el saldo en una transacción; una segunda aprobación devuelve 409. Las pruebas de integración envían dos aprobaciones simultáneas y verifican un solo descuento. El límite de peticiones utiliza contadores atómicos en la base compartida, incluidos un límite por IP y otro por cuenta para el login; funciona entre instancias del backend.
 
 Para actualizar una laptop desde `main`, preparar los dos servicios y probar el modo de campo, siga [FLUJO_LOCAL.md](FLUJO_LOCAL.md). Los comandos siguientes son la referencia breve para un entorno ya configurado.
 

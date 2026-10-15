@@ -19,6 +19,8 @@ router.get('/', async (req, res) => {
 
 router.get('/saldo/:colaboradorId', async (req, res) => {
   const colaboradorId = Number(req.params.colaboradorId);
+  const scope = await colaboradoresVisiblesPara(req.user);
+  if (scope && !scope.includes(colaboradorId)) return res.status(403).json({ error: 'Sin acceso al saldo solicitado' });
   const anio = new Date().getFullYear();
   const saldo = await prisma.saldoVacaciones.findUnique({ where: { colaboradorId_anio: { colaboradorId, anio } } });
   res.json(saldo || { colaboradorId, anio, diasDisponibles: 0, diasUsados: 0 });
@@ -47,27 +49,39 @@ router.post('/', async (req, res) => {
 });
 
 // RF-21: el jefe inmediato aprueba/rechaza.
-router.put('/:id', requirePermission('ausencias', 'aprobar'), async (req, res) => {
+router.put('/:id', requirePermission('ausencias', 'aprobar'), async (req, res, next) => {
   const id = Number(req.params.id);
   const { estado } = req.body;
   if (!['Aprobado', 'Rechazado'].includes(estado)) return res.status(400).json({ error: 'estado debe ser Aprobado o Rechazado' });
-
-  const solicitud = await prisma.solicitudAusencia.update({
-    where: { id },
-    data: { estado, aprobadorId: req.user.colaboradorId || null },
-  });
-
-  if (estado === 'Aprobado' && solicitud.tipo === 'Vacaciones') {
-    const anio = new Date().getFullYear();
-    const dias = Math.round((solicitud.hasta - solicitud.desde) / 86_400_000) + 1;
-    await prisma.saldoVacaciones.updateMany({
-      where: { colaboradorId: solicitud.colaboradorId, anio },
-      data: { diasUsados: { increment: dias } },
+  try {
+    const scope = await colaboradoresVisiblesPara(req.user);
+    const solicitud = await prisma.$transaction(async (tx) => {
+      const current = await tx.solicitudAusencia.findUnique({ where: { id } });
+      if (!current || (scope && !scope.includes(current.colaboradorId))) throw Object.assign(new Error('Solicitud no encontrada'), { status: 404 });
+      const changed = await tx.solicitudAusencia.updateMany({
+        where: { id, estado: 'Pendiente' },
+        data: { estado, aprobadorId: req.user.colaboradorId || null },
+      });
+      if (changed.count !== 1) throw Object.assign(new Error('La solicitud ya fue resuelta'), { status: 409 });
+      if (estado === 'Aprobado' && current.tipo === 'Vacaciones') {
+        const anio = new Date().getFullYear();
+        const dias = Math.round((current.hasta - current.desde) / 86_400_000) + 1;
+        const saldo = await tx.saldoVacaciones.findUnique({ where: { colaboradorId_anio: { colaboradorId: current.colaboradorId, anio } } });
+        if (!saldo || saldo.diasDisponibles - saldo.diasUsados < dias) throw Object.assign(new Error('Saldo de vacaciones insuficiente'), { status: 409 });
+        const debit = await tx.saldoVacaciones.updateMany({
+          where: { id: saldo.id, diasUsados: { lte: saldo.diasDisponibles - dias } },
+          data: { diasUsados: { increment: dias } },
+        });
+        if (debit.count !== 1) throw Object.assign(new Error('El saldo cambió; vuelva a intentar'), { status: 409 });
+      }
+      return tx.solicitudAusencia.findUnique({ where: { id } });
     });
+    await logAction(req.user.sub, `ausencia:${estado.toLowerCase()}`, 'solicitud_ausencia', id);
+    res.json(solicitud);
+  } catch (error) {
+    if (error?.status) return res.status(error.status).json({ error: error.message });
+    next(error);
   }
-
-  await logAction(req.user.sub, `ausencia:${estado.toLowerCase()}`, 'solicitud_ausencia', id);
-  res.json(solicitud);
 });
 
 export default router;

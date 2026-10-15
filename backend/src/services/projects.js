@@ -1,8 +1,8 @@
-import crypto from 'node:crypto';
 import { MUNICIPIOS_MFN } from '../lib/municipios.js';
 import prisma from '../lib/prisma.js';
 import { ValidationError } from './errors.js';
 import { date, chronological, numeric } from './validation.js';
+import { mediaUrl, saveMedia } from './media.js';
 
 const fields = ['nombre','municipio','agenciaFinanciadora','fechaInicioPlanificada','fechaFinPlanificada','presupuestoMunicipal','presupuestoCooperacion','estado','porcentajeAvanceFisico'];
 
@@ -17,16 +17,30 @@ export function projectData(body, creating = false) {
   return data;
 }
 
-const serializeEvidence = row => {
+const serializeEvidence = async row => {
   const { contenido, ...metadata } = row;
-  return { ...metadata, urlArchivo: contenido ? `data:${row.tipoMime};base64,${contenido}` : row.urlArchivo, integridadArchivo: contenido ? 'Archivo conservado con SHA-256' : 'Enlace histórico externo sin garantía de integridad' };
+  let urlArchivo = contenido ? `data:${row.tipoMime};base64,${contenido}` : row.urlArchivo;
+  if (row.urlArchivo?.startsWith('r2media://')) {
+    try { urlArchivo = await mediaUrl(row.urlArchivo); }
+    catch { urlArchivo = null; }
+  }
+  return { ...metadata, urlArchivo, integridadArchivo: row.urlArchivo?.startsWith('r2media://') ? 'Archivo en R2 con SHA-256' : contenido ? 'Archivo heredado en base de datos con SHA-256' : 'Enlace histórico externo sin garantía de integridad' };
 };
 
 export const listProjects = () => prisma.proyecto.findMany({ orderBy: { createdAt: 'desc' }, include: { _count: { select: { evidencias: true } } } });
 
 export async function getProject(id) {
   const row = await prisma.proyecto.findUnique({ where: { id }, include: { evidencias: { orderBy: { fechaCaptura: 'desc' } } } });
-  return row && { ...row, evidencias: row.evidencias.map(serializeEvidence) };
+  if (!row) return null;
+  const evidencias = new Array(row.evidencias.length);
+  let cursor = 0;
+  await Promise.all(Array.from({ length: Math.min(4, row.evidencias.length) }, async () => {
+    while (cursor < row.evidencias.length) {
+      const index = cursor++;
+      evidencias[index] = await serializeEvidence(row.evidencias[index]);
+    }
+  }));
+  return { ...row, evidencias };
 }
 
 export const createProject = body => prisma.proyecto.create({ data: projectData(body, true) });
@@ -51,6 +65,7 @@ export async function addProjectEvidence(projectId, userId, body) {
   if ((lat !== null && (!Number.isFinite(lat) || Math.abs(lat) > 90)) || (lon !== null && (!Number.isFinite(lon) || Math.abs(lon) > 180))) throw new ValidationError('Coordenadas fuera de rango');
   const captured = fechaCaptura ? new Date(fechaCaptura) : new Date();
   if (isNaN(captured.getTime())) throw new ValidationError('Fecha de captura inválida');
-  const row = await prisma.evidenciaProyecto.create({ data: { proyectoId: projectId, urlArchivo: '', contenido: archivoBase64, tipoMime, sha256: crypto.createHash('sha256').update(buffer).digest('hex'), latitud: lat, longitud: lon, descripcion, fechaCaptura: captured, cargadoPorId: userId } });
+  const media = await saveMedia(buffer, tipoMime, 'evidencias');
+  const row = await prisma.evidenciaProyecto.create({ data: { proyectoId: projectId, urlArchivo: media.reference, contenido: null, tipoMime, sha256: media.sha256, latitud: lat, longitud: lon, descripcion, fechaCaptura: captured, cargadoPorId: userId } });
   return serializeEvidence(row);
 }

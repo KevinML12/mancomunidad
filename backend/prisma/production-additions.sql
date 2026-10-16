@@ -45,7 +45,7 @@ CREATE UNIQUE INDEX "RecuperacionClave_tokenHash_key" ON "RecuperacionClave"("to
 ALTER TABLE "RecuperacionClave" ADD CONSTRAINT "RecuperacionClave_usuarioId_fkey" FOREIGN KEY ("usuarioId") REFERENCES "Usuario"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 
--- Las tablas privadas no deben exponerse mediante la API REST de Supabase.
+-- RLS en tablas privadas. Neon no publica una API REST automática; los permisos del backend siguen siendo obligatorios.
 ALTER TABLE "UnidadOrganizacional" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "Puesto" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "Colaborador" ENABLE ROW LEVEL SECURITY;

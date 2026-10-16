@@ -6,6 +6,7 @@
   import { toast } from 'svelte-sonner';
   import { auth } from '$lib/stores/auth.svelte.js';
   import { getSnapshot, saveSnapshot, queueEvidence, getEvidenceDrafts, removeEvidenceDraft, sha256Base64 } from '$lib/offline-field.js';
+  import { uploadEvidence } from '$lib/evidence/upload.js';
   import { fade, fly } from 'svelte/transition';
 
   let projectId = $derived($page.params.id);
@@ -14,6 +15,7 @@
   let offlineSnapshot = $state(null);
   let drafts = $state([]);
   let syncing = $state(false);
+  let loadingMore = $state(false);
 
   async function refreshDrafts() {
     drafts = await getEvidenceDrafts(auth.user?.id, projectId).catch(() => []);
@@ -26,8 +28,9 @@
     archivoBase64 = ''; tipoMime = '';
     if (!file || !['image/png', 'image/jpeg'].includes(file.type) || file.size > 5 * 1024 * 1024) { toast.error('Seleccione una fotografía PNG o JPEG de hasta 5 MB'); return; }
     const bytes = new Uint8Array(await file.arrayBuffer());
-    let binary = ''; for (const byte of bytes) binary += String.fromCharCode(byte);
-    archivoBase64 = btoa(binary); tipoMime = file.type;
+    const chunks = [];
+    for (let offset = 0; offset < bytes.length; offset += 32768) chunks.push(String.fromCharCode(...bytes.subarray(offset, offset + 32768)));
+    archivoBase64 = btoa(chunks.join('')); tipoMime = file.type;
   }
   // Evidencia Form State
   let showModal = $state(false);
@@ -62,16 +65,28 @@
     }
   };
 
+  async function loadMoreEvidence() {
+    if (loadingMore || !proyecto?.evidenciasNextCursor || offlineSnapshot) return;
+    loadingMore = true;
+    try {
+      const { data } = await apiClient.get(`/proyectos/${projectId}/evidencias`, { params: { after: proyecto.evidenciasNextCursor } });
+      if (!Array.isArray(data.evidencias)) throw new Error('Respuesta de evidencias inválida');
+      proyecto = { ...proyecto, evidencias: [...proyecto.evidencias, ...data.evidencias], evidenciasNextCursor: data.nextCursor };
+      await saveSnapshot(auth.user?.id, `project:${projectId}`, proyecto).catch(() => {});
+    } catch (error) {
+      toast.error('No se pudieron cargar más evidencias. Reintente.');
+    } finally {
+      loadingMore = false;
+    }
+  }
+
   async function syncDrafts() {
     if (syncing || !navigator.onLine || !auth.puedeEditar('proyectos')) return;
     syncing = true;
     try {
       const pending = await getEvidenceDrafts(auth.user?.id, projectId);
       for (const draft of pending) {
-        const { data } = await apiClient.get(`/proyectos/${projectId}`);
-        if (!data.evidencias?.some((item) => item.sha256 === draft.sha256)) {
-          await apiClient.post(`/proyectos/${projectId}/evidencias`, draft.payload);
-        }
+        await uploadEvidence(projectId, draft.payload, { api: apiClient });
         await removeEvidenceDraft(draft.key);
       }
       if (pending.length) {
@@ -122,7 +137,7 @@
     };
     try {
       if (navigator.onLine) {
-        await apiClient.post(`/proyectos/${projectId}/evidencias`, payload);
+        await uploadEvidence(projectId, payload, { api: apiClient });
         toast.success('Evidencia guardada en el servidor');
       } else {
         await queueEvidence(auth.user?.id, projectId, payload, await sha256Base64(archivoBase64));
@@ -273,7 +288,7 @@
           <h2 class="text-xl font-medium text-[#071D49] tracking-tight">Evidencias Fotográficas de Campo</h2>
         </div>
         <span class="text-[11px] font-medium text-[#071D49]/50">
-          {(proyecto.evidencias || []).length} registros
+          {(proyecto.evidencias || []).length} de {proyecto.evidenciasTotal ?? (proyecto.evidencias || []).length} registros
         </span>
       </div>
 
@@ -332,6 +347,11 @@
             </div>
           {/each}
         </div>
+        {#if proyecto.evidenciasNextCursor && !offlineSnapshot}
+          <button onclick={loadMoreEvidence} disabled={loadingMore} class="mt-6 px-5 py-3 bg-[#071D49] text-white rounded-full text-sm font-medium disabled:opacity-50">
+            {loadingMore ? 'Cargando…' : 'Cargar más evidencias'}
+          </button>
+        {/if}
       {/if}
     </section>
   {/if}

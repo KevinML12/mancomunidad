@@ -4,9 +4,10 @@ import crypto from 'node:crypto';
 export async function startR2Mock(port=0) {
   const objects=new Map();
   const server=http.createServer(async(req,res)=>{
-    res.setHeader('Access-Control-Allow-Origin','*');res.setHeader('Access-Control-Allow-Methods','PUT, GET, HEAD, OPTIONS');res.setHeader('Access-Control-Allow-Headers','Content-Type');
+    res.setHeader('Access-Control-Allow-Origin','*');res.setHeader('Access-Control-Allow-Methods','PUT, GET, HEAD, DELETE, OPTIONS');res.setHeader('Access-Control-Allow-Headers','Content-Type');
     if(req.method==='OPTIONS'){res.writeHead(204).end();return;}
     const path=decodeURIComponent(new URL(req.url,'http://127.0.0.1').pathname);
+    if(req.method==='DELETE'){objects.delete(path);res.writeHead(204).end();return;}
     if(req.method==='PUT') {
       const chunks=[];for await(const chunk of req)chunks.push(chunk);
       const body=Buffer.concat(chunks);const metadata={};

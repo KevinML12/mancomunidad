@@ -227,6 +227,14 @@ CREATE TABLE "BitacoraAuditoria" (
 );
 
 -- CreateTable
+CREATE TABLE "CorrelativoInstitucional" (
+    "clave" TEXT NOT NULL,
+    "ultimo" INTEGER NOT NULL,
+
+    CONSTRAINT "CorrelativoInstitucional_pkey" PRIMARY KEY ("clave")
+);
+
+-- CreateTable
 CREATE TABLE "Proyecto" (
     "municipio" TEXT,
     "id" SERIAL NOT NULL,
@@ -248,6 +256,7 @@ CREATE TABLE "EvidenciaProyecto" (
     "contenido" TEXT,
     "tipoMime" TEXT,
     "sha256" TEXT,
+    "dedupeKey" TEXT,
     "id" SERIAL NOT NULL,
     "proyectoId" INTEGER NOT NULL,
     "urlArchivo" TEXT NOT NULL,
@@ -517,6 +526,16 @@ ALTER TABLE "BitacoraAuditoria" ADD CONSTRAINT "BitacoraAuditoria_usuarioId_fkey
 -- AddForeignKey
 ALTER TABLE "EvidenciaProyecto" ADD CONSTRAINT "EvidenciaProyecto_proyectoId_fkey" FOREIGN KEY ("proyectoId") REFERENCES "Proyecto"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
+CREATE UNIQUE INDEX "EvidenciaProyecto_proyectoId_dedupeKey_key" ON "EvidenciaProyecto"("proyectoId", "dedupeKey");
+CREATE INDEX "EvidenciaProyecto_proyectoId_sha256_idx" ON "EvidenciaProyecto"("proyectoId", "sha256");
+CREATE INDEX "EvidenciaProyecto_proyectoId_fechaCaptura_id_idx" ON "EvidenciaProyecto"("proyectoId", "fechaCaptura", "id");
+CREATE INDEX "Proyecto_createdAt_id_idx" ON "Proyecto"("createdAt", "id");
+CREATE INDEX "TareaARC_estado_fechaLimite_idx" ON "TareaARC"("estado", "fechaLimite");
+CREATE INDEX "TransaccionFinanciera_cuentaBancaria_tipo_idx" ON "TransaccionFinanciera"("cuentaBancaria", "tipo");
+CREATE INDEX "TransaccionFinanciera_fecha_id_idx" ON "TransaccionFinanciera"("fecha", "id");
+CREATE INDEX "CensoComunitarioASH_municipio_fechaLevantamiento_idx" ON "CensoComunitarioASH"("municipio", "fechaLevantamiento");
+CREATE INDEX "PublicacionTransparencia_visibilidad_tipo_fechaPublicacion_idx" ON "PublicacionTransparencia"("visibilidad", "tipo", "fechaPublicacion");
+
 -- AddForeignKey
 ALTER TABLE "AcuerdoGobernanza" ADD CONSTRAINT "AcuerdoGobernanza_actaId_fkey" FOREIGN KEY ("actaId") REFERENCES "ActaAsamblea"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
@@ -524,7 +543,7 @@ ALTER TABLE "AcuerdoGobernanza" ADD CONSTRAINT "AcuerdoGobernanza_actaId_fkey" F
 ALTER TABLE "RecuperacionClave" ADD CONSTRAINT "RecuperacionClave_usuarioId_fkey" FOREIGN KEY ("usuarioId") REFERENCES "Usuario"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 
--- Las tablas privadas no deben exponerse mediante la API REST de Supabase.
+-- RLS en tablas privadas. Neon no publica una API REST automática; los permisos del backend siguen siendo obligatorios.
 ALTER TABLE "UnidadOrganizacional" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "Puesto" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "Colaborador" ENABLE ROW LEVEL SECURITY;
@@ -545,6 +564,7 @@ ALTER TABLE "CertificacionCapacitacion" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "BitacoraAuditoria" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "Proyecto" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "EvidenciaProyecto" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "CorrelativoInstitucional" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "TareaARC" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "TransaccionFinanciera" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "ActaAsamblea" ENABLE ROW LEVEL SECURITY;

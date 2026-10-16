@@ -5,9 +5,17 @@ import { ValidationError } from '../../services/errors.js';
 import { Router } from 'express';
 import prisma from '../../lib/prisma.js';
 import { requireAuth, requirePermission } from '../../middleware/auth.js';
+import { createWithCorrelative } from '../../services/correlatives.js';
 
 const router = Router();
 router.use(requireAuth, requirePermission('gobernanza'));
+
+router.get('/resumen', async (_req, res, next) => {
+  try {
+    const [actas, acuerdos] = await Promise.all([prisma.actaAsamblea.count(), prisma.acuerdoGobernanza.count()]);
+    res.json({ actas, acuerdos });
+  } catch (err) { next(err); }
+});
 
 // GET /api/v1/gobernanza/actas - Listar actas oficiales e indexadas
 router.get('/actas', async (req, res, next) => {
@@ -99,25 +107,19 @@ router.post('/actas/:id/acuerdos', requirePermission('gobernanza', 'editar'), as
     const actaId = Number(req.params.id);
     const { titulo, descripcion, responsable, fechaCumplimiento, estado, evidenciaUrl } = req.body;
 
-    const count = await prisma.acuerdoGobernanza.count({ where: { actaId } });
     const acta = await prisma.actaAsamblea.findUnique({ where: { id: actaId } });
     if (!acta) return res.status(404).json({error:'Acta no encontrada'});
     const validatedState = choice(estado === undefined ? 'En Proceso' : estado,['Pendiente','En Proceso','Cumplido'],'Estado');
     const reference = await documentReference(evidenciaUrl,'acuerdo',req.user.sub);
     if (validatedState === 'Cumplido' && !reference) throw new ValidationError('Adjunte una referencia documental para registrar cumplimiento');
-    const codigo = `ACU-${acta.numeroActa}-${(count + 1).toString().padStart(2, '0')}`;
-
-    const acuerdo = await prisma.acuerdoGobernanza.create({
-      data: {
-        codigo,
-        actaId,
-        titulo:text(titulo,'Título'),
-        descripcion:text(descripcion,'Descripción',{max:4000}),
-        responsable:text(responsable,'Responsable'),
-        fechaCumplimiento:fechaCumplimiento ? date(fechaCumplimiento,'Fecha de cumplimiento') : null,
-        estado:validatedState,
-        evidenciaUrl:reference
-      }
+    const acuerdo = await createWithCorrelative('acuerdoGobernanza', `ACU-${acta.numeroActa}-`, 2, {
+      actaId,
+      titulo:text(titulo,'Título'),
+      descripcion:text(descripcion,'Descripción',{max:4000}),
+      responsable:text(responsable,'Responsable'),
+      fechaCumplimiento:fechaCumplimiento ? date(fechaCumplimiento,'Fecha de cumplimiento') : null,
+      estado:validatedState,
+      evidenciaUrl:reference
     });
 
     res.status(201).json(acuerdo);

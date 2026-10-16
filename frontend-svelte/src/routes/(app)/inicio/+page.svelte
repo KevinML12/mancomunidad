@@ -36,7 +36,6 @@
     totalViviendas: 0
   });
 
-  let conveniosAlerta = $state([]);
   let loading = $state(true);
   let failedSources = $state([]);
   let roleDashboard = $state(null);
@@ -50,11 +49,11 @@
         ? apiClient.get(path)
         : Promise.resolve({ data: null });
       const [resProyectos, resArc, resBalance, resActas, resConvenios, resEstadisticas, resRole] = await settledLimited([
-        () => getIfAllowed('proyectos', '/proyectos'),
-        () => getIfAllowed('arc', '/arc'),
+        () => getIfAllowed('proyectos', '/proyectos/resumen'),
+        () => getIfAllowed('arc', '/arc/metricas'),
         () => getIfAllowed('financiero', '/financiero/balance'),
-        () => getIfAllowed('gobernanza', '/gobernanza/actas'),
-        () => getIfAllowed('convenios', '/convenios'),
+        () => getIfAllowed('gobernanza', '/gobernanza/resumen'),
+        () => getIfAllowed('convenios', '/convenios/resumen'),
         () => getIfAllowed('estadisticas', '/estadisticas/consolidado'),
         () => ['EMP', 'JI', 'DIRPROY', 'RRHH'].includes(auth.role)
           ? apiClient.get('/dashboard')
@@ -68,20 +67,18 @@
         ['mi panel', resRole]
       ].filter(([, result]) => result.status === 'rejected').map(([name]) => name);
 
-      if (resProyectos.status === 'fulfilled' && Array.isArray(resProyectos.value.data)) {
+      if (resProyectos.status === 'fulfilled' && resProyectos.value.data) {
         const proys = resProyectos.value.data;
-        stats.proyectosCount = proys.length;
-        stats.inversionTotal = proys.reduce((acc, p) => acc + (p.presupuestoMunicipal || 0) + (p.presupuestoCooperacion || 0), 0);
-        const sumAvance = proys.reduce((acc, p) => acc + (p.porcentajeAvanceFisico || 0), 0);
-        stats.avancePromedio = proys.length > 0 ? Number((sumAvance / proys.length).toFixed(1)) : 0;
+        stats.proyectosCount = proys.total;
+        stats.inversionTotal = proys.inversionTotal;
+        stats.avancePromedio = proys.avancePromedio;
       }
 
-      if (resArc.status === 'fulfilled' && Array.isArray(resArc.value.data)) {
+      if (resArc.status === 'fulfilled' && resArc.value.data) {
         const tareas = resArc.value.data;
-        stats.arcTotal = tareas.length;
-        const finalizadas = tareas.filter(t => t.estado === 'Finalizado').length;
-        stats.arcCumplidas = finalizadas;
-        stats.arcEfectividad = tareas.length > 0 ? Number(((finalizadas / tareas.length) * 100).toFixed(1)) : 0;
+        stats.arcTotal = tareas.total;
+        stats.arcCumplidas = tareas.finalizadas;
+        stats.arcEfectividad = tareas.porcentajeCumplimiento;
       }
 
       if (resBalance.status === 'fulfilled' && resBalance.value.data) {
@@ -91,17 +88,13 @@
         stats.cooperacion = b.cuentas?.cooperacion?.saldo || 0;
       }
 
-      if (resActas.status === 'fulfilled' && Array.isArray(resActas.value.data)) {
-        const actas = resActas.value.data;
-        stats.actasCount = actas.length;
-        stats.acuerdosCount = actas.reduce((acc, a) => acc + (a.acuerdos?.length || 0), 0);
+      if (resActas.status === 'fulfilled' && resActas.value.data) {
+        stats.actasCount = resActas.value.data.actas;
+        stats.acuerdosCount = resActas.value.data.acuerdos;
       }
 
-      if (resConvenios.status === 'fulfilled' && Array.isArray(resConvenios.value.data)) {
-        const convs = resConvenios.value.data;
-        const alertas = convs.filter(c => c.diasRestantes >= 0 && c.diasRestantes <= 90);
-        stats.conveniosAlertas = alertas.length;
-        conveniosAlerta = alertas;
+      if (resConvenios.status === 'fulfilled' && resConvenios.value.data) {
+        stats.conveniosAlertas = resConvenios.value.data.proximos;
       }
 
       if (resEstadisticas.status === 'fulfilled' && resEstadisticas.value.data) {

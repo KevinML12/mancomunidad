@@ -12,7 +12,7 @@ La membresía activa utilizada para esta implementación es **San Pedro Soloma, 
 
 - Svelte 5 y SvelteKit 2, Vite 8 y Tailwind CSS 3 en `frontend-svelte/`.
 - Node.js, Express 4 y Prisma 6 en `backend/`.
-- SQLite para desarrollo; esquema PostgreSQL separado para producción.
+- SQLite para desarrollo; PostgreSQL alojado en Neon, en el esquema `mancomunidad`, para producción.
 - La carpeta React `frontend/` corresponde a la interfaz anterior.
 - Go es una alternativa futura, no el backend implementado.
 
@@ -30,7 +30,7 @@ Las altas, cambios y bajas de los nueve modelos operativos incluidos en el contr
 
 Este control es interno. No es una certificación de la CGC, un árbol de Merkle formal ni un almacenamiento inmutable frente a quien administra la base. La protección y respaldo de la base de datos continúan siendo necesarios.
 
-Las evidencias nuevas conservan la foto PNG/JPEG en Cloudflare R2. La base guarda solo la referencia, el SHA-256 y los metadatos; no guarda nuevos archivos en base64. Las publicaciones creadas desde la administración también guardan imágenes y PDF en R2. Los PDF de actas, acuerdos y convenios se suben directamente a R2 mediante una URL temporal. Las evidencias antiguas que ya tenían contenido base64 en la base siguen siendo legibles y requieren una migración aparte si se desea liberar ese espacio. Las coordenadas proceden del cliente y no prueban la ubicación real. Los enlaces externos históricos se señalan como no verificados. No hay extracción EXIF implementada.
+Las evidencias nuevas suben la foto PNG/JPEG directamente a Cloudflare R2 mediante una URL temporal; el backend confirma tipo, tamaño y SHA-256 antes de registrar la referencia. La base guarda solo la referencia, el SHA-256 y los metadatos; no guarda nuevos archivos en base64. Las publicaciones creadas desde la administración también guardan imágenes y PDF en R2. Los PDF de actas, acuerdos y convenios se suben directamente a R2 mediante una URL temporal. Las evidencias antiguas que ya tenían contenido base64 en la base siguen siendo legibles y requieren una migración aparte si se desea liberar ese espacio. Las coordenadas proceden del cliente y no prueban la ubicación real. Los enlaces externos históricos se señalan como no verificados. No hay extracción EXIF implementada.
 
 ### Modo de campo con conexión previa
 
@@ -72,9 +72,12 @@ npm run dev
 
 El script de permisos actualiza los roles existentes sin eliminar cuentas. El seed de datos ficticios es destructivo y exige `ALLOW_DEMO_SEED=true`; no debe ejecutarse sobre datos institucionales.
 
-Para PostgreSQL existente: respaldar la base, revisar `backend/prisma/production-additions.sql` y ejecutar `npm run migrate:production` con la conexión correspondiente. Luego generar el cliente con `npx prisma generate --schema prisma/schema.production.prisma` y ejecutar `npm run permissions:update`. El historial `prisma/migrations/` es SQLite y no debe aplicarse a PostgreSQL. Para una base nueva e identificada de MFN, usar `npm run migrate:production:bootstrap`; crea el esquema sin cuentas ni datos ficticios y habilita RLS para impedir acceso directo a las tablas privadas mediante la API de Supabase. La conexión del backend debe utilizar el propietario de las tablas.
+Para la base PostgreSQL existente en Neon: respaldar la base, revisar `backend/prisma/production-additions.sql` y ejecutar `npm run migrate:production` con la conexión correspondiente. Luego generar el cliente con `npx prisma generate --schema prisma/schema.production.prisma` y ejecutar `npm run permissions:update`. El historial `prisma/migrations/` es SQLite y no debe aplicarse a PostgreSQL. Para una base nueva e identificada de MFN, usar `npm run migrate:production:bootstrap`; crea el esquema sin cuentas ni datos ficticios y habilita RLS en las tablas privadas. Neon no publica automáticamente una API REST de estas tablas; RLS no sustituye los permisos del backend ni restringe al propietario de las tablas. La conexión del backend debe utilizar el propietario de las tablas.
 
 Antes de desplegar la obligación de cambiar la clave inicial sobre una base PostgreSQL existente, revisar y ejecutar `npm run migrate:password-policy:production`. La columna nueva queda en `false` para las cuentas existentes; las altas posteriores desde el panel quedan en `true`. La base nueva creada con el bootstrap ya incluye la columna. El backend actualizado requiere esta migración antes de recibir tráfico.
+
+Para desplegar la rama de escalabilidad sobre Neon existente, revisar y aplicar, en este orden, `npm run migrate:evidence-dedupe:production`, `npm run migrate:query-indexes:production` y `npm run migrate:correlatives:production` desde `backend/`, con respaldo y conexión al esquema `mancomunidad` comprobados. La nueva base creada mediante `migrate:production:bootstrap` ya contiene estas estructuras. El build de Vercel no ejecuta estas tres migraciones. R2 debe permitir PUT desde el origen HTTPS de SvelteKit y disponer de una política de expiración de objetos `mfn/pendientes/evidencias/`.
+
 Al crear la primera cuenta administradora nominativa fuera del panel, establecer `mustChangePassword=true` para que su clave inicial también se cambie al ingresar. No usar ninguna cuenta de demostración para este arranque.
 
 ## Entrega del correo de recuperación

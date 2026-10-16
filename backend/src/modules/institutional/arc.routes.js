@@ -3,6 +3,7 @@ import { text, choice, date } from '../../services/validation.js';
 import { MUNICIPIOS_MFN } from '../../lib/municipios.js';
 import prisma from '../../lib/prisma.js';
 import { requireAuth, requirePermission } from '../../middleware/auth.js';
+import { createWithCorrelative } from '../../services/correlatives.js';
 
 const router = Router();
 router.use(requireAuth, requirePermission('arc'));
@@ -54,15 +55,16 @@ router.get('/', async (req, res, next) => {
 // GET /api/v1/arc/metricas - Métricas ejecutivas y alertas
 router.get('/metricas', async (req, res, next) => {
   try {
-    const tareas = await prisma.tareaARC.findMany();
-    const ahora = new Date();
-
-    const total = tareas.length;
-    const pendientes = tareas.filter(t => t.estado === 'Pendiente').length;
-    const enProceso = tareas.filter(t => t.estado === 'En Proceso').length;
-    const enRevision = tareas.filter(t => t.estado === 'En Revisión').length;
-    const finalizadas = tareas.filter(t => t.estado === 'Finalizado').length;
-    const vencidas = tareas.filter(t => t.estado !== 'Finalizado' && new Date(t.fechaLimite) < ahora).length;
+    const [grupos, vencidas] = await Promise.all([
+      prisma.tareaARC.groupBy({ by: ['estado'], _count: { _all: true } }),
+      prisma.tareaARC.count({ where: { estado: { not: 'Finalizado' }, fechaLimite: { lt: new Date() } } })
+    ]);
+    const porEstado = Object.fromEntries(grupos.map(grupo => [grupo.estado, grupo._count._all]));
+    const total = grupos.reduce((sum, grupo) => sum + grupo._count._all, 0);
+    const pendientes = porEstado.Pendiente ?? 0;
+    const enProceso = porEstado['En Proceso'] ?? 0;
+    const enRevision = porEstado['En Revisión'] ?? 0;
+    const finalizadas = porEstado.Finalizado ?? 0;
 
     // Cumplimiento global en %
     const porcentajeCumplimiento = total > 0 ? Math.round((finalizadas / total) * 100) : 0;
@@ -92,22 +94,15 @@ router.post('/', requirePermission('arc', 'editar'), async (req, res, next) => {
     const municipio = choice(req.body.municipio ?? 'Regional', [...MUNICIPIOS_MFN, 'Regional'], 'Municipio');
     const fechaLimite = date(req.body.fechaLimite, 'Fecha límite');
 
-    // Generar correlativo institucional
-    const count = await prisma.tareaARC.count();
-    const codigo = `ARC-2024-${(count + 1).toString().padStart(2, '0')}`;
-
-    const tarea = await prisma.tareaARC.create({
-      data: {
-        codigo,
-        titulo,
-        descripcion,
-        dimension: dimension || 'Planificación y Monitoreo',
-        prioridad: prioridad || 'Media',
-        municipio: municipio || 'Regional',
-        responsable,
-        fechaLimite: new Date(fechaLimite),
-        estado: 'Pendiente'
-      }
+    const tarea = await createWithCorrelative('tareaARC', 'ARC-2024-', 2, {
+      titulo,
+      descripcion,
+      dimension: dimension || 'Planificación y Monitoreo',
+      prioridad: prioridad || 'Media',
+      municipio: municipio || 'Regional',
+      responsable,
+      fechaLimite: new Date(fechaLimite),
+      estado: 'Pendiente'
     });
 
     res.status(201).json(tarea);

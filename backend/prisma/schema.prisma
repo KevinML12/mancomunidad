@@ -245,6 +245,11 @@ model BitacoraAuditoria {
 // MÓDULO 1: PROYECTOS INTERMUNICIPALES
 // ==========================================
 
+model CorrelativoInstitucional {
+  clave  String @id
+  ultimo Int
+}
+
 model Proyecto {
   municipio String?
   id                     Int                  @id @default(autoincrement())
@@ -258,12 +263,15 @@ model Proyecto {
   porcentajeAvanceFisico Float                @default(0)
   evidencias             EvidenciaProyecto[]
   createdAt              DateTime             @default(now())
+
+  @@index([createdAt, id])
 }
 
 model EvidenciaProyecto {
   contenido String?
   tipoMime String?
   sha256 String?
+  dedupeKey String?
   id           Int      @id @default(autoincrement())
   proyectoId   Int
   proyecto     Proyecto @relation(fields: [proyectoId], references: [id])
@@ -273,6 +281,10 @@ model EvidenciaProyecto {
   descripcion  String?
   fechaCaptura DateTime @default(now())
   cargadoPorId Int?     // referencia a Usuario
+
+  @@unique([proyectoId, dedupeKey])
+  @@index([proyectoId, sha256])
+  @@index([proyectoId, fechaCaptura, id])
 }
 
 // ==========================================
@@ -293,6 +305,8 @@ model TareaARC {
   fechaFinalizada DateTime?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
+
+  @@index([estado, fechaLimite])
 }
 
 // ==========================================
@@ -313,6 +327,9 @@ model TransaccionFinanciera {
   descripcion       String
   fecha             DateTime @default(now())
   createdAt         DateTime @default(now())
+
+  @@index([cuentaBancaria, tipo])
+  @@index([fecha, id])
 }
 
 // ==========================================
@@ -384,6 +401,8 @@ model CensoComunitarioASH {
   fechaLevantamiento    DateTime @default(now())
   tecnicoResponsable    String
   createdAt             DateTime @default(now())
+
+  @@index([municipio, fechaLevantamiento])
 }
 
 // ==========================================
@@ -402,6 +421,8 @@ model PublicacionTransparencia {
   fechaPublicacion DateTime @default(now())
   autorizadoPor    String   @default("Gerencia Ejecutiva")
   createdAt        DateTime @default(now())
+
+  @@index([visibilidad, tipo, fechaPublicacion])
 }
 
 

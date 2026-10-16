@@ -4,6 +4,8 @@ import { choice, numeric, text } from '../../services/validation.js';
 import { ValidationError } from '../../services/errors.js';
 import prisma from '../../lib/prisma.js';
 import { requireAuth, requirePermission } from '../../middleware/auth.js';
+import { aggregateCensus } from '../../services/census-stats.js';
+import { createWithCorrelative } from '../../services/correlatives.js';
 
 const router = Router();
 router.use(requireAuth, requirePermission('estadisticas'));
@@ -37,36 +39,7 @@ router.get('/censos', async (req, res, next) => {
 // GET /api/v1/estadisticas/consolidado - Motor estadístico de cobertura y déficit regional (RF16)
 router.get('/consolidado', async (req, res, next) => {
   try {
-    const censos = await prisma.censoComunitarioASH.findMany({ where: { municipio: { in: MUNICIPIOS_MFN } } });
-
-    let totalViviendas = 0;
-    let conAgua = 0;
-    let conSaneamiento = 0;
-    let sistemasClorados = 0;
-    let conCalidadAceptable = 0; // Cloro residual entre 0.5 y 1.5 ppm
-
-    const porMunicipio = {};
-
-    censos.forEach(c => {
-      totalViviendas += c.viviendasTotales;
-      conAgua += c.viviendasConAgua;
-      conSaneamiento += c.viviendasConSaneamiento;
-      if (c.sistemaCloracion) sistemasClorados++;
-      if (c.ppmCloroResidual >= 0.5 && c.ppmCloroResidual <= 1.5) conCalidadAceptable++;
-
-      if (!porMunicipio[c.municipio]) {
-        porMunicipio[c.municipio] = {
-          viviendas: 0,
-          conAgua: 0,
-          conSaneamiento: 0,
-          censos: 0
-        };
-      }
-      porMunicipio[c.municipio].viviendas += c.viviendasTotales;
-      porMunicipio[c.municipio].conAgua += c.viviendasConAgua;
-      porMunicipio[c.municipio].conSaneamiento += c.viviendasConSaneamiento;
-      porMunicipio[c.municipio].censos++;
-    });
+    const { totalViviendas, conAgua, conSaneamiento, sistemasClorados, totalCensos, porMunicipio } = await aggregateCensus();
 
     const porcentajeAgua = totalViviendas > 0 ? Number(((conAgua / totalViviendas) * 100).toFixed(1)) : 0;
     const porcentajeSaneamiento = totalViviendas > 0 ? Number(((conSaneamiento / totalViviendas) * 100).toFixed(1)) : 0;
@@ -78,7 +51,7 @@ router.get('/consolidado', async (req, res, next) => {
       conAgua,
       conSaneamiento,
       sistemasClorados,
-      totalComunidadesCensadas: censos.length,
+      totalComunidadesCensadas: totalCensos,
       coberturaAguaPorcentaje: porcentajeAgua,
       coberturaSaneamientoPorcentaje: porcentajeSaneamiento,
       deficitAguaPorcentaje: Number(deficitAgua.toFixed(1)),
@@ -105,22 +78,16 @@ router.post('/censos', requirePermission('estadisticas', 'editar'), async (req, 
     const ppmCloroResidual = numeric(req.body.ppmCloroResidual, 'Cloro residual');
     const tecnicoResponsable = text(req.body.tecnicoResponsable ?? 'Técnico OMAS', 'Técnico responsable');
 
-    const count = await prisma.censoComunitarioASH.count();
     const cleanMun = municipio.toUpperCase().slice(0, 3);
-    const codigo = `ASH-2024-${cleanMun}-${(count + 1).toString().padStart(3, '0')}`;
-
-    const censo = await prisma.censoComunitarioASH.create({
-      data: {
-        codigo,
-        municipio,
-        comunidad,
-        viviendasTotales: Number(viviendasTotales),
-        viviendasConAgua: Number(viviendasConAgua),
-        sistemaCloracion: Boolean(sistemaCloracion),
-        ppmCloroResidual: Number(ppmCloroResidual) || 0,
-        viviendasConSaneamiento: Number(viviendasConSaneamiento),
-        tecnicoResponsable: tecnicoResponsable || 'Técnico OMAS'
-      }
+    const censo = await createWithCorrelative('censoComunitarioASH', `ASH-2024-${cleanMun}-`, 3, {
+      municipio,
+      comunidad,
+      viviendasTotales: Number(viviendasTotales),
+      viviendasConAgua: Number(viviendasConAgua),
+      sistemaCloracion: Boolean(sistemaCloracion),
+      ppmCloroResidual: Number(ppmCloroResidual) || 0,
+      viviendasConSaneamiento: Number(viviendasConSaneamiento),
+      tecnicoResponsable: tecnicoResponsable || 'Técnico OMAS'
     });
 
     res.status(201).json(censo);

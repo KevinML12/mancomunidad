@@ -2,6 +2,7 @@ import prisma from '../lib/prisma.js';
 import { MUNICIPIOS_MFN } from '../lib/municipios.js';
 import { choice, numeric, text, date, url } from './validation.js';
 import { ValidationError } from './errors.js';
+import { createWithCorrelative } from './correlatives.js';
 
 export function listTransactions({ tipo, cuentaBancaria, categoria, municipio }) {
   const where = {};
@@ -13,15 +14,15 @@ export function listTransactions({ tipo, cuentaBancaria, categoria, municipio })
 }
 
 export async function getBalance() {
-  const transacciones = await prisma.transaccionFinanciera.findMany();
+  const grupos = await prisma.transaccionFinanciera.groupBy({ by: ['cuentaBancaria', 'tipo'], _sum: { monto: true } });
   const cuentas = {
     fondosPublicos: { ingresos: 0, egresos: 0, saldo: 0 },
     cooperacion: { ingresos: 0, egresos: 0, saldo: 0 },
   };
-  transacciones.forEach(t => {
-    const target = t.cuentaBancaria === 'Fondos Públicos' ? cuentas.fondosPublicos : cuentas.cooperacion;
-    if (t.tipo === 'Ingreso') target.ingresos += t.monto;
-    else target.egresos += t.monto;
+  grupos.forEach(grupo => {
+    const target = grupo.cuentaBancaria === 'Fondos Públicos' ? cuentas.fondosPublicos : cuentas.cooperacion;
+    if (grupo.tipo === 'Ingreso') target.ingresos += grupo._sum.monto ?? 0;
+    else target.egresos += grupo._sum.monto ?? 0;
   });
   cuentas.fondosPublicos.saldo = cuentas.fondosPublicos.ingresos - cuentas.fondosPublicos.egresos;
   cuentas.cooperacion.saldo = cuentas.cooperacion.ingresos - cuentas.cooperacion.egresos;
@@ -47,15 +48,10 @@ export async function createTransaction(body) {
   const fecha = body.fecha === undefined ? new Date() : date(body.fecha, 'Fecha del movimiento');
   if (categoria === 'Caja Chica' && !urlComprobante) throw new ValidationError('Adjunte el enlace al comprobante de caja chica');
 
-  const count = await prisma.transaccionFinanciera.count();
   const prefijo = tipo === 'Ingreso' ? 'ING' : 'EGR';
-  const codigo = `FIN-2024-${prefijo}${(count + 1).toString().padStart(4, '0')}`;
-  return prisma.transaccionFinanciera.create({
-    data: {
-      codigo, tipo, cuentaBancaria: cuentaBancaria || 'Fondos Públicos', categoria,
-      municipio: municipio || 'Regional', monto: Number(monto), comprobanteTipo,
-      comprobanteNumero, urlComprobante, descripcion,
-      fecha,
-    },
+  return createWithCorrelative('transaccionFinanciera', `FIN-2024-${prefijo}`, 4, {
+    tipo, cuentaBancaria: cuentaBancaria || 'Fondos Públicos', categoria,
+    municipio: municipio || 'Regional', monto: Number(monto), comprobanteTipo,
+    comprobanteNumero, urlComprobante, descripcion, fecha,
   });
 }

@@ -7,7 +7,7 @@
 
 ## 🔍 Diagnóstico y Resolución del Esquema de Base de Datos
 
-En la base de datos PostgreSQL en la nube conviven dos esquemas independientes:
+En la base de datos PostgreSQL alojada en Neon conviven dos esquemas independientes:
 - **`public`**: Utilizado por otra aplicación (`cursos`, `marcajes`, `matriculas`, etc.).
 - **`mancomunidad`**: Esquema institucional exclusivo de la Mancomunidad Frontera del Norte que contiene las 27 tablas oficiales del sistema.
 
@@ -82,6 +82,10 @@ npm run test:integration
 Las contraseñas que figuraban en versiones anteriores de este archivo quedaron expuestas en el historial de Git. Si corresponden a cuentas activas, deben rotarse individualmente y revocarse las sesiones vigentes. No registrar nuevas contraseñas ni tokens en el repositorio o en esta guía. La administración debe entregar cada acceso por un canal privado y configurar la recuperación mediante el servicio HTTPS descrito en el README.
 
 Las migraciones y la actualización de permisos se ejecutan desde los comandos de `backend/package.json`, con respaldo previo y la conexión correcta al esquema `mancomunidad`. No existe una ruta HTTP para ejecutar DDL ni una clave administrativa predeterminada.
+
+## Cambios de escalabilidad preparados en la rama de trabajo
+
+Estos cambios no se han aplicado a Neon ni a los despliegues de Vercel. Antes de publicarlos, respaldar la base, comprobar que `DATABASE_URL` use el esquema `mancomunidad` y aplicar desde `backend/` los scripts `migrate:evidence-dedupe:production`, `migrate:query-indexes:production` y `migrate:correlatives:production`, en ese orden. El backend nuevo requiere la columna de deduplicación y la tabla de correlativos. Configurar en R2 el permiso CORS para PUT desde el frontend y la expiración de `mfn/pendientes/evidencias/`; comprobarlo con el origen publicado. Luego desplegar y validar una carga real de foto y las métricas con una cuenta autorizada.
 
 ## Evidencia del 12 de octubre de 2026
 

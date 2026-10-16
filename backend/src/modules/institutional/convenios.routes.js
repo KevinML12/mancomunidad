@@ -9,6 +9,14 @@ import { requireAuth, requirePermission } from '../../middleware/auth.js';
 const router = Router();
 router.use(requireAuth, requirePermission('convenios'));
 
+router.get('/resumen', async (_req, res, next) => {
+  try {
+    const now = new Date();
+    const proximos = await prisma.convenioInstitucional.count({ where: { fechaVencimiento: { gt: new Date(now.getTime() - 86400000), lte: new Date(now.getTime() + 90 * 86400000) } } });
+    res.json({ proximos });
+  } catch (err) { next(err); }
+});
+
 // GET /api/v1/convenios - Listar convenios con motor cronológico y cálculo de alertas
 router.get('/', async (req, res, next) => {
   try {

@@ -18,6 +18,9 @@
     "permissions:update": "node prisma/update-permissions.js",
     "migrate:production": "prisma db execute --file prisma/production-additions.sql --schema prisma/schema.production.prisma",
     "migrate:password-policy:production": "prisma db execute --file prisma/production-password-policy.sql --schema prisma/schema.production.prisma",
+    "migrate:evidence-dedupe:production": "prisma db execute --file prisma/production-evidence-dedupe.sql --schema prisma/schema.production.prisma",
+    "migrate:query-indexes:production": "prisma db execute --file prisma/production-query-indexes.sql --schema prisma/schema.production.prisma",
+    "migrate:correlatives:production": "prisma db execute --file prisma/production-correlatives.sql --schema prisma/schema.production.prisma",
     "migrate:production:bootstrap": "prisma db execute --file prisma/production-bootstrap.sql --schema prisma/schema.production.prisma",
     "test:unit": "node --test tests/unit/*.test.js"
   },

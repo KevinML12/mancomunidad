@@ -103,6 +103,8 @@ test('Rutas reales con base migrada y aislada', async t => {
   const result=await request('/proyectos','POST',tokens.DIRPROY,project);assert.equal(result.status,201);id=result.data.id;
   assert.equal((await request(`/proyectos/${id}`,'GET',tokens.DIRPROY)).data.municipio,'Santa Eulalia');
   assert.equal((await request(`/proyectos/${id}`,'PUT',tokens.DIRPROY,{porcentajeAvanceFisico:101})).status,400);
+  const summary=await request('/proyectos/resumen','GET',tokens.DIRPROY);
+  assert.equal(summary.status,200);assert.equal(summary.data.total,1);assert.equal(summary.data.inversionTotal,300);
  });
  await t.test('finanzas separa cuentas y exige comprobante para caja chica',async()=>{
   const body={tipo:'Ingreso',cuentaBancaria:'Fondos Públicos',categoria:'Cuota Ordinaria',municipio:'Santa Eulalia',monto:100,comprobanteTipo:'Recibo CGC 63-A2',comprobanteNumero:'PRUEBA-1',descripcion:'Movimiento de prueba'};
@@ -112,6 +114,14 @@ test('Rutas reales con base migrada y aislada', async t => {
   assert.equal(balance.status,200);
   assert.equal(balance.data.cuentas.fondosPublicos.saldo,100);
   assert.equal(balance.data.cuentas.cooperacion.saldo,0);
+ });
+ await t.test('correlativos compartidos resisten altas financieras simultáneas',async()=>{
+  const body={tipo:'Ingreso',cuentaBancaria:'Fondos Públicos',categoria:'Cuota Ordinaria',municipio:'Santa Eulalia',monto:1,comprobanteTipo:'Recibo CGC 63-A2',descripcion:'Alta concurrente'};
+  const results=await Promise.all(Array.from({length:5},(_,index)=>request('/financiero/transacciones','POST',tokens.GE,{...body,comprobanteNumero:`CONC-${index}`})));
+  assert.ok(results.every(result=>result.status===201),JSON.stringify(results.map(result=>({status:result.status,error:result.data.error}))));
+  assert.equal(new Set(results.map(result=>result.data.codigo)).size,results.length);
+  assert.ok(results.every(result=>/^FIN-2024-ING\d{4}$/.test(result.data.codigo)));
+  assert.equal((await request('/financiero/balance','GET',tokens.GE)).data.cuentas.fondosPublicos.saldo,105);
  });
  await t.test('catálogo activo excluye municipios históricos y no prioriza datos ausentes',async()=>{
   assert.equal((await request('/proyectos','POST',tokens.GE,{...project,municipio:'Santa Cruz Barillas'})).status,400);
@@ -141,6 +151,56 @@ test('Rutas reales con base migrada y aislada', async t => {
    for(const [key,value] of Object.entries(saved)) if(value===undefined) delete process.env[key]; else process.env[key]=value;
    await new Promise(resolve=>mock.server.close(resolve));
   }
+ });
+ await t.test('foto directa a R2 verifica bytes y evita duplicados bajo concurrencia',async()=>{
+  const keys=['R2_ENDPOINT','R2_BUCKET','R2_ACCESS_KEY_ID','R2_SECRET_ACCESS_KEY'];
+  const saved=Object.fromEntries(keys.map(key=>[key,process.env[key]]));
+  const mock=await startR2Mock();
+  Object.assign(process.env,{R2_ENDPOINT:mock.endpoint,R2_BUCKET:'test-bucket',R2_ACCESS_KEY_ID:'test-key',R2_SECRET_ACCESS_KEY:'test-secret'});
+  try {
+    const newProject=await request('/proyectos','POST',tokens.GE,{...project,nombre:'Proyecto para carga concurrente'});
+    assert.equal(newProject.status,201);
+    const otherId=newProject.data.id;
+    const image=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII=','base64');
+    const sha256=crypto.createHash('sha256').update(image).digest('hex');
+    const basePath=`/proyectos/${otherId}/evidencias`;
+    assert.equal((await request(`${basePath}/preparar`,'POST',tokens.EMP,{tipoMime:'image/png',bytes:image.length,sha256})).status,403);
+    const another=Buffer.from(image);another[20]^=1;
+    const anotherHash=crypto.createHash('sha256').update(another).digest('hex');
+    const missing=await request(`${basePath}/preparar`,'POST',tokens.GE,{tipoMime:'image/png',bytes:another.length,sha256:anotherHash});
+    assert.equal((await request(`${basePath}/confirmar`,'POST',tokens.GE,{ticket:missing.data.ticket})).status,400);
+    assert.equal((await fetch(missing.data.uploadUrl,{method:'PUT',headers:{'Content-Type':'image/png'},body:image})).status,200);
+    assert.equal((await request(`${basePath}/confirmar`,'POST',tokens.GE,{ticket:missing.data.ticket})).status,400);
+    assert.equal(await prisma.evidenciaProyecto.count({where:{proyectoId:otherId}}),0);
+    const [first,second]=await Promise.all([request(`${basePath}/preparar`,'POST',tokens.DIRPROY,{tipoMime:'image/png',bytes:image.length,sha256}),request(`${basePath}/preparar`,'POST',tokens.GE,{tipoMime:'image/png',bytes:image.length,sha256})]);
+    assert.equal(first.status,200);assert.equal(second.status,200);
+    assert.ok(first.data.ticket && second.data.ticket);
+    for(const prepared of [first,second])assert.equal((await fetch(prepared.data.uploadUrl,{method:'PUT',headers:{'Content-Type':'image/png'},body:image})).status,200);
+    const confirmed=await Promise.all([request(`${basePath}/confirmar`,'POST',tokens.DIRPROY,{ticket:first.data.ticket,descripcion:'Carga uno'}),request(`${basePath}/confirmar`,'POST',tokens.GE,{ticket:second.data.ticket,descripcion:'Carga dos'})]);
+    assert.ok(confirmed.every(result=>result.status===200));
+    assert.equal(confirmed[0].data.id,confirmed[1].data.id);
+    assert.equal(await prisma.evidenciaProyecto.count({where:{proyectoId:otherId,sha256}}),1);
+    assert.equal([...mock.objects.keys()].filter(key=>key.includes('/mfn/evidencias/')).length,1);
+    const repeat=await request(`${basePath}/preparar`,'POST',tokens.DIRPROY,{tipoMime:'image/png',bytes:image.length,sha256});
+    assert.equal(repeat.data.existing.id,confirmed[0].data.id);
+    assert.equal(repeat.data.uploadUrl,undefined);
+    assert.equal((await request(`${basePath}/confirmar`,'POST',tokens.EMP,{ticket:first.data.ticket})).status,403);
+  } finally {
+    for(const [key,value] of Object.entries(saved)) if(value===undefined) delete process.env[key]; else process.env[key]=value;
+    await new Promise(resolve=>mock.server.close(resolve));
+  }
+ });
+ await t.test('expediente pagina evidencias sin duplicarlas',async()=>{
+  const created=await request('/proyectos','POST',tokens.GE,{...project,nombre:'Proyecto con galería paginada'});
+  assert.equal(created.status,201);
+  const projectId=created.data.id;
+  await prisma.evidenciaProyecto.createMany({data:Array.from({length:14},(_,index)=>({proyectoId:projectId,urlArchivo:`https://example.test/foto-${index}.png`,tipoMime:'image/png',sha256:crypto.createHash('sha256').update(String(index)).digest('hex'),descripcion:`Foto ${index}`}))});
+  const first=await request(`/proyectos/${projectId}`,'GET',tokens.GE);
+  assert.equal(first.status,200);assert.equal(first.data.evidenciasTotal,14);assert.equal(first.data.evidencias.length,12);
+  const second=await request(`/proyectos/${projectId}/evidencias?after=${first.data.evidenciasNextCursor}`,'GET',tokens.GE);
+  assert.equal(second.status,200);assert.equal(second.data.evidencias.length,2);assert.equal(second.data.nextCursor,null);
+  assert.equal(new Set([...first.data.evidencias,...second.data.evidencias].map(item=>item.id)).size,14);
+  assert.equal((await request(`/proyectos/${projectId}/evidencias?after=invalid`,'GET',tokens.GE)).status,400);
  });
  await t.test('administración separada publica contenido con archivo R2 y bloquea otros roles',async()=>{
   assert.equal((await request('/admin/overview','GET',tokens.EMP)).status,403);

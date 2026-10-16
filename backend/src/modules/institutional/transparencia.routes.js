@@ -1,10 +1,11 @@
-import { MUNICIPIOS_MFN } from '../../lib/municipios.js';
 import crypto from 'node:crypto';
 import { auditContext } from '../../lib/integrity.js';
 import { Router } from 'express';
 import prisma from '../../lib/prisma.js';
 import { requireAuth, requireAppAdmin } from '../../middleware/auth.js';
 import { mediaUrl } from '../../services/media.js';
+import { aggregateCensus } from '../../services/census-stats.js';
+import { createWithCorrelative } from '../../services/correlatives.js';
 
 const router = Router();
 
@@ -45,24 +46,14 @@ router.get('/publico', async (req, res, next) => {
       }
     });
 
-    const censos = await prisma.censoComunitarioASH.findMany({ where: { municipio: { in: MUNICIPIOS_MFN } } });
-    let totalViviendas = 0;
-    let conAgua = 0;
-    let conSaneamiento = 0;
-    let clorados = 0;
-    censos.forEach(c => {
-      totalViviendas += c.viviendasTotales;
-      conAgua += c.viviendasConAgua;
-      conSaneamiento += c.viviendasConSaneamiento;
-      if (c.ppmCloroResidual >= 0.5 && c.ppmCloroResidual <= 1.5) clorados++;
-    });
+    const { totalViviendas, conAgua, conSaneamiento, conCalidadAceptable, totalCensos } = await aggregateCensus();
 
     const estadisticas = {
       coberturaAgua: totalViviendas > 0 ? Number(((conAgua / totalViviendas) * 100).toFixed(1)) : 0,
       coberturaSaneamiento: totalViviendas > 0 ? Number(((conSaneamiento / totalViviendas) * 100).toFixed(1)) : 0,
-      cloroConforme: censos.length > 0 ? Number(((clorados / censos.length) * 100).toFixed(1)) : 0,
+      cloroConforme: totalCensos > 0 ? Number(((conCalidadAceptable / totalCensos) * 100).toFixed(1)) : 0,
       totalViviendas,
-      totalCensos: censos.length
+      totalCensos
     };
 
     res.json({
@@ -99,24 +90,14 @@ router.get('/gestion', requireAuth, requireAppAdmin, async (req, res, next) => {
       }
     });
 
-    const censos = await prisma.censoComunitarioASH.findMany({ where: { municipio: { in: MUNICIPIOS_MFN } } });
-    let totalViviendas = 0;
-    let conAgua = 0;
-    let conSaneamiento = 0;
-    let clorados = 0;
-    censos.forEach(c => {
-      totalViviendas += c.viviendasTotales;
-      conAgua += c.viviendasConAgua;
-      conSaneamiento += c.viviendasConSaneamiento;
-      if (c.ppmCloroResidual >= 0.5 && c.ppmCloroResidual <= 1.5) clorados++;
-    });
+    const { totalViviendas, conAgua, conSaneamiento, conCalidadAceptable, totalCensos } = await aggregateCensus();
 
     const estadisticas = {
       coberturaAgua: totalViviendas > 0 ? Number(((conAgua / totalViviendas) * 100).toFixed(1)) : 0,
       coberturaSaneamiento: totalViviendas > 0 ? Number(((conSaneamiento / totalViviendas) * 100).toFixed(1)) : 0,
-      cloroConforme: censos.length > 0 ? Number(((clorados / censos.length) * 100).toFixed(1)) : 0,
+      cloroConforme: totalCensos > 0 ? Number(((conCalidadAceptable / totalCensos) * 100).toFixed(1)) : 0,
       totalViviendas,
-      totalCensos: censos.length
+      totalCensos
     };
 
     res.json({
@@ -153,19 +134,13 @@ router.post('/', requireAuth, requireAppAdmin, async (req, res, next) => {
   try {
     const { tipo, titulo, resumen, referenciaId } = req.body;
 
-    const count = await prisma.publicacionTransparencia.count();
-    const codigo = `PUB-2024-${(count + 1).toString().padStart(3, '0')}`;
-
-    const nueva = await prisma.publicacionTransparencia.create({
-      data: {
-        codigo,
-        tipo,
-        titulo,
-        resumen,
-        referenciaId: referenciaId ? Number(referenciaId) : null,
-        visibilidad: true,
-        autorizadoPor: req.user?.nombre || 'Gerencia Ejecutiva'
-      }
+    const nueva = await createWithCorrelative('publicacionTransparencia', 'PUB-2024-', 3, {
+      tipo,
+      titulo,
+      resumen,
+      referenciaId: referenciaId ? Number(referenciaId) : null,
+      visibilidad: true,
+      autorizadoPor: req.user?.nombre || 'Gerencia Ejecutiva'
     });
 
     res.status(201).json(nueva);

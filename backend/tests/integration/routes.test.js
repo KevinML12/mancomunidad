@@ -334,6 +334,33 @@ test('Rutas reales con base migrada y aislada', async t => {
   const mock=await startR2Mock();
   try {
    Object.assign(process.env,{R2_ENDPOINT:mock.endpoint,R2_BUCKET:'mfn-test-private',R2_ACCESS_KEY_ID:'test-only-key',R2_SECRET_ACCESS_KEY:'test-only-secret'});
+   await r2.test('fotografías grandes van directo a R2 y la confirmación conserva un solo registro',async()=>{
+    const photo=Buffer.alloc(4_700_000,0);
+    Buffer.from([137,80,78,71,13,10,26,10]).copy(photo);
+    const imageHash=crypto.createHash('sha256').update(photo).digest('hex');
+    const path=`/proyectos/${id}/evidencias`;
+    const metadata={tipoMime:'image/png',bytes:photo.length,sha256:imageHash};
+    assert.equal((await request(`${path}/preparar`,'POST',tokens.EMP,metadata)).status,403);
+    const preparedPhoto=await request(`${path}/preparar`,'POST',tokens.GE,metadata);
+    assert.equal(preparedPhoto.status,200);
+    assert.equal((await request(`${path}/confirmar`,'POST',tokens.GE,{ticket:preparedPhoto.data.ticket})).status,400);
+    assert.equal((await fetch(preparedPhoto.data.uploadUrl,{method:'PUT',headers:{'Content-Type':'image/png'},body:photo})).status,200);
+    assert.equal((await request(`${path}/confirmar`,'POST',tokens.DIRPROY,{ticket:preparedPhoto.data.ticket})).status,403);
+    const before=await prisma.evidenciaProyecto.count();
+    const results=await Promise.all([request(`${path}/confirmar`,'POST',tokens.GE,{ticket:preparedPhoto.data.ticket,descripcion:'Prueba de carga directa'}),request(`${path}/confirmar`,'POST',tokens.GE,{ticket:preparedPhoto.data.ticket,descripcion:'Prueba de carga directa'})]);
+    assert.ok(results.every(result=>result.status===201),JSON.stringify(results.map(result=>result.status)));
+    assert.equal(results[0].data.id,results[1].data.id);
+    assert.equal(await prisma.evidenciaProyecto.count(),before+1);
+    const savedPhoto=await prisma.evidenciaProyecto.findUnique({where:{id:results[0].data.id}});
+    assert.equal(savedPhoto.contenido,null);
+    assert.equal(savedPhoto.sha256,imageHash);
+    assert.ok(savedPhoto.urlArchivo.startsWith('r2media://evidencias/'));
+    const modified=Buffer.from(photo);modified[20]=1;
+    const bad=await request(`${path}/preparar`,'POST',tokens.GE,metadata);
+    assert.equal(bad.status,200);
+    await fetch(bad.data.uploadUrl,{method:'PUT',headers:{'Content-Type':'image/png'},body:modified});
+    assert.equal((await request(`${path}/confirmar`,'POST',tokens.GE,{ticket:bad.data.ticket})).status,400);
+   });
    assert.equal((await request('/documentos/preparar','POST',tokens.GE,{...body,bytes:11*1024*1024})).status,400);
    assert.equal((await request('/documentos/preparar','POST',tokens.GE,{...body,tipoMime:'text/plain'})).status,400);
    await r2.test('archivo renombrado PDF se rechaza aunque su huella coincida',async()=>{

@@ -29,6 +29,26 @@
     let binary = ''; for (const byte of bytes) binary += String.fromCharCode(byte);
     archivoBase64 = btoa(binary); tipoMime = file.type;
   }
+
+  async function enviarEvidencia(payload) {
+    const bytes = Uint8Array.from(atob(payload.archivoBase64), char => char.charCodeAt(0));
+    const sha256 = await sha256Base64(payload.archivoBase64);
+    const { data: upload } = await apiClient.post(`/proyectos/${projectId}/evidencias/preparar`, {
+      tipoMime: payload.tipoMime, bytes: bytes.length, sha256
+    });
+    const url = new URL(upload.uploadUrl);
+    const localR2 = ['localhost', '127.0.0.1'].includes(url.hostname) && ['localhost', '127.0.0.1'].includes(window.location.hostname);
+    if (!(url.protocol === 'https:' && url.hostname.endsWith('.r2.cloudflarestorage.com')) && !(localR2 && url.protocol === 'http:')) {
+      throw new Error('La dirección de carga de la fotografía no es válida');
+    }
+    const response = await fetch(url.href, { method: 'PUT', credentials: 'omit', headers: { 'Content-Type': payload.tipoMime }, body: new Blob([bytes], { type: payload.tipoMime }) });
+    if (!response.ok) throw new Error('R2 no completó la carga de la fotografía');
+    const { data } = await apiClient.post(`/proyectos/${projectId}/evidencias/confirmar`, {
+      ticket: upload.ticket, latitud: payload.latitud, longitud: payload.longitud,
+      descripcion: payload.descripcion, fechaCaptura: payload.fechaCaptura
+    }, { timeout: 60000 });
+    return data;
+  }
   // Evidencia Form State
   let showModal = $state(false);
   let formLoading = $state(false);
@@ -70,7 +90,7 @@
       for (const draft of pending) {
         const { data } = await apiClient.get(`/proyectos/${projectId}`);
         if (!data.evidencias?.some((item) => item.sha256 === draft.sha256)) {
-          await apiClient.post(`/proyectos/${projectId}/evidencias`, draft.payload);
+          await enviarEvidencia(draft.payload);
         }
         await removeEvidenceDraft(draft.key);
       }
@@ -122,7 +142,7 @@
     };
     try {
       if (navigator.onLine) {
-        await apiClient.post(`/proyectos/${projectId}/evidencias`, payload);
+        await enviarEvidencia(payload);
         toast.success('Evidencia guardada en el servidor');
       } else {
         await queueEvidence(auth.user?.id, projectId, payload, await sha256Base64(archivoBase64));
@@ -139,7 +159,7 @@
           await refreshDrafts();
           showModal = false; archivoBase64 = ''; tipoMime = '';
           formData = { urlArchivo: '', latitud: '', longitud: '', descripcion: '' };
-          toast.info('Sin respuesta del servidor. Se guardó un borrador local para reintentar.');
+          toast.info('No se completó el envío. La fotografía quedó como borrador local para reintentar.');
         } catch (storageError) {
           toast.error('No se pudo guardar la evidencia en este dispositivo. Mantenga esta pantalla abierta.');
         }

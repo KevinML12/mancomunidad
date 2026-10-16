@@ -30,3 +30,9 @@ Estos resultados acreditan disponibilidad y controles básicos, pero no sustituy
 3. **Concurrencia e integración:** las pruebas locales verifican contadores compartidos entre dos instancias, dos aprobaciones simultáneas con un solo descuento, R2 simulado y contenido nulo en la base para evidencias nuevas. Pasaron 64 pruebas unitarias y 36 de integración del backend y 46 unitarias del frontend. La compilación de los tres proyectos pasó.
 
 **Estado:** apto para seguir puliendo y para una prueba piloto controlada con datos de demostración. La entrega institucional requiere resolver los P0, recuperar cuentas por correo, acreditar cargas R2 reales y probar respaldo y restauración.
+
+**Avance local posterior al diagnóstico:** el envío directo de fotografías a R2 y la sincronización de borradores ya están implementados y pasan la prueba con R2 simulado, incluida una fotografía de 4.7 MB y dos confirmaciones simultáneas. Falta verificar el CORS y una carga real en producción antes de cerrar el hallazgo P1.
+
+## Intento de publicación y reversión del 15 de octubre
+
+Se creó un snapshot manual de la rama `production` del proyecto Neon `mancomunidad` y se aplicó allí `mustChangePassword BOOLEAN NOT NULL DEFAULT false`; la consulta posterior confirmó la columna. Se publicaron desde el commit `62f7f0b` la API, el portal y la administración. La prueba autenticada devolvió 500 y el registro de la API indicó que `Usuario.mustChangePassword` no existía en **la base conectada a Vercel**. Por tanto, la rama migrada no es la base activa de la API. Se revirtieron los tres despliegues a sus versiones anteriores y se comprobó que el login volvió a responder 200. `DATABASE_URL` es una variable protegida en Vercel; queda pendiente identificar su proyecto/base real, respaldarla, migrarla y repetir el despliegue. No asignar permiso de administración a las cuentas de demostración.

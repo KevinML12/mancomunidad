@@ -1,8 +1,9 @@
 import { MUNICIPIOS_MFN } from '../lib/municipios.js';
-import prisma from '../lib/prisma.js';
+import prisma, { rawPrisma } from '../lib/prisma.js';
 import { ValidationError } from './errors.js';
 import { date, chronological, numeric } from './validation.js';
 import { mediaUrl, saveMedia } from './media.js';
+import { hash } from '../lib/integrity.js';
 
 const fields = ['nombre','municipio','agenciaFinanciadora','fechaInicioPlanificada','fechaFinPlanificada','presupuestoMunicipal','presupuestoCooperacion','estado','porcentajeAvanceFisico'];
 
@@ -66,6 +67,34 @@ export async function addProjectEvidence(projectId, userId, body) {
   const captured = fechaCaptura ? new Date(fechaCaptura) : new Date();
   if (isNaN(captured.getTime())) throw new ValidationError('Fecha de captura inválida');
   const media = await saveMedia(buffer, tipoMime, 'evidencias');
-  const row = await prisma.evidenciaProyecto.create({ data: { proyectoId: projectId, urlArchivo: media.reference, contenido: null, tipoMime, sha256: media.sha256, latitud: lat, longitud: lon, descripcion, fechaCaptura: captured, cargadoPorId: userId } });
-  return serializeEvidence(row);
+  return recordProjectEvidence(projectId, userId, { reference: media.reference, sha256: media.sha256, mime: tipoMime }, { latitud: lat, longitud: lon, descripcion, fechaCaptura: captured });
+}
+
+export async function recordProjectEvidence(projectId, userId, media, body = {}) {
+  const { lat, lon, captured, descripcion } = evidenceDetails(body);
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      const row = await rawPrisma.$transaction(async tx => {
+        const existing = await tx.evidenciaProyecto.findFirst({ where: { urlArchivo: media.reference } });
+        if (existing) return existing;
+        const created = await tx.evidenciaProyecto.create({ data: { proyectoId: projectId, urlArchivo: media.reference, contenido: null, tipoMime: media.mime, sha256: media.sha256, latitud: lat, longitud: lon, descripcion, fechaCaptura: captured, cargadoPorId: userId } });
+        await tx.bitacoraAuditoria.create({ data: { usuarioId: userId, accion: 'create', entidad: 'evidenciaProyecto', entidadId: created.id, despuesHash: hash(created) } });
+        return created;
+      }, { isolationLevel: 'Serializable' });
+      return serializeEvidence(row);
+    } catch (error) {
+      if (error.code !== 'P2034' || attempt === 2) throw error;
+    }
+  }
+}
+
+export function evidenceDetails(body = {}) {
+  const { latitud, longitud, descripcion, fechaCaptura } = body;
+  const lat = latitud === null || latitud === undefined || latitud === '' ? null : Number(latitud);
+  const lon = longitud === null || longitud === undefined || longitud === '' ? null : Number(longitud);
+  if ((lat !== null && (!Number.isFinite(lat) || Math.abs(lat) > 90)) || (lon !== null && (!Number.isFinite(lon) || Math.abs(lon) > 180))) throw new ValidationError('Coordenadas fuera de rango');
+  const captured = fechaCaptura ? new Date(fechaCaptura) : new Date();
+  if (isNaN(captured.getTime())) throw new ValidationError('Fecha de captura inválida');
+  if (descripcion !== undefined && (typeof descripcion !== 'string' || descripcion.length > 3000)) throw new ValidationError('Descripción inválida');
+  return { lat, lon, captured, descripcion };
 }

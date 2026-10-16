@@ -54,9 +54,17 @@ router.post('/login', rateLimit(30, undefined, { scope: 'login-ip' }), rateLimit
   } catch (err) { next(err); }
 });
 
-router.post('/logout', requireAuth, (req, res) => {
-  clearSessionCookie(res);
-  res.json({ ok: true });
+router.post('/logout', requireAuth, async (req, res, next) => {
+  try {
+    // The cookie is only one copy of the JWT. Incrementing the version also
+    // rejects a copied cookie or bearer token after logout.
+    await prisma.$transaction(async tx => {
+      await tx.usuario.update({ where: { id: req.user.sub }, data: { sessionVersion: { increment: 1 } } });
+      await tx.bitacoraAuditoria.create({ data: { usuarioId: req.user.sub, accion: 'cerrar_sesiones', entidad: 'usuario', entidadId: req.user.sub } });
+    });
+    clearSessionCookie(res);
+    res.json({ ok: true });
+  } catch (error) { next(error); }
 });
 
 router.get('/me', requireAuth, async (req, res, next) => {

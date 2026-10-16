@@ -374,6 +374,7 @@ CREATE TABLE "PublicacionTransparencia" (
     "tipo" TEXT NOT NULL,
     "titulo" TEXT NOT NULL,
     "resumen" TEXT NOT NULL,
+    "mediaRef" TEXT,
     "referenciaId" INTEGER,
     "visibilidad" BOOLEAN NOT NULL DEFAULT true,
     "fechaPublicacion" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -554,5 +555,19 @@ ALTER TABLE "CensoComunitarioASH" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "PublicacionTransparencia" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "RecuperacionClave" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "PuntoControlIntegridad" ENABLE ROW LEVEL SECURITY;
+
+CREATE TABLE public."RateLimitBucket" (
+    "key" TEXT NOT NULL PRIMARY KEY,
+    "count" INTEGER NOT NULL,
+    "untilMs" BIGINT NOT NULL
+);
+ALTER TABLE public."RateLimitBucket" ENABLE ROW LEVEL SECURITY;
+
+CREATE TABLE public."SchemaVersion" (
+    "version" TEXT PRIMARY KEY,
+    "appliedAt" TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+ALTER TABLE public."SchemaVersion" ENABLE ROW LEVEL SECURITY;
+INSERT INTO public."SchemaVersion" ("version") VALUES ('2026-10-15-release');
 
 COMMIT;

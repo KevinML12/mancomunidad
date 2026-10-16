@@ -5,7 +5,7 @@
 // usa para migrar y desplegar contra la base de datos real en la nube:
 //   npm run migrate:production (sobre una base MFN existente y respaldada)
 // Base nueva: npm run migrate:production:bootstrap.
-// DATABASE_URL debe apuntar al proyecto de MFN en Supabase.
+// DATABASE_URL debe apuntar a la base PostgreSQL activa y respaldada de MFN.
 
 datasource db {
   provider = "postgresql"

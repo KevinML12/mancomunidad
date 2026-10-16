@@ -64,8 +64,9 @@ test('Rutas reales con base migrada y aislada', async t => {
   assert.equal(privateResponse.headers.get('cache-control'),'no-store');
   assert.equal(privateResponse.headers.get('x-content-type-options'),'nosniff');
  });
- await t.test('sesión por cookie permite lectura, exige origen permitido en escritura y se cierra',async()=>{
-  const login=await request('/auth/login','POST',null,{correo:users.GE.correo,contrasena:password});
+ await t.test('sesión por cookie permite lectura, exige origen permitido y revoca el token al salir',async()=>{
+  const logoutUser=await prisma.usuario.create({data:{correo:'logout@example.test',hashContrasena:users.GE.hashContrasena,rolId:users.GE.rolId}});
+  const login=await request('/auth/login','POST',null,{correo:logoutUser.correo,contrasena:password});
   const cookie=login.headers.get('set-cookie').split(';')[0];
   const me=await fetch(base+'/auth/me',{headers:{Cookie:cookie}});
   assert.equal(me.status,200);
@@ -74,6 +75,7 @@ test('Rutas reales con base migrada y aislada', async t => {
   const logout=await fetch(base+'/auth/logout',{method:'POST',headers:{Cookie:cookie,Origin:'http://127.0.0.1:3000'}});
   assert.equal(logout.status,200);
   assert.match(logout.headers.get('set-cookie')||'',/mfn_session=/);
+  assert.equal((await fetch(base+'/auth/me',{headers:{Cookie:cookie}})).status,401);
  });
  await t.test('límite compartido conserva el cupo con peticiones concurrentes en dos instancias',async()=>{
   const scope=`test-${Date.now()}`;

@@ -253,6 +253,15 @@ CREATE TABLE "EvidenciaProyecto" (
     "urlArchivo" TEXT NOT NULL,
     "latitud" DOUBLE PRECISION,
     "longitud" DOUBLE PRECISION,
+    "latitudExif" DOUBLE PRECISION,
+    "longitudExif" DOUBLE PRECISION,
+    "latitudDispositivo" DOUBLE PRECISION,
+    "longitudDispositivo" DOUBLE PRECISION,
+    "precisionDispositivoMetros" DOUBLE PRECISION,
+    "municipioExif" TEXT,
+    "municipioDispositivo" TEXT,
+    "fuenteUbicacion" TEXT,
+    "validacionUbicacion" TEXT,
     "descripcion" TEXT,
     "fechaCaptura" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "cargadoPorId" INTEGER,
@@ -271,6 +280,7 @@ CREATE TABLE "TareaARC" (
     "estado" TEXT NOT NULL DEFAULT 'Pendiente',
     "municipio" TEXT DEFAULT 'Regional',
     "responsable" TEXT NOT NULL,
+    "responsableId" INTEGER,
     "fechaLimite" TIMESTAMP(3) NOT NULL,
     "fechaFinalizada" TIMESTAMP(3),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -569,5 +579,40 @@ CREATE TABLE public."SchemaVersion" (
 );
 ALTER TABLE public."SchemaVersion" ENABLE ROW LEVEL SECURITY;
 INSERT INTO public."SchemaVersion" ("version") VALUES ('2026-10-15-release');
+
+CREATE TABLE public."UsuarioMunicipio" (
+    "usuarioId" INTEGER NOT NULL,
+    "municipio" TEXT NOT NULL,
+    CONSTRAINT "UsuarioMunicipio_pkey" PRIMARY KEY ("usuarioId", "municipio"),
+    CONSTRAINT "UsuarioMunicipio_usuarioId_fkey" FOREIGN KEY ("usuarioId") REFERENCES public."Usuario"("id") ON DELETE CASCADE ON UPDATE CASCADE
+);
+ALTER TABLE public."UsuarioMunicipio" ENABLE ROW LEVEL SECURITY;
+
+CREATE TABLE public."HitoProyecto" (
+    "id" SERIAL NOT NULL PRIMARY KEY,
+    "proyectoId" INTEGER NOT NULL REFERENCES public."Proyecto"("id") ON DELETE RESTRICT ON UPDATE CASCADE,
+    "nombre" TEXT NOT NULL,
+    "pesoPorcentaje" DOUBLE PRECISION NOT NULL,
+    "fechaPlanificada" TIMESTAMP(3) NOT NULL,
+    "estado" TEXT NOT NULL DEFAULT 'Pendiente',
+    "fechaAprobacion" TIMESTAMP(3),
+    "aprobadoPorId" INTEGER,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+ALTER TABLE public."HitoProyecto" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public."EvidenciaProyecto" ADD COLUMN "hitoId" INTEGER;
+CREATE INDEX "EvidenciaProyecto_hitoId_idx" ON public."EvidenciaProyecto"("hitoId");
+ALTER TABLE public."EvidenciaProyecto" ADD CONSTRAINT "EvidenciaProyecto_hitoId_fkey" FOREIGN KEY ("hitoId") REFERENCES public."HitoProyecto"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+CREATE INDEX "TareaARC_responsableId_idx" ON public."TareaARC"("responsableId");
+ALTER TABLE public."TareaARC" ADD CONSTRAINT "TareaARC_responsableId_fkey" FOREIGN KEY ("responsableId") REFERENCES public."Usuario"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+CREATE OR REPLACE FUNCTION public.mfn_prevent_audit_mutation() RETURNS trigger LANGUAGE plpgsql AS $$
+BEGIN
+  RAISE EXCEPTION 'La bitácora y los puntos de control solo admiten inserciones';
+END $$;
+CREATE TRIGGER mfn_audit_append_only BEFORE UPDATE OR DELETE ON public."BitacoraAuditoria"
+  FOR EACH ROW EXECUTE FUNCTION public.mfn_prevent_audit_mutation();
+CREATE TRIGGER mfn_checkpoint_append_only BEFORE UPDATE OR DELETE ON public."PuntoControlIntegridad"
+  FOR EACH ROW EXECUTE FUNCTION public.mfn_prevent_audit_mutation();
 
 COMMIT;

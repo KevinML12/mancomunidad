@@ -14,6 +14,29 @@
   let offlineSnapshot = $state(null);
   let drafts = $state([]);
   let syncing = $state(false);
+  let milestoneBusy = $state(false);
+  let milestoneForm = $state({ nombre: '', pesoPorcentaje: '', fechaPlanificada: '' });
+
+  async function addMilestone(event) {
+    event.preventDefault(); milestoneBusy = true;
+    try {
+      await apiClient.post(`/proyectos/${projectId}/hitos`, milestoneForm);
+      milestoneForm = { nombre: '', pesoPorcentaje: '', fechaPlanificada: '' };
+      await fetchProyecto();
+      toast.success('Hito agregado');
+    } catch (error) { toast.error(error.response?.data?.error || 'No se pudo guardar el hito'); }
+    finally { milestoneBusy = false; }
+  }
+
+  async function setMilestoneApproval(hito, approve) {
+    milestoneBusy = true;
+    try {
+      await apiClient.post(`/proyectos/${projectId}/hitos/${hito.id}/${approve ? 'aprobar' : 'reabrir'}`);
+      await fetchProyecto();
+      toast.success(approve ? 'Hito aprobado' : 'Hito reabierto');
+    } catch (error) { toast.error(error.response?.data?.error || 'No se pudo actualizar el hito'); }
+    finally { milestoneBusy = false; }
+  }
 
   async function refreshDrafts() {
     drafts = await getEvidenceDrafts(auth.user?.id, projectId).catch(() => []);
@@ -45,7 +68,8 @@
     if (!response.ok) throw new Error('R2 no completó la carga de la fotografía');
     const { data } = await apiClient.post(`/proyectos/${projectId}/evidencias/confirmar`, {
       ticket: upload.ticket, latitud: payload.latitud, longitud: payload.longitud,
-      descripcion: payload.descripcion, fechaCaptura: payload.fechaCaptura
+      descripcion: payload.descripcion, fechaCaptura: payload.fechaCaptura, hitoId: payload.hitoId,
+      fuenteCoordenadas: payload.fuenteCoordenadas, precisionDispositivoMetros: payload.precisionDispositivoMetros
     }, { timeout: 60000 });
     return data;
   }
@@ -56,6 +80,9 @@
     urlArchivo: '',
     latitud: '',
     longitud: '',
+    precisionDispositivoMetros: null,
+    fuenteCoordenadas: 'declarada',
+    hitoId: '',
     descripcion: ''
   });
 
@@ -122,6 +149,8 @@
       (pos) => {
         formData.latitud = pos.coords.latitude.toFixed(6);
         formData.longitud = pos.coords.longitude.toFixed(6);
+        formData.precisionDispositivoMetros = pos.coords.accuracy;
+        formData.fuenteCoordenadas = 'dispositivo';
         toast.success('Coordenadas obtenidas del dispositivo');
       },
       () => {
@@ -138,6 +167,9 @@
       archivoBase64, tipoMime,
       latitud: formData.latitud ? parseFloat(formData.latitud) : null,
       longitud: formData.longitud ? parseFloat(formData.longitud) : null,
+      precisionDispositivoMetros: formData.precisionDispositivoMetros,
+      fuenteCoordenadas: formData.fuenteCoordenadas,
+      hitoId: formData.hitoId || null,
       descripcion: formData.descripcion
     };
     try {
@@ -149,7 +181,7 @@
         toast.info('Evidencia guardada solo en este dispositivo. Se enviará al recuperar conexión.');
       }
       showModal = false; archivoBase64 = ''; tipoMime = '';
-      formData = { urlArchivo: '', latitud: '', longitud: '', descripcion: '' };
+      formData = { urlArchivo: '', latitud: '', longitud: '', precisionDispositivoMetros: null, fuenteCoordenadas: 'declarada', hitoId: '', descripcion: '' };
       await refreshDrafts();
       if (navigator.onLine) await fetchProyecto();
     } catch (err) {
@@ -158,7 +190,7 @@
           await queueEvidence(auth.user?.id, projectId, payload, await sha256Base64(archivoBase64));
           await refreshDrafts();
           showModal = false; archivoBase64 = ''; tipoMime = '';
-          formData = { urlArchivo: '', latitud: '', longitud: '', descripcion: '' };
+          formData = { urlArchivo: '', latitud: '', longitud: '', precisionDispositivoMetros: null, fuenteCoordenadas: 'declarada', hitoId: '', descripcion: '' };
           toast.info('No se completó el envío. La fotografía quedó como borrador local para reintentar.');
         } catch (storageError) {
           toast.error('No se pudo guardar la evidencia en este dispositivo. Mantenga esta pantalla abierta.');
@@ -250,12 +282,13 @@
             <Icon name="trending_up" className="w-4 h-4" />
           </span>
         </div>
-        <p class="text-[24px] font-medium tracking-[-0.03em] text-[#071D49]">{proyecto.porcentajeAvanceFisico ?? 0}%</p>
+        <p class="text-[24px] font-medium tracking-[-0.03em] text-[#071D49]">{proyecto.avance?.aprobado ?? proyecto.porcentajeAvanceFisico ?? 0}%</p>
         <div class="mt-2.5">
           <div class="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
-            <div class="bg-[#1248AA] h-1.5 rounded-full transition-all duration-700 ease-out" style="width: {proyecto.porcentajeAvanceFisico ?? 0}%"></div>
+            <div class="bg-[#1248AA] h-1.5 rounded-full transition-all duration-700 ease-out" style="width: {proyecto.avance?.aprobado ?? proyecto.porcentajeAvanceFisico ?? 0}%"></div>
           </div>
         </div>
+        <p class="text-[11px] text-[#071D49]/55 mt-2">{proyecto.avance?.metodo || 'Sin plan de hitos'}</p>
       </div>
 
       <!-- Card 3: Aporte Municipal -->
@@ -282,6 +315,40 @@
         <p class="text-[11px] text-[#071D49]/50 font-medium mt-2">{proyecto.agenciaFinanciadora || 'Sin agencia registrada'}</p>
       </div>
     </div>
+
+    <section class="glass-light rounded-[4px] p-5 sm:p-8 space-y-5">
+      <div>
+        <h2 class="text-xl font-medium text-[#071D49]">Hitos y avance físico</h2>
+        <p class="text-sm text-[#071D49]/60">El avance real suma únicamente los pesos de hitos aprobados.</p>
+      </div>
+      {#if proyecto.avance?.pesoConfigurado > 0}
+        <div class="grid gap-4 sm:grid-cols-2">
+          <div><p class="text-sm">Programado a hoy: {proyecto.avance.programado}%</p><div class="h-2 bg-gray-100"><div class="h-2 bg-[#1248AA]/45" style={`width: ${proyecto.avance.programado}%`}></div></div></div>
+          <div><p class="text-sm">Aprobado: {proyecto.avance.aprobado}%</p><div class="h-2 bg-gray-100"><div class="h-2 bg-[#1248AA]" style={`width: ${proyecto.avance.aprobado}%`}></div></div></div>
+        </div>
+      {/if}
+      <p class="text-xs text-[#071D49]/60">Peso configurado: {proyecto.avance?.pesoConfigurado ?? 0}%. Se requiere 100% para aprobar.</p>
+      {#if proyecto.hitos?.length}
+        <div class="divide-y divide-[#071D49]/10 border-y border-[#071D49]/10">
+          {#each proyecto.hitos as hito}
+            <div class="py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div><p class="font-medium text-[#071D49]">{hito.nombre} · {hito.pesoPorcentaje}%</p><p class="text-xs text-[#071D49]/60">Planificado: {new Date(hito.fechaPlanificada).toLocaleDateString('es-GT')} · {hito.estado}</p></div>
+              {#if auth.puedeAprobar('proyectos') && !offlineSnapshot}
+                <button type="button" disabled={milestoneBusy} onclick={() => setMilestoneApproval(hito, hito.estado !== 'Aprobado')} class="px-4 py-2 border border-[#071D49]/30 rounded-[4px] text-sm text-[#071D49] disabled:opacity-50">{hito.estado === 'Aprobado' ? 'Reabrir' : 'Aprobar'}</button>
+              {/if}
+            </div>
+          {/each}
+        </div>
+      {/if}
+      {#if auth.puedeEditar('proyectos') && !offlineSnapshot}
+        <form onsubmit={addMilestone} class="grid gap-3 sm:grid-cols-[1fr_7rem_11rem_auto] sm:items-end">
+          <label class="text-xs text-[#071D49]/70">Nombre<input required maxlength="180" bind:value={milestoneForm.nombre} class="mt-1 w-full border border-gray-300 p-2 rounded-[4px] text-sm" /></label>
+          <label class="text-xs text-[#071D49]/70">Peso %<input required type="number" min="0.01" max="100" step="0.01" bind:value={milestoneForm.pesoPorcentaje} class="mt-1 w-full border border-gray-300 p-2 rounded-[4px] text-sm" /></label>
+          <label class="text-xs text-[#071D49]/70">Fecha prevista<input required type="date" bind:value={milestoneForm.fechaPlanificada} class="mt-1 w-full border border-gray-300 p-2 rounded-[4px] text-sm" /></label>
+          <button type="submit" disabled={milestoneBusy} class="bg-[#071D49] text-white px-4 py-2 rounded-[4px] text-sm disabled:opacity-50">Agregar hito</button>
+        </form>
+      {/if}
+    </section>
 
     <!-- SECCIÓN DE EVIDENCIAS FOTOGRÁFICAS -->
     <section class="glass-light  rounded-[4px] p-8  ">
@@ -332,6 +399,9 @@
                 <p class="text-[12px] font-medium text-[#071D49]/80 leading-relaxed line-clamp-2">
                   {evidencia.descripcion || 'Sin descripción registrada.'}
                 </p>
+                <p class="text-[11px] text-[#071D49]/60">{proyecto.hitos?.find(hito => hito.id === evidencia.hitoId)?.nombre || 'Sin hito asociado'} · {evidencia.validacionUbicacion || 'Ubicación histórica'}</p>
+                {#if evidencia.municipioExif}<p class="text-[11px] text-[#071D49]/60">EXIF: {evidencia.municipioExif}</p>{/if}
+                {#if evidencia.municipioDispositivo}<p class="text-[11px] text-[#071D49]/60">Dispositivo: {evidencia.municipioDispositivo}</p>{/if}
                 <div class="pt-3 border-t border-gray-50 flex items-center justify-between text-[11px]">
                   <span class="text-[12px] font-mono font-medium text-[#071D49]/50">
                     {evidencia.latitud != null && evidencia.longitud != null ? `${evidencia.latitud}°, ${evidencia.longitud}°` : 'Sin coordenadas'}
@@ -385,6 +455,11 @@
       </div>
 
       <form onsubmit={handleAddEvidencia} class="space-y-4">
+        {#if proyecto?.hitos?.length}
+          <label class="block text-xs text-[#071D49]/70">Hito relacionado
+            <select bind:value={formData.hitoId} required class="mt-1 w-full p-3 border border-gray-300 rounded-[4px] text-sm"><option value="">Seleccione un hito</option>{#each proyecto.hitos as hito}<option value={hito.id}>{hito.nombre}</option>{/each}</select>
+          </label>
+        {/if}
         <div>
           <label for="field-1" class="block text-[12px] font-medium uppercase tracking-normal text-[#071D49]/50 mb-1.5">Fotografía PNG o JPEG (hasta 5 MB)</label>
           <input id="field-1" type="file" accept="image/png,image/jpeg" onchange={seleccionarArchivo} required class="w-full p-3 border rounded-[4px]" />
@@ -405,17 +480,20 @@
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <input 
               bind:value={formData.latitud} 
+              oninput={() => { formData.fuenteCoordenadas = 'declarada'; formData.precisionDispositivoMetros = null; }}
               type="text" 
               placeholder="Latitud (ej: 15.7314)" 
               class="w-full bg-white border border-gray-200 focus:border-[#1248AA] rounded-[4px] px-4 py-2.5 text-[12px] font-mono text-[#071D49]"
             />
             <input 
               bind:value={formData.longitud} 
+              oninput={() => { formData.fuenteCoordenadas = 'declarada'; formData.precisionDispositivoMetros = null; }}
               type="text" 
               placeholder="Longitud (ej: -91.4821)" 
               class="w-full bg-white border border-gray-200 focus:border-[#1248AA] rounded-[4px] px-4 py-2.5 text-[12px] font-mono text-[#071D49]"
             />
           </div>
+          <p class="mt-2 text-xs text-[#071D49]/55">Fuente: {formData.fuenteCoordenadas === 'dispositivo' ? `GPS del dispositivo (±${Math.round(formData.precisionDispositivoMetros ?? 0)} m)` : 'Coordenadas declaradas o sin GPS'}. El EXIF se leerá de la foto en el servidor.</p>
         </div>
 
         <div>

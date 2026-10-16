@@ -9,12 +9,12 @@ export async function requireAuth(req, res, next) {
     if (!token) return res.status(401).json({ error: 'No autenticado' });
     const payload = jwt.verify(token, process.env.JWT_SECRET, { algorithms: ['HS256'] });
     if (payload.type !== 'session' || !Number.isInteger(payload.sub)) return res.status(401).json({ error: 'Token inválido para una sesión' });
-    const user = await prisma.usuario.findUnique({ where: { id: payload.sub }, include: { rol: true } });
+    const user = await prisma.usuario.findUnique({ where: { id: payload.sub }, include: { rol: true, municipios: { select: { municipio: true } } } });
     if (!user || payload.version !== user.sessionVersion) return res.status(401).json({ error: 'Sesión revocada' });
     if (user.mustChangePassword && !['/api/v1/auth/me', '/api/v1/auth/password', '/api/v1/auth/logout'].includes(req.originalUrl.split('?')[0])) {
       return res.status(403).json({ code: 'PASSWORD_CHANGE_REQUIRED', error: 'Cambie su contraseña inicial para continuar' });
     }
-    req.user = { sub: user.id, correo: user.correo, rol: user.rol.codigo, permisos: user.rol.permisos, nombre: payload.nombre, colaboradorId: user.colaboradorId };
+    req.user = { sub: user.id, correo: user.correo, rol: user.rol.codigo, permisos: user.rol.permisos, nombre: payload.nombre, colaboradorId: user.colaboradorId, municipios: user.municipios.map(row => row.municipio) };
     return auditContext.run({ usuarioId: user.id }, next);
   } catch (err) {
     if (['JsonWebTokenError','TokenExpiredError','NotBeforeError'].includes(err.name)) return res.status(401).json({ error: 'Token inválido o expirado' });

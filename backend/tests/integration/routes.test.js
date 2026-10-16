@@ -1,6 +1,7 @@
 import test from 'node:test';
 import crypto from 'node:crypto';
 import { startR2Mock, pdfFixture } from '../helpers/r2-mock.js';
+import { gpsJpeg } from '../helpers/gps-jpeg.js';
 import assert from 'node:assert/strict';
 import { mkdtemp, writeFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
@@ -10,6 +11,7 @@ import http from 'node:http';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { ROLE_PERMISSIONS } from '../../src/lib/roles.js';
+import { MUNICIPIOS_MFN } from '../../src/lib/municipios.js';
 import express from 'express';
 
 const dir = await mkdtemp(join(tmpdir(), 'mfn-routes-'));
@@ -46,6 +48,9 @@ for (const code of Object.keys(users)) {
  assert.equal(r.data.user.mustChangePassword,false);
  assert.match(r.headers.get('set-cookie')||'',/mfn_session=.*HttpOnly.*SameSite=Lax/i);
  tokens[code]=jwt.sign({type:'session',version:users[code].sessionVersion,sub:users[code].id},process.env.JWT_SECRET,{expiresIn:'12h'});
+}
+for (const code of ['DIRPROY', 'DIRADMIN']) {
+ await prisma.usuarioMunicipio.createMany({ data: MUNICIPIOS_MFN.map(municipio => ({ usuarioId: users[code].id, municipio })) });
 }
 const project = { nombre:'Obra de prueba sin municipio en el nombre', municipio:'Santa Eulalia', agenciaFinanciadora:'Prueba', fechaInicioPlanificada:'2026-10-03',presupuestoMunicipal:100, presupuestoCooperacion:200 };
 let id;
@@ -108,12 +113,50 @@ test('Rutas reales con base migrada y aislada', async t => {
  });
  await t.test('finanzas separa cuentas y exige comprobante para caja chica',async()=>{
   const body={tipo:'Ingreso',cuentaBancaria:'Fondos Públicos',categoria:'Cuota Ordinaria',municipio:'Santa Eulalia',monto:100,comprobanteTipo:'Recibo CGC 63-A2',comprobanteNumero:'PRUEBA-1',descripcion:'Movimiento de prueba'};
-  assert.equal((await request('/financiero/transacciones','POST',tokens.GE,body)).status,201);
+  const income=await request('/financiero/transacciones','POST',tokens.GE,body);
+  assert.equal(income.status,201);
   assert.equal((await request('/financiero/transacciones','POST',tokens.GE,{...body,tipo:'Egreso',categoria:'Caja Chica'})).status,400);
   const balance=await request('/financiero/balance','GET',tokens.GE);
   assert.equal(balance.status,200);
   assert.equal(balance.data.cuentas.fondosPublicos.saldo,100);
   assert.equal(balance.data.cuentas.cooperacion.saldo,0);
+  const receipt=await fetch(base+`/financiero/transacciones/${income.data.id}/constancia.pdf`,{headers:{Authorization:`Bearer ${tokens.GE}`}});
+  assert.equal(receipt.status,200);
+  assert.match(receipt.headers.get('content-type'),/application\/pdf/);
+  assert.equal(Buffer.from(await receipt.arrayBuffer()).subarray(0,5).toString(),'%PDF-');
+  assert.equal((await fetch(base+`/financiero/transacciones/${income.data.id}/constancia.pdf`,{headers:{Authorization:`Bearer ${tokens.EMP}`}})).status,403);
+  const report=await fetch(base+'/financiero/reportes/ejecucion.pdf?anio=2026',{headers:{Authorization:`Bearer ${tokens.GE}`}});
+  assert.equal(report.status,200);
+  assert.equal(Buffer.from(await report.arrayBuffer()).subarray(0,5).toString(),'%PDF-');
+ });
+ await t.test('caja chica exige foto verificada en R2 y la abre con permiso financiero',async()=>{
+  const keys=['R2_ENDPOINT','R2_BUCKET','R2_ACCESS_KEY_ID','R2_SECRET_ACCESS_KEY'];
+  const saved=Object.fromEntries(keys.map(key=>[key,process.env[key]]));
+  const mock=await startR2Mock();
+  Object.assign(process.env,{R2_ENDPOINT:mock.endpoint,R2_BUCKET:'test-bucket',R2_ACCESS_KEY_ID:'test-key',R2_SECRET_ACCESS_KEY:'test-secret'});
+  try {
+    const body={tipo:'Egreso',cuentaBancaria:'Fondos Públicos',categoria:'Caja Chica',municipio:'Regional',monto:25,comprobanteTipo:'Factura SAT FEL',comprobanteNumero:'FEL-PRUEBA',descripcion:'Gasto sintético de integración'};
+    assert.equal((await request('/financiero/transacciones','POST',tokens.GE,{...body,urlComprobante:'https://example.test/foto.jpg'})).status,400);
+    const bytes=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII=','base64');
+    const sha256=crypto.createHash('sha256').update(bytes).digest('hex');
+    const prepared=await request('/documentos/preparar','POST',tokens.GE,{tipo:'factura',nombre:'factura.png',tipoMime:'image/png',bytes:bytes.length,sha256});
+    assert.equal(prepared.status,200);
+    assert.equal((await fetch(prepared.data.uploadUrl,{method:'PUT',headers:{'Content-Type':'image/png'},body:bytes})).status,200);
+    const confirmed=await request('/documentos/confirmar','POST',tokens.GE,{ticket:prepared.data.ticket});
+    assert.equal(confirmed.status,200);
+    assert.match(confirmed.data.reference,/^r2:\/\//);
+    assert.equal((await request('/financiero/transacciones','POST',tokens.DIRADMIN,{...body,urlComprobante:confirmed.data.reference})).status,400);
+    const created=await request('/financiero/transacciones','POST',tokens.GE,{...body,urlComprobante:confirmed.data.reference});
+    assert.equal(created.status,201);
+    assert.equal(created.data.urlComprobante,confirmed.data.reference);
+    assert.equal((await request('/documentos/abrir','POST',tokens.EMP,{tipo:'factura',id:created.data.id})).status,403);
+    const opened=await request('/documentos/abrir','POST',tokens.GE,{tipo:'factura',id:created.data.id});
+    assert.equal(opened.status,200);
+    assert.match(opened.data.url,/^http:\/\/127\.0\.0\.1:/);
+  } finally {
+    for(const [key,value] of Object.entries(saved)) if(value===undefined) delete process.env[key]; else process.env[key]=value;
+    await new Promise(resolve=>mock.server.close(resolve));
+  }
  });
  await t.test('catálogo activo excluye municipios históricos y no prioriza datos ausentes',async()=>{
   assert.equal((await request('/proyectos','POST',tokens.GE,{...project,municipio:'Santa Cruz Barillas'})).status,400);
@@ -142,6 +185,68 @@ test('Rutas reales con base migrada y aislada', async t => {
   } finally {
    for(const [key,value] of Object.entries(saved)) if(value===undefined) delete process.env[key]; else process.env[key]=value;
    await new Promise(resolve=>mock.server.close(resolve));
+  }
+ });
+ await t.test('hitos ponderados y ubicación municipal requieren evidencia y aprobación',async()=>{
+  const created=await request('/proyectos','POST',tokens.GE,{...project,nombre:'Proyecto con plan de hitos',fechaFinPlanificada:'2026-11-30'});
+  assert.equal(created.status,201);
+  const projectId=created.data.id;
+  const path=`/proyectos/${projectId}/hitos`;
+  const first=await request(path,'POST',tokens.DIRPROY,{nombre:'Cimentación',pesoPorcentaje:60,fechaPlanificada:'2026-10-05'});
+  assert.equal(first.status,201);
+  const second=await request(path,'POST',tokens.DIRPROY,{nombre:'Entrega',pesoPorcentaje:40,fechaPlanificada:'2026-11-05'});
+  assert.equal(second.status,201);
+  assert.equal((await request(path,'POST',tokens.DIRPROY,{nombre:'Exceso',pesoPorcentaje:1,fechaPlanificada:'2026-11-06'})).status,400);
+  const concurrentProject=await request('/proyectos','POST',tokens.GE,{...project,nombre:'Control de pesos concurrentes',fechaFinPlanificada:'2026-11-30'});
+  assert.equal(concurrentProject.status,201);
+  const concurrentPath=`/proyectos/${concurrentProject.data.id}/hitos`;
+  const concurrent=await Promise.all(['Uno','Dos'].map(nombre=>request(concurrentPath,'POST',tokens.DIRPROY,{nombre,pesoPorcentaje:60,fechaPlanificada:'2026-11-05'})));
+  assert.deepEqual(concurrent.map(response=>response.status).sort(),[201,400]);
+  assert.equal((await prisma.hitoProyecto.findMany({where:{proyectoId:concurrentProject.data.id}})).length,1);
+  assert.equal((await request(`/proyectos/${projectId}`,'PUT',tokens.GE,{porcentajeAvanceFisico:60})).status,400);
+  assert.equal((await request(`${path}/${first.data.id}/aprobar`,'POST',tokens.DIRPROY,{})).status,403);
+  assert.equal((await request(`${path}/${first.data.id}/aprobar`,'POST',tokens.GE,{})).status,400);
+  const keys=['R2_ENDPOINT','R2_BUCKET','R2_ACCESS_KEY_ID','R2_SECRET_ACCESS_KEY'];
+  const saved=Object.fromEntries(keys.map(key=>[key,process.env[key]]));
+  const mock=await startR2Mock();
+  Object.assign(process.env,{R2_ENDPOINT:mock.endpoint,R2_BUCKET:'test-bucket',R2_ACCESS_KEY_ID:'test-key',R2_SECRET_ACCESS_KEY:'test-secret'});
+  try {
+    const archivoBase64='iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII=';
+    const evidence=await request(`/proyectos/${projectId}/evidencias`,'POST',tokens.DIRPROY,{archivoBase64,tipoMime:'image/png',hitoId:first.data.id,
+      latitud:15.67225093,longitud:-91.21384434,fuenteCoordenadas:'dispositivo',precisionDispositivoMetros:12});
+    assert.equal(evidence.status,201);
+    assert.equal(evidence.data.municipioDispositivo,'Santa Eulalia');
+    assert.equal(evidence.data.validacionUbicacion,'Coincide');
+    assert.equal(evidence.data.latitudExif,null);
+    assert.equal(evidence.data.fuenteUbicacion,'Dispositivo');
+    assert.equal((await request(`${path}/${first.data.id}/aprobar`,'POST',tokens.GE,{})).status,200);
+    const detail=await request(`/proyectos/${projectId}`,'GET',tokens.GE);
+    assert.equal(detail.data.porcentajeAvanceFisico,60);
+    assert.equal(detail.data.avance.aprobado,60);
+    assert.equal(detail.data.avance.pesoConfigurado,100);
+    assert.equal(detail.data.avance.programado,60);
+    assert.equal((await request(`${path}/${first.data.id}/reabrir`,'POST',tokens.GE,{})).status,200);
+    assert.equal((await request(`/proyectos/${projectId}`,'GET',tokens.GE)).data.avance.aprobado,0);
+    const mismatched=await request(`/proyectos/${projectId}/evidencias`,'POST',tokens.DIRPROY,{archivoBase64,tipoMime:'image/png',hitoId:second.data.id,
+      latitud:15.66264734,longitud:-91.43159310,fuenteCoordenadas:'dispositivo'});
+    assert.equal(mismatched.status,201);
+    assert.equal(mismatched.data.municipioDispositivo,'San Pedro Soloma');
+    assert.equal(mismatched.data.validacionUbicacion,'Revisar');
+    const jpeg=gpsJpeg();
+    const prepared=await request(`/proyectos/${projectId}/evidencias/preparar`,'POST',tokens.DIRPROY,
+      {tipoMime:'image/jpeg',bytes:jpeg.length,sha256:crypto.createHash('sha256').update(jpeg).digest('hex')});
+    assert.equal(prepared.status,200);
+    assert.equal((await fetch(prepared.data.uploadUrl,{method:'PUT',headers:{'Content-Type':'image/jpeg'},body:jpeg})).status,200);
+    const confirmed=await request(`/proyectos/${projectId}/evidencias/confirmar`,'POST',tokens.DIRPROY,
+      {ticket:prepared.data.ticket,hitoId:second.data.id,latitud:15.66264734,longitud:-91.43159310,fuenteCoordenadas:'dispositivo',precisionDispositivoMetros:15});
+    assert.equal(confirmed.status,201);
+    assert.equal(confirmed.data.municipioExif,'Santa Eulalia');
+    assert.equal(confirmed.data.municipioDispositivo,'San Pedro Soloma');
+    assert.equal(confirmed.data.fuenteUbicacion,'EXIF');
+    assert.equal(confirmed.data.validacionUbicacion,'Revisar');
+  } finally {
+    for(const [key,value] of Object.entries(saved)) if(value===undefined) delete process.env[key]; else process.env[key]=value;
+    await new Promise(resolve=>mock.server.close(resolve));
   }
  });
  await t.test('administración separada publica contenido con archivo R2 y bloquea otros roles',async()=>{
@@ -203,6 +308,17 @@ test('Rutas reales con base migrada y aislada', async t => {
   assert.equal(changedLogin.data.user.mustChangePassword,false);
   const nextVersion=await prisma.usuario.findUnique({where:{id:created.data.id}});
   const currentToken=jwt.sign({type:'session',version:nextVersion.sessionVersion,sub:created.data.id},process.env.JWT_SECRET,{expiresIn:'12h'});
+  const projectRole=roles.data.find(role=>role.codigo==='DIRPROY');
+  assert.equal((await request(`/admin/users/${created.data.id}/role`,'PATCH',tokens.EMP,{rolId:projectRole.id,contrasenaAdministrador:password})).status,403);
+  assert.equal((await request(`/admin/users/${created.data.id}/role`,'PATCH',tokens.GE,{rolId:projectRole.id,contrasenaAdministrador:'incorrecta'})).status,403);
+  assert.equal((await request(`/admin/users/${users.GE.id}/role`,'PATCH',tokens.GE,{rolId:projectRole.id,contrasenaAdministrador:password})).status,400);
+  const changedRole=await request(`/admin/users/${created.data.id}/role`,'PATCH',tokens.GE,{rolId:projectRole.id,contrasenaAdministrador:password});
+  assert.equal(changedRole.status,200);
+  assert.equal(changedRole.data.rol.codigo,'DIRPROY');
+  assert.equal((await request('/auth/me','GET',currentToken)).status,401);
+  const roleVersion=await prisma.usuario.findUnique({where:{id:created.data.id}});
+  const roleToken=jwt.sign({type:'session',version:roleVersion.sessionVersion,sub:created.data.id},process.env.JWT_SECRET,{expiresIn:'12h'});
+  assert.equal((await request('/proyectos','GET',roleToken)).status,200);
   assert.equal((await request(`/admin/users/${created.data.id}/password`,'POST',tokens.EMP,{nuevaContrasena:newPassword,contrasenaAdministrador:password})).status,403);
   assert.equal((await request(`/admin/users/${created.data.id}/password`,'POST',tokens.GE,{nuevaContrasena:newPassword,contrasenaAdministrador:'incorrecta'})).status,403);
   assert.equal((await request(`/admin/users/${created.data.id}/password`,'POST',tokens.GE,{nuevaContrasena:newPassword,contrasenaAdministrador:password})).status,200);
@@ -212,12 +328,45 @@ test('Rutas reales con base migrada y aislada', async t => {
   assert.equal(resetLogin.status,200);
   assert.equal(resetLogin.data.user.mustChangePassword,true);
  });
+ await t.test('municipios autorizados limitan lectura y escritura y revocan sesiones al cambiar',async()=>{
+  const scoped=await prisma.usuario.create({data:{correo:'tecnico-scope@example.test',hashContrasena:users.DIRPROY.hashContrasena,rolId:users.DIRPROY.rolId,
+    municipios:{create:[{municipio:'Santa Eulalia'}]}}});
+  const scopedToken=jwt.sign({type:'session',version:0,sub:scoped.id},process.env.JWT_SECRET,{expiresIn:'12h'});
+  const other=await request('/proyectos','POST',tokens.GE,{...project,nombre:'Proyecto de otro municipio',municipio:'San Pedro Soloma'});
+  assert.equal(other.status,201);
+  const visible=await request('/proyectos','GET',scopedToken);
+  assert.equal(visible.status,200);
+  assert.ok(visible.data.some(row=>row.id===id));
+  assert.ok(visible.data.every(row=>row.municipio==='Santa Eulalia'));
+  assert.equal((await request(`/proyectos/${other.data.id}`,'GET',scopedToken)).status,404);
+  assert.equal((await request('/proyectos','POST',scopedToken,{...project,municipio:'San Pedro Soloma'})).status,400);
+  assert.equal((await request('/estadisticas/censos?municipio=San%20Pedro%20Soloma','GET',scopedToken)).data.length,0);
+  assert.equal((await request('/estadisticas/censos','POST',scopedToken,{municipio:'San Pedro Soloma'})).status,403);
+  assert.equal((await request(`/admin/users/${scoped.id}/municipalities`,'PATCH',tokens.EMP,{municipios:MUNICIPIOS_MFN,contrasenaAdministrador:password})).status,403);
+  assert.equal((await request(`/admin/users/${scoped.id}/municipalities`,'PATCH',tokens.GE,{municipios:['Municipio inexistente'],contrasenaAdministrador:password})).status,400);
+  assert.equal((await request(`/admin/users/${scoped.id}/municipalities`,'PATCH',tokens.GE,{municipios:MUNICIPIOS_MFN,contrasenaAdministrador:'incorrecta'})).status,403);
+  const changed=await request(`/admin/users/${scoped.id}/municipalities`,'PATCH',tokens.GE,{municipios:MUNICIPIOS_MFN,contrasenaAdministrador:password});
+  assert.equal(changed.status,200);
+  assert.equal(changed.data.municipios.length,MUNICIPIOS_MFN.length);
+  assert.equal((await request('/auth/me','GET',scopedToken)).status,401);
+  const next=await prisma.usuario.findUnique({where:{id:scoped.id}});
+  const newToken=jwt.sign({type:'session',version:next.sessionVersion,sub:scoped.id},process.env.JWT_SECRET,{expiresIn:'12h'});
+  assert.equal((await request(`/proyectos/${other.data.id}`,'GET',newToken)).status,200);
+ });
  await t.test('RF7-RF9 ARC asigna, filtra, detecta vencimiento y deja de alertar al finalizar',async()=>{
   const due=new Date(Date.now()-2*86400000).toISOString();
-  const created=await request('/arc','POST',tokens.GE,{titulo:'Evidencia de aceptación ARC',descripcion:'Acción sintética de prueba',municipio:'Santa Eulalia',responsable:'Responsable de prueba',prioridad:'Alta',fechaLimite:due});
+  const assignable=await request('/arc/asignables?municipio=Santa%20Eulalia','GET',tokens.GE);
+  assert.equal(assignable.status,200);
+  assert.equal(assignable.data.some(row=>row.id===users.DIRPROY.id),true);
+  assert.equal(assignable.data.some(row=>row.id===users.EMP.id),false);
+  const task={titulo:'Evidencia de aceptación ARC',descripcion:'Acción sintética de prueba',municipio:'Santa Eulalia',responsableId:users.DIRPROY.id,prioridad:'Alta',fechaLimite:due};
+  assert.equal((await request('/arc','POST',tokens.GE,{...task,responsableId:users.EMP.id})).status,400);
+  const created=await request('/arc','POST',tokens.GE,task);
   assert.equal(created.status,201);
   assert.equal(created.data.estado,'Pendiente');
-  const filtered=await request('/arc?municipio=Santa%20Eulalia&prioridad=Alta&search=Responsable','GET',tokens.GE);
+  assert.equal(created.data.responsableId,users.DIRPROY.id);
+  assert.equal((await request('/arc','GET',tokens.DIRPROY)).data.find(row=>row.id===created.data.id).esPropia,true);
+  const filtered=await request('/arc?municipio=Santa%20Eulalia&prioridad=Alta&search=dirproy','GET',tokens.GE);
   assert.equal(filtered.status,200);assert.equal(filtered.data.length,1);assert.equal(filtered.data[0].estaVencida,true);
   assert.equal((await request(`/arc/${created.data.id}`,'PUT',tokens.AUD,{estado:'Finalizado'})).status,403);
   for(const estado of ['En Proceso','En Revisión','Finalizado'])assert.equal((await request(`/arc/${created.data.id}`,'PUT',tokens.GE,{estado})).status,200);

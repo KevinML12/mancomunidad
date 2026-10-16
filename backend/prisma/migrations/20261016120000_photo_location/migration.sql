@@ -1,0 +1,9 @@
+ALTER TABLE "EvidenciaProyecto" ADD COLUMN "latitudExif" REAL;
+ALTER TABLE "EvidenciaProyecto" ADD COLUMN "longitudExif" REAL;
+ALTER TABLE "EvidenciaProyecto" ADD COLUMN "latitudDispositivo" REAL;
+ALTER TABLE "EvidenciaProyecto" ADD COLUMN "longitudDispositivo" REAL;
+ALTER TABLE "EvidenciaProyecto" ADD COLUMN "precisionDispositivoMetros" REAL;
+ALTER TABLE "EvidenciaProyecto" ADD COLUMN "municipioExif" TEXT;
+ALTER TABLE "EvidenciaProyecto" ADD COLUMN "municipioDispositivo" TEXT;
+ALTER TABLE "EvidenciaProyecto" ADD COLUMN "fuenteUbicacion" TEXT;
+ALTER TABLE "EvidenciaProyecto" ADD COLUMN "validacionUbicacion" TEXT;

@@ -1,7 +1,7 @@
 import './style.css';
 
 const root = document.querySelector('#app');
-const state = { user: null, overview: null, publicaciones: [], usuarios: [], roles: [], tab: 'publicaciones', editing: null, message: '', error: '' };
+const state = { user: null, overview: null, publicaciones: [], usuarios: [], roles: [], municipios: [], tab: 'publicaciones', editing: null, message: '', error: '' };
 
 async function api(path, options = {}) {
   const response = await fetch(`/api/v1${path}`, {
@@ -58,7 +58,7 @@ async function bootstrap() {
 
 async function loadTab() {
   if (state.tab === 'publicaciones') state.publicaciones = await api('/admin/publicaciones');
-  if (state.tab === 'usuarios') [state.usuarios, state.roles] = await Promise.all([api('/admin/users'), api('/admin/roles')]);
+  if (state.tab === 'usuarios') [state.usuarios, state.roles, state.municipios] = await Promise.all([api('/admin/users'), api('/admin/roles'), api('/admin/municipalities')]);
 }
 
 function showMessage(text, error = false) {
@@ -200,14 +200,16 @@ function renderUsers() {
   const role = field('Rol institucional', 'nuevo-rol', 'select', { required: '' });
   role.control.append(element('option', { value: '', text: 'Seleccione un rol' }));
   for (const item of state.roles) role.control.append(element('option', { value: item.id, text: item.nombre }));
+  const municipios = field('Municipios autorizados (varios si corresponde)', 'nuevos-municipios', 'select', { multiple: '', size: '3' });
+  for (const value of state.municipios) municipios.control.append(element('option', { value, text: value }));
   const password = field('Contraseña inicial, mínimo 12 caracteres', 'nueva-clave', 'input', { type: 'password', required: '', minlength: '12', autocomplete: 'new-password' });
   const adminPassword = field('Su contraseña para confirmar', 'clave-admin', 'input', { type: 'password', required: '', autocomplete: 'current-password' });
   const create = element('button', { className: 'button', type: 'submit', text: 'Crear cuenta' });
-  form.append(email.wrapper, role.wrapper, password.wrapper, adminPassword.wrapper, create);
+  form.append(email.wrapper, role.wrapper, municipios.wrapper, password.wrapper, adminPassword.wrapper, create);
   form.addEventListener('submit', async event => {
     event.preventDefault(); create.disabled = true;
     try {
-      await api('/admin/users', { method: 'POST', body: JSON.stringify({ correo: email.control.value.trim(), rolId: Number(role.control.value), contrasena: password.control.value, contrasenaAdministrador: adminPassword.control.value }) });
+      await api('/admin/users', { method: 'POST', body: JSON.stringify({ correo: email.control.value.trim(), rolId: Number(role.control.value), municipios: [...municipios.control.selectedOptions].map(option => option.value), contrasena: password.control.value, contrasenaAdministrador: adminPassword.control.value }) });
       state.usuarios = await api('/admin/users');
       state.overview = await api('/admin/overview');
       showMessage('Cuenta creada. Entregue la contraseña inicial a su titular por un canal privado. Tendrá que cambiarla al ingresar.');
@@ -217,13 +219,15 @@ function renderUsers() {
   section.append(form);
   const table = element('table');
   const head = element('thead');
-  head.append(element('tr', {}, ['Cuenta', 'Rol', 'Acción'].map(text => element('th', { text }))));
+  head.append(element('tr', {}, ['Cuenta', 'Rol', 'Municipios', 'Acción'].map(text => element('th', { text }))));
   const body = element('tbody');
   for (const user of state.usuarios) {
     const row = element('tr');
-    row.append(element('td', { text: user.correo }), element('td', { text: user.rol.nombre }));
+    row.append(element('td', { text: user.correo }), element('td', { text: user.rol.nombre }), element('td', { text: user.municipios.map(item => item.municipio).join(', ') || 'Sin asignar' }));
     const action = element('td');
     if (user.id !== state.user.id) {
+      action.append(button('Cambiar rol', () => renderRoleForm(section, user), true));
+      action.append(button('Municipios', () => renderMunicipalityForm(section, user), true));
       action.append(button('Revocar sesiones', async () => {
       if (!window.confirm(`¿Cerrar todas las sesiones de ${user.correo}?`)) return;
       try { await api(`/admin/users/${user.id}/revoke-sessions`, { method: 'POST' }); showMessage('Sesiones revocadas.'); }
@@ -235,6 +239,56 @@ function renderUsers() {
   }
   table.append(head, body); section.append(element('div', { className: 'list' }, [table]));
   return section;
+}
+
+function renderMunicipalityForm(section, user) {
+  section.querySelector('.municipality-change')?.remove();
+  const form = element('form', { className: 'municipality-change' });
+  form.append(element('h3', { text: `Municipios de ${user.correo}` }));
+  const municipios = field('Municipios autorizados', 'cambiar-municipios', 'select', { multiple: '', size: '3' });
+  const current = new Set(user.municipios.map(item => item.municipio));
+  for (const value of state.municipios) {
+    const option = element('option', { value, text: value });
+    option.selected = current.has(value);
+    municipios.control.append(option);
+  }
+  const adminPassword = field('Su contraseña para confirmar', 'cambiar-municipios-admin', 'input', { type: 'password', required: '', autocomplete: 'current-password' });
+  const submit = element('button', { className: 'button', type: 'submit', text: 'Guardar municipios y cerrar sesiones' });
+  form.append(municipios.wrapper, adminPassword.wrapper, submit);
+  form.addEventListener('submit', async event => {
+    event.preventDefault(); submit.disabled = true;
+    try {
+      await api(`/admin/users/${user.id}/municipalities`, { method: 'PATCH', body: JSON.stringify({ municipios: [...municipios.control.selectedOptions].map(option => option.value), contrasenaAdministrador: adminPassword.control.value }) });
+      state.usuarios = await api('/admin/users');
+      showMessage(`Municipios de ${user.correo} actualizados. Sus sesiones anteriores quedaron revocadas.`);
+    } catch (error) { showMessage(error.message, true); }
+    finally { adminPassword.control.value = ''; submit.disabled = false; }
+  });
+  section.prepend(form);
+  municipios.control.focus();
+}
+
+function renderRoleForm(section, user) {
+  section.querySelector('.role-change')?.remove();
+  const form = element('form', { className: 'role-change' });
+  form.append(element('h3', { text: `Cambiar rol de ${user.correo}` }));
+  const role = field('Nuevo rol institucional', 'cambiar-rol', 'select', { required: '' });
+  for (const item of state.roles) role.control.append(element('option', { value: item.id, text: item.nombre }));
+  role.control.value = String(state.roles.find(item => item.codigo === user.rol.codigo)?.id || '');
+  const adminPassword = field('Su contraseña para confirmar', 'cambiar-rol-admin', 'input', { type: 'password', required: '', autocomplete: 'current-password' });
+  const submit = element('button', { className: 'button', type: 'submit', text: 'Guardar rol y cerrar sesiones' });
+  form.append(role.wrapper, adminPassword.wrapper, submit);
+  form.addEventListener('submit', async event => {
+    event.preventDefault(); submit.disabled = true;
+    try {
+      await api(`/admin/users/${user.id}/role`, { method: 'PATCH', body: JSON.stringify({ rolId: Number(role.control.value), contrasenaAdministrador: adminPassword.control.value }) });
+      state.usuarios = await api('/admin/users');
+      showMessage(`Rol de ${user.correo} actualizado. Sus sesiones anteriores quedaron revocadas.`);
+    } catch (error) { showMessage(error.message, true); }
+    finally { adminPassword.control.value = ''; submit.disabled = false; }
+  });
+  section.prepend(form);
+  role.control.focus();
 }
 
 function renderRotationForm(section, user) {

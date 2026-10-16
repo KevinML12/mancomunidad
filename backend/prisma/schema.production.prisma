@@ -84,10 +84,20 @@ model Usuario {
   hashContrasena String
   rolId          Int
   rol            Rol                 @relation(fields: [rolId], references: [id])
+  municipios     UsuarioMunicipio[]
+  tareasARC      TareaARC[]
   colaboradorId  Int?                @unique
   colaborador    Colaborador?        @relation(fields: [colaboradorId], references: [id])
   bitacora       BitacoraAuditoria[]
   createdAt      DateTime            @default(now())
+}
+
+model UsuarioMunicipio {
+  usuarioId Int
+  usuario   Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  municipio String
+
+  @@id([usuarioId, municipio])
 }
 
 model RateLimitBucket {
@@ -264,7 +274,22 @@ model Proyecto {
   estado                 String               @default("Planificación") // Planificación, Ejecución, Finalizado
   porcentajeAvanceFisico Float                @default(0)
   evidencias             EvidenciaProyecto[]
+  hitos                  HitoProyecto[]
   createdAt              DateTime             @default(now())
+}
+
+model HitoProyecto {
+  id               Int @id @default(autoincrement())
+  proyectoId       Int
+  proyecto         Proyecto @relation(fields: [proyectoId], references: [id])
+  nombre           String
+  pesoPorcentaje   Float
+  fechaPlanificada DateTime
+  estado           String @default("Pendiente")
+  fechaAprobacion  DateTime?
+  aprobadoPorId    Int?
+  evidencias       EvidenciaProyecto[]
+  createdAt        DateTime @default(now())
 }
 
 model EvidenciaProyecto {
@@ -274,12 +299,25 @@ model EvidenciaProyecto {
   id           Int      @id @default(autoincrement())
   proyectoId   Int
   proyecto     Proyecto @relation(fields: [proyectoId], references: [id])
+  hitoId       Int?
+  hito         HitoProyecto? @relation(fields: [hitoId], references: [id])
   urlArchivo   String
   latitud      Float?
   longitud     Float?
+  latitudExif Float?
+  longitudExif Float?
+  latitudDispositivo Float?
+  longitudDispositivo Float?
+  precisionDispositivoMetros Float?
+  municipioExif String?
+  municipioDispositivo String?
+  fuenteUbicacion String?
+  validacionUbicacion String?
   descripcion  String?
   fechaCaptura DateTime @default(now())
   cargadoPorId Int?     // referencia a Usuario
+
+  @@index([hitoId])
 }
 
 // ==========================================
@@ -296,10 +334,13 @@ model TareaARC {
   estado          String    @default("Pendiente") // Pendiente | En Proceso | En Revisión | Finalizado
   municipio       String?   @default("Regional")
   responsable     String
+  responsableId   Int?
+  responsableUsuario Usuario? @relation(fields: [responsableId], references: [id])
   fechaLimite     DateTime
   fechaFinalizada DateTime?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
+  @@index([responsableId])
 }
 
 // ==========================================

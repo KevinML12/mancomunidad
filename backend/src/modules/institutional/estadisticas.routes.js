@@ -4,6 +4,8 @@ import { choice, numeric, text } from '../../services/validation.js';
 import { ValidationError } from '../../services/errors.js';
 import prisma from '../../lib/prisma.js';
 import { requireAuth, requirePermission } from '../../middleware/auth.js';
+import { canAccessMunicipio, municipalityWhere } from '../../lib/municipality-scope.js';
+import crypto from 'node:crypto';
 
 const router = Router();
 router.use(requireAuth, requirePermission('estadisticas'));
@@ -13,8 +15,11 @@ router.get('/censos', async (req, res, next) => {
   try {
     const { municipio, search } = req.query;
     // Operational view follows the active territory; an explicit municipality query preserves historical access.
-    const where = { municipio: { in: MUNICIPIOS_MFN } };
-    if (municipio) where.municipio = municipio;
+    const where = municipalityWhere(req.user);
+    if (municipio) {
+      if (!canAccessMunicipio(req.user, municipio)) return res.json([]);
+      where.municipio = municipio;
+    } else if (!Object.keys(where).length) where.municipio = { in: MUNICIPIOS_MFN };
     if (search) {
       where.OR = [
         { comunidad: { contains: search } },
@@ -37,7 +42,8 @@ router.get('/censos', async (req, res, next) => {
 // GET /api/v1/estadisticas/consolidado - Motor estadístico de cobertura y déficit regional (RF16)
 router.get('/consolidado', async (req, res, next) => {
   try {
-    const censos = await prisma.censoComunitarioASH.findMany({ where: { municipio: { in: MUNICIPIOS_MFN } } });
+    const scoped = municipalityWhere(req.user);
+    const censos = await prisma.censoComunitarioASH.findMany({ where: Object.keys(scoped).length ? scoped : { municipio: { in: MUNICIPIOS_MFN } } });
 
     let totalViviendas = 0;
     let conAgua = 0;
@@ -94,6 +100,7 @@ router.get('/consolidado', async (req, res, next) => {
 router.post('/censos', requirePermission('estadisticas', 'editar'), async (req, res, next) => {
   try {
     const municipio = choice(req.body.municipio, MUNICIPIOS_MFN, 'Municipio');
+    if (!canAccessMunicipio(req.user, municipio)) return res.status(403).json({ error: 'Municipio fuera de su ámbito autorizado' });
     const comunidad = text(req.body.comunidad, 'Comunidad');
     const options = { integer: true, max: 2147483647 };
     const viviendasTotales = numeric(req.body.viviendasTotales, 'Total de viviendas', { ...options, min: 1 });
@@ -105,9 +112,8 @@ router.post('/censos', requirePermission('estadisticas', 'editar'), async (req, 
     const ppmCloroResidual = numeric(req.body.ppmCloroResidual, 'Cloro residual');
     const tecnicoResponsable = text(req.body.tecnicoResponsable ?? 'Técnico OMAS', 'Técnico responsable');
 
-    const count = await prisma.censoComunitarioASH.count();
     const cleanMun = municipio.toUpperCase().slice(0, 3);
-    const codigo = `ASH-2024-${cleanMun}-${(count + 1).toString().padStart(3, '0')}`;
+    const codigo = `ASH-${new Date().getUTCFullYear()}-${cleanMun}-${crypto.randomBytes(4).toString('hex').toUpperCase()}`;
 
     const censo = await prisma.censoComunitarioASH.create({
       data: {

@@ -1,7 +1,7 @@
 <script>
   import { onMount } from 'svelte';
   import apiClient from '$lib/apiClient';
-  import { documentKind } from '$lib/documents/upload.js';
+  import { documentKind, uploadInvoicePhoto, openPrivatePdf } from '$lib/documents/upload.js';
   import Icon from '$lib/components/ui/Icon.svelte';
   import { toast } from 'svelte-sonner';
   import { auth } from '$lib/stores/auth.svelte.js';
@@ -21,6 +21,18 @@
   });
   let loading = $state(true);
   let loadError = $state(false);
+  let reportYear = $state(new Date().getFullYear());
+
+  async function descargarPdf(path, filename) {
+    try {
+      const { data } = await apiClient.get(path, { responseType:'blob', timeout:60000 });
+      const blob = new Blob([data], { type:'application/pdf' });
+      const objectUrl = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = objectUrl; link.download = filename; document.body.appendChild(link); link.click(); link.remove();
+      setTimeout(() => URL.revokeObjectURL(objectUrl), 60_000);
+    } catch (error) { toast.error(error.response?.data?.error || 'No se pudo preparar el PDF'); }
+  }
 
   // Mostrar solo aportes registrados; la obligación anual requiere una regla institucional aprobada.
   let municipiosMFN = $derived(
@@ -43,6 +55,7 @@
   // Modal Registro Cuota / Caja Chica
   let showModal = $state(false);
   let formLoading = $state(false);
+  let invoiceFile = $state(null);
   let modalTipo = $state('Cuota'); // 'Cuota' | 'CajaChica'
   let nuevaTx = $state({
     tipo: 'Ingreso',
@@ -81,6 +94,7 @@
   });
 
   function abrirModal(tipo) {
+    invoiceFile = null;
     modalTipo = tipo;
     if (tipo === 'Cuota') {
       nuevaTx = {
@@ -112,13 +126,14 @@
 
   async function guardarTransaccion(e) {
     e.preventDefault();
-    if (nuevaTx.categoria === 'Caja Chica' && !nuevaTx.urlComprobante) {
-      toast.error('Adjunte el comprobante del gasto de caja chica');
+    if (nuevaTx.categoria === 'Caja Chica' && !invoiceFile && !nuevaTx.urlComprobante) {
+      toast.error('Adjunte una fotografía de la factura');
       return;
     }
 
     formLoading = true;
     try {
+      if (nuevaTx.categoria === 'Caja Chica' && invoiceFile && !nuevaTx.urlComprobante) nuevaTx.urlComprobante = await uploadInvoicePhoto(invoiceFile, apiClient);
       await apiClient.post('/financiero/transacciones', {
         ...nuevaTx,
         monto: Number(nuevaTx.monto)
@@ -132,6 +147,11 @@
     } finally {
       formLoading = false;
     }
+  }
+
+  async function abrirComprobante(transaccion) {
+    try { await openPrivatePdf({ openWindow:() => window.open('about:blank','_blank'), authorize:() => apiClient.post('/documentos/abrir',{ tipo:'factura', id:transaccion.id }) }); }
+    catch (error) { toast.error(error.response?.data?.error || error.message || 'No se pudo abrir la factura'); }
   }
 
   // Cálculos reactivos de cuentas bancarias separadas
@@ -185,8 +205,10 @@
     </p>
   </div>
 
-  {#if auth.puedeEditar('financiero')}
   <div class="flex items-center gap-3 shrink-0 flex-wrap">
+    <label class="text-xs text-[#071D49]/70">Año fiscal <input type="number" min="2000" max="2100" bind:value={reportYear} class="ml-1 w-20 border border-gray-300 p-2 rounded-[4px]" /></label>
+    <button type="button" onclick={() => descargarPdf(`/financiero/reportes/ejecucion.pdf?anio=${reportYear}`, `mfn-ejecucion-${reportYear}.pdf`)} class="px-4 py-3 border border-gray-300 rounded-[4px] text-[12px] text-[#071D49]">Informe PDF</button>
+    {#if auth.puedeEditar('financiero')}
     <!-- Botón Cuota Municipal -->
     <button 
       onclick={() => abrirModal('Cuota')}
@@ -204,8 +226,8 @@
       <Icon name="receipt_long" className="w-[18px] h-[18px] text-[#1248AA]" />
       <span>+ Registrar Caja Chica</span>
     </button>
+    {/if}
   </div>
-  {/if}
 </header>
 {#if loadError}
   <div role="alert" class="glass-light rounded-[4px] p-6 mb-8 text-[#071D49]">
@@ -369,6 +391,8 @@
                   <a href={t.urlComprobante} target="_blank" rel="noopener noreferrer" class="w-7 h-7 rounded-[4px] bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-[#071D49] transition-colors" title="Ver comprobante adjunto">
                     <Icon name="image" className="w-3.5 h-3.5" />
                   </a>
+                {:else if documentKind(t.urlComprobante) === 'private'}
+                  <button type="button" onclick={() => abrirComprobante(t)} class="w-7 h-7 rounded-[4px] bg-gray-100 flex items-center justify-center text-[#071D49]" title="Abrir factura privada"><Icon name="image" className="w-3.5 h-3.5" /></button>
                 {/if}
               </div>
             </td>
@@ -376,6 +400,7 @@
               <span class="text-[15px] font-medium tracking-tight {esIngreso ? 'text-emerald-600' : 'text-rose-600'}">
                 {esIngreso ? '+' : '-'} Q {t.monto.toLocaleString('es-GT')}
               </span>
+              <button type="button" onclick={() => descargarPdf(`/financiero/transacciones/${t.id}/constancia.pdf`, `${t.codigo}.pdf`)} class="block ml-auto mt-1 text-[11px] text-[#1248AA] underline">Constancia PDF</button>
             </td>
           </tr>
         {/each}
@@ -453,9 +478,9 @@
           <!-- RF11: Evidencia obligatoria de factura en Caja Chica -->
           <div>
             <label for="field-7" class="block text-[12px] font-medium uppercase tracking-normal text-[#071D49]/40 mb-1.5">
-              URL del comprobante del gasto
+              Fotografía de la factura (PNG o JPEG, hasta 5 MB)
             </label>
-            <input id="field-7" required type="text" bind:value={nuevaTx.urlComprobante} placeholder="https://..." class="w-full bg-white border border-gray-200 rounded-[4px] px-4 py-3 text-[13px] text-[#071D49]" />
+            <input id="field-7" required={!nuevaTx.urlComprobante} type="file" accept="image/png,image/jpeg" onchange={event => { invoiceFile = event.currentTarget.files?.[0] || null; nuevaTx.urlComprobante = ''; }} class="w-full bg-white border border-gray-200 rounded-[4px] px-4 py-3 text-[13px] text-[#071D49]" />
           </div>
         {/if}
 

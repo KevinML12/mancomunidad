@@ -1,0 +1,8 @@
+
+> frontend-svelte@0.0.1 check
+> svelte-kit sync && svelte-check --tsconfig ./jsconfig.json
+
+Loading svelte-check in workspace: /Users/kevv/Documents/proyectos/mancomunidad/frontend-svelte
+Getting Svelte diagnostics...
+
+svelte-check found 0 errors and 0 warnings

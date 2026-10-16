@@ -7,6 +7,7 @@ import { storage, DocumentServiceError } from './documents.js';
 import { mediaKey } from './media.js';
 import { evidenceDetails, recordProjectEvidence } from './projects.js';
 import { ValidationError } from './errors.js';
+import { readExifLocation } from './photo-location.js';
 
 const MAX_BYTES = 5 * 1024 * 1024;
 const EXTENSIONS = { 'image/png': 'png', 'image/jpeg': 'jpg' };
@@ -60,6 +61,7 @@ export async function finishEvidenceUpload(userId, projectId, ticket, body = {})
   const target = reference(claim);
   const finalKey = mediaKey(target);
   const final = await headIfPresent(client, finalKey, claim.bucket);
+  let photoBuffer;
   if (!final || final.Metadata?.sha256 !== claim.sha256 || final.ContentLength !== claim.bytes || final.ContentType !== claim.mime) {
     const head = await headIfPresent(client, stagingKey(claim), claim.bucket);
     if (!head || head.ContentLength !== claim.bytes || head.ContentType !== claim.mime) throw new ValidationError('La fotografía no terminó de subir o su tamaño no coincide');
@@ -74,7 +76,22 @@ export async function finishEvidenceUpload(userId, projectId, ticket, body = {})
     if (buffer.length !== claim.bytes || !validImage(buffer, claim.mime) || crypto.createHash('sha256').update(buffer).digest('hex') !== claim.sha256) {
       throw new ValidationError('La fotografía no coincide con el archivo seleccionado');
     }
+    photoBuffer = buffer;
     await client.send(new PutObjectCommand({ Bucket: claim.bucket, Key: finalKey, Body: buffer, ContentType: claim.mime, ContentLength: buffer.length, Metadata: { sha256: claim.sha256, bytes: String(buffer.length) } }));
   }
-  return recordProjectEvidence(projectId, userId, { reference: target, sha256: claim.sha256, mime: claim.mime }, body);
+  if (!photoBuffer) {
+    const object = await client.send(new GetObjectCommand({ Bucket: claim.bucket, Key: finalKey, IfMatch: final.ETag }));
+    const chunks = []; let size = 0;
+    for await (const chunk of object.Body) {
+      size += chunk.length;
+      if (size > MAX_BYTES || size > claim.bytes) { object.Body.destroy?.(); throw new ValidationError('La fotografía supera el tamaño autorizado'); }
+      chunks.push(chunk);
+    }
+    photoBuffer = Buffer.concat(chunks);
+    if (photoBuffer.length !== claim.bytes || !validImage(photoBuffer, claim.mime) || crypto.createHash('sha256').update(photoBuffer).digest('hex') !== claim.sha256) {
+      throw new ValidationError('La fotografía almacenada no coincide con el archivo seleccionado');
+    }
+  }
+  const exif = await readExifLocation(photoBuffer);
+  return recordProjectEvidence(projectId, userId, { reference: target, sha256: claim.sha256, mime: claim.mime }, body, exif);
 }

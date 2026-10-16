@@ -32,6 +32,23 @@ export async function uploadPdf(file,{tipo,api,send,hash,onStage=()=>{}}) {
   if(typeof data.reference!=='string'||!data.reference.startsWith('r2://'))throw new Error('No se recibió la confirmación del archivo. Vuelva a intentarlo');
   return data;
 }
+export async function uploadInvoicePhoto(file, api) {
+  if (!file || !['image/png','image/jpeg'].includes(file.type) || file.size < 12 || file.size > 5 * 1024 * 1024 ||
+      !(/\.png$/i.test(file.name) && file.type === 'image/png' || /\.(jpg|jpeg)$/i.test(file.name) && file.type === 'image/jpeg')) {
+    throw new Error('Seleccione una fotografía PNG o JPEG de la factura, hasta 5 MB');
+  }
+  const digest = await crypto.subtle.digest('SHA-256', await file.arrayBuffer());
+  const sha256 = Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2,'0')).join('');
+  const { data: upload } = await api.post('/documentos/preparar', { tipo:'factura', nombre:file.name, tipoMime:file.type, bytes:file.size, sha256 });
+  const target = new URL(upload.uploadUrl);
+  const local = ['localhost','127.0.0.1'].includes(target.hostname) && ['localhost','127.0.0.1'].includes(window.location.hostname);
+  if (!(target.protocol === 'https:' && target.hostname.endsWith('.r2.cloudflarestorage.com')) && !(local && target.protocol === 'http:')) throw new Error('La dirección de carga no es válida');
+  const sent = await fetch(target.href, { method:'PUT', credentials:'omit', headers:{'Content-Type':file.type}, body:file });
+  if (!sent.ok) throw new Error('No se pudo subir la fotografía a R2');
+  const { data } = await api.post('/documentos/confirmar', { ticket:upload.ticket }, { timeout:60000 });
+  if (typeof data.reference !== 'string' || !data.reference.startsWith('r2://')) throw new Error('No se confirmó el archivo');
+  return data.reference;
+}
 export async function openPrivatePdf({openWindow,authorize}) {
   const tab=openWindow();
   if(!tab)throw new Error('Permita abrir una pestaña para consultar el PDF y vuelva a intentar');

@@ -1,0 +1,58 @@
+
+> frontend-svelte@0.0.1 test:unit
+> node --test tests/*.test.js
+
+✔ CSV escapa comillas y evita fórmulas al abrirlo en una hoja de cálculo (0.5785ms)
+✔ PDF normal (0.851083ms)
+✔ MIME vacío (0.091208ms)
+✔ extensión mayúscula (0.061542ms)
+✔ límite exacto (0.064125ms)
+✔ nombre largo permitido (0.059042ms)
+✔ selección rechazada: sobre límite (14.512292ms)
+✔ selección rechazada: vacío (0.07275ms)
+✔ selección rechazada: incompleto (0.056083ms)
+✔ selección rechazada: fracción (0.05825ms)
+✔ selección rechazada: tipo falso (0.544833ms)
+✔ selección rechazada: extensión falsa (0.054ms)
+✔ selección rechazada: nombre excesivo (0.039292ms)
+✔ selección rechazada: nombre ausente (0.036375ms)
+✔ sin selección (0.052083ms)
+✔ tamaño 0 (0.07175ms)
+✔ tamaño 1024 (0.082333ms)
+✔ tamaño 1048576 (0.055667ms)
+✔ tamaño 10485760 (0.049917ms)
+✔ tamaño -1 (0.022041ms)
+✔ tamaño NaN (0.02ms)
+✔ referencia null (0.070708ms)
+✔ referencia  (0.032792ms)
+✔ referencia r2://signed (0.026042ms)
+✔ referencia r2:// (0.039208ms)
+✔ referencia https://example.test/a.pdf (0.031292ms)
+✔ referencia http://example.test (0.027417ms)
+✔ referencia javascript:alert(1) (0.0245ms)
+✔ referencia https://user:pass@example.test (0.033708ms)
+✔ referencia [object Object] (0.022042ms)
+✔ flujo ordenado prepara, sube y confirma (0.63ms)
+✔ interrupción en /documentos/preparar no produce referencia (0.193792ms)
+✔ interrupción en send no produce referencia (0.057916ms)
+✔ interrupción en /documentos/confirmar no produce referencia (0.055083ms)
+✔ archivo inválido no invoca red (0.102083ms)
+✔ MIME vacío se envía como PDF (0.06125ms)
+✔ sin referencia confirmada no declara éxito (0.077791ms)
+✔ ventana bloqueada no solicita URL firmada (0.095625ms)
+✔ abre antes de esperar la API y elimina opener (0.094458ms)
+✔ no abre URL insegura javascript (0.083917ms)
+✔ no abre URL insegura http (0.039958ms)
+✔ no abre URL insegura https (0.0655ms)
+✔ error de autorización cierra pestaña vacía (0.088458ms)
+✔ prioridad visual conserva todos los accesos autorizados sin ampliar permisos (1.579167ms)
+✔ API usa el mismo origen en producción y localhost en desarrollo (0.678708ms)
+✔ consultas mantienen el orden y no exceden tres simultáneas (7.806542ms)
+ℹ tests 46
+ℹ suites 0
+ℹ pass 46
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 95.596

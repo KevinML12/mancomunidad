@@ -23,6 +23,7 @@ function serialize(usuario) {
     nombre: displayName(usuario),
     puesto: usuario.colaborador?.puesto?.nombre || null,
     colaboradorId: usuario.colaboradorId,
+    municipios: usuario.municipios.map(row => row.municipio),
     mustChangePassword: usuario.mustChangePassword,
   };
 }
@@ -34,7 +35,7 @@ router.post('/login', rateLimit(30, undefined, { scope: 'login-ip' }), rateLimit
 
   const usuario = await prisma.usuario.findUnique({
     where: { correo },
-    include: { colaborador: { include: { puesto: true } }, rol: true },
+    include: { colaborador: { include: { puesto: true } }, rol: true, municipios: { select: { municipio: true } } },
   });
   if (!usuario) return res.status(401).json({ error: 'Credenciales inválidas' });
 
@@ -71,7 +72,7 @@ router.get('/me', requireAuth, async (req, res, next) => {
   try {
   const usuario = await prisma.usuario.findUnique({
     where: { id: req.user.sub },
-    include: { colaborador: { include: { puesto: true } }, rol: true },
+    include: { colaborador: { include: { puesto: true } }, rol: true, municipios: { select: { municipio: true } } },
   });
   if (!usuario) return res.status(404).json({ error: 'Usuario no encontrado' });
   res.json(serialize(usuario));

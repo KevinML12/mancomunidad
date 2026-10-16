@@ -1,6 +1,8 @@
 # Diagnóstico de los capítulos de la tesis
 
-**Fecha:** 16 de octubre de 2026. **Rama:** `codex/chapter-diagnostic-2026-10-16`. **Base examinada:** `05618df` de `codex/night-release-readiness-2026-10-15`. Este informe examina el texto del repositorio y la evidencia técnica archivada; no certifica hechos institucionales ni sustituye la aprobación del asesor. Los cambios funcionales sin confirmar en la otra rama quedan fuera de esta fotografía y deberán cotejarse al integrar.
+**Fecha:** 16 de octubre de 2026. **Rama:** `codex/chapter-diagnostic-2026-10-16`. **Base examinada:** `05618df` de `codex/night-release-readiness-2026-10-15`. Este informe examina el texto del repositorio y la evidencia técnica archivada; no certifica hechos institucionales ni sustituye la aprobación del asesor. Los cambios funcionales posteriores de la otra rama quedan fuera de esta fotografía y deberán cotejarse al integrar.
+
+**Actualización de seguimiento:** después de redactar esta fotografía, la rama funcional publicó `a36751d`, con hitos ponderados, GPS EXIF y del dispositivo, municipios autorizados, asignación ARC y constancias financieras. La simulación local pasó 68 resultados unitarios, 41 de integración y 46 del frontend; su matriz y límites están en `evidencias/2026-10-16-simulacion/` de esa rama. No se ha migrado ni publicado esa fase en producción. Las recomendaciones de actualizar IV/V y retirar las cifras no verificadas de VI siguen vigentes.
 
 ## Criterio de lectura y estado general
 

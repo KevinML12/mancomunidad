@@ -19,6 +19,7 @@
     "migrate:production": "prisma db execute --file prisma/production-additions.sql --schema prisma/schema.production.prisma",
     "migrate:password-policy:production": "prisma db execute --file prisma/production-password-policy.sql --schema prisma/schema.production.prisma",
     "migrate:release:production": "prisma db execute --file prisma/production-release-20261015.sql --schema prisma/schema.production.prisma",
+    "migrate:legacy-neon:production": "prisma db execute --file prisma/production-legacy-neon-20261016.sql --schema prisma/schema.production.prisma",
     "migrate:rf:production": "prisma db execute --file prisma/production-rf-20261016.sql --schema prisma/schema.production.prisma",
     "geo:refresh": "node scripts/update-municipal-boundaries.js",
     "migrate:production:bootstrap": "prisma db execute --file prisma/production-bootstrap.sql --schema prisma/schema.production.prisma",

@@ -1,7 +1,7 @@
 import './style.css';
 
 const root = document.querySelector('#app');
-const state = { user: null, overview: null, publicaciones: [], usuarios: [], tab: 'publicaciones', editing: null, message: '', error: '' };
+const state = { user: null, overview: null, publicaciones: [], usuarios: [], roles: [], tab: 'publicaciones', editing: null, message: '', error: '' };
 
 async function api(path, options = {}) {
   const response = await fetch(`/api/v1${path}`, {
@@ -52,7 +52,7 @@ async function bootstrap() {
 
 async function loadTab() {
   if (state.tab === 'publicaciones') state.publicaciones = await api('/admin/publicaciones');
-  if (state.tab === 'usuarios') state.usuarios = await api('/admin/users');
+  if (state.tab === 'usuarios') [state.usuarios, state.roles] = await Promise.all([api('/admin/users'), api('/admin/roles')]);
 }
 
 function showMessage(text, error = false) {
@@ -64,6 +64,7 @@ function showMessage(text, error = false) {
 function renderLogin() {
   const shell = element('main', { className: 'login panel' });
   shell.append(element('p', { className: 'small muted', text: 'MFN DIGITAL' }), element('h1', { text: 'Administración' }), element('p', { className: 'muted', text: 'Acceso para cuentas autorizadas. Este sitio está separado del portal público.' }));
+  if (state.message) shell.append(element('p', { className: 'notice', text: state.message }));
   if (state.error) shell.append(element('p', { className: 'error', text: state.error }));
   const form = element('form');
   const email = field('Correo', 'correo', 'input', { type: 'email', required: '', autocomplete: 'username' });
@@ -74,10 +75,10 @@ function renderLogin() {
     event.preventDefault(); submit.disabled = true;
     try {
       await api('/auth/login', { method: 'POST', body: JSON.stringify({ correo: email.control.value.trim(), contrasena: password.control.value }) });
-      state.error = '';
+      state.error = ''; state.message = '';
       await bootstrap();
     } catch (error) { showMessage(error.message, true); }
-    finally { submit.disabled = false; }
+    finally { password.control.value = ''; submit.disabled = false; }
   });
   shell.append(form);
   return shell;
@@ -176,7 +177,27 @@ function renderPublications() {
 
 function renderUsers() {
   const section = element('section', { className: 'panel' });
-  section.append(element('h2', { text: 'Cuentas y sesiones' }), element('p', { className: 'small muted', text: 'Puede cerrar todas las sesiones de una cuenta. La asignación del permiso administrador se hace fuera de esta aplicación.' }));
+  section.append(element('h2', { text: 'Cuentas y sesiones' }), element('p', { className: 'small muted', text: 'Cree cuentas personales con claves únicas. El permiso de administración se configura fuera de este panel.' }));
+  const form = element('form');
+  const email = field('Correo de la nueva cuenta', 'nuevo-correo', 'input', { type: 'email', required: '', autocomplete: 'off' });
+  const role = field('Rol institucional', 'nuevo-rol', 'select', { required: '' });
+  role.control.append(element('option', { value: '', text: 'Seleccione un rol' }));
+  for (const item of state.roles) role.control.append(element('option', { value: item.id, text: item.nombre }));
+  const password = field('Contraseña inicial, mínimo 12 caracteres', 'nueva-clave', 'input', { type: 'password', required: '', minlength: '12', autocomplete: 'new-password' });
+  const adminPassword = field('Su contraseña para confirmar', 'clave-admin', 'input', { type: 'password', required: '', autocomplete: 'current-password' });
+  const create = element('button', { className: 'button', type: 'submit', text: 'Crear cuenta' });
+  form.append(email.wrapper, role.wrapper, password.wrapper, adminPassword.wrapper, create);
+  form.addEventListener('submit', async event => {
+    event.preventDefault(); create.disabled = true;
+    try {
+      await api('/admin/users', { method: 'POST', body: JSON.stringify({ correo: email.control.value.trim(), rolId: Number(role.control.value), contrasena: password.control.value, contrasenaAdministrador: adminPassword.control.value }) });
+      state.usuarios = await api('/admin/users');
+      state.overview = await api('/admin/overview');
+      showMessage('Cuenta creada. Entregue la contraseña inicial a su titular por un canal privado y pídale que la cambie al ingresar.');
+    } catch (error) { showMessage(error.message, true); }
+    finally { password.control.value = ''; adminPassword.control.value = ''; create.disabled = false; }
+  });
+  section.append(form);
   const table = element('table');
   const head = element('thead');
   head.append(element('tr', {}, ['Cuenta', 'Rol', 'Acción'].map(text => element('th', { text }))));
@@ -185,14 +206,62 @@ function renderUsers() {
     const row = element('tr');
     row.append(element('td', { text: user.correo }), element('td', { text: user.rol.nombre }));
     const action = element('td');
-    if (user.id !== state.user.id) action.append(button('Revocar sesiones', async () => {
+    if (user.id !== state.user.id) {
+      action.append(button('Revocar sesiones', async () => {
       if (!window.confirm(`¿Cerrar todas las sesiones de ${user.correo}?`)) return;
       try { await api(`/admin/users/${user.id}/revoke-sessions`, { method: 'POST' }); showMessage('Sesiones revocadas.'); }
       catch (error) { showMessage(error.message, true); }
-    }, true));
+      }, true));
+      action.append(button('Cambiar clave', () => renderRotationForm(section, user), true));
+    }
     row.append(action); body.append(row);
   }
   table.append(head, body); section.append(element('div', { className: 'list' }, [table]));
+  return section;
+}
+
+function renderRotationForm(section, user) {
+  section.querySelector('.rotation')?.remove();
+  const form = element('form', { className: 'rotation' });
+  form.append(element('h3', { text: `Cambiar clave de ${user.correo}` }));
+  const password = field('Contraseña nueva, mínimo 12 caracteres', 'rotar-clave', 'input', { type: 'password', required: '', minlength: '12', autocomplete: 'new-password' });
+  const adminPassword = field('Su contraseña para confirmar', 'rotar-admin', 'input', { type: 'password', required: '', autocomplete: 'current-password' });
+  const submit = element('button', { className: 'button', type: 'submit', text: 'Cambiar clave y cerrar sesiones' });
+  form.append(password.wrapper, adminPassword.wrapper, submit);
+  form.addEventListener('submit', async event => {
+    event.preventDefault(); submit.disabled = true;
+    try {
+      await api(`/admin/users/${user.id}/password`, { method: 'POST', body: JSON.stringify({ nuevaContrasena: password.control.value, contrasenaAdministrador: adminPassword.control.value }) });
+      showMessage(`Contraseña de ${user.correo} cambiada y sesiones revocadas.`);
+    } catch (error) { showMessage(error.message, true); }
+    finally { password.control.value = ''; adminPassword.control.value = ''; submit.disabled = false; }
+  });
+  section.prepend(form);
+  password.control.focus();
+}
+
+function renderSecurity() {
+  const section = element('section', { className: 'panel' });
+  section.append(element('h2', { text: 'Mi contraseña' }), element('p', { className: 'small muted', text: 'Al cambiarla se cerrarán todas sus sesiones, incluida esta.' }));
+  const form = element('form');
+  const current = field('Contraseña actual', 'clave-actual', 'input', { type: 'password', required: '', autocomplete: 'current-password' });
+  const next = field('Contraseña nueva, mínimo 12 caracteres', 'clave-nueva', 'input', { type: 'password', required: '', minlength: '12', autocomplete: 'new-password' });
+  const confirm = field('Repita la contraseña nueva', 'clave-confirmar', 'input', { type: 'password', required: '', minlength: '12', autocomplete: 'new-password' });
+  const submit = element('button', { className: 'button', type: 'submit', text: 'Cambiar contraseña' });
+  form.append(current.wrapper, next.wrapper, confirm.wrapper, submit);
+  form.addEventListener('submit', async event => {
+    event.preventDefault();
+    if (next.control.value !== confirm.control.value) { showMessage('Las contraseñas nuevas no coinciden.', true); return; }
+    submit.disabled = true;
+    try {
+      await api('/auth/password', { method: 'POST', body: JSON.stringify({ contrasenaActual: current.control.value, nuevaContrasena: next.control.value }) });
+      state.user = null; state.overview = null; state.tab = 'publicaciones';
+      state.message = 'Contraseña cambiada. Ingrese con la nueva clave.'; state.error = '';
+      render();
+    } catch (error) { showMessage(error.message, true); }
+    finally { current.control.value = ''; next.control.value = ''; confirm.control.value = ''; submit.disabled = false; }
+  });
+  section.append(form);
   return section;
 }
 
@@ -214,11 +283,11 @@ function renderDashboard() {
   }
   shell.append(stats);
   const tabs = element('nav', { className: 'tabs', 'aria-label': 'Secciones de administración' });
-  for (const [key, label] of [['publicaciones', 'Publicaciones'], ['usuarios', 'Cuentas']]) tabs.append(button(label, async () => {
+  for (const [key, label] of [['publicaciones', 'Publicaciones'], ['usuarios', 'Cuentas'], ['seguridad', 'Mi contraseña']]) tabs.append(button(label, async () => {
     state.tab = key; state.editing = null; state.error = ''; state.message = '';
     try { await loadTab(); render(); } catch (error) { showMessage(error.message, true); }
   }, state.tab !== key));
-  shell.append(tabs, state.tab === 'publicaciones' ? renderPublications() : renderUsers());
+  shell.append(tabs, state.tab === 'publicaciones' ? renderPublications() : state.tab === 'usuarios' ? renderUsers() : renderSecurity());
   return shell;
 }
 

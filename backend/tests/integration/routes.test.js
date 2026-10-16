@@ -168,6 +168,38 @@ test('Rutas reales con base migrada y aislada', async t => {
    await new Promise(resolve=>mock.server.close(resolve));
   }
  });
+ await t.test('altas y cambios de clave exigen administrador y revocan sesiones',async()=>{
+  const roles=await request('/admin/roles','GET',tokens.GE);
+  assert.equal(roles.status,200);
+  assert.equal((await request('/admin/roles','GET',tokens.EMP)).status,403);
+  const employeeRole=roles.data.find(role=>role.codigo==='EMP');
+  const newPassword='Clave-personal-inicial-2026';
+  const changedPassword='Clave-personal-renovada-2026';
+  const email='persona-nueva@example.test';
+  const details={correo:email,rolId:employeeRole.id,contrasena:newPassword,contrasenaAdministrador:password};
+  assert.equal((await request('/admin/users','POST',tokens.EMP,details)).status,403);
+  assert.equal((await request('/admin/users','POST',tokens.GE,{...details,contrasenaAdministrador:'incorrecta'})).status,403);
+  const created=await request('/admin/users','POST',tokens.GE,details);
+  assert.equal(created.status,201);
+  assert.equal(created.data.correo,email);
+  assert.equal(created.data.hashContrasena,undefined);
+  assert.equal((await request('/auth/login','POST',null,{correo:email,contrasena:newPassword})).status,200);
+  const firstVersion=await prisma.usuario.findUnique({where:{id:created.data.id}});
+  const accountToken=jwt.sign({type:'session',version:firstVersion.sessionVersion,sub:created.data.id},process.env.JWT_SECRET,{expiresIn:'12h'});
+  assert.equal((await request('/auth/password','POST',accountToken,{contrasenaActual:'incorrecta',nuevaContrasena:changedPassword})).status,401);
+  assert.equal((await request('/auth/password','POST',accountToken,{contrasenaActual:newPassword,nuevaContrasena:changedPassword})).status,200);
+  assert.equal((await request('/auth/me','GET',accountToken)).status,401);
+  assert.equal((await request('/auth/login','POST',null,{correo:email,contrasena:newPassword})).status,401);
+  assert.equal((await request('/auth/login','POST',null,{correo:email,contrasena:changedPassword})).status,200);
+  const nextVersion=await prisma.usuario.findUnique({where:{id:created.data.id}});
+  const currentToken=jwt.sign({type:'session',version:nextVersion.sessionVersion,sub:created.data.id},process.env.JWT_SECRET,{expiresIn:'12h'});
+  assert.equal((await request(`/admin/users/${created.data.id}/password`,'POST',tokens.EMP,{nuevaContrasena:newPassword,contrasenaAdministrador:password})).status,403);
+  assert.equal((await request(`/admin/users/${created.data.id}/password`,'POST',tokens.GE,{nuevaContrasena:newPassword,contrasenaAdministrador:'incorrecta'})).status,403);
+  assert.equal((await request(`/admin/users/${created.data.id}/password`,'POST',tokens.GE,{nuevaContrasena:newPassword,contrasenaAdministrador:password})).status,200);
+  assert.equal((await request('/auth/me','GET',currentToken)).status,401);
+  assert.equal((await request('/auth/login','POST',null,{correo:email,contrasena:changedPassword})).status,401);
+  assert.equal((await request('/auth/login','POST',null,{correo:email,contrasena:newPassword})).status,200);
+ });
  await t.test('RF7-RF9 ARC asigna, filtra, detecta vencimiento y deja de alertar al finalizar',async()=>{
   const due=new Date(Date.now()-2*86400000).toISOString();
   const created=await request('/arc','POST',tokens.GE,{titulo:'Evidencia de aceptación ARC',descripcion:'Acción sintética de prueba',municipio:'Santa Eulalia',responsable:'Responsable de prueba',prioridad:'Alta',fechaLimite:due});

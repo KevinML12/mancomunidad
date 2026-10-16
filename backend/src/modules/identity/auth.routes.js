@@ -76,6 +76,25 @@ router.get('/roles', requireAuth, async (req, res, next) => {
   } catch (err) { next(err); }
 });
 
+router.post('/password', requireAuth, rateLimit(5, 15 * 60_000, { scope: 'change-password', keyFrom: req => req.user.sub }), async (req, res, next) => {
+  try {
+    const { contrasenaActual, nuevaContrasena } = req.body || {};
+    if (typeof contrasenaActual !== 'string' || typeof nuevaContrasena !== 'string' || nuevaContrasena.length < 12 || Buffer.byteLength(nuevaContrasena, 'utf8') > 72 || contrasenaActual === nuevaContrasena) {
+      return res.status(400).json({ error: 'Indique la contraseña actual y una nueva de 12 caracteres como mínimo y 72 bytes como máximo' });
+    }
+    const usuario = await prisma.usuario.findUnique({ where: { id: req.user.sub }, select: { hashContrasena: true } });
+    if (!usuario || !(await bcrypt.compare(contrasenaActual, usuario.hashContrasena))) return res.status(401).json({ error: 'Contraseña actual incorrecta' });
+    const hashContrasena = await bcrypt.hash(nuevaContrasena, 10);
+    await prisma.$transaction(async tx => {
+      await tx.usuario.update({ where: { id: req.user.sub }, data: { hashContrasena, sessionVersion: { increment: 1 } } });
+      await tx.recuperacionClave.updateMany({ where: { usuarioId: req.user.sub, usado: false }, data: { usado: true } });
+      await tx.bitacoraAuditoria.create({ data: { usuarioId: req.user.sub, accion: 'cambiar_clave', entidad: 'usuario', entidadId: req.user.sub } });
+    });
+    clearSessionCookie(res);
+    res.json({ ok: true });
+  } catch (error) { next(error); }
+});
+
 
 // Tokens are delivered only to the account owner's configured email channel.
 router.post('/recuperar', rateLimit(10), async (req, res, next) => {

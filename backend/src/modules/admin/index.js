@@ -1,4 +1,5 @@
 import { randomBytes } from 'node:crypto';
+import bcrypt from 'bcryptjs';
 import { Router } from 'express';
 import prisma from '../../lib/prisma.js';
 import { requireAuth, requireAppAdmin } from '../../middleware/auth.js';
@@ -56,6 +57,35 @@ router.get('/users', async (_req, res, next) => {
   } catch (error) { next(error); }
 });
 
+router.get('/roles', async (_req, res, next) => {
+  try {
+    res.json(await prisma.rol.findMany({ select: { id: true, codigo: true, nombre: true }, orderBy: { nombre: 'asc' } }));
+  } catch (error) { next(error); }
+});
+
+router.post('/users', rateLimit(5, 15 * 60_000, { scope: 'admin-create-user', keyFrom: req => req.user.sub }), async (req, res, next) => {
+  try {
+    const { correo, contrasena, rolId, contrasenaAdministrador } = req.body || {};
+    const normalizedEmail = typeof correo === 'string' ? correo.trim().toLowerCase() : '';
+    if (normalizedEmail.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail) ||
+        typeof contrasena !== 'string' || contrasena.length < 12 || Buffer.byteLength(contrasena, 'utf8') > 72 ||
+        !Number.isSafeInteger(rolId) || rolId < 1 || typeof contrasenaAdministrador !== 'string') {
+      throw new ValidationError('Correo, rol y contraseña nueva de 12 a 72 bytes válidos son requeridos');
+    }
+    const actor = await prisma.usuario.findUnique({ where: { id: req.user.sub }, select: { hashContrasena: true } });
+    if (!actor || !(await bcrypt.compare(contrasenaAdministrador, actor.hashContrasena))) return res.status(403).json({ error: 'Contraseña de administración incorrecta' });
+    const rol = await prisma.rol.findUnique({ where: { id: rolId }, select: { id: true } });
+    if (!rol) throw new ValidationError('Rol no encontrado');
+    const hashContrasena = await bcrypt.hash(contrasena, 10);
+    const user = await prisma.$transaction(async tx => {
+      const created = await tx.usuario.create({ data: { correo: normalizedEmail, hashContrasena, rolId }, select: { id: true, correo: true, rol: { select: { nombre: true, codigo: true } } } });
+      await tx.bitacoraAuditoria.create({ data: { usuarioId: req.user.sub, accion: 'crear_usuario', entidad: 'usuario', entidadId: created.id } });
+      return created;
+    });
+    res.status(201).json(user);
+  } catch (error) { next(error); }
+});
+
 router.post('/users/:id/revoke-sessions', async (req, res, next) => {
   try {
     const id = Number(req.params.id);
@@ -63,6 +93,25 @@ router.post('/users/:id/revoke-sessions', async (req, res, next) => {
     const user = await prisma.usuario.update({ where: { id }, data: { sessionVersion: { increment: 1 } }, select: { id: true, correo: true } });
     await logAction(req.user.sub, 'revocar_sesiones', 'usuario', id);
     res.json({ ok: true, usuario: user.correo });
+  } catch (error) { next(error); }
+});
+
+router.post('/users/:id/password', rateLimit(5, 15 * 60_000, { scope: 'admin-reset-password', keyFrom: req => req.user.sub }), async (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+    const { nuevaContrasena, contrasenaAdministrador } = req.body || {};
+    if (!Number.isSafeInteger(id) || id < 1 || id === req.user.sub || typeof nuevaContrasena !== 'string' || nuevaContrasena.length < 12 || Buffer.byteLength(nuevaContrasena, 'utf8') > 72 || typeof contrasenaAdministrador !== 'string') {
+      throw new ValidationError('Seleccione otra cuenta e indique una contraseña nueva de 12 a 72 bytes');
+    }
+    const actor = await prisma.usuario.findUnique({ where: { id: req.user.sub }, select: { hashContrasena: true } });
+    if (!actor || !(await bcrypt.compare(contrasenaAdministrador, actor.hashContrasena))) return res.status(403).json({ error: 'Contraseña de administración incorrecta' });
+    const hashContrasena = await bcrypt.hash(nuevaContrasena, 10);
+    await prisma.$transaction(async tx => {
+      await tx.usuario.update({ where: { id }, data: { hashContrasena, sessionVersion: { increment: 1 } } });
+      await tx.recuperacionClave.updateMany({ where: { usuarioId: id, usado: false }, data: { usado: true } });
+      await tx.bitacoraAuditoria.create({ data: { usuarioId: req.user.sub, accion: 'rotar_clave_usuario', entidad: 'usuario', entidadId: id } });
+    });
+    res.json({ ok: true });
   } catch (error) { next(error); }
 });
 

@@ -72,6 +72,7 @@ model Usuario {
   id             Int                 @id @default(autoincrement())
   correo         String              @unique
   sessionVersion Int @default(0)
+  mustChangePassword Boolean @default(false)
   recuperaciones RecuperacionClave[]
   hashContrasena String
   rolId          Int

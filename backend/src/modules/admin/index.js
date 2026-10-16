@@ -78,7 +78,7 @@ router.post('/users', rateLimit(5, 15 * 60_000, { scope: 'admin-create-user', ke
     if (!rol) throw new ValidationError('Rol no encontrado');
     const hashContrasena = await bcrypt.hash(contrasena, 10);
     const user = await prisma.$transaction(async tx => {
-      const created = await tx.usuario.create({ data: { correo: normalizedEmail, hashContrasena, rolId }, select: { id: true, correo: true, rol: { select: { nombre: true, codigo: true } } } });
+      const created = await tx.usuario.create({ data: { correo: normalizedEmail, hashContrasena, rolId, mustChangePassword: true }, select: { id: true, correo: true, rol: { select: { nombre: true, codigo: true } } } });
       await tx.bitacoraAuditoria.create({ data: { usuarioId: req.user.sub, accion: 'crear_usuario', entidad: 'usuario', entidadId: created.id } });
       return created;
     });
@@ -107,7 +107,7 @@ router.post('/users/:id/password', rateLimit(5, 15 * 60_000, { scope: 'admin-res
     if (!actor || !(await bcrypt.compare(contrasenaAdministrador, actor.hashContrasena))) return res.status(403).json({ error: 'Contraseña de administración incorrecta' });
     const hashContrasena = await bcrypt.hash(nuevaContrasena, 10);
     await prisma.$transaction(async tx => {
-      await tx.usuario.update({ where: { id }, data: { hashContrasena, sessionVersion: { increment: 1 } } });
+      await tx.usuario.update({ where: { id }, data: { hashContrasena, mustChangePassword: true, sessionVersion: { increment: 1 } } });
       await tx.recuperacionClave.updateMany({ where: { usuarioId: id, usado: false }, data: { usado: true } });
       await tx.bitacoraAuditoria.create({ data: { usuarioId: req.user.sub, accion: 'rotar_clave_usuario', entidad: 'usuario', entidadId: id } });
     });

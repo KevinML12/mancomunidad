@@ -23,6 +23,7 @@ function serialize(usuario) {
     nombre: displayName(usuario),
     puesto: usuario.colaborador?.puesto?.nombre || null,
     colaboradorId: usuario.colaboradorId,
+    mustChangePassword: usuario.mustChangePassword,
   };
 }
 
@@ -83,10 +84,10 @@ router.post('/password', requireAuth, rateLimit(5, 15 * 60_000, { scope: 'change
       return res.status(400).json({ error: 'Indique la contraseña actual y una nueva de 12 caracteres como mínimo y 72 bytes como máximo' });
     }
     const usuario = await prisma.usuario.findUnique({ where: { id: req.user.sub }, select: { hashContrasena: true } });
-    if (!usuario || !(await bcrypt.compare(contrasenaActual, usuario.hashContrasena))) return res.status(401).json({ error: 'Contraseña actual incorrecta' });
+    if (!usuario || !(await bcrypt.compare(contrasenaActual, usuario.hashContrasena))) return res.status(400).json({ error: 'Contraseña actual incorrecta' });
     const hashContrasena = await bcrypt.hash(nuevaContrasena, 10);
     await prisma.$transaction(async tx => {
-      await tx.usuario.update({ where: { id: req.user.sub }, data: { hashContrasena, sessionVersion: { increment: 1 } } });
+      await tx.usuario.update({ where: { id: req.user.sub }, data: { hashContrasena, mustChangePassword: false, sessionVersion: { increment: 1 } } });
       await tx.recuperacionClave.updateMany({ where: { usuarioId: req.user.sub, usado: false }, data: { usado: true } });
       await tx.bitacoraAuditoria.create({ data: { usuarioId: req.user.sub, accion: 'cambiar_clave', entidad: 'usuario', entidadId: req.user.sub } });
     });

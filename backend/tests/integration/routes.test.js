@@ -43,6 +43,7 @@ for (const code of Object.keys(users)) {
  const r=await request('/auth/login','POST',null,{correo:users[code].correo,contrasena:password});
  assert.equal(r.status,200);
  assert.equal(r.data.token,undefined);
+ assert.equal(r.data.user.mustChangePassword,false);
  assert.match(r.headers.get('set-cookie')||'',/mfn_session=.*HttpOnly.*SameSite=Lax/i);
  tokens[code]=jwt.sign({type:'session',version:users[code].sessionVersion,sub:users[code].id},process.env.JWT_SECRET,{expiresIn:'12h'});
 }
@@ -183,14 +184,21 @@ test('Rutas reales con base migrada y aislada', async t => {
   assert.equal(created.status,201);
   assert.equal(created.data.correo,email);
   assert.equal(created.data.hashContrasena,undefined);
-  assert.equal((await request('/auth/login','POST',null,{correo:email,contrasena:newPassword})).status,200);
+  const initialLogin=await request('/auth/login','POST',null,{correo:email,contrasena:newPassword});
+  assert.equal(initialLogin.status,200);
+  assert.equal(initialLogin.data.user.mustChangePassword,true);
   const firstVersion=await prisma.usuario.findUnique({where:{id:created.data.id}});
   const accountToken=jwt.sign({type:'session',version:firstVersion.sessionVersion,sub:created.data.id},process.env.JWT_SECRET,{expiresIn:'12h'});
-  assert.equal((await request('/auth/password','POST',accountToken,{contrasenaActual:'incorrecta',nuevaContrasena:changedPassword})).status,401);
+  assert.equal((await request('/auth/me','GET',accountToken)).data.mustChangePassword,true);
+  assert.equal((await request('/dashboard','GET',accountToken)).data.code,'PASSWORD_CHANGE_REQUIRED');
+  assert.equal((await request('/admin/overview','GET',accountToken)).data.code,'PASSWORD_CHANGE_REQUIRED');
+  assert.equal((await request('/auth/password','POST',accountToken,{contrasenaActual:'incorrecta',nuevaContrasena:changedPassword})).status,400);
   assert.equal((await request('/auth/password','POST',accountToken,{contrasenaActual:newPassword,nuevaContrasena:changedPassword})).status,200);
   assert.equal((await request('/auth/me','GET',accountToken)).status,401);
   assert.equal((await request('/auth/login','POST',null,{correo:email,contrasena:newPassword})).status,401);
-  assert.equal((await request('/auth/login','POST',null,{correo:email,contrasena:changedPassword})).status,200);
+  const changedLogin=await request('/auth/login','POST',null,{correo:email,contrasena:changedPassword});
+  assert.equal(changedLogin.status,200);
+  assert.equal(changedLogin.data.user.mustChangePassword,false);
   const nextVersion=await prisma.usuario.findUnique({where:{id:created.data.id}});
   const currentToken=jwt.sign({type:'session',version:nextVersion.sessionVersion,sub:created.data.id},process.env.JWT_SECRET,{expiresIn:'12h'});
   assert.equal((await request(`/admin/users/${created.data.id}/password`,'POST',tokens.EMP,{nuevaContrasena:newPassword,contrasenaAdministrador:password})).status,403);
@@ -198,7 +206,9 @@ test('Rutas reales con base migrada y aislada', async t => {
   assert.equal((await request(`/admin/users/${created.data.id}/password`,'POST',tokens.GE,{nuevaContrasena:newPassword,contrasenaAdministrador:password})).status,200);
   assert.equal((await request('/auth/me','GET',currentToken)).status,401);
   assert.equal((await request('/auth/login','POST',null,{correo:email,contrasena:changedPassword})).status,401);
-  assert.equal((await request('/auth/login','POST',null,{correo:email,contrasena:newPassword})).status,200);
+  const resetLogin=await request('/auth/login','POST',null,{correo:email,contrasena:newPassword});
+  assert.equal(resetLogin.status,200);
+  assert.equal(resetLogin.data.user.mustChangePassword,true);
  });
  await t.test('RF7-RF9 ARC asigna, filtra, detecta vencimiento y deja de alertar al finalizar',async()=>{
   const due=new Date(Date.now()-2*86400000).toISOString();

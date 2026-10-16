@@ -21,6 +21,10 @@
   $effect(() => {
     if (!auth.ready) return;
     if (auth.isAuthenticated) {
+      if (auth.user.mustChangePassword) {
+        goto('/cambiar-clave');
+        return;
+      }
       const segmentos = $page.url.pathname.split('/');
       const modulo = segmentos[1] === 'gestion-personal' ? segmentos[2] : (segmentos[1] || 'dashboard');
       const permission = modulo === 'personal' ? 'estructura' : modulo === 'inicio' ? 'dashboard' : modulo;

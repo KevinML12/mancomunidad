@@ -17,6 +17,7 @@
     "test:integration": "prisma generate --schema prisma/schema.prisma && node --test tests/integration/*.test.js",
     "permissions:update": "node prisma/update-permissions.js",
     "migrate:production": "prisma db execute --file prisma/production-additions.sql --schema prisma/schema.production.prisma",
+    "migrate:password-policy:production": "prisma db execute --file prisma/production-password-policy.sql --schema prisma/schema.production.prisma",
     "migrate:production:bootstrap": "prisma db execute --file prisma/production-bootstrap.sql --schema prisma/schema.production.prisma",
     "test:unit": "node --test tests/unit/*.test.js"
   },

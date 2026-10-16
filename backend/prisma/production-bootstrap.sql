@@ -55,6 +55,7 @@ CREATE TABLE "Usuario" (
     "id" SERIAL NOT NULL,
     "correo" TEXT NOT NULL,
     "sessionVersion" INTEGER NOT NULL DEFAULT 0,
+    "mustChangePassword" BOOLEAN NOT NULL DEFAULT false,
     "hashContrasena" TEXT NOT NULL,
     "rolId" INTEGER NOT NULL,
     "colaboradorId" INTEGER,

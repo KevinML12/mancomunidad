@@ -29,9 +29,14 @@
 
     loading = true;
     try {
-      await auth.login(correo.trim(), contrasena);
-      toast.success('Sesión iniciada correctamente');
-      goto('/inicio');
+      const user = await auth.login(correo.trim(), contrasena);
+      contrasena = '';
+      if (user.mustChangePassword) {
+        goto('/cambiar-clave');
+      } else {
+        toast.success('Sesión iniciada correctamente');
+        goto('/inicio');
+      }
     } catch (err) {
       console.error('Error de autenticación:', err);
       const msg = err.response?.data?.error || err.message || 'Error de conexión con el servidor';

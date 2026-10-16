@@ -36,7 +36,7 @@ export async function completePasswordReset(token, nuevaContrasena) {
     if (consumed.count !== 1) return false;
     await tx.usuario.update({
       where: { id: record.usuarioId },
-      data: { hashContrasena: passwordHash, sessionVersion: { increment: 1 } },
+      data: { hashContrasena: passwordHash, mustChangePassword: false, sessionVersion: { increment: 1 } },
     });
     await tx.recuperacionClave.updateMany({ where: { usuarioId: record.usuarioId, usado: false }, data: { usado: true } });
     await tx.bitacoraAuditoria.create({

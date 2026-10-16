@@ -40,6 +40,12 @@ function field(label, name, tag = 'input', attributes = {}) {
 async function bootstrap() {
   try {
     state.user = await api('/auth/me');
+    if (state.user.mustChangePassword) {
+      state.overview = null;
+      state.error = '';
+      render();
+      return;
+    }
     state.overview = await api('/admin/overview');
     await loadTab();
   } catch (error) {
@@ -89,6 +95,17 @@ function renderDenied() {
   shell.append(element('h1', { text: 'Acceso restringido' }), element('p', { text: state.error || 'Esta cuenta no tiene permiso de administración.' }));
   shell.append(button('Cerrar sesión', async () => {
     try { await api('/auth/logout', { method: 'POST' }); } catch { /* La cookie puede haber expirado. */ }
+    state.user = null; state.error = ''; render();
+  }, true));
+  return shell;
+}
+
+function renderRequiredPasswordChange() {
+  const shell = element('main', { className: 'login' });
+  shell.append(element('p', { className: 'small muted', text: 'MFN DIGITAL · ADMINISTRACIÓN' }), element('h1', { text: 'Cambie su contraseña inicial' }), element('p', { className: 'muted', text: 'Para continuar, establezca una contraseña personal. Se cerrará esta sesión al guardarla.' }));
+  if (state.error) shell.append(element('p', { className: 'error', text: state.error }));
+  shell.append(renderSecurity(), button('Cerrar sesión', async () => {
+    try { await api('/auth/logout', { method: 'POST' }); } catch { /* La sesión puede haber expirado. */ }
     state.user = null; state.error = ''; render();
   }, true));
   return shell;
@@ -193,7 +210,7 @@ function renderUsers() {
       await api('/admin/users', { method: 'POST', body: JSON.stringify({ correo: email.control.value.trim(), rolId: Number(role.control.value), contrasena: password.control.value, contrasenaAdministrador: adminPassword.control.value }) });
       state.usuarios = await api('/admin/users');
       state.overview = await api('/admin/overview');
-      showMessage('Cuenta creada. Entregue la contraseña inicial a su titular por un canal privado y pídale que la cambie al ingresar.');
+      showMessage('Cuenta creada. Entregue la contraseña inicial a su titular por un canal privado. Tendrá que cambiarla al ingresar.');
     } catch (error) { showMessage(error.message, true); }
     finally { password.control.value = ''; adminPassword.control.value = ''; create.disabled = false; }
   });
@@ -232,7 +249,7 @@ function renderRotationForm(section, user) {
     event.preventDefault(); submit.disabled = true;
     try {
       await api(`/admin/users/${user.id}/password`, { method: 'POST', body: JSON.stringify({ nuevaContrasena: password.control.value, contrasenaAdministrador: adminPassword.control.value }) });
-      showMessage(`Contraseña de ${user.correo} cambiada y sesiones revocadas.`);
+      showMessage(`Contraseña de ${user.correo} cambiada y sesiones revocadas. La persona deberá establecer otra al ingresar.`);
     } catch (error) { showMessage(error.message, true); }
     finally { password.control.value = ''; adminPassword.control.value = ''; submit.disabled = false; }
   });
@@ -292,7 +309,7 @@ function renderDashboard() {
 }
 
 function render() {
-  root.replaceChildren(state.overview ? renderDashboard() : state.user ? renderDenied() : renderLogin());
+  root.replaceChildren(state.user?.mustChangePassword ? renderRequiredPasswordChange() : state.overview ? renderDashboard() : state.user ? renderDenied() : renderLogin());
 }
 
 bootstrap();

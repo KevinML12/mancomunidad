@@ -6,6 +6,7 @@ import { requireAuth, requirePermission } from '../../middleware/auth.js';
 import { canAccessMunicipio, municipalityWhere } from '../../lib/municipality-scope.js';
 import crypto from 'node:crypto';
 import { ValidationError } from '../../services/errors.js';
+import { pageWindow, sendPage } from '../../lib/pagination.js';
 
 const router = Router();
 router.use(requireAuth, requirePermission('arc'));
@@ -15,7 +16,7 @@ async function assigneeFromId(value, municipio) {
   if (!Number.isSafeInteger(id) || id < 1) throw new ValidationError('Seleccione una cuenta responsable');
   const user = await prisma.usuario.findUnique({ where: { id }, include: { rol: true, municipios: { select: { municipio: true } }, colaborador: { select: { nombre: true } } } });
   if (!user || !user.rol.permisos?.modulos?.includes('arc') ||
-      (municipio !== 'Regional' && !canAccessMunicipio({ rol: user.rol.codigo, municipios: user.municipios.map(row => row.municipio) }, municipio))) {
+      (municipio !== 'Regional' && !canAccessMunicipio({ permisos: user.rol.permisos, municipios: user.municipios.map(row => row.municipio) }, municipio))) {
     throw new ValidationError('La cuenta responsable no tiene acceso al municipio o al módulo ARC');
   }
   return { responsableId: id, responsable: user.colaborador?.nombre || user.correo };
@@ -29,7 +30,7 @@ router.get('/asignables', async (req, res, next) => {
     const rows = await prisma.usuario.findMany({ select: { id: true, correo: true, rol: { select: { codigo: true, permisos: true } },
       municipios: { select: { municipio: true } }, colaborador: { select: { nombre: true } } }, orderBy: { correo: 'asc' } });
     res.json(rows.filter(row => row.rol.permisos?.modulos?.includes('arc') &&
-      (municipio === 'Regional' || canAccessMunicipio({ rol: row.rol.codigo, municipios: row.municipios.map(item => item.municipio) }, municipio)))
+      (municipio === 'Regional' || canAccessMunicipio({ permisos: row.rol.permisos, municipios: row.municipios.map(item => item.municipio) }, municipio)))
       .map(row => ({ id: row.id, correo: row.correo, nombre: row.colaborador?.nombre || row.correo })));
   } catch (err) { next(err); }
 });
@@ -37,6 +38,7 @@ router.get('/asignables', async (req, res, next) => {
 // GET /api/v1/arc - Listar tareas del Plan de Mejoras ARC
 router.get('/', async (req, res, next) => {
   try {
+    const page = pageWindow(req.query);
     const { estado, dimension, prioridad, municipio, search } = req.query;
     const where = municipalityWhere(req.user, { includeRegional: true });
 
@@ -58,8 +60,8 @@ router.get('/', async (req, res, next) => {
     const tareas = await prisma.tareaARC.findMany({
       where,
       orderBy: [
-        { fechaLimite: 'asc' }
-      ]
+        { fechaLimite: 'asc' }, { id: 'asc' }
+      ], skip: page.skip, take: page.take,
     });
 
     const ahora = new Date();
@@ -76,7 +78,7 @@ router.get('/', async (req, res, next) => {
       };
     });
 
-    res.json(enriquecidas);
+    sendPage(res, enriquecidas, page);
   } catch (err) {
     next(err);
   }
@@ -85,15 +87,18 @@ router.get('/', async (req, res, next) => {
 // GET /api/v1/arc/metricas - Métricas ejecutivas y alertas
 router.get('/metricas', async (req, res, next) => {
   try {
-    const tareas = await prisma.tareaARC.findMany({ where: municipalityWhere(req.user, { includeRegional: true }) });
+    const where = municipalityWhere(req.user, { includeRegional: true });
     const ahora = new Date();
-
-    const total = tareas.length;
-    const pendientes = tareas.filter(t => t.estado === 'Pendiente').length;
-    const enProceso = tareas.filter(t => t.estado === 'En Proceso').length;
-    const enRevision = tareas.filter(t => t.estado === 'En Revisión').length;
-    const finalizadas = tareas.filter(t => t.estado === 'Finalizado').length;
-    const vencidas = tareas.filter(t => t.estado !== 'Finalizado' && new Date(t.fechaLimite) < ahora).length;
+    const [groups, vencidas] = await Promise.all([
+      prisma.tareaARC.groupBy({ by: ['estado'], where, _count: { _all: true } }),
+      prisma.tareaARC.count({ where: { ...where, estado: { not: 'Finalizado' }, fechaLimite: { lt: ahora } } }),
+    ]);
+    const counts = Object.fromEntries(groups.map(group => [group.estado, group._count._all]));
+    const total = groups.reduce((sum, group) => sum + group._count._all, 0);
+    const pendientes = counts.Pendiente || 0;
+    const enProceso = counts['En Proceso'] || 0;
+    const enRevision = counts['En Revisión'] || 0;
+    const finalizadas = counts.Finalizado || 0;
 
     // Cumplimiento global en %
     const porcentajeCumplimiento = total > 0 ? Math.round((finalizadas / total) * 100) : 0;
@@ -153,7 +158,7 @@ router.put('/:id', requirePermission('arc', 'editar'), async (req, res, next) =>
     const id = Number(req.params.id);
     if (!Number.isSafeInteger(id) || id < 1) return res.status(404).json({ error: 'Tarea no encontrada' });
     const existing = await prisma.tareaARC.findUnique({ where: { id }, select: { municipio: true, responsableId: true } });
-    if (!existing || !(existing.municipio === 'Regional' ? ['GE', 'JD'].includes(req.user.rol) || existing.responsableId === req.user.sub : canAccessMunicipio(req.user, existing.municipio))) return res.status(404).json({ error: 'Tarea no encontrada' });
+    if (!existing || !(existing.municipio === 'Regional' ? req.user.permisos?.alcance?.regionalARC || existing.responsableId === req.user.sub : canAccessMunicipio(req.user, existing.municipio))) return res.status(404).json({ error: 'Tarea no encontrada' });
     const { estado, titulo, descripcion, dimension, prioridad, responsable, responsableId, fechaLimite } = req.body;
 
     const data = {};
@@ -190,7 +195,7 @@ router.delete('/:id', requirePermission('arc', 'editar'), async (req, res, next)
     const id = Number(req.params.id);
     if (!Number.isSafeInteger(id) || id < 1) return res.status(404).json({ error: 'Tarea no encontrada' });
     const existing = await prisma.tareaARC.findUnique({ where: { id }, select: { municipio: true } });
-    if (!existing || !(existing.municipio === 'Regional' ? ['GE', 'JD'].includes(req.user.rol) : canAccessMunicipio(req.user, existing.municipio))) return res.status(404).json({ error: 'Tarea no encontrada' });
+    if (!existing || !(existing.municipio === 'Regional' ? req.user.permisos?.alcance?.regionalARC : canAccessMunicipio(req.user, existing.municipio))) return res.status(404).json({ error: 'Tarea no encontrada' });
     await prisma.tareaARC.delete({
       where: { id }
     });

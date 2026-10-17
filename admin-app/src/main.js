@@ -1,7 +1,7 @@
 import './style.css';
 
 const root = document.querySelector('#app');
-const state = { user: null, overview: null, publicaciones: [], usuarios: [], roles: [], municipios: [], tab: 'publicaciones', editing: null, message: '', error: '' };
+const state = { user: null, overview: null, publicaciones: [], usuarios: [], roles: [], modules: [], municipios: [], tab: 'publicaciones', selectedRoleId: null, editing: null, message: '', error: '' };
 
 async function api(path, options = {}) {
   const response = await fetch(`/api/v1${path}`, {
@@ -15,6 +15,22 @@ async function api(path, options = {}) {
     throw error;
   }
   return data;
+}
+
+async function apiPaged(path, onPage) {
+  const rows = [];
+  let page = 1;
+  while (page) {
+    const response = await fetch(`/api/v1${path}${path.includes('?') ? '&' : '?'}page=${page}&limit=50`, { credentials: 'same-origin', cache: 'no-store' });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data.error || `Error ${response.status}`);
+    if (!Array.isArray(data)) throw new Error('La lista recibida no es válida');
+    rows.push(...data);
+    onPage?.([...rows]);
+    const next = Number(response.headers.get('X-Next-Page'));
+    page = Number.isSafeInteger(next) && next > page ? next : 0;
+  }
+  return rows;
 }
 
 function element(tag, { className, text, ...attributes } = {}, children = []) {
@@ -57,8 +73,9 @@ async function bootstrap() {
 }
 
 async function loadTab() {
-  if (state.tab === 'publicaciones') state.publicaciones = await api('/admin/publicaciones');
-  if (state.tab === 'usuarios') [state.usuarios, state.roles, state.municipios] = await Promise.all([api('/admin/users'), api('/admin/roles'), api('/admin/municipalities')]);
+  if (state.tab === 'publicaciones') state.publicaciones = await apiPaged('/admin/publicaciones', rows => { state.publicaciones = rows; render(); });
+  if (state.tab === 'usuarios') [state.usuarios, state.roles, state.municipios] = await Promise.all([apiPaged('/admin/users', rows => { state.usuarios = rows; render(); }), api('/admin/roles'), api('/admin/municipalities')]);
+  if (state.tab === 'roles') [state.roles, state.modules] = await Promise.all([api('/admin/roles'), api('/admin/modules')]);
 }
 
 function showMessage(text, error = false) {
@@ -149,7 +166,7 @@ function renderPublicationForm() {
         method: state.editing ? 'PATCH' : 'POST', body: JSON.stringify(payload),
       });
       state.editing = null;
-      state.publicaciones = await api('/admin/publicaciones');
+      state.publicaciones = await apiPaged('/admin/publicaciones');
       state.overview = await api('/admin/overview');
       showMessage('Publicación guardada. Revise su contenido antes de hacerla visible.');
     } catch (error) { showMessage(error.message, true); }
@@ -177,7 +194,7 @@ function renderPublications() {
       if (!window.confirm(publication.visibilidad ? '¿Retirar esta publicación del portal público?' : '¿Publicar este contenido en el portal público?')) return;
       try {
         await api(`/admin/publicaciones/${publication.id}`, { method: 'PATCH', body: JSON.stringify({ visibilidad: !publication.visibilidad }) });
-        state.publicaciones = await api('/admin/publicaciones');
+        state.publicaciones = await apiPaged('/admin/publicaciones');
         state.overview = await api('/admin/overview');
         showMessage('Visibilidad actualizada.');
       } catch (error) { showMessage(error.message, true); }
@@ -210,7 +227,7 @@ function renderUsers() {
     event.preventDefault(); create.disabled = true;
     try {
       await api('/admin/users', { method: 'POST', body: JSON.stringify({ correo: email.control.value.trim(), rolId: Number(role.control.value), municipios: [...municipios.control.selectedOptions].map(option => option.value), contrasena: password.control.value, contrasenaAdministrador: adminPassword.control.value }) });
-      state.usuarios = await api('/admin/users');
+      state.usuarios = await apiPaged('/admin/users');
       state.overview = await api('/admin/overview');
       showMessage('Cuenta creada. Entregue la contraseña inicial a su titular por un canal privado. Tendrá que cambiarla al ingresar.');
     } catch (error) { showMessage(error.message, true); }
@@ -241,6 +258,92 @@ function renderUsers() {
   return section;
 }
 
+function renderRoles() {
+  const section = element('section', { className: 'panel' });
+  section.append(element('h2', { text: 'Acceso por rol' }), element('p', { className: 'small muted', text: 'Defina los módulos visibles, las acciones permitidas y el orden de las áreas principales. Al guardar se cierran las sesiones de ese rol.' }));
+  const selector = field('Rol institucional', 'rol-permisos', 'select');
+  for (const role of state.roles) selector.control.append(element('option', { value: role.id, text: role.nombre }));
+  state.selectedRoleId ??= state.roles[0]?.id;
+  selector.control.value = String(state.selectedRoleId || '');
+  selector.control.addEventListener('change', () => { state.selectedRoleId = Number(selector.control.value); render(); });
+  section.append(selector.wrapper);
+  const role = state.roles.find(item => item.id === state.selectedRoleId);
+  if (!role) return section;
+  const current = role.permisos || {};
+  const form = element('form');
+  const matrix = element('div', { className: 'permission-list' });
+  const controls = new Map();
+  for (const module of state.modules.filter(item => item.key !== 'dashboard')) {
+    const row = element('div', { className: 'permission-row' });
+    row.append(element('span', { text: module.label }));
+    const checks = {};
+    for (const [key, label] of [['modulos', 'Ver'], ['editar', 'Editar'], ['aprobar', 'Aprobar']]) {
+      const input = element('input', { type: 'checkbox', 'aria-label': `${label} ${module.label}` });
+      input.checked = current[key]?.includes(module.key) || false;
+      const wrapper = element('label', { className: 'permission-check' }, [input, element('span', { text: label })]);
+      row.append(wrapper); checks[key] = input;
+      if (module.key === 'transparencia' && key !== 'modulos') input.disabled = true;
+      if (key === 'modulos') input.addEventListener('change', () => {
+        if (!input.checked) { checks.editar.checked = false; checks.aprobar.checked = false; }
+        checks.editar.disabled = !input.checked || module.key === 'transparencia'; checks.aprobar.disabled = !input.checked || module.key === 'transparencia';
+      });
+    }
+    checks.editar.disabled = !checks.modulos.checked || module.key === 'transparencia';
+    checks.aprobar.disabled = !checks.modulos.checked || module.key === 'transparencia';
+    controls.set(module.key, checks);
+    matrix.append(row);
+  }
+  form.append(matrix, element('h3', { text: 'Áreas principales' }), element('p', { className: 'small muted', text: 'Hasta cuatro, en el orden en que aparecerán en el portal.' }));
+  const priorities = [];
+  for (let i = 0; i < 4; i++) {
+    const priority = field(`Área ${i + 1}`, `prioridad-${i + 1}`, 'select');
+    priority.control.append(element('option', { value: '', text: 'Ninguna' }));
+    for (const module of state.modules.filter(item => item.key !== 'dashboard')) priority.control.append(element('option', { value: module.key, text: module.label }));
+    priority.control.value = current.prioritarios?.[i] || '';
+    priorities.push(priority.control); form.append(priority.wrapper);
+  }
+  form.append(element('h3', { text: 'Alcance de los datos' }), element('p', { className: 'small muted', text: 'Estos ajustes controlan qué municipios, expedientes y operaciones regionales puede consultar el rol.' }));
+  const scopeFields = [];
+  for (const [key, label, choices] of [
+    ['territorio', 'Territorio', [['asignado', 'Municipios asignados'], ['global', 'Todos los municipios']]],
+    ['personal', 'Expedientes de personal', [['propio', 'Solo el propio'], ['equipo', 'Equipo a cargo'], ['global', 'Todos']]],
+    ['tablero', 'Tipo de resumen', [['personal', 'Personal'], ['equipo', 'Equipo'], ['operativo', 'Operativo'], ['institucional', 'Institucional']]],
+  ]) {
+    const input = field(label, `alcance-${key}`, 'select');
+    for (const [value, text] of choices) input.control.append(element('option', { value, text }));
+    input.control.value = current.alcance?.[key] || choices[0][0];
+    scopeFields.push([key, input.control]); form.append(input.wrapper);
+  }
+  const regionalFields = [];
+  for (const [key, label] of [['regionalFinanzas', 'Registrar movimientos financieros regionales'], ['regionalARC', 'Gestionar tareas ARC regionales']]) {
+    const input = element('input', { type: 'checkbox' });
+    input.checked = current.alcance?.[key] || false;
+    regionalFields.push([key, input]);
+    form.append(element('label', { className: 'field-inline' }, [input, element('span', { text: label })]));
+  }
+  const password = field('Su contraseña para confirmar', 'permisos-admin', 'input', { type: 'password', required: '', autocomplete: 'current-password' });
+  const submit = element('button', { className: 'button', type: 'submit', text: 'Guardar permisos y cerrar sesiones' });
+  form.append(password.wrapper, submit);
+  form.addEventListener('submit', async event => {
+    event.preventDefault(); submit.disabled = true;
+    try {
+      const alcance = Object.fromEntries([...scopeFields.map(([key, input]) => [key, input.value]), ...regionalFields.map(([key, input]) => [key, input.checked])]);
+      const permisos = { modulos: ['dashboard'], editar: [], aprobar: [], prioritarios: priorities.map(input => input.value).filter(Boolean), alcance };
+      for (const [key, checks] of controls) for (const name of ['modulos', 'editar', 'aprobar']) if (checks[name].checked) permisos[name].push(key);
+      if (new Set(permisos.prioritarios).size !== permisos.prioritarios.length || permisos.prioritarios.some(key => !permisos.modulos.includes(key))) {
+        throw new Error('Las áreas principales deben ser visibles y no repetirse.');
+      }
+      const saved = await api(`/admin/roles/${role.id}/permissions`, { method: 'PATCH', body: JSON.stringify({ permisos, contrasenaAdministrador: password.control.value }) });
+      if (saved.requiresReauth) { state.user = null; state.overview = null; state.message = 'Permisos guardados. Ingrese de nuevo para continuar.'; state.error = ''; render(); return; }
+      state.roles = await api('/admin/roles');
+      showMessage(`Permisos de ${role.nombre} actualizados. Las sesiones de ese rol quedaron cerradas.`);
+    } catch (error) { showMessage(error.message, true); }
+    finally { password.control.value = ''; submit.disabled = false; }
+  });
+  section.append(form);
+  return section;
+}
+
 function renderMunicipalityForm(section, user) {
   section.querySelector('.municipality-change')?.remove();
   const form = element('form', { className: 'municipality-change' });
@@ -259,7 +362,7 @@ function renderMunicipalityForm(section, user) {
     event.preventDefault(); submit.disabled = true;
     try {
       await api(`/admin/users/${user.id}/municipalities`, { method: 'PATCH', body: JSON.stringify({ municipios: [...municipios.control.selectedOptions].map(option => option.value), contrasenaAdministrador: adminPassword.control.value }) });
-      state.usuarios = await api('/admin/users');
+      state.usuarios = await apiPaged('/admin/users');
       showMessage(`Municipios de ${user.correo} actualizados. Sus sesiones anteriores quedaron revocadas.`);
     } catch (error) { showMessage(error.message, true); }
     finally { adminPassword.control.value = ''; submit.disabled = false; }
@@ -282,7 +385,7 @@ function renderRoleForm(section, user) {
     event.preventDefault(); submit.disabled = true;
     try {
       await api(`/admin/users/${user.id}/role`, { method: 'PATCH', body: JSON.stringify({ rolId: Number(role.control.value), contrasenaAdministrador: adminPassword.control.value }) });
-      state.usuarios = await api('/admin/users');
+      state.usuarios = await apiPaged('/admin/users');
       showMessage(`Rol de ${user.correo} actualizado. Sus sesiones anteriores quedaron revocadas.`);
     } catch (error) { showMessage(error.message, true); }
     finally { adminPassword.control.value = ''; submit.disabled = false; }
@@ -354,11 +457,11 @@ function renderDashboard() {
   }
   shell.append(stats);
   const tabs = element('nav', { className: 'tabs', 'aria-label': 'Secciones de administración' });
-  for (const [key, label] of [['publicaciones', 'Publicaciones'], ['usuarios', 'Cuentas'], ['seguridad', 'Mi contraseña']]) tabs.append(button(label, async () => {
+  for (const [key, label] of [['publicaciones', 'Publicaciones'], ['usuarios', 'Cuentas'], ['roles', 'Roles y módulos'], ['seguridad', 'Mi contraseña']]) tabs.append(button(label, async () => {
     state.tab = key; state.editing = null; state.error = ''; state.message = '';
     try { await loadTab(); render(); } catch (error) { showMessage(error.message, true); }
   }, state.tab !== key));
-  shell.append(tabs, state.tab === 'publicaciones' ? renderPublications() : state.tab === 'usuarios' ? renderUsers() : renderSecurity());
+  shell.append(tabs, state.tab === 'publicaciones' ? renderPublications() : state.tab === 'usuarios' ? renderUsers() : state.tab === 'roles' ? renderRoles() : renderSecurity());
   return shell;
 }
 

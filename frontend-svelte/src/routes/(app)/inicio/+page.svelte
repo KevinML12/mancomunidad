@@ -41,85 +41,80 @@
   let failedSources = $state([]);
   let roleDashboard = $state(null);
   let requestSequence = 0;
+  let sourceReady = $state({});
+  let inFlight = false;
 
   const fetchDashboardData = async () => {
+    if (inFlight || (typeof navigator !== 'undefined' && !navigator.onLine)) return;
+    inFlight = true;
     const sequence = ++requestSequence;
-    loading = true;
+    if (!Object.keys(sourceReady).length) loading = true;
     try {
       const getIfAllowed = (module, path) => esPrincipal(module)
         ? apiClient.get(path)
         : Promise.resolve({ data: null });
-      const [resProyectos, resArc, resBalance, resActas, resConvenios, resEstadisticas, resRole] = await settledLimited([
-        () => getIfAllowed('proyectos', '/proyectos'),
-        () => getIfAllowed('arc', '/arc'),
+      const sources = ['proyectos', 'arc', 'financiero', 'gobernanza', 'convenios', 'estadisticas', 'mi panel'];
+      await settledLimited([
+        () => getIfAllowed('proyectos', '/proyectos/metricas'),
+        () => getIfAllowed('arc', '/arc/metricas'),
         () => getIfAllowed('financiero', '/financiero/balance'),
-        () => getIfAllowed('gobernanza', '/gobernanza/actas'),
-        () => getIfAllowed('convenios', '/convenios'),
+        () => getIfAllowed('gobernanza', '/gobernanza/metricas'),
+        () => getIfAllowed('convenios', '/convenios/metricas'),
         () => getIfAllowed('estadisticas', '/estadisticas/consolidado'),
-        () => ['EMP', 'JI', 'DIRPROY', 'RRHH'].includes(auth.role)
+        () => auth.permisos?.alcance?.tablero !== 'institucional'
           ? apiClient.get('/dashboard')
           : Promise.resolve({ data: null })
-      ]);
-      if (sequence !== requestSequence) return;
-      if (resRole.status === 'fulfilled') roleDashboard = resRole.value.data;
-      failedSources = [
-        ['proyectos', resProyectos], ['ARC', resArc], ['finanzas', resBalance],
-        ['actas', resActas], ['convenios', resConvenios], ['estadísticas', resEstadisticas],
-        ['mi panel', resRole]
-      ].filter(([, result]) => result.status === 'rejected').map(([name]) => name);
-
-      if (resProyectos.status === 'fulfilled' && Array.isArray(resProyectos.value.data)) {
-        const proys = resProyectos.value.data;
-        stats.proyectosCount = proys.length;
-        stats.inversionTotal = proys.reduce((acc, p) => acc + (p.presupuestoMunicipal || 0) + (p.presupuestoCooperacion || 0), 0);
-        const sumAvance = proys.reduce((acc, p) => acc + (p.porcentajeAvanceFisico || 0), 0);
-        stats.avancePromedio = proys.length > 0 ? Number((sumAvance / proys.length).toFixed(1)) : 0;
-      }
-
-      if (resArc.status === 'fulfilled' && Array.isArray(resArc.value.data)) {
-        const tareas = resArc.value.data;
-        stats.arcTotal = tareas.length;
-        const finalizadas = tareas.filter(t => t.estado === 'Finalizado').length;
-        stats.arcCumplidas = finalizadas;
-        stats.arcEfectividad = tareas.length > 0 ? Number(((finalizadas / tareas.length) * 100).toFixed(1)) : 0;
-      }
-
-      if (resBalance.status === 'fulfilled' && resBalance.value.data) {
-        const b = resBalance.value.data;
-        stats.saldoNeto = b.saldoDisponibleTotal || 0;
-        stats.fondosPublicos = b.cuentas?.fondosPublicos?.saldo || 0;
-        stats.cooperacion = b.cuentas?.cooperacion?.saldo || 0;
-      }
-
-      if (resActas.status === 'fulfilled' && Array.isArray(resActas.value.data)) {
-        const actas = resActas.value.data;
-        stats.actasCount = actas.length;
-        stats.acuerdosCount = actas.reduce((acc, a) => acc + (a.acuerdos?.length || 0), 0);
-      }
-
-      if (resConvenios.status === 'fulfilled' && Array.isArray(resConvenios.value.data)) {
-        const convs = resConvenios.value.data;
-        const alertas = convs.filter(c => c.diasRestantes >= 0 && c.diasRestantes <= 90);
-        stats.conveniosAlertas = alertas.length;
-        conveniosAlerta = alertas;
-      }
-
-      if (resEstadisticas.status === 'fulfilled' && resEstadisticas.value.data) {
-        const est = resEstadisticas.value.data;
-        stats.totalViviendas = est.totalViviendas || 0;
-        stats.coberturaAgua = est.coberturaAguaPorcentaje || 0;
-        stats.coberturaSaneamiento = est.coberturaSaneamientoPorcentaje || 0;
-        stats.deficitAgua = est.deficitAguaPorcentaje || 0;
-      }
+      ], 2, (index, result) => {
+        if (sequence !== requestSequence) return;
+        const key = sources[index];
+        if (result.status === 'rejected') {
+          if (!failedSources.includes(key)) failedSources = [...failedSources, key];
+          return;
+        }
+        failedSources = failedSources.filter(name => name !== key);
+        const data = result.value.data;
+        if (!data) return;
+        sourceReady[key] = true;
+        if (key === 'proyectos') {
+          stats.proyectosCount = data.total;
+          stats.inversionTotal = data.inversionTotal;
+          stats.avancePromedio = data.avancePromedio;
+        } else if (key === 'arc') {
+          stats.arcTotal = data.total;
+          stats.arcCumplidas = data.finalizadas;
+          stats.arcEfectividad = data.porcentajeCumplimiento;
+        } else if (key === 'financiero') {
+          stats.saldoNeto = data.saldoDisponibleTotal || 0;
+          stats.fondosPublicos = data.cuentas?.fondosPublicos?.saldo || 0;
+          stats.cooperacion = data.cuentas?.cooperacion?.saldo || 0;
+        } else if (key === 'gobernanza') {
+          stats.actasCount = data.actas;
+          stats.acuerdosCount = data.acuerdos;
+        } else if (key === 'convenios') {
+          stats.conveniosAlertas = data.proximos;
+        } else if (key === 'estadisticas') {
+          stats.totalViviendas = data.totalViviendas || 0;
+          stats.coberturaAgua = data.coberturaAguaPorcentaje || 0;
+          stats.coberturaSaneamiento = data.coberturaSaneamientoPorcentaje || 0;
+          stats.deficitAgua = data.deficitAguaPorcentaje || 0;
+        } else roleDashboard = data;
+      });
     } catch (err) {
       console.error('Error al sincronizar métricas del dashboard:', err);
     } finally {
       if (sequence === requestSequence) loading = false;
+      inFlight = false;
     }
   };
 
   onMount(() => {
     fetchDashboardData();
+    const refresh = () => { if (document.visibilityState === 'visible') fetchDashboardData(); };
+    const slow = navigator.connection?.saveData || ['slow-2g', '2g'].includes(navigator.connection?.effectiveType);
+    const timer = window.setInterval(refresh, slow ? 300_000 : 120_000);
+    window.addEventListener('online', refresh);
+    document.addEventListener('visibilitychange', refresh);
+    return () => { window.clearInterval(timer); window.removeEventListener('online', refresh); document.removeEventListener('visibilitychange', refresh); requestSequence++; };
   });
 
 
@@ -185,12 +180,12 @@
 
   {#if esPrincipal('proyectos') || esPrincipal('arc') || esPrincipal('financiero') || esPrincipal('gobernanza') || esPrincipal('convenios') || esPrincipal('estadisticas') || roleDashboard?.vista === 'personal' || roleDashboard?.vista === 'equipo' || roleDashboard?.vista === 'operativo'}
     <section class="mfn-home-metrics" aria-label="Indicadores de las áreas principales">
-      {#if esPrincipal('proyectos')}<a href="/proyectos"><span>Proyectos activos</span><strong>{loading ? '…' : stats.proyectosCount}</strong></a>{/if}
-      {#if esPrincipal('arc')}<a href="/arc"><span>Metas ARC</span><strong>{loading ? '…' : `${stats.arcCumplidas} / ${stats.arcTotal}`}</strong></a>{/if}
-      {#if esPrincipal('financiero')}<a href="/financiero"><span>Saldo registrado</span><strong>{loading ? '…' : `Q ${stats.saldoNeto.toLocaleString()}`}</strong></a>{/if}
-      {#if esPrincipal('gobernanza')}<a href="/gobernanza"><span>Actas registradas</span><strong>{loading ? '…' : stats.actasCount}</strong></a>{/if}
-      {#if esPrincipal('convenios')}<a href="/convenios"><span>Convenios próximos a vencer</span><strong>{loading ? '…' : stats.conveniosAlertas}</strong></a>{/if}
-      {#if esPrincipal('estadisticas')}<a href="/estadisticas"><span>Cobertura de agua</span><strong>{loading ? '…' : `${stats.coberturaAgua}%`}</strong></a>{/if}
+      {#if esPrincipal('proyectos')}<a href="/proyectos"><span>Proyectos activos</span><strong>{sourceReady.proyectos ? stats.proyectosCount : '…'}</strong></a>{/if}
+      {#if esPrincipal('arc')}<a href="/arc"><span>Metas ARC</span><strong>{sourceReady.arc ? `${stats.arcCumplidas} / ${stats.arcTotal}` : '…'}</strong></a>{/if}
+      {#if esPrincipal('financiero')}<a href="/financiero"><span>Saldo registrado</span><strong>{sourceReady.financiero ? `Q ${stats.saldoNeto.toLocaleString()}` : '…'}</strong></a>{/if}
+      {#if esPrincipal('gobernanza')}<a href="/gobernanza"><span>Actas registradas</span><strong>{sourceReady.gobernanza ? stats.actasCount : '…'}</strong></a>{/if}
+      {#if esPrincipal('convenios')}<a href="/convenios"><span>Convenios próximos a vencer</span><strong>{sourceReady.convenios ? stats.conveniosAlertas : '…'}</strong></a>{/if}
+      {#if esPrincipal('estadisticas')}<a href="/estadisticas"><span>Cobertura de agua</span><strong>{sourceReady.estadisticas ? `${stats.coberturaAgua}%` : '…'}</strong></a>{/if}
       {#if roleDashboard?.vista === 'personal'}
         <a href="/gestion-personal/ausencias"><span>Días de vacaciones disponibles</span><strong>{roleDashboard.kpis.diasDisponibles}</strong></a>
         <a href="/gestion-personal/ausencias"><span>Días utilizados</span><strong>{roleDashboard.kpis.diasUsados}</strong></a>

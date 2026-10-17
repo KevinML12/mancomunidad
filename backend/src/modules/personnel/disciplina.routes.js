@@ -3,6 +3,7 @@ import prisma from '../../lib/prisma.js';
 import { requireAuth, requirePermission } from '../../middleware/auth.js';
 import { logAction } from '../../lib/audit.js';
 import { colaboradoresVisiblesPara } from '../../lib/scope.js';
+import { pageWindow, sendPage } from '../../lib/pagination.js';
 
 const router = Router();
 router.use(requireAuth, requirePermission('disciplina'));
@@ -10,13 +11,14 @@ router.use(requireAuth, requirePermission('disciplina'));
 // RF-27: el expediente disciplinario solo es visible para RRHH, Gerencia,
 // Junta Directiva, Auditoría Interna, y el jefe inmediato del colaborador.
 router.get('/', async (req, res) => {
+  const page = pageWindow(req.query);
   const scope = await colaboradoresVisiblesPara(req.user);
   const faltas = await prisma.faltaDisciplinaria.findMany({
     where: scope ? { colaboradorId: { in: scope } } : undefined,
     include: { colaborador: true, sancion: true },
-    orderBy: { fecha: 'desc' },
+    orderBy: [{ fecha: 'desc' }, { id: 'desc' }], skip: page.skip, take: page.take,
   });
-  res.json(faltas);
+  sendPage(res, faltas, page);
 });
 
 // RF-24/25/26: registra la falta y escala la sanción según el conteo de

@@ -2,17 +2,19 @@ import { Router } from 'express';
 import prisma from '../../lib/prisma.js';
 import { requireAuth, requirePermission } from '../../middleware/auth.js';
 import { logAction } from '../../lib/audit.js';
+import { pageWindow, sendPage } from '../../lib/pagination.js';
 
 const router = Router();
 router.use(requireAuth, requirePermission('reclutamiento'));
 
 // RF-06/07
 router.get('/', async (req, res) => {
+  const page = pageWindow(req.query);
   const convocatorias = await prisma.convocatoria.findMany({
     include: { puesto: true, candidatos: true },
-    orderBy: { fechaPublicacion: 'desc' },
+    orderBy: [{ fechaPublicacion: 'desc' }, { id: 'desc' }], skip: page.skip, take: page.take,
   });
-  res.json(convocatorias);
+  sendPage(res, convocatorias, page);
 });
 
 router.post('/', requirePermission('reclutamiento', 'editar'), async (req, res) => {

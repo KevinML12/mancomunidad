@@ -3,18 +3,20 @@ import prisma from '../../lib/prisma.js';
 import { requireAuth, requirePermission } from '../../middleware/auth.js';
 import { logAction } from '../../lib/audit.js';
 import { colaboradoresVisiblesPara } from '../../lib/scope.js';
+import { pageWindow, sendPage } from '../../lib/pagination.js';
 
 const router = Router();
 router.use(requireAuth, requirePermission('ausencias'));
 
 router.get('/', async (req, res) => {
+  const page = pageWindow(req.query);
   const scope = await colaboradoresVisiblesPara(req.user);
   const solicitudes = await prisma.solicitudAusencia.findMany({
     where: scope ? { colaboradorId: { in: scope } } : undefined,
     include: { colaborador: { include: { puesto: true } } },
-    orderBy: { createdAt: 'desc' },
+    orderBy: [{ createdAt: 'desc' }, { id: 'desc' }], skip: page.skip, take: page.take,
   });
-  res.json(solicitudes);
+  sendPage(res, solicitudes, page);
 });
 
 router.get('/saldo/:colaboradorId', async (req, res) => {

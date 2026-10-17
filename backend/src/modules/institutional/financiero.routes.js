@@ -5,12 +5,13 @@ import { listTransactions, getBalance, createTransaction } from '../../services/
 import { transactionReceiptPdf, annualFinanceReportPdf } from '../../services/finance-pdf.js';
 import prisma from '../../lib/prisma.js';
 import { canAccessMunicipio, municipalityWhere } from '../../lib/municipality-scope.js';
+import { pageWindow, sendPage } from '../../lib/pagination.js';
 
 const router = Router();
 router.use(requireAuth, requirePermission('financiero'));
 
 router.get('/transacciones', async (req, res, next) => {
-  try { res.json(await listTransactions(req.query, req.user)); } catch (err) { next(err); }
+  try { const page = pageWindow(req.query); sendPage(res, await listTransactions(req.query, req.user, page), page); } catch (err) { next(err); }
 });
 router.get('/balance', async (req, res, next) => {
   try { res.json(await getBalance(req.user)); } catch (err) { next(err); }
@@ -29,7 +30,7 @@ router.get('/reportes/ejecucion.pdf', async (req, res, next) => {
       ...municipalityWhere(req.user, { includeRegional: true }),
       fecha: { gte: new Date(Date.UTC(year, 0, 1)), lt: new Date(Date.UTC(year + 1, 0, 1)) },
     }, orderBy: { fecha: 'asc' } });
-    const scope = ['GE','JD','AUD'].includes(req.user.rol) ? 'Todos los municipios' : 'Municipios autorizados';
+    const scope = req.user.permisos?.alcance?.territorio === 'global' ? 'Todos los municipios' : 'Municipios autorizados';
     sendPdf(res, `mfn-ejecucion-${year}.pdf`, await annualFinanceReportPdf(year, transactions, scope));
   } catch (err) { next(err); }
 });

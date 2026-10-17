@@ -5,13 +5,22 @@ import { ValidationError } from '../../services/errors.js';
 import { Router } from 'express';
 import prisma from '../../lib/prisma.js';
 import { requireAuth, requirePermission } from '../../middleware/auth.js';
+import { pageWindow, sendPage } from '../../lib/pagination.js';
 
 const router = Router();
 router.use(requireAuth, requirePermission('gobernanza'));
 
+router.get('/metricas', async (_req, res, next) => {
+  try {
+    const [actas, acuerdos] = await Promise.all([prisma.actaAsamblea.count(), prisma.acuerdoGobernanza.count()]);
+    res.json({ actas, acuerdos });
+  } catch (error) { next(error); }
+});
+
 // GET /api/v1/gobernanza/actas - Listar actas oficiales e indexadas
 router.get('/actas', async (req, res, next) => {
   try {
+    const page = pageWindow(req.query);
     const { tipoSesion, municipioSede, search } = req.query;
     const where = {};
     if (tipoSesion) where.tipoSesion = tipoSesion;
@@ -26,13 +35,13 @@ router.get('/actas', async (req, res, next) => {
 
     const actas = await prisma.actaAsamblea.findMany({
       where,
-      orderBy: { fecha: 'desc' },
+      orderBy: [{ fecha: 'desc' }, { id: 'desc' }], skip: page.skip, take: page.take,
       include: {
         acuerdos: true
       }
     });
 
-    res.json(actas);
+    sendPage(res, actas, page);
   } catch (err) {
     next(err);
   }
@@ -41,6 +50,7 @@ router.get('/actas', async (req, res, next) => {
 // GET /api/v1/gobernanza/acuerdos - Semáforo de acuerdos políticos
 router.get('/acuerdos', async (req, res, next) => {
   try {
+    const page = pageWindow(req.query);
     const { estado } = req.query;
     const where = {};
     if (estado) where.estado = estado;
@@ -50,10 +60,10 @@ router.get('/acuerdos', async (req, res, next) => {
       include: {
         acta: true
       },
-      orderBy: { createdAt: 'desc' }
+      orderBy: [{ createdAt: 'desc' }, { id: 'desc' }], skip: page.skip, take: page.take,
     });
 
-    res.json(acuerdos);
+    sendPage(res, acuerdos, page);
   } catch (err) {
     next(err);
   }

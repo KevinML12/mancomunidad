@@ -15,3 +15,9 @@ test('prioridad visual conserva todos los accesos autorizados sin ampliar permis
   assert.deepEqual(navigationFor('EMP',ROLE_PERMISSIONS.EMP).primary.map(x=>x.key),['ausencias','evaluaciones','capacitacion']);
   assert.deepEqual(navigationFor('GE',{modulos:[]}),{primary:[],secondary:[]});
 });
+test('el menú sigue la configuración guardada del rol, no su código',()=>{
+  const custom={...ROLE_PERMISSIONS.EMP,modulos:['dashboard','convenios','proyectos','ausencias'],prioritarios:['convenios','ausencias']};
+  const result=navigationFor('EMP',custom);
+  assert.deepEqual(result.primary.map(area=>area.key),['convenios','ausencias']);
+  assert.deepEqual(result.secondary.map(area=>area.key),['proyectos']);
+});

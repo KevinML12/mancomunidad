@@ -2,6 +2,7 @@
   import { auth } from '$lib/stores/auth.svelte.js';
   import { onMount } from 'svelte';
   import apiClient from '$lib/apiClient';
+  import { refreshWhenVisible } from '$lib/progressive-data.js';
   import Icon from '$lib/components/ui/Icon.svelte';
   import { toast } from 'svelte-sonner';
 
@@ -11,14 +12,9 @@
   let verificando = $state(false);
 
   const fetchData = async () => {
-    loading = true;
+    if (!dictamen) loading = true;
     try {
-      const [resDictamen, resSello] = await Promise.all([
-        apiClient.get('/inteligencia/dictamen'),
-        apiClient.get('/inteligencia/sello-forense')
-      ]);
-      dictamen = resDictamen.data;
-      selloForense = resSello.data;
+      dictamen = (await apiClient.get('/inteligencia/dictamen')).data;
     } catch (err) {
       console.error('Error al cargar datos de inteligencia:', err);
       toast.error('No se pudieron cargar los datos');
@@ -44,9 +40,7 @@
     try { const { data } = await apiClient.post('/inteligencia/sello-forense'); selloForense = data; toast.success('Punto de control registrado'); }
     catch (err) { toast.error(err.response?.data?.error || 'No se pudo registrar el punto de control'); }
   }
-  onMount(() => {
-    fetchData();
-  });
+  onMount(() => refreshWhenVisible(fetchData));
 </script>
 
 <svelte:head>

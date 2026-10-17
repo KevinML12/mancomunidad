@@ -6,6 +6,7 @@
   import { auth } from '$lib/stores/auth.svelte.js';
   import { onMount } from 'svelte';
   import apiClient from '$lib/apiClient';
+  import { loadPaged, refreshWhenVisible } from '$lib/progressive-data.js';
   import Icon from '$lib/components/ui/Icon.svelte';
   import { toast } from 'svelte-sonner';
   import { fade, fly } from 'svelte/transition';
@@ -48,12 +49,9 @@
   }
 
   async function fetchConvenios() {
-    loading = true;
+    if (!convenios.length) loading = true;
     try {
-      const { data } = await apiClient.get('/convenios');
-      if (Array.isArray(data)) {
-        convenios = data;
-      }
+      await loadPaged('/convenios', rows => { convenios = rows; loading = false; });
     } catch (err) {
       console.error('Error al cargar convenios de la BD:', err);
       toast.error('No se pudieron cargar los convenios');
@@ -62,9 +60,7 @@
     }
   }
 
-  onMount(() => {
-    fetchConvenios();
-  });
+  onMount(() => refreshWhenVisible(fetchConvenios));
 
   // Métricas reactivas
   let totalCooperacion = $derived(convenios.reduce((acc, c) => acc + (c.montoCooperacion || 0), 0));

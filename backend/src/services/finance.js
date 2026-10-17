@@ -6,7 +6,7 @@ import { canAccessMunicipio, municipalityWhere } from '../lib/municipality-scope
 import crypto from 'node:crypto';
 import { documentReference } from './documents.js';
 
-export function listTransactions({ tipo, cuentaBancaria, categoria, municipio }, user) {
+export function listTransactions({ tipo, cuentaBancaria, categoria, municipio }, user, page) {
   const where = municipalityWhere(user, { includeRegional: true });
   if (tipo) where.tipo = tipo;
   if (cuentaBancaria) where.cuentaBancaria = cuentaBancaria;
@@ -15,7 +15,7 @@ export function listTransactions({ tipo, cuentaBancaria, categoria, municipio },
     if (municipio !== 'Regional' && !canAccessMunicipio(user, municipio)) return Promise.resolve([]);
     where.municipio = municipio;
   }
-  return prisma.transaccionFinanciera.findMany({ where, orderBy: { fecha: 'desc' } });
+  return prisma.transaccionFinanciera.findMany({ where, orderBy: [{ fecha: 'desc' }, { id: 'desc' }], ...(page ? { skip: page.skip, take: page.take } : {}) });
 }
 
 export async function getBalance(user) {
@@ -46,7 +46,7 @@ export async function createTransaction(body, user) {
   const categoria = text(body.categoria, 'Categoría');
   const municipio = choice(body.municipio ?? 'Regional', [...MUNICIPIOS_MFN, 'Regional'], 'Municipio');
   if (municipio !== 'Regional' && !canAccessMunicipio(user, municipio)) throw new ValidationError('Municipio fuera de su ámbito autorizado');
-  if (municipio === 'Regional' && !['GE', 'JD', 'DIRADMIN'].includes(user.rol)) throw new ValidationError('El registro regional requiere una cuenta autorizada');
+  if (municipio === 'Regional' && !user.permisos?.alcance?.regionalFinanzas) throw new ValidationError('El registro regional requiere una cuenta autorizada');
   if (categoria.startsWith('Cuota') && !MUNICIPIOS_MFN.includes(municipio)) throw new ValidationError('Seleccione el municipio activo que realiza el aporte');
   const monto = numeric(body.monto, 'Monto', { min: 0.01, money: true });
   const comprobanteTipo = text(body.comprobanteTipo, 'Tipo de comprobante');

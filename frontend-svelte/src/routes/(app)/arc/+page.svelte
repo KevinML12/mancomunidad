@@ -1,6 +1,7 @@
 <script>
   import { onMount } from 'svelte';
   import apiClient from '$lib/apiClient';
+  import { loadPaged, refreshWhenVisible } from '$lib/progressive-data.js';
   import Icon from '$lib/components/ui/Icon.svelte';
   import { toast } from 'svelte-sonner';
   import { fade, fly } from 'svelte/transition';
@@ -14,7 +15,7 @@
   let filtroMunicipio = $state('todos');
   let searchQuery = $state('');
   let asignables = $state([]);
-  let municipiosPermitidos = $derived(['GE', 'JD'].includes(auth.role) ? ['Regional', ...MUNICIPIOS_MFN] : (auth.user?.municipios || []));
+  let municipiosPermitidos = $derived(auth.permisos?.alcance?.territorio === 'global' ? ['Regional', ...MUNICIPIOS_MFN] : (auth.user?.municipios || []));
 
   function openModal() {
     nuevaTarea.municipio = municipiosPermitidos[0] || '';
@@ -53,12 +54,9 @@
   ];
 
   async function fetchTareas() {
-    loading = true;
+    if (!tareas.length) loading = true;
     try {
-      const { data } = await apiClient.get('/arc');
-      if (Array.isArray(data)) {
-        tareas = data;
-      }
+      await loadPaged('/arc', rows => { tareas = rows; loading = false; });
     } catch (err) {
       console.error('Error al cargar tareas ARC de la BD:', err);
       toast.error('No se pudo cargar el tablero ARC desde la base de datos');
@@ -67,9 +65,7 @@
     }
   }
 
-  onMount(() => {
-    fetchTareas();
-  });
+  onMount(() => refreshWhenVisible(fetchTareas));
 
   async function cambiarEstado(tareaId, nuevoEstado) {
     try {

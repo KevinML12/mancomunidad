@@ -1,6 +1,7 @@
 <script>
   import { onMount } from 'svelte';
   import apiClient from '$lib/apiClient';
+  import { loadPaged, refreshWhenVisible } from '$lib/progressive-data.js';
   import { documentKind, uploadInvoicePhoto, openPrivatePdf } from '$lib/documents/upload.js';
   import Icon from '$lib/components/ui/Icon.svelte';
   import { toast } from 'svelte-sonner';
@@ -70,15 +71,14 @@
   });
 
   async function fetchFinanciero() {
-    loading = true;
+    if (!transacciones.length) loading = true;
     loadError = false;
     try {
-      const [resTx, resBal] = await Promise.all([
-        apiClient.get('/financiero/transacciones'),
+      const [tx, resBal] = await Promise.all([
+        loadPaged('/financiero/transacciones', rows => { transacciones = rows; loading = false; }),
         apiClient.get('/financiero/balance')
       ]);
-      if (!Array.isArray(resTx.data) || !resBal.data?.cuentas) throw new Error('Respuesta financiera incompleta');
-      transacciones = resTx.data;
+      if (!Array.isArray(tx) || !resBal.data?.cuentas) throw new Error('Respuesta financiera incompleta');
       balance = resBal.data;
     } catch (err) {
       console.error('Error al cargar datos financieros de la BD:', err);
@@ -89,9 +89,7 @@
     }
   }
 
-  onMount(() => {
-    fetchFinanciero();
-  });
+  onMount(() => refreshWhenVisible(fetchFinanciero));
 
   function abrirModal(tipo) {
     invoiceFile = null;

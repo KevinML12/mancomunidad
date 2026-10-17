@@ -1,6 +1,7 @@
 <script>
   import { onMount } from 'svelte';
   import apiClient from '$lib/apiClient';
+  import { refreshWhenVisible } from '$lib/progressive-data.js';
   import { csvCell } from '$lib/csv.js';
   import Icon from '$lib/components/ui/Icon.svelte';
   import { toast } from 'svelte-sonner';
@@ -42,20 +43,26 @@
   import { MUNICIPIOS_MFN } from '$lib/municipios.js';
 
   const fetchTransparencia = async () => {
-    loading = true;
+    if (!actas.length && !proyectos.length) loading = true;
     try {
-      const { data } = await apiClient.get('/transparencia/publico');
+      let nextPage = 1;
+      const allPublications = [];
+      const allProjects = [];
+      while (nextPage) {
+      const { data } = await apiClient.get('/transparencia/publico', { params: { page: nextPage, limit: 30 } });
 
       const publicaciones = data?.publicaciones || (Array.isArray(data) ? data : []);
       const proys = data?.proyectosPublicos || [];
       const stats = data?.estadisticas || null;
+      allPublications.push(...publicaciones);
+      allProjects.push(...proys);
 
       if (stats) {
         estadisticas = stats;
       }
 
       if (Array.isArray(publicaciones)) {
-        actas = publicaciones.map(pub => ({
+        actas = allPublications.map(pub => ({
           id: pub.id,
           numero: pub.codigo,
           fecha: pub.fechaPublicacion ? new Date(pub.fechaPublicacion).toLocaleDateString('es-GT', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Reciente',
@@ -69,7 +76,7 @@
       }
 
       if (Array.isArray(proys)) {
-        proyectos = proys.map(p => {
+        proyectos = allProjects.map(p => {
           const muni = p.municipio || 'Regional';
 
           const totalMonto = (p.presupuestoMunicipal || 0) + (p.presupuestoCooperacion || 0);
@@ -93,6 +100,9 @@
           };
         });
       }
+      loading = false;
+      nextPage = Number.isSafeInteger(data?.nextPage) && data.nextPage > nextPage ? data.nextPage : 0;
+      }
     } catch (err) {
       console.error('Error al cargar datos de transparencia desde BD:', err);
       toast.error('No se pudo conectar con el portal de transparencia');
@@ -101,9 +111,7 @@
     }
   };
 
-  onMount(() => {
-    fetchTransparencia();
-  });
+  onMount(() => refreshWhenVisible(fetchTransparencia));
 
 
   // Filtrado reactivo de proyectos

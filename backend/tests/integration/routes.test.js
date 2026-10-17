@@ -624,4 +624,37 @@ test('Rutas reales con base migrada y aislada', async t => {
   assert.equal(saldo.diasUsados,2);
   assert.equal((await prisma.solicitudAusencia.findUnique({where:{id:solicitud.id}})).estado,'Aprobado');
  });
+ await t.test('permisos configurables revocan sesiones y conservan el alcance de datos',async()=>{
+  const actor=await prisma.usuario.findUnique({where:{id:users.GE.id}});
+  const adminToken=jwt.sign({type:'session',version:actor.sessionVersion,sub:actor.id},process.env.JWT_SECRET,{expiresIn:'12h'});
+  const roles=await request('/admin/roles','GET',adminToken);
+  const modules=await request('/admin/modules','GET',adminToken);
+  assert.equal(roles.status,200);assert.equal(modules.status,200);
+  const employee=roles.data.find(row=>row.codigo==='EMP');
+  const newPermissions={...employee.permisos,modulos:[...employee.permisos.modulos,'proyectos'],prioritarios:['proyectos']};
+  const path=`/admin/roles/${employee.id}/permissions`;
+  assert.equal((await request(path,'PATCH',tokens.EMP,{permisos:newPermissions,contrasenaAdministrador:'Nueva-clave-segura-2026'})).status,403);
+  assert.equal((await request(path,'PATCH',adminToken,{permisos:{...newPermissions,editar:['proyectos','proyectos']},contrasenaAdministrador:'Nueva-clave-segura-2026'})).status,400);
+  assert.equal((await request(path,'PATCH',adminToken,{permisos:newPermissions,contrasenaAdministrador:'incorrecta'})).status,403);
+  const changed=await request(path,'PATCH',adminToken,{permisos:newPermissions,contrasenaAdministrador:'Nueva-clave-segura-2026'});
+  assert.equal(changed.status,200);assert.equal(changed.data.requiresReauth,false);
+  assert.equal((await request('/auth/me','GET',tokens.EMP)).status,401);
+  const current=await prisma.usuario.findUnique({where:{id:users.EMP.id}});
+  const employeeToken=jwt.sign({type:'session',version:current.sessionVersion,sub:current.id},process.env.JWT_SECRET,{expiresIn:'12h'});
+  assert.equal((await request('/proyectos','GET',employeeToken)).status,200);
+  assert.deepEqual((await request('/proyectos','GET',employeeToken)).data,[]);
+  assert.equal((await request('/proyectos','POST',employeeToken,project)).status,403);
+  assert.equal((await prisma.bitacoraAuditoria.count({where:{accion:'cambiar_permisos_rol',entidadId:employee.id}})),1);
+ });
+ await t.test('listas pequeñas llegan paginadas con continuación estable',async()=>{
+  const actor=await prisma.usuario.findUnique({where:{id:users.GE.id}});
+  const token=jwt.sign({type:'session',version:actor.sessionVersion,sub:actor.id},process.env.JWT_SECRET,{expiresIn:'12h'});
+  const first=await request('/proyectos?limit=2&page=1','GET',token);
+  assert.equal(first.status,200);assert.equal(first.data.length,2);
+  assert.equal(first.headers.get('x-next-page'),'2');
+  const second=await request('/proyectos?limit=2&page=2','GET',token);
+  assert.equal(second.status,200);
+  assert.ok(second.data.every(row=>!first.data.some(old=>old.id===row.id)));
+  assert.equal((await request('/proyectos/metricas','GET',token)).data.total,await prisma.proyecto.count());
+ });
 });

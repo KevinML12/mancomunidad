@@ -6,6 +6,7 @@ import prisma from '../../lib/prisma.js';
 import { requireAuth, requirePermission } from '../../middleware/auth.js';
 import { canAccessMunicipio, municipalityWhere } from '../../lib/municipality-scope.js';
 import crypto from 'node:crypto';
+import { pageWindow, sendPage } from '../../lib/pagination.js';
 
 const router = Router();
 router.use(requireAuth, requirePermission('estadisticas'));
@@ -13,6 +14,7 @@ router.use(requireAuth, requirePermission('estadisticas'));
 // GET /api/v1/estadisticas/censos - Listado de censos comunitarios
 router.get('/censos', async (req, res, next) => {
   try {
+    const page = pageWindow(req.query);
     const { municipio, search } = req.query;
     // Operational view follows the active territory; an explicit municipality query preserves historical access.
     const where = municipalityWhere(req.user);
@@ -30,10 +32,10 @@ router.get('/censos', async (req, res, next) => {
 
     const censos = await prisma.censoComunitarioASH.findMany({
       where,
-      orderBy: { fechaLevantamiento: 'desc' }
+      orderBy: [{ fechaLevantamiento: 'desc' }, { id: 'desc' }], skip: page.skip, take: page.take,
     });
 
-    res.json(censos);
+    sendPage(res, censos, page);
   } catch (err) {
     next(err);
   }
@@ -43,35 +45,34 @@ router.get('/censos', async (req, res, next) => {
 router.get('/consolidado', async (req, res, next) => {
   try {
     const scoped = municipalityWhere(req.user);
-    const censos = await prisma.censoComunitarioASH.findMany({ where: Object.keys(scoped).length ? scoped : { municipio: { in: MUNICIPIOS_MFN } } });
+    const where = Object.keys(scoped).length ? scoped : { municipio: { in: MUNICIPIOS_MFN } };
+    const [censos, clorados, calidadAceptable] = await Promise.all([
+      prisma.censoComunitarioASH.groupBy({ by: ['municipio'], where,
+        _sum: { viviendasTotales: true, viviendasConAgua: true, viviendasConSaneamiento: true }, _count: { _all: true } }),
+      prisma.censoComunitarioASH.count({ where: { ...where, sistemaCloracion: true } }),
+      prisma.censoComunitarioASH.count({ where: { ...where, ppmCloroResidual: { gte: 0.5, lte: 1.5 } } }),
+    ]);
 
     let totalViviendas = 0;
     let conAgua = 0;
     let conSaneamiento = 0;
-    let sistemasClorados = 0;
-    let conCalidadAceptable = 0; // Cloro residual entre 0.5 y 1.5 ppm
+    const sistemasClorados = clorados;
+    const conCalidadAceptable = calidadAceptable;
+    let totalCensos = 0;
 
     const porMunicipio = {};
 
     censos.forEach(c => {
-      totalViviendas += c.viviendasTotales;
-      conAgua += c.viviendasConAgua;
-      conSaneamiento += c.viviendasConSaneamiento;
-      if (c.sistemaCloracion) sistemasClorados++;
-      if (c.ppmCloroResidual >= 0.5 && c.ppmCloroResidual <= 1.5) conCalidadAceptable++;
-
-      if (!porMunicipio[c.municipio]) {
-        porMunicipio[c.municipio] = {
-          viviendas: 0,
-          conAgua: 0,
-          conSaneamiento: 0,
-          censos: 0
-        };
-      }
-      porMunicipio[c.municipio].viviendas += c.viviendasTotales;
-      porMunicipio[c.municipio].conAgua += c.viviendasConAgua;
-      porMunicipio[c.municipio].conSaneamiento += c.viviendasConSaneamiento;
-      porMunicipio[c.municipio].censos++;
+      totalViviendas += c._sum.viviendasTotales || 0;
+      conAgua += c._sum.viviendasConAgua || 0;
+      conSaneamiento += c._sum.viviendasConSaneamiento || 0;
+      totalCensos += c._count._all;
+      porMunicipio[c.municipio] = {
+        viviendas: c._sum.viviendasTotales || 0,
+        conAgua: c._sum.viviendasConAgua || 0,
+        conSaneamiento: c._sum.viviendasConSaneamiento || 0,
+        censos: c._count._all,
+      };
     });
 
     const porcentajeAgua = totalViviendas > 0 ? Number(((conAgua / totalViviendas) * 100).toFixed(1)) : 0;
@@ -84,7 +85,7 @@ router.get('/consolidado', async (req, res, next) => {
       conAgua,
       conSaneamiento,
       sistemasClorados,
-      totalComunidadesCensadas: censos.length,
+      totalComunidadesCensadas: totalCensos,
       coberturaAguaPorcentaje: porcentajeAgua,
       coberturaSaneamientoPorcentaje: porcentajeSaneamiento,
       deficitAguaPorcentaje: Number(deficitAgua.toFixed(1)),

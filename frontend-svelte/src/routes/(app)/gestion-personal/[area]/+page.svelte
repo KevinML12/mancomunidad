@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import { page } from '$app/stores';
   import apiClient from '$lib/apiClient';
+  import { loadPaged, refreshWhenVisible } from '$lib/progressive-data.js';
   import { AREAS } from '$lib/navigation.js';
   import { auth } from '$lib/stores/auth.svelte.js';
 
@@ -46,11 +47,10 @@
 
   async function loadRecords() {
     if (!endpoints[area] || !auth.puedeVer(area)) return;
-    loading = true;
+    if (!records.length) loading = true;
     error = '';
     try {
-      const { data } = await apiClient.get(endpoints[area]);
-      records = Array.isArray(data) ? data : [];
+      await loadPaged(endpoints[area], rows => { records = rows; loading = false; });
     } catch (err) {
       error = err.response?.data?.error || 'No se pudieron cargar los registros. Intente de nuevo.';
     } finally {
@@ -83,7 +83,7 @@
     }
   }
 
-  onMount(loadRecords);
+  onMount(() => refreshWhenVisible(loadRecords));
 </script>
 
 <svelte:head><title>{config?.title || 'Gestión de personal'} · MFN Digital</title></svelte:head>

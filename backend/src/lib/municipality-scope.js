@@ -1,9 +1,7 @@
 import { MUNICIPIOS_MFN } from './municipios.js';
 
-const GLOBAL_ROLES = new Set(['GE', 'JD', 'AUD']);
-
 export function authorizedMunicipios(user) {
-  if (GLOBAL_ROLES.has(user.rol)) return null;
+  if (user.permisos?.alcance?.territorio === 'global') return null;
   return (user.municipios || []).filter(municipio => MUNICIPIOS_MFN.includes(municipio));
 }
 

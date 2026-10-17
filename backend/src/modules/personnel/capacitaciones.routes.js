@@ -3,27 +3,29 @@ import prisma from '../../lib/prisma.js';
 import { requireAuth, requirePermission } from '../../middleware/auth.js';
 import { logAction } from '../../lib/audit.js';
 import { colaboradoresVisiblesPara } from '../../lib/scope.js';
+import { pageWindow, sendPage } from '../../lib/pagination.js';
 
 const router = Router();
 router.use(requireAuth, requirePermission('capacitacion'));
 
 router.get('/', async (req, res) => {
+  const page = pageWindow(req.query);
   const scope = await colaboradoresVisiblesPara(req.user);
   const capacitaciones = await prisma.capacitacion.findMany({
     include: { certificaciones: {
       where: scope ? { colaboradorId: { in: scope } } : undefined,
       include: { colaborador: true },
     } },
-    orderBy: { id: 'asc' },
+    orderBy: { id: 'asc' }, skip: page.skip, take: page.take,
   });
   const totalColaboradores = scope
     ? await prisma.colaborador.count({ where: { id: { in: scope }, estado: 'Activo' } })
     : await prisma.colaborador.count({ where: { estado: 'Activo' } });
-  res.json(capacitaciones.map((c) => ({
+  sendPage(res, capacitaciones.map((c) => ({
     ...c,
     cobertura: c.certificaciones.filter((x) => x.firmado).length,
     totalColaboradores,
-  })));
+  })), page);
 });
 
 router.post('/', requirePermission('capacitacion', 'editar'), async (req, res) => {

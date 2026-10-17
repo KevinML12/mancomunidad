@@ -1,6 +1,7 @@
 <script>
   import { onMount } from 'svelte';
   import apiClient from '$lib/apiClient';
+  import { loadPaged, refreshWhenVisible } from '$lib/progressive-data.js';
   import Icon from '$lib/components/ui/Icon.svelte';
   import { toast } from 'svelte-sonner';
 
@@ -28,19 +29,13 @@
   });
 
   async function cargarDatos() {
-    loading = true;
+    if (!colaboradores.length && !puestos.length) loading = true;
     try {
       const [resColab, resPuestos] = await Promise.allSettled([
-        apiClient.get('/colaboradores'),
-        apiClient.get('/puestos')
+        loadPaged('/colaboradores', rows => { colaboradores = rows; loading = false; }),
+        loadPaged('/puestos', rows => { puestos = rows; loading = false; })
       ]);
-
-      if (resColab.status === 'fulfilled' && Array.isArray(resColab.value.data)) {
-        colaboradores = resColab.value.data;
-      }
-      if (resPuestos.status === 'fulfilled' && Array.isArray(resPuestos.value.data)) {
-        puestos = resPuestos.value.data;
-      }
+      if (resColab.status === 'rejected' || resPuestos.status === 'rejected') toast.error('No se pudieron cargar todos los datos de personal');
     } catch (err) {
       console.error('Error al cargar talento humano:', err);
       toast.error('Error al conectar con el módulo de personal');
@@ -49,9 +44,7 @@
     }
   }
 
-  onMount(() => {
-    cargarDatos();
-  });
+  onMount(() => refreshWhenVisible(cargarDatos));
 
   async function verExpediente(colabId) {
     expedienteLoading = true;

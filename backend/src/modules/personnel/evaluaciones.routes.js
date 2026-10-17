@@ -4,6 +4,7 @@ import { requireAuth, requirePermission } from '../../middleware/auth.js';
 import { logAction } from '../../lib/audit.js';
 import { FACTORES_EVALUACION } from '../../lib/constants.js';
 import { colaboradoresVisiblesPara } from '../../lib/scope.js';
+import { pageWindow, sendPage } from '../../lib/pagination.js';
 
 const router = Router();
 router.use(requireAuth, requirePermission('evaluaciones'));
@@ -19,6 +20,7 @@ function consolidar(calificaciones) {
 }
 
 router.get('/', async (req, res) => {
+  const page = pageWindow(req.query);
   const { colaboradorId } = req.query;
   const scope = await colaboradoresVisiblesPara(req.user);
   const solicitado = colaboradorId ? Number(colaboradorId) : null;
@@ -36,9 +38,9 @@ router.get('/', async (req, res) => {
       factores: { orderBy: { factor: 'asc' } },
       planMejora: true,
     },
-    orderBy: { createdAt: 'desc' },
+    orderBy: [{ createdAt: 'desc' }, { id: 'desc' }], skip: page.skip, take: page.take,
   });
-  res.json(evaluaciones);
+  sendPage(res, evaluaciones, page);
 });
 
 router.get('/factores', (req, res) => res.json(FACTORES_EVALUACION));

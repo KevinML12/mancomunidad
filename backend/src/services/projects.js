@@ -32,7 +32,8 @@ const serializeEvidence = async row => {
   return { ...metadata, urlArchivo, integridadArchivo: row.urlArchivo?.startsWith('r2media://') ? 'Archivo en R2 con SHA-256' : contenido ? 'Archivo heredado en base de datos con SHA-256' : 'Enlace histórico externo sin garantía de integridad' };
 };
 
-export const listProjects = user => prisma.proyecto.findMany({ where: municipalityWhere(user), orderBy: { createdAt: 'desc' }, include: { _count: { select: { evidencias: true } } } });
+export const listProjects = (user, page) => prisma.proyecto.findMany({ where: municipalityWhere(user), orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+  ...(page ? { skip: page.skip, take: page.take } : {}), include: { _count: { select: { evidencias: true } } } });
 
 export async function getProject(id, user) {
   const row = await prisma.proyecto.findUnique({ where: { id }, include: { evidencias: { orderBy: { fechaCaptura: 'desc' } }, hitos: { orderBy: { fechaPlanificada: 'asc' } } } });

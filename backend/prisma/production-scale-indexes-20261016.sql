@@ -1,0 +1,25 @@
+-- Idempotent indexes for scoped lists, counters, and recent-record views.
+CREATE INDEX IF NOT EXISTS "Usuario_rolId_idx" ON "Usuario" ("rolId");
+CREATE INDEX IF NOT EXISTS "UsuarioMunicipio_municipio_usuarioId_idx" ON "UsuarioMunicipio" ("municipio", "usuarioId");
+CREATE INDEX IF NOT EXISTS "Colaborador_puestoId_estado_idx" ON "Colaborador" ("puestoId", "estado");
+CREATE INDEX IF NOT EXISTS "Convocatoria_fechaPublicacion_id_idx" ON "Convocatoria" ("fechaPublicacion" DESC, "id" DESC);
+CREATE INDEX IF NOT EXISTS "Candidato_convocatoriaId_idx" ON "Candidato" ("convocatoriaId");
+CREATE INDEX IF NOT EXISTS "Contrato_fechaRegistroContraloria_idx" ON "Contrato" ("fechaRegistroContraloria");
+CREATE INDEX IF NOT EXISTS "EvaluacionDesempeno_colaboradorId_createdAt_idx" ON "EvaluacionDesempeno" ("colaboradorId", "createdAt" DESC);
+CREATE INDEX IF NOT EXISTS "EvaluacionDesempeno_resultado_idx" ON "EvaluacionDesempeno" ("resultado");
+CREATE INDEX IF NOT EXISTS "SolicitudAusencia_colaboradorId_estado_createdAt_idx" ON "SolicitudAusencia" ("colaboradorId", "estado", "createdAt" DESC);
+CREATE INDEX IF NOT EXISTS "SolicitudAusencia_estado_idx" ON "SolicitudAusencia" ("estado");
+CREATE INDEX IF NOT EXISTS "FaltaDisciplinaria_colaboradorId_fecha_idx" ON "FaltaDisciplinaria" ("colaboradorId", "fecha" DESC);
+CREATE INDEX IF NOT EXISTS "BitacoraAuditoria_entidad_entidadId_idx" ON "BitacoraAuditoria" ("entidad", "entidadId");
+CREATE INDEX IF NOT EXISTS "Proyecto_municipio_createdAt_idx" ON "Proyecto" ("municipio", "createdAt" DESC);
+CREATE INDEX IF NOT EXISTS "HitoProyecto_proyectoId_idx" ON "HitoProyecto" ("proyectoId");
+CREATE INDEX IF NOT EXISTS "EvidenciaProyecto_proyectoId_fechaCaptura_idx" ON "EvidenciaProyecto" ("proyectoId", "fechaCaptura" DESC);
+CREATE INDEX IF NOT EXISTS "TareaARC_municipio_fechaLimite_idx" ON "TareaARC" ("municipio", "fechaLimite", "id");
+CREATE INDEX IF NOT EXISTS "TareaARC_municipio_estado_idx" ON "TareaARC" ("municipio", "estado");
+CREATE INDEX IF NOT EXISTS "TransaccionFinanciera_municipio_fecha_idx" ON "TransaccionFinanciera" ("municipio", "fecha" DESC);
+CREATE INDEX IF NOT EXISTS "TransaccionFinanciera_categoria_municipio_idx" ON "TransaccionFinanciera" ("categoria", "municipio");
+CREATE INDEX IF NOT EXISTS "ActaAsamblea_fecha_idx" ON "ActaAsamblea" ("fecha" DESC, "id" DESC);
+CREATE INDEX IF NOT EXISTS "AcuerdoGobernanza_actaId_idx" ON "AcuerdoGobernanza" ("actaId");
+CREATE INDEX IF NOT EXISTS "ConvenioInstitucional_fechaVencimiento_idx" ON "ConvenioInstitucional" ("fechaVencimiento", "id");
+CREATE INDEX IF NOT EXISTS "CensoComunitarioASH_municipio_fechaLevantamiento_idx" ON "CensoComunitarioASH" ("municipio", "fechaLevantamiento" DESC);
+CREATE INDEX IF NOT EXISTS "PublicacionTransparencia_visibilidad_tipo_fechaPublicacion_idx" ON "PublicacionTransparencia" ("visibilidad", "tipo", "fechaPublicacion" DESC);

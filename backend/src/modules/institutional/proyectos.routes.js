@@ -6,6 +6,8 @@ import { prepareEvidenceUpload, finishEvidenceUpload } from '../../services/evid
 import { rateLimit } from '../../middleware/rate-limit.js';
 import prisma from '../../lib/prisma.js';
 import { canAccessMunicipio } from '../../lib/municipality-scope.js';
+import { municipalityWhere } from '../../lib/municipality-scope.js';
+import { pageWindow, sendPage } from '../../lib/pagination.js';
 import { createMilestone, updateMilestone, approveMilestone, deleteMilestone } from '../../services/milestones.js';
 
 const router = Router();
@@ -31,7 +33,17 @@ function handleError(err, res, next) {
 }
 
 router.get('/', async (req, res, next) => {
-  try { res.json(await listProjects(req.user)); } catch (err) { next(err); }
+  try { const page = pageWindow(req.query); sendPage(res, await listProjects(req.user, page), page); } catch (err) { next(err); }
+});
+router.get('/metricas', async (req, res, next) => {
+  try {
+    const where = municipalityWhere(req.user);
+    const [total, sums] = await Promise.all([
+      prisma.proyecto.count({ where }),
+      prisma.proyecto.aggregate({ where, _sum: { presupuestoMunicipal: true, presupuestoCooperacion: true }, _avg: { porcentajeAvanceFisico: true } }),
+    ]);
+    res.json({ total, inversionTotal: (sums._sum.presupuestoMunicipal || 0) + (sums._sum.presupuestoCooperacion || 0), avancePromedio: Number((sums._avg.porcentajeAvanceFisico || 0).toFixed(1)) });
+  } catch (error) { next(error); }
 });
 router.get('/:id', async (req, res, next) => {
   try {

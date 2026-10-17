@@ -9,6 +9,8 @@ import { ValidationError } from '../../services/errors.js';
 import { logAction } from '../../lib/audit.js';
 import { hash } from '../../lib/integrity.js';
 import { MUNICIPIOS_MFN } from '../../lib/municipios.js';
+import { MODULE_KEYS, MODULE_LABELS, validRolePermissions } from '../../lib/roles.js';
+import { pageWindow, sendPage } from '../../lib/pagination.js';
 
 const router = Router();
 router.use(requireAuth, requireAppAdmin);
@@ -55,19 +57,46 @@ router.get('/overview', async (_req, res, next) => {
   } catch (error) { next(error); }
 });
 
-router.get('/users', async (_req, res, next) => {
+router.get('/users', async (req, res, next) => {
   try {
+    const page = pageWindow(req.query);
     const rows = await prisma.usuario.findMany({
       select: { id: true, correo: true, createdAt: true, rol: { select: { codigo: true, nombre: true } }, municipios: { select: { municipio: true } } },
-      orderBy: { id: 'asc' },
+      orderBy: { id: 'asc' }, skip: page.skip, take: page.take,
     });
-    res.json(rows);
+    sendPage(res, rows, page);
   } catch (error) { next(error); }
 });
 
 router.get('/roles', async (_req, res, next) => {
   try {
-    res.json(await prisma.rol.findMany({ select: { id: true, codigo: true, nombre: true }, orderBy: { nombre: 'asc' } }));
+    res.json(await prisma.rol.findMany({ select: { id: true, codigo: true, nombre: true, descripcion: true, permisos: true }, orderBy: { nombre: 'asc' } }));
+  } catch (error) { next(error); }
+});
+
+router.get('/modules', (_req, res) => res.json(MODULE_KEYS.map(key => ({ key, label: MODULE_LABELS[key] }))));
+
+router.patch('/roles/:id/permissions', rateLimit(10, 15 * 60_000, { scope: 'admin-role-permissions', keyFrom: req => req.user.sub }), async (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+    const { permisos, contrasenaAdministrador } = req.body || {};
+    if (!Number.isSafeInteger(id) || id < 1 || !validRolePermissions(permisos) || typeof contrasenaAdministrador !== 'string') {
+      throw new ValidationError('Seleccione un rol, módulos y prioridades válidos; confirme con su contraseña');
+    }
+    const actor = await prisma.usuario.findUnique({ where: { id: req.user.sub }, select: { hashContrasena: true, rolId: true } });
+    if (!actor || !(await bcrypt.compare(contrasenaAdministrador, actor.hashContrasena))) {
+      return res.status(403).json({ error: 'Contraseña de administración incorrecta' });
+    }
+    const previous = await prisma.rol.findUnique({ where: { id }, select: { permisos: true } });
+    if (!previous) throw new ValidationError('Rol no encontrado');
+    const updated = await prisma.$transaction(async tx => {
+      const role = await tx.rol.update({ where: { id }, data: { permisos }, select: { id: true, codigo: true, nombre: true, descripcion: true, permisos: true } });
+      await tx.usuario.updateMany({ where: { rolId: id }, data: { sessionVersion: { increment: 1 } } });
+      await tx.bitacoraAuditoria.create({ data: { usuarioId: req.user.sub, accion: 'cambiar_permisos_rol', entidad: 'rol', entidadId: id,
+        antesHash: hash(previous.permisos), despuesHash: hash(permisos) } });
+      return role;
+    });
+    res.json({ ...updated, requiresReauth: actor.rolId === id });
   } catch (error) { next(error); }
 });
 
@@ -189,11 +218,12 @@ router.post('/users/:id/password', rateLimit(5, 15 * 60_000, { scope: 'admin-res
   } catch (error) { next(error); }
 });
 
-router.get('/publicaciones', async (_req, res, next) => {
+router.get('/publicaciones', async (req, res, next) => {
   try {
-    res.json(await prisma.publicacionTransparencia.findMany({
-      where: { tipo: { not: 'SolicitudUIP' } }, orderBy: { fechaPublicacion: 'desc' },
-    }));
+    const page = pageWindow(req.query);
+    sendPage(res, await prisma.publicacionTransparencia.findMany({
+      where: { tipo: { not: 'SolicitudUIP' } }, orderBy: [{ fechaPublicacion: 'desc' }, { id: 'desc' }], skip: page.skip, take: page.take,
+    }), page);
   } catch (error) { next(error); }
 });
 

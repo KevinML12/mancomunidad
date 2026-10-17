@@ -1,6 +1,6 @@
 # Estado de producción de MFN Digital
 
-Actualizado el 17 de octubre de 2026 a las 05:59 UTC. El portal público, la API y el panel independiente están publicados desde el commit `6fc8ec9` de la rama `codex/night-release-readiness-2026-10-15`:
+Actualizado el 17 de octubre de 2026 a las 06:01 UTC. El portal público, la API y el panel independiente están publicados desde el commit `6fc8ec9` de la rama `codex/night-release-readiness-2026-10-15`:
 
 | Servicio | URL | Despliegue |
 | --- | --- | --- |

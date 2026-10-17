@@ -5,13 +5,27 @@ import { ValidationError } from '../../services/errors.js';
 import { Router } from 'express';
 import prisma from '../../lib/prisma.js';
 import { requireAuth, requirePermission } from '../../middleware/auth.js';
+import { pageWindow, sendPage } from '../../lib/pagination.js';
 
 const router = Router();
 router.use(requireAuth, requirePermission('convenios'));
 
+router.get('/metricas', async (_req, res, next) => {
+  try {
+    const now = new Date();
+    const in90Days = new Date(now.getTime() + 90 * 86400000);
+    const [total, proximos] = await Promise.all([
+      prisma.convenioInstitucional.count(),
+      prisma.convenioInstitucional.count({ where: { fechaVencimiento: { gte: now, lte: in90Days } } }),
+    ]);
+    res.json({ total, proximos });
+  } catch (error) { next(error); }
+});
+
 // GET /api/v1/convenios - Listar convenios con motor cronológico y cálculo de alertas
 router.get('/', async (req, res, next) => {
   try {
+    const page = pageWindow(req.query);
     const { tipoOrganizacion, estado, search } = req.query;
     const where = {};
     if (tipoOrganizacion) where.tipoOrganizacion = tipoOrganizacion;
@@ -26,7 +40,7 @@ router.get('/', async (req, res, next) => {
 
     const convenios = await prisma.convenioInstitucional.findMany({
       where,
-      orderBy: { fechaVencimiento: 'asc' }
+      orderBy: [{ fechaVencimiento: 'asc' }, { id: 'asc' }], skip: page.skip, take: page.take,
     });
 
     const ahora = new Date();
@@ -57,7 +71,7 @@ router.get('/', async (req, res, next) => {
       };
     });
 
-    res.json(procesados);
+    sendPage(res, procesados, page);
   } catch (err) {
     next(err);
   }

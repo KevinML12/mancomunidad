@@ -2,20 +2,27 @@ import { Router } from 'express';
 import prisma from '../../lib/prisma.js';
 import { requireAuth, requirePermission } from '../../middleware/auth.js';
 import { logAction } from '../../lib/audit.js';
+import { colaboradoresVisiblesPara } from '../../lib/scope.js';
+import { pageWindow, sendPage } from '../../lib/pagination.js';
 
 const router = Router();
 router.use(requireAuth, requirePermission('estructura'));
 
 router.get('/', async (req, res) => {
+  const page = pageWindow(req.query);
+  const scope = await colaboradoresVisiblesPara(req.user);
   const colaboradores = await prisma.colaborador.findMany({
+    where: scope ? { id: { in: scope } } : undefined,
     include: { puesto: true },
-    orderBy: { nombre: 'asc' },
+    orderBy: [{ nombre: 'asc' }, { id: 'asc' }], skip: page.skip, take: page.take,
   });
-  res.json(colaboradores);
+  sendPage(res, colaboradores, page);
 });
 
 router.get('/:id', async (req, res) => {
   const id = Number(req.params.id);
+  const scope = await colaboradoresVisiblesPara(req.user);
+  if (scope && !scope.includes(id)) return res.status(404).json({ error: 'Colaborador no encontrado' });
   const colaborador = await prisma.colaborador.findUnique({
     where: { id },
     include: {

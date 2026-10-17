@@ -1,15 +1,33 @@
 <script>
   import { onMount } from 'svelte';
   import apiClient from '$lib/apiClient';
+  import { loadPaged, refreshWhenVisible } from '$lib/progressive-data.js';
   import Icon from '$lib/components/ui/Icon.svelte';
   import { toast } from 'svelte-sonner';
   import { fade, fly } from 'svelte/transition';
+  import { auth } from '$lib/stores/auth.svelte.js';
+  import { MUNICIPIOS_MFN } from '$lib/municipios.js';
 
   let tareas = $state([]);
   let loading = $state(true);
   let filtroDimension = $state('todas');
   let filtroPrioridad = $state('todas');
+  let filtroMunicipio = $state('todos');
   let searchQuery = $state('');
+  let asignables = $state([]);
+  let municipiosPermitidos = $derived(auth.permisos?.alcance?.territorio === 'global' ? ['Regional', ...MUNICIPIOS_MFN] : (auth.user?.municipios || []));
+
+  function openModal() {
+    nuevaTarea.municipio = municipiosPermitidos[0] || '';
+    showModal = true;
+    if (nuevaTarea.municipio) fetchAsignables(nuevaTarea.municipio);
+  }
+
+  async function fetchAsignables(municipio) {
+    nuevaTarea.responsableId = '';
+    try { asignables = (await apiClient.get(`/arc/asignables?municipio=${encodeURIComponent(municipio)}`)).data; }
+    catch { asignables = []; toast.error('No se pudieron cargar las cuentas disponibles'); }
+  }
 
   // Drag and Drop (RF7)
   let draggingTaskId = $state(null);
@@ -24,7 +42,7 @@
     dimension: 'Planificación y Monitoreo',
     prioridad: 'Media',
     municipio: 'Regional',
-    responsable: '',
+    responsableId: '',
     fechaLimite: ''
   });
 
@@ -36,12 +54,9 @@
   ];
 
   async function fetchTareas() {
-    loading = true;
+    if (!tareas.length) loading = true;
     try {
-      const { data } = await apiClient.get('/arc');
-      if (Array.isArray(data)) {
-        tareas = data;
-      }
+      await loadPaged('/arc', rows => { tareas = rows; loading = false; });
     } catch (err) {
       console.error('Error al cargar tareas ARC de la BD:', err);
       toast.error('No se pudo cargar el tablero ARC desde la base de datos');
@@ -50,9 +65,7 @@
     }
   }
 
-  onMount(() => {
-    fetchTareas();
-  });
+  onMount(() => refreshWhenVisible(fetchTareas));
 
   async function cambiarEstado(tareaId, nuevoEstado) {
     try {
@@ -69,7 +82,7 @@
     e.preventDefault();
     formLoading = true;
     try {
-      await apiClient.post('/arc', nuevaTarea);
+      await apiClient.post('/arc', { ...nuevaTarea, responsableId: Number(nuevaTarea.responsableId) });
       toast.success('Meta del Plan ARC guardada en la base de datos');
       showModal = false;
       nuevaTarea = {
@@ -78,7 +91,7 @@
         dimension: 'Planificación y Monitoreo',
         prioridad: 'Media',
         municipio: 'Regional',
-        responsable: '',
+        responsableId: '',
         fechaLimite: ''
       };
       await fetchTareas();
@@ -95,6 +108,7 @@
     tareas.filter(t => {
       if (filtroDimension !== 'todas' && t.dimension !== filtroDimension) return false;
       if (filtroPrioridad !== 'todas' && t.prioridad !== filtroPrioridad) return false;
+      if (filtroMunicipio !== 'todos' && t.municipio !== filtroMunicipio) return false;
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
         const match = t.titulo.toLowerCase().includes(q) || 
@@ -103,7 +117,7 @@
         if (!match) return false;
       }
       return true;
-    })
+    }).sort((a, b) => Number(b.esPropia) - Number(a.esPropia))
   );
 
   // Métricas reactivas
@@ -156,14 +170,20 @@
       <option value="Probidad, Transparencia y Eficiencia Institucional">Probidad y Transparencia</option>
     </select>
 
+    <select bind:value={filtroMunicipio} aria-label="Filtrar por municipio" class="px-4 py-3 bg-white border border-gray-100 rounded-[4px] text-[12px] text-[#071D49]">
+      <option value="todos">Todos los municipios</option><option value="Regional">Regional</option>
+      {#each MUNICIPIOS_MFN as municipio}<option value={municipio}>{municipio}</option>{/each}
+    </select>
+
     <!-- Botón Crear -->
-    <button 
-      onclick={() => showModal = true} 
+    {#if auth.puedeEditar('arc')}<button
+      onclick={openModal}
       class="px-6 py-3 bg-[#071D49] hover:bg-black text-white rounded-full text-[13px] font-medium shadow-md transition-colors flex items-center gap-2 cursor-pointer"
     >
       <Icon name="add" className="w-[18px] h-[18px] text-[#1248AA]" stroke={2.5} />
       Nueva Tarea ARC
     </button>
+    {/if}
   </div>
 </header>
 
@@ -283,6 +303,7 @@
                 <span class="text-[12px] font-mono font-medium text-[#1248AA] bg-blue-50 px-2 py-0.5 rounded-md">
                   {tarea.codigo}
                 </span>
+                {#if tarea.esPropia}<span class="text-[11px] text-[#1248AA]">Mi tarea</span>{/if}
                 <span class="text-[12px] font-medium uppercase tracking-wider px-2 py-0.5 rounded-full {tarea.prioridad === 'Alta' ? 'bg-rose-50 text-rose-700' : tarea.prioridad === 'Media' ? 'bg-amber-50 text-amber-700' : 'bg-gray-100 text-gray-600'}">
                   {tarea.prioridad}
                 </span>
@@ -363,7 +384,7 @@
 </div>
 
 <!-- MODAL NUEVA TAREA ARC (RF8) -->
-{#if showModal}
+{#if showModal && auth.puedeEditar('arc')}
   <!-- svelte-ignore a11y_click_events_have_key_events -->
   <!-- svelte-ignore a11y_no_static_element_interactions -->
   <div transition:fade={{ duration: 180 }} class="fixed inset-0 bg-[#071D49]/20 backdrop-blur-sm z-50 flex items-center justify-center p-4" onclick={() => showModal = false}>
@@ -379,6 +400,11 @@
       </div>
 
       <form onsubmit={crearTarea} class="space-y-4">
+        <label class="block text-[12px] text-[#071D49]/70">Municipio
+          <select required bind:value={nuevaTarea.municipio} onchange={() => fetchAsignables(nuevaTarea.municipio)} class="mt-1 w-full bg-white border border-gray-200 rounded-[4px] px-4 py-3 text-[13px] text-[#071D49]">
+            {#each municipiosPermitidos as municipio}<option value={municipio}>{municipio}</option>{/each}
+          </select>
+        </label>
         <div>
           <label for="field-1" class="block text-[12px] font-medium uppercase tracking-normal text-[#071D49]/40 mb-1.5">Título de la Meta</label>
           <input id="field-1" required bind:value={nuevaTarea.titulo} type="text" class="w-full bg-white border border-gray-200 focus:border-[#1248AA] focus:ring-1 focus:ring-[#1248AA] rounded-[4px] px-4 py-3 text-[13px] text-[#071D49] shadow-sm transition-all" placeholder="Ej: Implementación de Módulo Financiero..." />
@@ -412,7 +438,9 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label for="field-5" class="block text-[12px] font-medium uppercase tracking-normal text-[#071D49]/40 mb-1.5">Responsable Asignado</label>
-            <input id="field-5" required bind:value={nuevaTarea.responsable} type="text" class="w-full bg-white border border-gray-200 rounded-[4px] px-4 py-3 text-[13px] text-[#071D49]" placeholder="Ej: Ing. Carlos Méndez" />
+            <select id="field-5" required bind:value={nuevaTarea.responsableId} class="w-full bg-white border border-gray-200 rounded-[4px] px-4 py-3 text-[13px] text-[#071D49]">
+              <option value="">Seleccione una cuenta</option>{#each asignables as persona}<option value={persona.id}>{persona.nombre}</option>{/each}
+            </select>
           </div>
 
           <div>

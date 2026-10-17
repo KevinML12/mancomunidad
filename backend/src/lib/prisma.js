@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { auditContext, BUSINESS_MODELS, hash } from './integrity.js';
 const base = new PrismaClient();
+export const rawPrisma = base;
 const prisma = base.$extends({ query: { $allModels: { async $allOperations({ model, operation, args, query }) {
   const name = model[0].toLowerCase() + model.slice(1);
   const context = auditContext.getStore();

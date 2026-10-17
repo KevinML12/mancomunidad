@@ -14,19 +14,9 @@ export const AREAS = [
   { key:'capacitacion', path:'/gestion-personal/capacitacion', title:'Capacitación', description:'Formación y certificaciones.' },
   { key:'transparencia', path:'/transparencia', title:'Transparencia', description:'Consulta ciudadana de información publicada.' }
 ];
-const PRIORITIES = {
-  GE:['proyectos','arc','financiero','gobernanza'],
-  JD:['gobernanza','financiero','proyectos'],
-  DIRADMIN:['financiero','convenios','gobernanza'],
-  DIRPROY:['proyectos','arc','estadisticas'],
-  AUD:['inteligencia','financiero','gobernanza','proyectos'],
-  RRHH:['estructura','ausencias','evaluaciones','reclutamiento'],
-  JI:['ausencias','evaluaciones','disciplina'],
-  EMP:['ausencias','evaluaciones','capacitacion']
-};
-export function navigationFor(role, permissions) {
+export function navigationFor(_role, permissions) {
   const allowed = AREAS.filter(area => permissions?.modulos?.includes(area.key));
-  const priorities = PRIORITIES[role] || allowed.slice(0,4).map(area => area.key);
+  const priorities = Array.isArray(permissions?.prioritarios) ? permissions.prioritarios.slice(0,4) : allowed.slice(0,4).map(area => area.key);
   const primary = priorities.map(key => allowed.find(area => area.key === key)).filter(Boolean);
   return { primary, secondary:allowed.filter(area => !primary.some(item => item.key === area.key)) };
 }

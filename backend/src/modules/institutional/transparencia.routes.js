@@ -5,6 +5,7 @@ import { Router } from 'express';
 import prisma from '../../lib/prisma.js';
 import { requireAuth, requireAppAdmin } from '../../middleware/auth.js';
 import { mediaUrl } from '../../services/media.js';
+import { pageWindow } from '../../lib/pagination.js';
 
 const router = Router();
 
@@ -23,13 +24,15 @@ router.get('/publicaciones/:id/media', async (req, res, next) => {
 // GET /api/v1/transparencia/publico - Acceso público ciudadano libre (RF5, sin autenticación)
 router.get('/publico', async (req, res, next) => {
   try {
+    const page = pageWindow(req.query);
     const publicaciones = await prisma.publicacionTransparencia.findMany({
       where: { visibilidad: true, tipo: { not: 'SolicitudUIP' } },
-      orderBy: { fechaPublicacion: 'desc' }
+      orderBy: [{ fechaPublicacion: 'desc' }, { id: 'desc' }], skip: page.skip, take: page.take,
     });
+    const currentPublications = publicaciones.slice(0, page.limit);
 
     const proyectosPublicos = await prisma.proyecto.findMany({
-      where: { estado: { not: 'Cancelado' }, id: { in: publicaciones.filter(p => p.tipo === 'Proyecto' && p.referenciaId !== null).map(p => p.referenciaId) } },
+      where: { estado: { not: 'Cancelado' }, id: { in: currentPublications.filter(p => p.tipo === 'Proyecto' && p.referenciaId !== null).map(p => p.referenciaId) } },
       select: {
         id: true,
         nombre: true,
@@ -45,30 +48,30 @@ router.get('/publico', async (req, res, next) => {
       }
     });
 
-    const censos = await prisma.censoComunitarioASH.findMany({ where: { municipio: { in: MUNICIPIOS_MFN } } });
-    let totalViviendas = 0;
-    let conAgua = 0;
-    let conSaneamiento = 0;
-    let clorados = 0;
-    censos.forEach(c => {
-      totalViviendas += c.viviendasTotales;
-      conAgua += c.viviendasConAgua;
-      conSaneamiento += c.viviendasConSaneamiento;
-      if (c.ppmCloroResidual >= 0.5 && c.ppmCloroResidual <= 1.5) clorados++;
-    });
+    const censusWhere = { municipio: { in: MUNICIPIOS_MFN } };
+    const [totals, clorados] = await Promise.all([
+      prisma.censoComunitarioASH.aggregate({ where: censusWhere,
+        _sum: { viviendasTotales: true, viviendasConAgua: true, viviendasConSaneamiento: true }, _count: { _all: true } }),
+      prisma.censoComunitarioASH.count({ where: { ...censusWhere, ppmCloroResidual: { gte: 0.5, lte: 1.5 } } }),
+    ]);
+    const totalViviendas = totals._sum.viviendasTotales || 0;
+    const conAgua = totals._sum.viviendasConAgua || 0;
+    const conSaneamiento = totals._sum.viviendasConSaneamiento || 0;
+    const totalCensos = totals._count._all;
 
     const estadisticas = {
       coberturaAgua: totalViviendas > 0 ? Number(((conAgua / totalViviendas) * 100).toFixed(1)) : 0,
       coberturaSaneamiento: totalViviendas > 0 ? Number(((conSaneamiento / totalViviendas) * 100).toFixed(1)) : 0,
-      cloroConforme: censos.length > 0 ? Number(((clorados / censos.length) * 100).toFixed(1)) : 0,
+      cloroConforme: totalCensos > 0 ? Number(((clorados / totalCensos) * 100).toFixed(1)) : 0,
       totalViviendas,
-      totalCensos: censos.length
+      totalCensos
     };
 
     res.json({
       portal: 'Portal de Transparencia y Datos Abiertos · Mancomunidad Frontera del Norte',
       marcoLegal: 'Ley de Acceso a la Información Pública (Decreto 57-2008)',
-      publicaciones,
+      publicaciones: currentPublications,
+      nextPage: publicaciones.length > page.limit ? page.page + 1 : null,
       proyectosPublicos,
       estadisticas
     });
@@ -134,12 +137,13 @@ router.put('/:id/visibilidad', requireAuth, requireAppAdmin, async (req, res, ne
   try {
     const id = Number(req.params.id);
     const { visibilidad } = req.body;
+    if (!Number.isSafeInteger(id) || id < 1 || typeof visibilidad !== 'boolean') return res.status(400).json({ error: 'Visibilidad inválida' });
     const publication = await prisma.publicacionTransparencia.findUnique({ where: { id } });
     if (publication?.tipo === 'SolicitudUIP') return res.status(400).json({ error: 'Los expedientes de solicitudes son privados' });
 
     const updated = await prisma.publicacionTransparencia.update({
       where: { id },
-      data: { visibilidad: Boolean(visibilidad) }
+      data: { visibilidad }
     });
 
     res.json(updated);
@@ -152,19 +156,23 @@ router.put('/:id/visibilidad', requireAuth, requireAppAdmin, async (req, res, ne
 router.post('/', requireAuth, requireAppAdmin, async (req, res, next) => {
   try {
     const { tipo, titulo, resumen, referenciaId } = req.body;
-
-    const count = await prisma.publicacionTransparencia.count();
-    const codigo = `PUB-2024-${(count + 1).toString().padStart(3, '0')}`;
+    if (!['Aviso', 'Proyecto', 'Acta', 'Estadística', 'Finanzas', 'Convocatoria', 'Documento'].includes(tipo) ||
+        typeof titulo !== 'string' || !titulo.trim() || titulo.length > 160 ||
+        typeof resumen !== 'string' || !resumen.trim() || resumen.length > 3000 ||
+        (referenciaId != null && (!Number.isSafeInteger(Number(referenciaId)) || Number(referenciaId) < 1))) {
+      return res.status(400).json({ error: 'Publicación inválida' });
+    }
+    const codigo = `PUB-${new Date().getUTCFullYear()}-${crypto.randomBytes(5).toString('hex').toUpperCase()}`;
 
     const nueva = await prisma.publicacionTransparencia.create({
       data: {
         codigo,
         tipo,
-        titulo,
-        resumen,
+        titulo: titulo.trim(),
+        resumen: resumen.trim(),
         referenciaId: referenciaId ? Number(referenciaId) : null,
         visibilidad: true,
-        autorizadoPor: req.user?.nombre || 'Gerencia Ejecutiva'
+        autorizadoPor: req.user?.nombre || req.user.correo
       }
     });
 

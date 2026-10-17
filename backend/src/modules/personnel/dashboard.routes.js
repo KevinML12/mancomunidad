@@ -10,15 +10,8 @@ router.use(requireAuth, requirePermission('dashboard'));
 // Gerencia/Dirección Admin/Auditoría ven cumplimiento institucional, RRHH
 // ve pendientes operativos, un jefe de equipo ve las solicitudes de su
 // equipo, y un Empleado ve su propio saldo e historial.
-const TIER_POR_ROL = {
-  JD: 'institucional', GE: 'institucional', DIRADMIN: 'institucional', AUD: 'institucional',
-  RRHH: 'operativo',
-  JI: 'equipo', DIRPROY: 'equipo',
-  EMP: 'personal',
-};
-
 router.get('/', async (req, res) => {
-  const tier = TIER_POR_ROL[req.user.rol] || 'institucional';
+  const tier = req.user.permisos?.alcance?.tablero || 'personal';
   if (tier === 'personal') return res.json(await tableroPersonal(req.user));
   if (tier === 'equipo') return res.json(await tableroEquipo(req.user));
   if (tier === 'operativo') return res.json(await tableroOperativo());
@@ -26,19 +19,17 @@ router.get('/', async (req, res) => {
 });
 
 async function tableroInstitucional() {
-  const [totalColaboradores, evaluacionesPendientes, contratosSinRegistrar, capacitaciones, ausenciasPendientes, faltasSinSancion] =
+  const [totalColaboradores, evaluacionesPendientes, contratosSinRegistrar, totalHerramientas, herramientasAlDia, capacitacionesPendientes, ausenciasPendientes, faltasSinSancion] =
     await Promise.all([
       prisma.colaborador.count({ where: { estado: 'Activo' } }),
       prisma.evaluacionDesempeno.count({ where: { OR: [{ resultado: null }, { resultado: 'Pendiente' }] } }),
       prisma.contrato.count({ where: { fechaRegistroContraloria: null } }),
-      prisma.capacitacion.findMany({ include: { certificaciones: true } }),
+      prisma.capacitacion.count(),
+      prisma.capacitacion.count({ where: { certificaciones: { some: {}, every: { firmado: true } } } }),
+      prisma.capacitacion.findMany({ where: { certificaciones: { none: {} } }, select: { nombreHerramienta: true }, take: 8 }),
       prisma.solicitudAusencia.count({ where: { estado: 'Pendiente' } }),
-      prisma.faltaDisciplinaria.findMany({ where: { sancion: null }, include: { colaborador: true } }),
+      prisma.faltaDisciplinaria.findMany({ where: { sancion: null }, include: { colaborador: true }, take: 8 }),
     ]);
-
-  const herramientasAlDia = capacitaciones.filter(
-    (c) => c.certificaciones.length > 0 && c.certificaciones.every((cert) => cert.firmado),
-  ).length;
 
   const alertas = [];
   if (contratosSinRegistrar > 0) {
@@ -56,26 +47,24 @@ async function tableroInstitucional() {
       texto: `Falta sin resolver de ${f.colaborador.nombre} — definir audiencia (plazo: 3 días hábiles)`,
     });
   }
-  const capacitacionesPendientes = capacitaciones.filter((c) => c.certificaciones.length === 0);
   for (const c of capacitacionesPendientes) {
     alertas.push({ tipo: 'atencion', texto: `Capacitación "${c.nombreHerramienta}" sin programar` });
   }
 
   return {
     vista: 'institucional',
-    kpis: { herramientasAlDia, totalHerramientas: capacitaciones.length, evaluacionesPendientes, contratosSinRegistrar, totalColaboradores },
+    kpis: { herramientasAlDia, totalHerramientas, evaluacionesPendientes, contratosSinRegistrar, totalColaboradores },
     alertas: alertas.slice(0, 8),
   };
 }
 
 async function tableroOperativo() {
-  const [evaluacionesPendientes, contratosSinRegistrar, capacitaciones, totalColaboradores] = await Promise.all([
+  const [evaluacionesPendientes, contratosSinRegistrar, capacitacionesSinProgramar, totalColaboradores] = await Promise.all([
     prisma.evaluacionDesempeno.count({ where: { OR: [{ resultado: null }, { resultado: 'Pendiente' }] } }),
     prisma.contrato.count({ where: { fechaRegistroContraloria: null } }),
-    prisma.capacitacion.findMany({ include: { certificaciones: true } }),
+    prisma.capacitacion.count({ where: { fecha: null } }),
     prisma.colaborador.count({ where: { estado: 'Activo' } }),
   ]);
-  const capacitacionesSinProgramar = capacitaciones.filter((c) => !c.fecha).length;
 
   const alertas = [];
   if (contratosSinRegistrar > 0) alertas.push({ tipo: 'urgente', texto: `${contratosSinRegistrar} contrato(s) por registrar ante la Contraloría` });
@@ -93,19 +82,20 @@ async function tableroEquipo(user) {
   const scope = (await colaboradoresVisiblesPara(user)) || [];
   const subordinadosIds = scope.filter((id) => id !== user.colaboradorId);
 
-  const [ausenciasPendientes, evaluacionesPendientes, faltasSinSancion, tamanoEquipo] = await Promise.all([
+  const [ausenciasPendientes, alertasAusencias, evaluacionesPendientes, faltasSinSancion, tamanoEquipo] = await Promise.all([
+    prisma.solicitudAusencia.count({ where: { colaboradorId: { in: scope }, estado: 'Pendiente' } }),
     prisma.solicitudAusencia.findMany({
       where: { colaboradorId: { in: scope }, estado: 'Pendiente' },
-      include: { colaborador: true },
+      include: { colaborador: true }, take: 8,
     }),
     prisma.evaluacionDesempeno.count({
       where: { colaboradorId: { in: subordinadosIds }, OR: [{ resultado: null }, { resultado: 'Pendiente' }] },
     }),
-    prisma.faltaDisciplinaria.findMany({ where: { colaboradorId: { in: scope }, sancion: null }, include: { colaborador: true } }),
+    prisma.faltaDisciplinaria.findMany({ where: { colaboradorId: { in: scope }, sancion: null }, include: { colaborador: true }, take: 8 }),
     prisma.colaborador.count({ where: { id: { in: subordinadosIds } } }),
   ]);
 
-  const alertas = ausenciasPendientes.map((a) => ({
+  const alertas = alertasAusencias.map((a) => ({
     tipo: 'atencion',
     texto: `${a.colaborador.nombre} solicitó ${a.tipo.toLowerCase()} — pendiente de tu aprobación`,
   }));
@@ -115,7 +105,7 @@ async function tableroEquipo(user) {
 
   return {
     vista: 'equipo',
-    kpis: { tamanoEquipo, ausenciasPendientes: ausenciasPendientes.length, evaluacionesPendientes },
+    kpis: { tamanoEquipo, ausenciasPendientes, evaluacionesPendientes },
     alertas: alertas.slice(0, 8),
   };
 }

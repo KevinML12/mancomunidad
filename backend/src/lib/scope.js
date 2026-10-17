@@ -7,16 +7,14 @@ import prisma from './prisma.js';
 // equipo (Jefe Inmediato, Dirección de Proyectos, Dirección Administrativa
 // y Financiera) solo ve su propio expediente y el de sus subordinados
 // directos (Puesto.jefeInmediatoId). Un Empleado solo ve lo propio.
-const ROLES_ALCANCE_AMPLIO = ['JD', 'GE', 'RRHH', 'AUD'];
-const ROLES_ALCANCE_EQUIPO = ['DIRADMIN', 'DIRPROY', 'JI'];
 
 // Devuelve null cuando no debe filtrarse (ve todo); un arreglo de
 // colaboradorId cuando sí — vacío si el usuario no tiene expediente propio.
 export async function colaboradoresVisiblesPara(user) {
-  if (ROLES_ALCANCE_AMPLIO.includes(user.rol)) return null;
+  if (user.permisos?.alcance?.personal === 'global') return null;
   if (!user.colaboradorId) return [];
 
-  if (ROLES_ALCANCE_EQUIPO.includes(user.rol)) {
+  if (user.permisos?.alcance?.personal === 'equipo') {
     const propio = await prisma.colaborador.findUnique({
       where: { id: user.colaboradorId },
       select: { puestoId: true },

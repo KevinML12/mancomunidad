@@ -4,6 +4,9 @@ import { choice, numeric, text } from '../../services/validation.js';
 import { ValidationError } from '../../services/errors.js';
 import prisma from '../../lib/prisma.js';
 import { requireAuth, requirePermission } from '../../middleware/auth.js';
+import { canAccessMunicipio, municipalityWhere } from '../../lib/municipality-scope.js';
+import crypto from 'node:crypto';
+import { pageWindow, sendPage } from '../../lib/pagination.js';
 
 const router = Router();
 router.use(requireAuth, requirePermission('estadisticas'));
@@ -11,10 +14,14 @@ router.use(requireAuth, requirePermission('estadisticas'));
 // GET /api/v1/estadisticas/censos - Listado de censos comunitarios
 router.get('/censos', async (req, res, next) => {
   try {
+    const page = pageWindow(req.query);
     const { municipio, search } = req.query;
     // Operational view follows the active territory; an explicit municipality query preserves historical access.
-    const where = { municipio: { in: MUNICIPIOS_MFN } };
-    if (municipio) where.municipio = municipio;
+    const where = municipalityWhere(req.user);
+    if (municipio) {
+      if (!canAccessMunicipio(req.user, municipio)) return res.json([]);
+      where.municipio = municipio;
+    } else if (!Object.keys(where).length) where.municipio = { in: MUNICIPIOS_MFN };
     if (search) {
       where.OR = [
         { comunidad: { contains: search } },
@@ -25,10 +32,10 @@ router.get('/censos', async (req, res, next) => {
 
     const censos = await prisma.censoComunitarioASH.findMany({
       where,
-      orderBy: { fechaLevantamiento: 'desc' }
+      orderBy: [{ fechaLevantamiento: 'desc' }, { id: 'desc' }], skip: page.skip, take: page.take,
     });
 
-    res.json(censos);
+    sendPage(res, censos, page);
   } catch (err) {
     next(err);
   }
@@ -37,35 +44,35 @@ router.get('/censos', async (req, res, next) => {
 // GET /api/v1/estadisticas/consolidado - Motor estadístico de cobertura y déficit regional (RF16)
 router.get('/consolidado', async (req, res, next) => {
   try {
-    const censos = await prisma.censoComunitarioASH.findMany({ where: { municipio: { in: MUNICIPIOS_MFN } } });
+    const scoped = municipalityWhere(req.user);
+    const where = Object.keys(scoped).length ? scoped : { municipio: { in: MUNICIPIOS_MFN } };
+    const [censos, clorados, calidadAceptable] = await Promise.all([
+      prisma.censoComunitarioASH.groupBy({ by: ['municipio'], where,
+        _sum: { viviendasTotales: true, viviendasConAgua: true, viviendasConSaneamiento: true }, _count: { _all: true } }),
+      prisma.censoComunitarioASH.count({ where: { ...where, sistemaCloracion: true } }),
+      prisma.censoComunitarioASH.count({ where: { ...where, ppmCloroResidual: { gte: 0.5, lte: 1.5 } } }),
+    ]);
 
     let totalViviendas = 0;
     let conAgua = 0;
     let conSaneamiento = 0;
-    let sistemasClorados = 0;
-    let conCalidadAceptable = 0; // Cloro residual entre 0.5 y 1.5 ppm
+    const sistemasClorados = clorados;
+    const conCalidadAceptable = calidadAceptable;
+    let totalCensos = 0;
 
     const porMunicipio = {};
 
     censos.forEach(c => {
-      totalViviendas += c.viviendasTotales;
-      conAgua += c.viviendasConAgua;
-      conSaneamiento += c.viviendasConSaneamiento;
-      if (c.sistemaCloracion) sistemasClorados++;
-      if (c.ppmCloroResidual >= 0.5 && c.ppmCloroResidual <= 1.5) conCalidadAceptable++;
-
-      if (!porMunicipio[c.municipio]) {
-        porMunicipio[c.municipio] = {
-          viviendas: 0,
-          conAgua: 0,
-          conSaneamiento: 0,
-          censos: 0
-        };
-      }
-      porMunicipio[c.municipio].viviendas += c.viviendasTotales;
-      porMunicipio[c.municipio].conAgua += c.viviendasConAgua;
-      porMunicipio[c.municipio].conSaneamiento += c.viviendasConSaneamiento;
-      porMunicipio[c.municipio].censos++;
+      totalViviendas += c._sum.viviendasTotales || 0;
+      conAgua += c._sum.viviendasConAgua || 0;
+      conSaneamiento += c._sum.viviendasConSaneamiento || 0;
+      totalCensos += c._count._all;
+      porMunicipio[c.municipio] = {
+        viviendas: c._sum.viviendasTotales || 0,
+        conAgua: c._sum.viviendasConAgua || 0,
+        conSaneamiento: c._sum.viviendasConSaneamiento || 0,
+        censos: c._count._all,
+      };
     });
 
     const porcentajeAgua = totalViviendas > 0 ? Number(((conAgua / totalViviendas) * 100).toFixed(1)) : 0;
@@ -78,7 +85,7 @@ router.get('/consolidado', async (req, res, next) => {
       conAgua,
       conSaneamiento,
       sistemasClorados,
-      totalComunidadesCensadas: censos.length,
+      totalComunidadesCensadas: totalCensos,
       coberturaAguaPorcentaje: porcentajeAgua,
       coberturaSaneamientoPorcentaje: porcentajeSaneamiento,
       deficitAguaPorcentaje: Number(deficitAgua.toFixed(1)),
@@ -94,6 +101,7 @@ router.get('/consolidado', async (req, res, next) => {
 router.post('/censos', requirePermission('estadisticas', 'editar'), async (req, res, next) => {
   try {
     const municipio = choice(req.body.municipio, MUNICIPIOS_MFN, 'Municipio');
+    if (!canAccessMunicipio(req.user, municipio)) return res.status(403).json({ error: 'Municipio fuera de su ámbito autorizado' });
     const comunidad = text(req.body.comunidad, 'Comunidad');
     const options = { integer: true, max: 2147483647 };
     const viviendasTotales = numeric(req.body.viviendasTotales, 'Total de viviendas', { ...options, min: 1 });
@@ -105,9 +113,8 @@ router.post('/censos', requirePermission('estadisticas', 'editar'), async (req, 
     const ppmCloroResidual = numeric(req.body.ppmCloroResidual, 'Cloro residual');
     const tecnicoResponsable = text(req.body.tecnicoResponsable ?? 'Técnico OMAS', 'Técnico responsable');
 
-    const count = await prisma.censoComunitarioASH.count();
     const cleanMun = municipio.toUpperCase().slice(0, 3);
-    const codigo = `ASH-2024-${cleanMun}-${(count + 1).toString().padStart(3, '0')}`;
+    const codigo = `ASH-${new Date().getUTCFullYear()}-${cleanMun}-${crypto.randomBytes(4).toString('hex').toUpperCase()}`;
 
     const censo = await prisma.censoComunitarioASH.create({
       data: {

@@ -8,9 +8,14 @@ import { numeric, text, url } from './validation.js';
 export const DOCUMENT_TYPES = {
   acta:{module:'gobernanza',model:'actaAsamblea',field:'urlPdfEscaneado'},
   acuerdo:{module:'gobernanza',model:'acuerdoGobernanza',field:'evidenciaUrl'},
-  convenio:{module:'convenios',model:'convenioInstitucional',field:'urlDocumento'}
+  convenio:{module:'convenios',model:'convenioInstitucional',field:'urlDocumento'},
+  factura:{module:'financiero',model:'transaccionFinanciera',field:'urlComprobante'},
 };
 export const MAX_DOCUMENT_BYTES = 10 * 1024 * 1024;
+const PHOTO_BYTES = 5 * 1024 * 1024;
+const mimeFor = claim => claim.tipo === 'factura' ? claim.mime : 'application/pdf';
+const extensionFor = claim => claim.tipo === 'factura' ? claim.mime === 'image/png' ? 'png' : 'jpg' : 'pdf';
+const maxFor = tipo => tipo === 'factura' ? PHOTO_BYTES : MAX_DOCUMENT_BYTES;
 const REFERENCE_PREFIX = 'r2://';
 export class DocumentServiceError extends Error {
   constructor(message,status=503) { super(message); this.status=status; }
@@ -36,24 +41,29 @@ export function documentScope(tipo) {
 function verifyToken(token,type) {
   try {
     const payload=jwt.verify(token,process.env.JWT_SECRET,{algorithms:['HS256']});
-    if (payload.type!==type || !Object.hasOwn(DOCUMENT_TYPES,payload.tipo) || !Number.isInteger(payload.sub) || !/^[a-f0-9]{64}$/.test(payload.sha256) || !Number.isInteger(payload.bytes) || payload.bytes < 8 || payload.bytes > MAX_DOCUMENT_BYTES || payload.bucket!==process.env.R2_BUCKET || !/^[a-f0-9-]{36}$/.test(payload.uploadId)) throw new Error();
+    if (payload.type!==type || !Object.hasOwn(DOCUMENT_TYPES,payload.tipo) || !Number.isInteger(payload.sub) || !/^[a-f0-9]{64}$/.test(payload.sha256) || !Number.isInteger(payload.bytes) || payload.bytes < 8 || payload.bytes > maxFor(payload.tipo) ||
+        (payload.tipo === 'factura' && !['image/png','image/jpeg'].includes(payload.mime)) || payload.bucket!==process.env.R2_BUCKET || !/^[a-f0-9-]{36}$/.test(payload.uploadId)) throw new Error();
     return payload;
-  } catch { throw new ValidationError('La autorización del archivo es inválida o venció. Seleccione el PDF nuevamente'); }
+  } catch { throw new ValidationError('La autorización del archivo es inválida o venció. Seleccione el archivo nuevamente'); }
 }
-const finalKey = claim => `mfn/documentos/${claim.tipo}/${claim.uploadId}.pdf`;
-const stagingKey = claim => `mfn/pendientes/${claim.tipo}/${claim.uploadId}.pdf`;
+const finalKey = claim => `mfn/documentos/${claim.tipo}/${claim.uploadId}.${extensionFor(claim)}`;
+const stagingKey = claim => `mfn/pendientes/${claim.tipo}/${claim.uploadId}.${extensionFor(claim)}`;
 function reference(claim) {
-  return REFERENCE_PREFIX+jwt.sign({type:'document_reference',sub:claim.sub,tipo:claim.tipo,bucket:claim.bucket,uploadId:claim.uploadId,sha256:claim.sha256,bytes:claim.bytes,nombre:claim.nombre,iat:claim.iat},process.env.JWT_SECRET,{algorithm:'HS256'});
+  return REFERENCE_PREFIX+jwt.sign({type:'document_reference',sub:claim.sub,tipo:claim.tipo,mime:claim.mime,bucket:claim.bucket,uploadId:claim.uploadId,sha256:claim.sha256,bytes:claim.bytes,nombre:claim.nombre,iat:claim.iat},process.env.JWT_SECRET,{algorithm:'HS256'});
 }
 export async function prepareDocument(userId,body) {
   documentScope(body.tipo);
-  const bytes=numeric(body.bytes,'Tamaño del archivo',{min:8,max:MAX_DOCUMENT_BYTES,integer:true});
+  const bytes=numeric(body.bytes,'Tamaño del archivo',{min:8,max:maxFor(body.tipo),integer:true});
   const nombre=text(body.nombre,'Nombre del archivo',{max:180});
-  if (!nombre.toLowerCase().endsWith('.pdf') || body.tipoMime!=='application/pdf' || typeof body.sha256!=='string' || !/^[a-f0-9]{64}$/.test(body.sha256)) throw new ValidationError('Seleccione un PDF de hasta 10 MB');
+  const photo = body.tipo === 'factura';
+  const validType = photo ? (body.tipoMime === 'image/png' && /\.png$/i.test(nombre)) ||
+    (body.tipoMime === 'image/jpeg' && /\.(jpg|jpeg)$/i.test(nombre)) :
+    body.tipoMime === 'application/pdf' && /\.pdf$/i.test(nombre);
+  if (!validType || typeof body.sha256!=='string' || !/^[a-f0-9]{64}$/.test(body.sha256)) throw new ValidationError(photo ? 'Seleccione una fotografía PNG o JPEG de hasta 5 MB' : 'Seleccione un PDF de hasta 10 MB');
   const client=storage();
-  const claim={type:'document_upload',sub:userId,tipo:body.tipo,bucket:process.env.R2_BUCKET,uploadId:crypto.randomUUID(),sha256:body.sha256,bytes,nombre,iat:Math.floor(Date.now()/1000)};
+  const claim={type:'document_upload',sub:userId,tipo:body.tipo,mime:body.tipoMime,bucket:process.env.R2_BUCKET,uploadId:crypto.randomUUID(),sha256:body.sha256,bytes,nombre,iat:Math.floor(Date.now()/1000)};
   const ticket=jwt.sign(claim,process.env.JWT_SECRET,{algorithm:'HS256',expiresIn:'10m'});
-  const uploadUrl=await getSignedUrl(client,new PutObjectCommand({Bucket:claim.bucket,Key:stagingKey(claim),ContentType:'application/pdf',ContentLength:bytes}),{expiresIn:600});
+  const uploadUrl=await getSignedUrl(client,new PutObjectCommand({Bucket:claim.bucket,Key:stagingKey(claim),ContentType:claim.mime,ContentLength:bytes}),{expiresIn:600});
   return {ticket,uploadUrl,expiresIn:600};
 }
 async function headIfPresent(client,key) {
@@ -65,37 +75,41 @@ export async function finishDocument(userId,ticket) {
   if (claim.sub!==userId) throw new DocumentServiceError('Este envío pertenece a otra cuenta',403);
   const client=storage();
   const already=await headIfPresent(client,finalKey(claim));
-  if (already && already.Metadata?.sha256===claim.sha256 && already.ContentLength===claim.bytes) return {reference:reference(claim),nombre:claim.nombre,sha256:claim.sha256,bytes:claim.bytes};
+  if (already && already.Metadata?.sha256===claim.sha256 && already.ContentLength===claim.bytes && already.ContentType===mimeFor(claim)) return {reference:reference(claim),nombre:claim.nombre,sha256:claim.sha256,bytes:claim.bytes};
   const head=await headIfPresent(client,stagingKey(claim));
-  if (!head || head.ContentLength!==claim.bytes || head.ContentType!=='application/pdf') throw new ValidationError('El PDF no terminó de subir o su tamaño no coincide. Reintente');
+  if (!head || head.ContentLength!==claim.bytes || head.ContentType!==mimeFor(claim)) throw new ValidationError('El archivo no terminó de subir o su tamaño no coincide. Reintente');
   const object=await client.send(new GetObjectCommand({Bucket:claim.bucket,Key:stagingKey(claim),IfMatch:head.ETag}));
   const chunks=[];let size=0;
   for await (const chunk of object.Body) {
     size+=chunk.length;
-    if (size>MAX_DOCUMENT_BYTES || size>claim.bytes) { object.Body.destroy?.(); throw new ValidationError('El archivo supera el tamaño autorizado'); }
+    if (size>maxFor(claim.tipo) || size>claim.bytes) { object.Body.destroy?.(); throw new ValidationError('El archivo supera el tamaño autorizado'); }
     chunks.push(chunk);
   }
   const buffer=Buffer.concat(chunks);
-  if (buffer.length!==claim.bytes || !buffer.subarray(0,8).toString('ascii').startsWith('%PDF-') || !/%%EOF\s*$/.test(buffer.subarray(-1024).toString('latin1')) || crypto.createHash('sha256').update(buffer).digest('hex')!==claim.sha256) throw new ValidationError('El contenido del PDF no coincide con el archivo seleccionado');
+  const validContent = claim.tipo === 'factura' ? claim.mime === 'image/png' ?
+    buffer.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10])) :
+    buffer[0]===255 && buffer[1]===216 && buffer.at(-2)===255 && buffer.at(-1)===217 :
+    buffer.subarray(0,8).toString('ascii').startsWith('%PDF-') && /%%EOF\s*$/.test(buffer.subarray(-1024).toString('latin1'));
+  if (buffer.length!==claim.bytes || !validContent || crypto.createHash('sha256').update(buffer).digest('hex')!==claim.sha256) throw new ValidationError('El contenido no coincide con el archivo seleccionado');
   // A separate final object preserves the verified bytes even if the temporary PUT URL is replayed.
-  await client.send(new PutObjectCommand({Bucket:claim.bucket,Key:finalKey(claim),Body:buffer,ContentType:'application/pdf',Metadata:{sha256:claim.sha256,bytes:String(claim.bytes)},ContentDisposition:'attachment'}));
+  await client.send(new PutObjectCommand({Bucket:claim.bucket,Key:finalKey(claim),Body:buffer,ContentType:mimeFor(claim),Metadata:{sha256:claim.sha256,bytes:String(claim.bytes)},ContentDisposition:'attachment'}));
   return {reference:reference(claim),nombre:claim.nombre,sha256:claim.sha256,bytes:claim.bytes};
 }
 export async function documentReference(value,tipo,userId,{existing}={}) {
   if (typeof value!=='string' || !value.startsWith(REFERENCE_PREFIX)) return url(value,'Documento');
   const claim=verifyToken(value.slice(REFERENCE_PREFIX.length),'document_reference');
-  if (claim.tipo!==tipo || (claim.sub!==userId && value!==existing)) throw new ValidationError('El PDF no corresponde a este tipo de registro o a su carga');
+  if (claim.tipo!==tipo || (claim.sub!==userId && value!==existing)) throw new ValidationError('El archivo no corresponde a este tipo de registro o a su carga');
   const stored=await headIfPresent(storage(),finalKey(claim));
-  if (!stored || stored.Metadata?.sha256!==claim.sha256 || stored.ContentLength!==claim.bytes) throw new ValidationError('No se encontró el PDF verificado. Selecciónelo nuevamente');
+  if (!stored || stored.Metadata?.sha256!==claim.sha256 || stored.ContentLength!==claim.bytes || stored.ContentType!==mimeFor(claim)) throw new ValidationError('No se encontró el archivo verificado. Selecciónelo nuevamente');
   return value;
 }
 export async function openDocument(value,tipo) {
   if (!value?.startsWith(REFERENCE_PREFIX)) return {url:url(value,'Documento',false),externo:true};
   const claim=verifyToken(value.slice(REFERENCE_PREFIX.length),'document_reference');
-  if (claim.tipo!==tipo) throw new ValidationError('El PDF no corresponde al registro');
+  if (claim.tipo!==tipo) throw new ValidationError('El archivo no corresponde al registro');
   const client=storage();const head=await headIfPresent(client,finalKey(claim));
-  if (!head || head.Metadata?.sha256!==claim.sha256 || head.ContentLength!==claim.bytes) throw new DocumentServiceError('El archivo no está disponible o requiere revisión',409);
+  if (!head || head.Metadata?.sha256!==claim.sha256 || head.ContentLength!==claim.bytes || head.ContentType!==mimeFor(claim)) throw new DocumentServiceError('El archivo no está disponible o requiere revisión',409);
   const safeName=claim.nombre.replace(/[^a-zA-Z0-9._-]/g,'_');
-  const downloadUrl=await getSignedUrl(client,new GetObjectCommand({Bucket:claim.bucket,Key:finalKey(claim),ResponseContentType:'application/pdf',ResponseContentDisposition:`inline; filename="${safeName}"`}),{expiresIn:120});
+  const downloadUrl=await getSignedUrl(client,new GetObjectCommand({Bucket:claim.bucket,Key:finalKey(claim),ResponseContentType:mimeFor(claim),ResponseContentDisposition:`inline; filename="${safeName}"`}),{expiresIn:120});
   return {url:downloadUrl,nombre:claim.nombre,sha256:claim.sha256,bytes:claim.bytes,expiresIn:120,externo:false};
 }

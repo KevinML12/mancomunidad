@@ -17,40 +17,40 @@ router.use(requireAuth, requirePermission('inteligencia'));
  */
 router.get('/dictamen', async (req, res, next) => {
   try {
-    const [censos, transacciones, proyectos, tareas] = await Promise.all([
-      prisma.censoComunitarioASH.findMany(),
-      prisma.transaccionFinanciera.findMany(),
-      prisma.proyecto.findMany(),
-      prisma.tareaARC.findMany()
+    const [censos, sinCloro, transacciones, proyectos] = await Promise.all([
+      prisma.censoComunitarioASH.groupBy({ by: ['municipio'], _sum: { viviendasTotales: true, viviendasConAgua: true, viviendasConSaneamiento: true }, _count: { _all: true } }),
+      prisma.censoComunitarioASH.groupBy({ by: ['municipio'], where: { OR: [{ ppmCloroResidual: { lt: 0.5 } }, { ppmCloroResidual: { gt: 1.5 } }] }, _count: { _all: true } }),
+      prisma.transaccionFinanciera.groupBy({ by: ['municipio'], where: { categoria: 'Cuota Ordinaria' }, _sum: { monto: true } }),
+      prisma.proyecto.groupBy({ by: ['municipio'], _sum: { presupuestoMunicipal: true, presupuestoCooperacion: true }, _count: { _all: true } })
     ]);
 
     const analisisPorMunicipio = MUNICIPIOS_MFN.map(muni => {
       // 1. Datos de Agua y Saneamiento (50% ponderación)
-      const censosMuni = censos.filter(c => c.municipio === muni);
-      const vivTotales = censosMuni.reduce((acc, c) => acc + c.viviendasTotales, 0);
-      const vivAgua = censosMuni.reduce((acc, c) => acc + c.viviendasConAgua, 0);
-      const vivSan = censosMuni.reduce((acc, c) => acc + c.viviendasConSaneamiento, 0);
-      const sinCloro = censosMuni.filter(c => c.ppmCloroResidual < 0.5 || c.ppmCloroResidual > 1.5).length;
+      const census = censos.find(c => c.municipio === muni);
+      const vivTotales = census?._sum.viviendasTotales || 0;
+      const vivAgua = census?._sum.viviendasConAgua || 0;
+      const vivSan = census?._sum.viviendasConSaneamiento || 0;
+      const censusCount = census?._count._all || 0;
+      const riskCount = sinCloro.find(c => c.municipio === muni)?._count._all || 0;
 
       const cobAgua = vivTotales > 0 ? (vivAgua / vivTotales) * 100 : null;
       const defAgua = 100 - cobAgua;
       const cobSan = vivTotales > 0 ? (vivSan / vivTotales) * 100 : null;
       const defSan = 100 - cobSan;
-      const pctCloroRiesgo = censosMuni.length > 0 ? (sinCloro / censosMuni.length) * 100 : 50;
+      const pctCloroRiesgo = censusCount > 0 ? (riskCount / censusCount) * 100 : 50;
 
       // 2. Solvencia Financiera de Cuotas (25% ponderación)
-      const cuotas = transacciones.filter(t => t.municipio && (t.municipio.includes(muni) || muni.includes(t.municipio)) && t.categoria === 'Cuota Ordinaria');
-      const aportado = cuotas.reduce((acc, c) => acc + c.monto, 0);
+      const cuotas = transacciones.filter(t => t.municipio && (t.municipio.includes(muni) || muni.includes(t.municipio)));
+      const aportado = cuotas.reduce((acc, c) => acc + (c._sum.monto || 0), 0);
       // Meta anual estimada: Q 180,000 (12 meses x Q 15,000)
       const porcentajeSolvencia = Math.min(100, (aportado / 180000) * 100);
       const factorCompromisoFiscal = 100 - porcentajeSolvencia;
 
       // 3. Saturación de Inversión y Hallazgos (25% ponderación)
-      const proysMuni = proyectos.filter(p => 
-        p.municipio === muni
-      );
-      const montoInvertido = proysMuni.reduce((acc, p) => acc + p.presupuestoMunicipal + p.presupuestoCooperacion, 0);
-      const factorDesatencionObras = proysMuni.length === 0 ? 100 : proysMuni.length === 1 ? 50 : 20;
+      const projectGroup = proyectos.find(p => p.municipio === muni);
+      const projectCount = projectGroup?._count._all || 0;
+      const montoInvertido = (projectGroup?._sum.presupuestoMunicipal || 0) + (projectGroup?._sum.presupuestoCooperacion || 0);
+      const factorDesatencionObras = projectCount === 0 ? 100 : projectCount === 1 ? 50 : 20;
 
 
       // Cálculo del Índice IPIM (0 a 100 pts)
@@ -76,7 +76,7 @@ router.get('/dictamen', async (req, res, next) => {
           deficitAgua: vivTotales > 0 ? Number(defAgua.toFixed(1)) : null,
           deficitSaneamiento: vivTotales > 0 ? Number(defSan.toFixed(1)) : null,
           viviendasAuditadas: vivTotales,
-          obrasActivas: proysMuni.length,
+          obrasActivas: projectCount,
           montoInvertido,
           solvenciaCuotas: Number(porcentajeSolvencia.toFixed(1))
         }

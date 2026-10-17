@@ -1,6 +1,7 @@
 <script>
   import { onMount } from 'svelte';
   import apiClient from '$lib/apiClient';
+  import { loadPaged, refreshWhenVisible } from '$lib/progressive-data.js';
   import Icon from '$lib/components/ui/Icon.svelte';
   import { toast } from 'svelte-sonner';
   import { auth } from '$lib/stores/auth.svelte.js';
@@ -43,11 +44,10 @@
   }
 
   const fetchProyectos = async () => {
-    loading = true;
+    if (!proyectos.length) loading = true;
     offlineSnapshot = null;
     try {
-      const { data } = await apiClient.get('/proyectos');
-      if (!Array.isArray(data)) throw new Error('Respuesta de proyectos inválida');
+      const data = await loadPaged('/proyectos', rows => { applyProjects(rows); loading = false; });
       await saveSnapshot(auth.user?.id, 'projects', data).catch((error) => console.warn('No se pudo guardar la copia local de proyectos:', error));
       applyProjects(data);
     } catch (err) {
@@ -68,9 +68,7 @@
     }
   };
 
-  onMount(() => {
-    fetchProyectos();
-  });
+  onMount(() => refreshWhenVisible(fetchProyectos));
 
   const handleSubmit = async (e) => {
     e.preventDefault();

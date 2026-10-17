@@ -2,18 +2,6 @@ import { createHash } from 'node:crypto';
 import prisma from '../lib/prisma.js';
 import { Prisma } from '@prisma/client';
 
-let tableReady;
-async function ensureTable() {
-  if (process.env.NODE_ENV !== 'production') return;
-  if (!tableReady) {
-    tableReady = prisma.$executeRawUnsafe('CREATE TABLE IF NOT EXISTS public."RateLimitBucket" ("key" TEXT NOT NULL PRIMARY KEY, "count" INTEGER NOT NULL, "untilMs" BIGINT NOT NULL)').catch(error => {
-      tableReady = null;
-      throw error;
-    });
-  }
-  await tableReady;
-}
-
 function clientAddress(req) {
   if (process.env.VERCEL === '1') return req.get('x-vercel-forwarded-for')?.split(',')[0]?.trim() || req.ip;
   return req.ip;
@@ -23,7 +11,6 @@ export function rateLimit(max, intervalMs = 15 * 60_000, { scope, keyFrom = clie
   if (!Number.isInteger(max) || max < 1) throw new Error('Límite inválido');
   return async (req, res, next) => {
     try {
-      await ensureTable();
       const identity = String(keyFrom(req) || clientAddress(req)).trim().toLowerCase();
       const namespace = scope || `${req.baseUrl}${req.path}`;
       const key = createHash('sha256').update(`${namespace}:${identity}`).digest('hex');

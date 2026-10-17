@@ -5,6 +5,7 @@
   let documentBusy = $state(false);
   import { onMount } from 'svelte';
   import apiClient from '$lib/apiClient';
+  import { loadPaged, refreshWhenVisible } from '$lib/progressive-data.js';
   import Icon from '$lib/components/ui/Icon.svelte';
   import { toast } from 'svelte-sonner';
   import { auth } from '$lib/stores/auth.svelte.js';
@@ -46,17 +47,16 @@
   }
 
   async function fetchActas() {
-    loading = true;
+    if (!actas.length) loading = true;
     try {
-      const { data } = await apiClient.get('/gobernanza/actas');
-      if (Array.isArray(data)) {
-        actas = data;
+      await loadPaged('/gobernanza/actas', data => {
+        actas = data; loading = false;
         if (data.length > 0 && !selectedActa) {
           selectedActa = data[0];
         } else if (selectedActa) {
           selectedActa = data.find(a => a.id === selectedActa.id) || data[0] || null;
         }
-      }
+      });
     } catch (err) {
       console.error('Error al cargar actas de la base de datos:', err);
       toast.error('No se pudo cargar el repositorio de actas de la BD');
@@ -65,9 +65,7 @@
     }
   }
 
-  onMount(() => {
-    fetchActas();
-  });
+  onMount(() => refreshWhenVisible(fetchActas));
 
   // Métricas reactivas de gobernanza
   let todosLosAcuerdos = $derived(actas.flatMap(a => a.acuerdos || []));

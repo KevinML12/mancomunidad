@@ -2,17 +2,19 @@ import { Router } from 'express';
 import prisma from '../../lib/prisma.js';
 import { requireAuth, requirePermission } from '../../middleware/auth.js';
 import { logAction } from '../../lib/audit.js';
+import { pageWindow, sendPage } from '../../lib/pagination.js';
 
 const router = Router();
 router.use(requireAuth, requirePermission('estructura'));
 
 // RF-01
 router.get('/', async (req, res) => {
+  const page = pageWindow(req.query);
   const puestos = await prisma.puesto.findMany({
     include: { unidad: true, jefeInmediato: true, _count: { select: { colaboradores: true } } },
-    orderBy: { id: 'asc' },
+    orderBy: { id: 'asc' }, skip: page.skip, take: page.take,
   });
-  res.json(puestos);
+  sendPage(res, puestos, page);
 });
 
 router.post('/', requirePermission('estructura', 'editar'), async (req, res) => {

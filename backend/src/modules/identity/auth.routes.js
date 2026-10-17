@@ -23,6 +23,7 @@ function serialize(usuario) {
     nombre: displayName(usuario),
     puesto: usuario.colaborador?.puesto?.nombre || null,
     colaboradorId: usuario.colaboradorId,
+    municipios: usuario.municipios.map(row => row.municipio),
     mustChangePassword: usuario.mustChangePassword,
   };
 }
@@ -34,7 +35,7 @@ router.post('/login', rateLimit(30, undefined, { scope: 'login-ip' }), rateLimit
 
   const usuario = await prisma.usuario.findUnique({
     where: { correo },
-    include: { colaborador: { include: { puesto: true } }, rol: true },
+    include: { colaborador: { include: { puesto: true } }, rol: true, municipios: { select: { municipio: true } } },
   });
   if (!usuario) return res.status(401).json({ error: 'Credenciales inválidas' });
 
@@ -54,16 +55,24 @@ router.post('/login', rateLimit(30, undefined, { scope: 'login-ip' }), rateLimit
   } catch (err) { next(err); }
 });
 
-router.post('/logout', requireAuth, (req, res) => {
-  clearSessionCookie(res);
-  res.json({ ok: true });
+router.post('/logout', requireAuth, async (req, res, next) => {
+  try {
+    // The cookie is only one copy of the JWT. Incrementing the version also
+    // rejects a copied cookie or bearer token after logout.
+    await prisma.$transaction(async tx => {
+      await tx.usuario.update({ where: { id: req.user.sub }, data: { sessionVersion: { increment: 1 } } });
+      await tx.bitacoraAuditoria.create({ data: { usuarioId: req.user.sub, accion: 'cerrar_sesiones', entidad: 'usuario', entidadId: req.user.sub } });
+    });
+    clearSessionCookie(res);
+    res.json({ ok: true });
+  } catch (error) { next(error); }
 });
 
 router.get('/me', requireAuth, async (req, res, next) => {
   try {
   const usuario = await prisma.usuario.findUnique({
     where: { id: req.user.sub },
-    include: { colaborador: { include: { puesto: true } }, rol: true },
+    include: { colaborador: { include: { puesto: true } }, rol: true, municipios: { select: { municipio: true } } },
   });
   if (!usuario) return res.status(404).json({ error: 'Usuario no encontrado' });
   res.json(serialize(usuario));

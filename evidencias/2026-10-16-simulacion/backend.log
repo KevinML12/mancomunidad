@@ -1,0 +1,430 @@
+
+> sirh-mfn-backend@0.1.0 test
+> npm run test:unit && npm run test:integration
+
+
+> sirh-mfn-backend@0.1.0 test:unit
+> node --test tests/unit/*.test.js
+
+✔ producción solo permite el frontend HTTPS y orígenes configurados seguros (1.004167ms)
+✔ desarrollo permite el frontend local sin abrir CORS a internet (0.133875ms)
+✔ importe válido 0 (0.95525ms)
+✔ importe válido "1330.25" (0.137208ms)
+✔ importe válido " 15 " (0.118291ms)
+✔ importe válido ".5" (0.0535ms)
+✔ importe válido 100000 (0.087791ms)
+✔ importe inválido  (0.167333ms)
+✔ importe inválido null (0.059542ms)
+✔ importe inválido undefined (0.055667ms)
+✔ importe inválido [object Object] (0.0705ms)
+✔ importe inválido NaN (0.101583ms)
+✔ importe inválido Infinity (0.056708ms)
+✔ importe inválido -1 (0.043208ms)
+✔ importe inválido 1,000 (0.039125ms)
+✔ importe inválido 1abc (0.035875ms)
+✔ importe inválido 2.555 (0.034125ms)
+✔ rechaza fecha 2026-02-29 (1.204792ms)
+✔ rechaza fecha 2026-04-31 (0.132417ms)
+✔ rechaza fecha 2026-13-01 (0.050708ms)
+✔ rechaza fecha hoy (0.041709ms)
+✔ rechaza fecha 2026-2-01 (0.038542ms)
+✔ acepta calendario 2024-02-29 (0.152292ms)
+✔ acepta calendario 2026-10-14 (0.051125ms)
+✔ acepta calendario 2026-10-14T12:30:00Z (0.029084ms)
+✔ vigencia invertida se rechaza (0.085208ms)
+✔ vigencia igual se conserva (0.088584ms)
+✔ URL insegura javascript (0.102ms)
+✔ URL insegura data (0.051167ms)
+✔ URL insegura http (0.064333ms)
+✔ URL insegura https (0.057625ms)
+✔ URL insegura file (0.046708ms)
+✔ URL externa se normaliza (0.046459ms)
+✔ referencia opcional vacía (0.036375ms)
+✔ texto obligatorio recorta espacios (0.073291ms)
+✔ texto demasiado largo se rechaza (0.053083ms)
+✔ estado ajeno se rechaza (0.079958ms)
+✔ ámbito acta (0.060167ms)
+✔ ámbito acuerdo (0.038292ms)
+✔ ámbito convenio (0.026667ms)
+✔ ámbito inválido constructor (0.046292ms)
+✔ ámbito inválido __proto__ (0.03975ms)
+✔ ámbito inválido toString (0.038458ms)
+✔ ámbito inválido otro (0.042542ms)
+✔ ámbito inválido null (0.043917ms)
+✔ preparación inválida bytes 10485761 (0.257166ms)
+✔ preparación inválida bytes 0 (0.0495ms)
+✔ preparación inválida bytes 2.5 (0.045292ms)
+✔ preparación inválida nombre archivo.exe (0.091375ms)
+✔ preparación inválida nombre aaaaaaaaaaaaaaaaaaaa (0.045292ms)
+✔ preparación inválida tipoMime text/plain (0.057375ms)
+✔ preparación inválida sha256 falso (0.086959ms)
+✔ preparación inválida sha256 AAAAAAAAAAAAAAAAAAAA (0.071917ms)
+✔ ticket inválido: ámbito heredado (2.398375ms)
+✔ ticket inválido: sesión (0.28975ms)
+✔ ticket inválido: otro bucket (0.21925ms)
+✔ ticket inválido: sin usuario (0.192292ms)
+✔ ticket inválido: sin huella (0.214125ms)
+✔ ticket inválido: tamaño excesivo (0.200792ms)
+✔ ticket inválido: ruta alterada (0.183042ms)
+✔ ticket vencido (0.333ms)
+✔ ticket de otra cuenta es 403 antes de acceder a S3 (0.505ms)
+✔ referencia falsificada (0.110625ms)
+✔ referencia de otro ámbito (0.206084ms)
+✔ GPS EXIF interpreta latitud norte y longitud oeste sin confiar en coordenadas declaradas (3.37925ms)
+✔ foto sin GPS no recibe municipio sugerido (0.159041ms)
+✔ punto dentro del municipio pero cerca del límite queda para revisión (0.59375ms)
+✔ el control de despliegue detecta columnas faltantes en cualquier módulo (0.946375ms)
+ℹ tests 68
+ℹ suites 0
+ℹ pass 68
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 167.749333
+
+> sirh-mfn-backend@0.1.0 test:integration
+> prisma generate --schema prisma/schema.prisma && node --test tests/integration/*.test.js
+
+Environment variables loaded from .env
+Prisma schema loaded from prisma/schema.prisma
+
+✔ Generated Prisma Client (v6.12.0) to ./node_modules/@prisma/client in 110ms
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+Tip: Interested in query caching in just a few lines of code? Try Accelerate today! https://pris.ly/tip-3-accelerate
+
+POST /api/v1/auth/login 200 14.617 ms - 782
+POST /api/v1/auth/login 200 5.171 ms - 463
+POST /api/v1/auth/login 200 5.567 ms - 417
+POST /api/v1/auth/login 200 4.793 ms - 416
+POST /api/v1/auth/login 200 5.074 ms - 430
+POST /api/v1/auth/login 200 4.329 ms - 272
+POST /api/v1/sistema/migrar 404 0.347 ms - 30
+▶ Rutas reales con base migrada y aislada
+  ✔ la migración administrativa no se expone por HTTP (2.915583ms)
+OPTIONS /api/v1/auth/me 200 0.375 ms - 8
+GET /api/v1/auth/me 401 0.293 ms - 26
+  ✔ CORS solo permite el origen configurado y la API privada no se almacena en caché (8.087208ms)
+POST /api/v1/auth/login 200 4.997 ms - 786
+GET /api/v1/auth/me 200 2.161 ms - 777
+POST /api/v1/auth/logout 200 2.985 ms - 11
+GET /api/v1/auth/me 401 0.605 ms - 28
+  ✔ sesión por cookie permite lectura, exige origen permitido y revoca el token al salir (16.74125ms)
+  ✔ límite compartido conserva el cupo con peticiones concurrentes en dos instancias (29.395334ms)
+GET /api/v1/proyectos 401 0.210 ms - 38
+GET /api/v1/proyectos 401 0.164 ms - 44
+  ✔ token fijo y token de recuperación no sirven como sesión (5.519875ms)
+GET /api/v1/proyectos 403 0.952 ms - 46
+POST /api/v1/estadisticas/censos 403 0.821 ms - 46
+POST /api/v1/transparencia 403 0.901 ms - 49
+PUT /api/v1/transparencia/1/visibilidad 403 0.831 ms - 49
+PUT /api/v1/gobernanza/acuerdos/1 403 0.736 ms - 46
+POST /api/v1/inteligencia/sello-forense 403 0.926 ms - 46
+  ✔ empleado no consulta ni modifica módulos restringidos (10.400209ms)
+POST /api/v1/proyectos 201 3.472 ms - 347
+GET /api/v1/proyectos/1 200 1.793 ms - 468
+PUT /api/v1/proyectos/1 400 0.742 ms - 68
+  ✔ proyecto conserva municipio y rechaza montos o porcentajes inválidos (8.682542ms)
+POST /api/v1/financiero/transacciones 201 3.170 ms - 365
+POST /api/v1/financiero/transacciones 400 0.827 ms - 71
+GET /api/v1/financiero/balance 200 1.311 ms - 190
+GET /api/v1/financiero/transacciones/1/constancia.pdf 200 75.101 ms - 10180
+GET /api/v1/financiero/transacciones/1/constancia.pdf 403 0.967 ms - 46
+GET /api/v1/financiero/reportes/ejecucion.pdf?anio=2026 200 36.672 ms - 10525
+  ✔ finanzas separa cuentas y exige comprobante para caja chica (124.124834ms)
+POST /api/v1/financiero/transacciones 400 1.094 ms - 71
+POST /api/v1/documentos/preparar 200 14.503 ms - 925
+POST /api/v1/documentos/confirmar 200 15.007 ms - 576
+POST /api/v1/financiero/transacciones 400 1.084 ms - 70
+POST /api/v1/financiero/transacciones 201 5.242 ms - 814
+POST /api/v1/documentos/abrir 403 1.034 ms - 44
+POST /api/v1/documentos/abrir 200 4.444 ms - 656
+  ✔ caja chica exige foto verificada en R2 y la abre con permiso financiero (51.018333ms)
+POST /api/v1/proyectos 400 0.714 ms - 61
+POST /api/v1/estadisticas/censos 400 0.845 ms - 53
+GET /api/v1/inteligencia/dictamen 200 1.689 ms - 1415
+  ✔ catálogo activo excluye municipios históricos y no prioriza datos ausentes (6.255417ms)
+GET /api/v1/proyectos 403 0.767 ms - 46
+  ✔ permisos revocados se aplican a una sesión ya iniciada (3.818916ms)
+POST /api/v1/proyectos/1/evidencias 201 14.096 ms - 1002
+POST /api/v1/proyectos/1/evidencias 400 1.172 ms - 46
+  ✔ evidencia conserva archivo, huella y coordenadas cero (18.419084ms)
+POST /api/v1/proyectos 201 2.576 ms - 354
+POST /api/v1/proyectos/2/hitos 201 2.702 ms - 217
+POST /api/v1/proyectos/2/hitos 201 5.025 ms - 212
+POST /api/v1/proyectos/2/hitos 400 1.525 ms - 58
+POST /api/v1/proyectos 201 2.744 ms - 357
+POST /api/v1/proyectos/3/hitos 201 3.094 ms - 208
+POST /api/v1/proyectos/3/hitos 400 5.155 ms - 58
+PUT /api/v1/proyectos/2 400 0.664 ms - 68
+POST /api/v1/proyectos/2/hitos/1/aprobar 403 0.693 ms - 46
+POST /api/v1/proyectos/2/hitos/1/aprobar 400 2.090 ms - 56
+POST /api/v1/proyectos/2/evidencias 201 11.380 ms - 1047
+POST /api/v1/proyectos/2/hitos/1/aprobar 200 4.027 ms - 272
+GET /api/v1/proyectos/2 200 5.849 ms - 1978
+POST /api/v1/proyectos/2/hitos/1/reabrir 200 3.907 ms - 253
+GET /api/v1/proyectos/2 200 5.087 ms - 1958
+POST /api/v1/proyectos/2/evidencias 201 9.435 ms - 1049
+POST /api/v1/proyectos/2/evidencias/preparar 200 3.676 ms - 896
+POST /api/v1/proyectos/2/evidencias/confirmar 201 15.630 ms - 1093
+  ✔ hitos ponderados y ubicación municipal requieren evidencia y aprobación (100.556541ms)
+GET /api/v1/admin/overview 403 1.064 ms - 49
+GET /api/v1/admin/overview 200 1.489 ms - 55
+POST /api/v1/admin/media 403 0.684 ms - 49
+POST /api/v1/admin/media 201 4.380 ms - 186
+POST /api/v1/admin/publicaciones 201 5.919 ms - 364
+GET /api/v1/transparencia/publico 200 1.521 ms - 317
+PATCH /api/v1/admin/publicaciones/1 200 3.270 ms - 363
+GET /api/v1/transparencia/publico 200 1.252 ms - 680
+GET /api/v1/transparencia/publicaciones/1/media 302 4.622 ms - 487
+  ✔ administración separada publica contenido con archivo R2 y bloquea otros roles (32.5115ms)
+GET /api/v1/admin/roles 200 1.355 ms - 249
+GET /api/v1/admin/roles 403 0.623 ms - 49
+POST /api/v1/admin/users 403 0.576 ms - 49
+POST /api/v1/admin/users 403 3.502 ms - 53
+POST /api/v1/admin/users 201 90.014 ms - 100
+POST /api/v1/auth/login 200 87.227 ms - 281
+GET /api/v1/auth/me 200 1.124 ms - 272
+GET /api/v1/dashboard 403 0.645 ms - 90
+GET /api/v1/admin/overview 403 0.559 ms - 90
+POST /api/v1/auth/password 400 84.955 ms - 41
+POST /api/v1/auth/password 200 172.561 ms - 11
+GET /api/v1/auth/me 401 0.865 ms - 28
+POST /api/v1/auth/login 401 85.166 ms - 35
+POST /api/v1/auth/login 200 87.708 ms - 282
+PATCH /api/v1/admin/users/8/role 403 0.773 ms - 49
+PATCH /api/v1/admin/users/8/role 403 4.082 ms - 53
+PATCH /api/v1/admin/users/1/role 400 1.638 ms - 80
+PATCH /api/v1/admin/users/8/role 200 9.322 ms - 92
+GET /api/v1/auth/me 401 0.742 ms - 28
+GET /api/v1/proyectos 200 1.191 ms - 2
+POST /api/v1/admin/users/8/password 403 0.653 ms - 49
+POST /api/v1/admin/users/8/password 403 3.292 ms - 53
+POST /api/v1/admin/users/8/password 200 88.931 ms - 11
+GET /api/v1/auth/me 401 0.915 ms - 28
+POST /api/v1/auth/login 401 85.546 ms - 35
+POST /api/v1/auth/login 200 87.715 ms - 422
+  ✔ altas y cambios de clave exigen administrador y revocan sesiones (925.928084ms)
+POST /api/v1/proyectos 201 2.633 ms - 335
+GET /api/v1/proyectos 200 1.231 ms - 1140
+GET /api/v1/proyectos/4 404 1.600 ms - 34
+POST /api/v1/proyectos 400 0.713 ms - 52
+GET /api/v1/estadisticas/censos?municipio=San%20Pedro%20Soloma 200 0.671 ms - 2
+POST /api/v1/estadisticas/censos 403 0.496 ms - 52
+PATCH /api/v1/admin/users/9/municipalities 403 0.451 ms - 49
+PATCH /api/v1/admin/users/9/municipalities 400 1.729 ms - 56
+PATCH /api/v1/admin/users/9/municipalities 403 3.216 ms - 53
+PATCH /api/v1/admin/users/9/municipalities 200 6.252 ms - 168
+GET /api/v1/auth/me 401 0.730 ms - 28
+GET /api/v1/proyectos/4 200 1.030 ms - 456
+  ✔ municipios autorizados limitan lectura y escritura y revocan sesiones al cambiar (31.353167ms)
+GET /api/v1/arc/asignables?municipio=Santa%20Eulalia 200 1.429 ms - 496
+POST /api/v1/arc 400 1.165 ms - 79
+POST /api/v1/arc 201 3.027 ms - 428
+GET /api/v1/arc 200 1.611 ms - 484
+GET /api/v1/arc?municipio=Santa%20Eulalia&prioridad=Alta&search=dirproy 200 1.310 ms - 485
+PUT /api/v1/arc/1 403 0.535 ms - 46
+PUT /api/v1/arc/1 200 2.751 ms - 429
+PUT /api/v1/arc/1 200 2.800 ms - 431
+PUT /api/v1/arc/1 200 2.705 ms - 451
+GET /api/v1/arc 200 0.961 ms - 509
+GET /api/v1/arc/metricas 200 1.250 ms - 113
+  ✔ RF7-RF9 ARC asigna, filtra, detecta vencimiento y deja de alertar al finalizar (27.394917ms)
+POST /api/v1/gobernanza/actas 201 3.123 ms - 296
+GET /api/v1/gobernanza/actas?municipioSede=Santa%20Eulalia&search=FOLIO-DE-PRUEBA 200 1.360 ms - 312
+POST /api/v1/gobernanza/actas/1/acuerdos 201 3.191 ms - 287
+PUT /api/v1/gobernanza/acuerdos/1 403 0.705 ms - 46
+PUT /api/v1/gobernanza/acuerdos/1 200 2.959 ms - 315
+GET /api/v1/gobernanza/acuerdos?estado=Cumplido 200 1.406 ms - 621
+  ✔ RF13-RF14 acta se indexa y acuerdo conserva vínculo y estado (17.946542ms)
+POST /api/v1/convenios 201 2.430 ms - 413
+POST /api/v1/convenios 201 2.095 ms - 413
+POST /api/v1/convenios 201 2.585 ms - 413
+GET /api/v1/convenios 200 1.256 ms - 1366
+PUT /api/v1/convenios/2 200 3.230 ms - 420
+GET /api/v1/convenios 200 1.266 ms - 1363
+  ✔ RF15 convenios distingue vencido, frontera de 90 días y renovación (17.768083ms)
+POST /api/v1/convenios 400 0.755 ms - 55
+POST /api/v1/convenios 400 0.653 ms - 61
+POST /api/v1/convenios 400 0.599 ms - 67
+POST /api/v1/convenios 400 0.898 ms - 59
+POST /api/v1/convenios 201 2.691 ms - 408
+POST /api/v1/convenios 403 0.669 ms - 46
+PUT /api/v1/convenios/4 403 0.723 ms - 46
+PUT /api/v1/convenios/4 400 1.134 ms - 69
+PUT /api/v1/convenios/4 200 2.988 ms - 408
+  ✔ convenios acepta centavos, valida fechas y restringe edición de consulta (18.668042ms)
+POST /api/v1/gobernanza/actas 400 0.694 ms - 59
+POST /api/v1/gobernanza/actas 201 2.567 ms - 273
+POST /api/v1/gobernanza/actas/2/acuerdos 201 2.932 ms - 249
+PUT /api/v1/gobernanza/acuerdos/2 400 0.928 ms - 73
+PUT /api/v1/gobernanza/acuerdos/2 400 0.977 ms - 59
+GET /api/v1/gobernanza/actas 200 1.448 ms - 1164
+PUT /api/v1/gobernanza/acuerdos/2 403 0.686 ms - 46
+GET /api/v1/gobernanza/actas 200 0.913 ms - 1164
+PUT /api/v1/gobernanza/acuerdos/2 403 0.586 ms - 46
+PUT /api/v1/gobernanza/acuerdos/2 200 3.141 ms - 276
+  ✔ gobernanza exige referencia HTTP para cumplimiento y restringe roles de consulta (22.484583ms)
+POST /api/v1/estadisticas/censos 201 2.670 ms - 348
+POST /api/v1/estadisticas/censos 201 2.703 ms - 350
+GET /api/v1/estadisticas/censos 200 1.115 ms - 701
+GET /api/v1/estadisticas/censos?municipio=San%20Juan%20Ixcoy 200 0.954 ms - 367
+GET /api/v1/estadisticas/consolidado 200 0.936 ms - 411
+  ✔ RF16 ASH consolida viviendas y coberturas de municipios activos (13.129ms)
+GET /api/v1/transparencia/publico 200 1.297 ms - 688
+POST /api/v1/transparencia 201 2.738 ms - 320
+GET /api/v1/transparencia/publico 200 1.066 ms - 1356
+PUT /api/v1/transparencia/2/visibilidad 200 3.661 ms - 321
+GET /api/v1/transparencia/publico 200 1.118 ms - 688
+  ✔ RF5 publicación visible controla proyecto público sin fotos ni GPS (13.795625ms)
+POST /api/v1/financiero/transacciones 400 0.735 ms - 39
+POST /api/v1/financiero/transacciones 400 0.775 ms - 45
+POST /api/v1/financiero/transacciones 400 0.636 ms - 45
+POST /api/v1/financiero/transacciones 400 0.597 ms - 37
+POST /api/v1/financiero/transacciones 400 0.624 ms - 37
+POST /api/v1/financiero/transacciones 400 0.667 ms - 37
+POST /api/v1/financiero/transacciones 400 0.900 ms - 49
+POST /api/v1/financiero/transacciones 400 0.870 ms - 62
+POST /api/v1/financiero/transacciones 400 0.794 ms - 50
+POST /api/v1/financiero/transacciones 400 0.636 ms - 64
+POST /api/v1/financiero/transacciones 400 0.596 ms - 73
+POST /api/v1/financiero/transacciones 400 0.648 ms - 49
+POST /api/v1/financiero/transacciones 400 0.620 ms - 61
+POST /api/v1/financiero/transacciones 201 3.427 ms - 357
+  ✔ captura financiera rechaza montos y cuentas incoherentes sin escribir (22.866375ms)
+POST /api/v1/estadisticas/censos 400 0.693 ms - 64
+POST /api/v1/estadisticas/censos 400 1.034 ms - 65
+POST /api/v1/estadisticas/censos 400 0.742 ms - 65
+POST /api/v1/estadisticas/censos 400 0.613 ms - 64
+POST /api/v1/estadisticas/censos 400 0.675 ms - 64
+POST /api/v1/estadisticas/censos 400 0.836 ms - 64
+POST /api/v1/estadisticas/censos 400 0.586 ms - 50
+POST /api/v1/estadisticas/censos 400 0.619 ms - 50
+POST /api/v1/estadisticas/censos 400 0.705 ms - 48
+POST /api/v1/estadisticas/censos 400 0.760 ms - 51
+POST /api/v1/estadisticas/censos 400 0.675 ms - 51
+POST /api/v1/estadisticas/censos 400 0.742 ms - 60
+POST /api/v1/estadisticas/censos 201 2.757 ms - 350
+  ✔ censos rechaza valores inventados por conversión o servicios superiores al total (26.580792ms)
+POST /api/v1/arc 400 0.615 ms - 58
+POST /api/v1/arc 400 0.641 ms - 62
+POST /api/v1/arc 400 0.606 ms - 64
+POST /api/v1/arc 400 0.546 ms - 42
+POST /api/v1/arc 400 0.539 ms - 53
+POST /api/v1/arc 400 0.643 ms - 53
+POST /api/v1/arc 201 2.642 ms - 406
+PUT /api/v1/arc/2 400 1.032 ms - 50
+PUT /api/v1/arc/2 400 0.916 ms - 42
+  ✔ ARC valida datos obligatorios, fechas y estados sin dejar escrituras inválidas (15.021375ms)
+POST /api/v1/proyectos 400 0.685 ms - 67
+POST /api/v1/proyectos 400 0.608 ms - 51
+POST /api/v1/proyectos 400 0.532 ms - 52
+PUT /api/v1/proyectos/1 400 0.854 ms - 67
+PUT /api/v1/proyectos/1 200 2.793 ms - 369
+PUT /api/v1/proyectos/1 400 1.007 ms - 67
+PUT /api/v1/proyectos/1 200 2.742 ms - 347
+  ✔ proyectos conserva cronología en creación y edición parcial (14.752459ms)
+POST /api/v1/documentos/preparar 401 0.060 ms - 26
+POST /api/v1/documentos/preparar 403 1.378 ms - 61
+POST /api/v1/documentos/preparar 503 1.398 ms - 116
+POST /api/v1/proyectos/1/evidencias/preparar 403 0.726 ms - 46
+POST /api/v1/proyectos/1/evidencias/preparar 200 3.337 ms - 917
+POST /api/v1/proyectos/1/evidencias/confirmar 400 5.358 ms - 72
+POST /api/v1/proyectos/1/evidencias/confirmar 403 2.462 ms - 58
+POST /api/v1/proyectos/1/evidencias/confirmar 201 628.541 ms - 1045
+POST /api/v1/proyectos/1/evidencias/confirmar 201 633.957 ms - 1045
+POST /api/v1/proyectos/1/evidencias/preparar 200 3.313 ms - 917
+POST /api/v1/proyectos/1/evidencias/confirmar 400 13.484 ms - 66
+  ▶ R2 privado: carga directa, archivo verificado, referencia y descarga con permisos
+    ✔ fotografías grandes van directo a R2 y la confirmación conserva un solo registro (701.896667ms)
+POST /api/v1/documentos/preparar 400 2.367 ms - 65
+POST /api/v1/documentos/preparar 400 1.941 ms - 44
+POST /api/v1/documentos/preparar 200 7.338 ms - 949
+POST /api/v1/documentos/confirmar 400 6.440 ms - 64
+    ✔ archivo renombrado PDF se rechaza aunque su huella coincida (17.321625ms)
+POST /api/v1/documentos/preparar 200 2.932 ms - 949
+GET /api/v1/proyectos 401 0.138 ms - 44
+POST /api/v1/documentos/confirmar 400 4.406 ms - 79
+POST /api/v1/documentos/confirmar 400 5.844 ms - 64
+POST /api/v1/documentos/confirmar 200 10.783 ms - 599
+POST /api/v1/documentos/confirmar 200 11.211 ms - 599
+    ✔ dos confirmaciones simultáneas mantienen la misma referencia y bytes (12.669ms)
+POST /api/v1/documentos/confirmar 200 4.213 ms - 599
+POST /api/v1/documentos/confirmar 200 3.578 ms - 599
+POST /api/v1/documentos/confirmar 403 1.453 ms - 47
+    ✔ otra cuenta editora no confirma un envío ajeno (3.563041ms)
+POST /api/v1/documentos/confirmar 400 1.543 ms - 60
+POST /api/v1/documentos/preparar 400 1.388 ms - 41
+    ✔ ticket vencido y ámbito heredado se rechazan (4.656584ms)
+POST /api/v1/documentos/confirmar 403 1.873 ms - 64
+    ✔ retirar edición impide confirmar un ticket anterior (5.50125ms)
+POST /api/v1/gobernanza/actas 400 0.874 ms - 93
+POST /api/v1/gobernanza/actas 201 4.968 ms - 732
+POST /api/v1/documentos/abrir 401 0.052 ms - 26
+POST /api/v1/documentos/abrir 403 0.670 ms - 44
+POST /api/v1/documentos/abrir 200 3.803 ms - 678
+POST /api/v1/documentos/confirmar 200 3.965 ms - 599
+POST /api/v1/documentos/abrir 404 0.853 ms - 52
+POST /api/v1/documentos/preparar 200 3.026 ms - 964
+POST /api/v1/documentos/confirmar 200 34.857 ms - 613
+POST /api/v1/convenios 201 6.659 ms - 873
+POST /api/v1/documentos/abrir 200 4.029 ms - 686
+POST /api/v1/documentos/preparar 200 3.380 ms - 962
+POST /api/v1/documentos/confirmar 200 34.313 ms - 612
+POST /api/v1/gobernanza/actas/3/acuerdos 201 6.602 ms - 727
+POST /api/v1/documentos/abrir 200 3.488 ms - 685
+POST /api/v1/convenios 400 0.992 ms - 70
+  ✔ R2 privado: carga directa, archivo verificado, referencia y descarga con permisos (964.8825ms)
+GET /api/v1/inteligencia/sello-forense?sellar=true 200 5.564 ms - 1651
+POST /api/v1/inteligencia/sello-forense 200 5.254 ms - 1777
+PUT /api/v1/proyectos/1 200 3.077 ms - 347
+GET /api/v1/inteligencia/sello-forense 200 4.609 ms - 1785
+  ✔ consulta de integridad no escribe; auditoría distingue cambios autorizados (23.032584ms)
+POST /api/v1/auth/login 200 4.640 ms - 782
+GET /api/v1/inteligencia/sello-forense 200 4.850 ms - 1702
+POST /api/v1/inteligencia/sello-forense 409 3.513 ms - 108
+  ✔ alteraciones no auditadas no se ocultan con un login ni pueden sellarse (17.46975ms)
+PrismaClientKnownRequestError:
+Invalid `prisma.bitacoraAuditoria.create()` invocation:
+
+
+Foreign key constraint violated on the foreign key
+    at ei.handleRequestError (/Users/kevv/Documents/proyectos/mancomunidad/backend/node_modules/@prisma/client/runtime/library.js:121:7268)
+    at ei.handleAndLogRequestError (/Users/kevv/Documents/proyectos/mancomunidad/backend/node_modules/@prisma/client/runtime/library.js:121:6593)
+    at ei.request (/Users/kevv/Documents/proyectos/mancomunidad/backend/node_modules/@prisma/client/runtime/library.js:121:6300)
+    at async a (/Users/kevv/Documents/proyectos/mancomunidad/backend/node_modules/@prisma/client/runtime/library.js:130:9551)
+    at async base.$transaction.isolationLevel (file:///Users/kevv/Documents/proyectos/mancomunidad/backend/src/lib/prisma.js:13:5)
+    at async Proxy._transactionWithCallback (/Users/kevv/Documents/proyectos/mancomunidad/backend/node_modules/@prisma/client/runtime/library.js:130:8120)
+    at async a (/Users/kevv/Documents/proyectos/mancomunidad/backend/node_modules/@prisma/client/runtime/library.js:130:9551)
+    at async file:///Users/kevv/Documents/proyectos/mancomunidad/backend/src/modules/institutional/proyectos.routes.js:44:30 {
+  code: 'P2003',
+  meta: { modelName: 'BitacoraAuditoria', constraint: null },
+  clientVersion: '6.12.0'
+}
+POST /api/v1/proyectos 500 5.935 ms - 38
+  ✔ fallo de auditoría revierte la escritura de negocio (9.022042ms)
+POST /api/v1/transparencia/solicitudes 201 2.554 ms - 379
+GET /api/v1/transparencia/solicitudes/UIP-81cd40c7c976af3d9d25e1a177d380905f44efffffcd2e7b 200 0.730 ms - 198
+GET /api/v1/transparencia/solicitudes/EXP-UIP-2024-0001 404 0.315 ms - 69
+  ✔ expediente público no expone datos personales ni códigos secuenciales (5.927ms)
+POST /api/v1/auth/recuperar 200 4.258 ms - 121
+POST /api/v1/auth/recuperar 200 1.076 ms - 121
+POST /api/v1/auth/restablecer 200 88.228 ms - 74
+POST /api/v1/auth/restablecer 401 85.434 ms - 47
+GET /api/v1/proyectos 401 0.788 ms - 28
+POST /api/v1/auth/login 200 87.991 ms - 782
+  ✔ recuperación entrega por canal privado, consume una vez y revoca sesiones (272.684292ms)
+PUT /api/v1/ausencias/1 200 4.409 ms - 208
+PUT /api/v1/ausencias/1 409 4.904 ms - 40
+  ✔ dos aprobaciones simultáneas descuentan vacaciones una sola vez (11.416083ms)
+✔ Rutas reales con base migrada y aislada (2898.378375ms)
+ℹ tests 41
+ℹ suites 0
+ℹ pass 41
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4282.470875

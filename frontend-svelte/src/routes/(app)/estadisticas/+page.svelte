@@ -2,6 +2,7 @@
   import { auth } from '$lib/stores/auth.svelte.js';
   import { onMount } from 'svelte';
   import apiClient from '$lib/apiClient';
+  import { loadPaged, refreshWhenVisible } from '$lib/progressive-data.js';
   import Icon from '$lib/components/ui/Icon.svelte';
   import { toast } from 'svelte-sonner';
   import { fade, fly } from 'svelte/transition';
@@ -27,12 +28,9 @@
   });
 
   async function fetchCensos() {
-    loading = true;
+    if (!censos.length) loading = true;
     try {
-      const { data } = await apiClient.get('/estadisticas/censos');
-      if (Array.isArray(data)) {
-        censos = data;
-      }
+      await loadPaged('/estadisticas/censos', rows => { censos = rows; loading = false; });
     } catch (err) {
       console.error('Error al cargar censos ASH de la BD:', err);
       toast.error('No se pudo cargar la base de censos de la base de datos');
@@ -41,9 +39,7 @@
     }
   }
 
-  onMount(() => {
-    fetchCensos();
-  });
+  onMount(() => refreshWhenVisible(fetchCensos));
 
   // Métricas agregadas
   let totalViviendas = $derived(censos.reduce((a, c) => a + c.viviendasTotales, 0));
